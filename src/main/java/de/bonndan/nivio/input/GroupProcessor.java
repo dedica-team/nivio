@@ -33,7 +33,7 @@ public class GroupProcessor extends Processor {
         List<Function<String, Boolean>> specs = getSpecs(input.getConfig().getGroupBlacklist());
 
         /*
-         * this handles the configured groups, the default/fallback group COMMON is not configured
+         * this handles the configured groups, the default/fallback group is not configured
          */
         input.getGroups().forEach((identifier, groupDescription) -> {
             Group g = GroupFactory.createFromDescription(identifier, landscape.getIdentifier(), groupDescription);

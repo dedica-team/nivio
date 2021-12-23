@@ -33,7 +33,9 @@ public class Indexer {
     @EventListener(IndexEvent.class)
     public void onIndexEvent(@NonNull final IndexEvent event) {
         event.getLandscapeDescriptions().forEach(this::index);
-        event.getSeedConfiguration().ifPresent(seedConfiguration -> eventPublisher.publishEvent(new SeedConfigurationProcessedEvent(seedConfiguration)));
+        event.getSeedConfiguration().ifPresent(
+                seedConfiguration -> eventPublisher.publishEvent(new SeedConfigurationProcessedEvent(seedConfiguration))
+        );
     }
 
     /**

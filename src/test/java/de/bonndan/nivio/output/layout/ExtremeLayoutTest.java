@@ -1,9 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.LayoutConfig;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,7 @@ class ExtremeLayoutTest {
     @BeforeEach
     void setup() {
         collisionRegardingForces = new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
-        originalForces = new OriginalForces(2, MAX_DISTANCE_LIMIT, SubLayout.FORCE_CONSTANT);
+        originalForces = new OriginalForces(2, MAX_DISTANCE_LIMIT, OriginalForces.FORCE_CONSTANT);
     }
 
     @Test
@@ -76,7 +74,7 @@ class ExtremeLayoutTest {
 
         var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
 
-        var layout = new FastOrganicLayout(components, forces, SubLayout.INITIAL_TEMP);
+        var layout = new FastOrganicLayout(components, forces, LayoutConfig.GROUP_LAYOUT_INITIAL_TEMP);
         layout.setDebug(true);
 
         //when
@@ -124,7 +122,7 @@ class ExtremeLayoutTest {
 
         var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
 
-        var layout = new FastOrganicLayout(components, forces, SubLayout.INITIAL_TEMP);
+        var layout = new FastOrganicLayout(components, forces, LayoutConfig.GROUP_LAYOUT_INITIAL_TEMP);
         layout.setDebug(true);
 
         //when

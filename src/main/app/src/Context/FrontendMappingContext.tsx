@@ -1,20 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { get } from '../utils/API/APIClient';
 
+interface FrontendMapping {
+  keys: Map<string, string>;
+  descriptions: Map<string, string>;
+}
+
 export interface FrontendMappingContextType {
-  frontendMapping: Map<string, string>;
+  frontendMapping: FrontendMapping;
 }
 
 export const FrontendMappingContext = React.createContext<FrontendMappingContextType>({
-  frontendMapping: new Map<string, string>(),
+  frontendMapping: {
+    keys: new Map([]),
+    descriptions: new Map([]),
+  },
 });
 
 const FrontendMappingProvider: React.FC = ({ children }) => {
-  const [frontendMapping, setFrontendMapping] = useState(new Map());
+  const [frontendMapping, setFrontendMapping] = useState<FrontendMapping>({
+    keys: new Map([]),
+    descriptions: new Map([]),
+  });
 
   useEffect(() => {
     get(`/api/mapping`).then((response) => {
-      setFrontendMapping(new Map(Object.entries(response)));
+      // @ts-ignore
+      const keys: Map<string, string> = new Map(Object.entries(response.keys));
+      // @ts-ignore
+      const descriptions: Map<string, string> = new Map(Object.entries(response.descriptions));
+      setFrontendMapping({ keys: keys, descriptions: descriptions });
     });
   }, []);
 

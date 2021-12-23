@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.LayoutConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -19,21 +20,14 @@ public class SubLayout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubLayout.class);
 
-    //higher means more space between items
-    public static final int FORCE_CONSTANT = 150;
-
-    //distance when repulsion has no more effect
-    public static final int MAX_DISTANCE_LIMIT = 350;
-
-    public static final int INITIAL_TEMP = 300;
-    public static final int MIN_DISTANCE_LIMIT = 100;
-
     private FastOrganicLayout layout;
     private Component parent;
     private final boolean debug;
+    private final LayoutConfig layoutConfig;
 
-    public SubLayout(boolean debug) {
+    public SubLayout(boolean debug, @NonNull final LayoutConfig layoutConfig) {
         this.debug = debug;
+        this.layoutConfig = layoutConfig;
     }
 
     public void render(@NonNull final Component group, @NonNull final Set<Item> items) {
@@ -44,8 +38,8 @@ public class SubLayout {
 
         layout = new FastOrganicLayout(
                 components,
-                new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT),
-                INITIAL_TEMP
+                new CollisionRegardingForces(layoutConfig.getItemMinDistanceLimit(), layoutConfig.getItemMaxDistanceLimit()),
+                layoutConfig.getItemLayoutInitialTemp()
         );
         layout.setDebug(debug);
         layout.execute();

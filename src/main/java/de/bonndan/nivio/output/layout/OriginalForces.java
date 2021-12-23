@@ -7,6 +7,9 @@ import java.awt.geom.Point2D;
  */
 class OriginalForces implements Forces {
 
+    //higher means more space between items
+    public static final int FORCE_CONSTANT = 150;
+
     private final int minDistanceLimit;
     private final int minDistanceLimitSquared;
     private final int maxDistanceLimit;
