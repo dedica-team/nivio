@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.output.map.hex.Hex;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -83,10 +84,16 @@ public class LayoutedComponent {
         opposites = new ArrayList<>();
     }
 
+    /**
+     * lowest x coord (top left)
+     */
     public long getX() {
         return x;
     }
 
+    /**
+     * lowest y coord (top left)
+     */
     public long getY() {
         return y;
     }
@@ -178,21 +185,7 @@ public class LayoutedComponent {
      */
     public double getRadius() {
         final var center = getCenter();
-
-
-        Optional<Double> farthest = children.stream().reduce((component1, component2) -> {
-            Point2D.Double center1 = component1.getCenter();
-            Point2D.Double center2 = component2.getCenter();
-            var dist1 = Geometry.getDistance(center1.x - center.x, center1.y - center.y) + component1.getRadius();
-            var dist2 = Geometry.getDistance(center2.x - center.x, center2.y - center.y) + component2.getRadius();
-            if (dist1 > dist2)
-                return component1;
-            return component2;
-        }).map(component1 -> {
-            Point2D.Double center1 = component1.getCenter();
-            return Geometry.getDistance(center1.x - center.x, center1.y - center.y) + component1.getRadius();
-        });
-        return farthest.orElse(Math.max(width / 2, height / 2));
+        return Geometry.getDistance(x - center.x, y - center.y) + 2 * Hex.HEX_SIZE;
     }
 
     /**

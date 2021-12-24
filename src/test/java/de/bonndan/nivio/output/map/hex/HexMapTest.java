@@ -44,7 +44,7 @@ class HexMapTest {
         tiles.forEach(pathTile -> assertThat(pathTile.getMapTile().getPathDirections()).isNotNull());
 
         List<Integer> pathTileDirs = path.get().getDirections();
-        assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
+        assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
 
 
         PathTile port = tiles.get(tiles.size() - 2);
