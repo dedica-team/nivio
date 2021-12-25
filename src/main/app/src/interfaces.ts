@@ -203,7 +203,8 @@ export interface INotificationMessage {
   level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
-  changelog: { changes: IChanges };
+  changelog?: { changes: IChanges };
+  assessment?: IAssessment;
 }
 
 export interface IFacet {

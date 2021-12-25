@@ -82,7 +82,7 @@ const changes: IChanges = {
   test: {
     changeType: '',
     componentType: '',
-    message: '',
+    messages: [],
   },
 };
 const notification: INotificationMessage = {
@@ -99,7 +99,7 @@ const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',
   landscape: landscape,
   assessment: assessments,
-  changes: notification,
+  landscapeChanges: notification,
   next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
     if (!assessments.results[fqi]) {
@@ -107,7 +107,7 @@ const landscapeContextValue: LandscapeContextType = {
     }
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;
   },
-  notification: null,
+  mapChanges: null,
 };
 
 export default landscapeContextValue;

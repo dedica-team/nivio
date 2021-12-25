@@ -41,7 +41,7 @@ public class ProcessingEventListener {
                 .orElseGet(() -> AssessmentChangelogFactory.getChanges(landscape, assessment));
 
         if (!changes.getChanges().isEmpty()) {
-            publisher.publishEvent(new AssessmentChangedEvent(landscape, assessment));
+            publisher.publishEvent(new AssessmentChangedEvent(landscape, assessment, changes));
         }
     }
 
