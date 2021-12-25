@@ -37,3 +37,28 @@
   stroke-linecap: butt;
   stroke-linejoin: round;
 }
+
+
+.map .item .assessment.UNKNOWN {
+  display: none;
+}
+
+.map .item .assessment.GREEN {
+  fill: green;
+}
+
+.map .item .assessment.YELLOW {
+  fill: yellow;
+}
+
+.map .item .assessment.ORANGE {
+  fill: orange;
+}
+
+.map .item .assessment.RED {
+  fill: red;
+}
+
+.map .item .assessment.BROWN {
+  fill: saddlebrown;
+}
