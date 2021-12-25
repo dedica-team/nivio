@@ -184,19 +184,15 @@ public class SVGDocument extends Component {
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted) {
         List<SVGRelation> relations = new ArrayList<>();
-        layouted.getChildren().forEach(layoutedGroup -> {
-            layoutedGroup.getChildren().forEach(layoutedItem -> {
-                Item item = (Item) layoutedItem.getComponent();
-                LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                //parallel streaming enables must faster rendering with the drawback that two paths more likely use the
-                // same track.
-                item.getRelations().parallelStream()
-                        .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                        .map(rel -> getSvgRelation(layoutedItem, item, rel))
-                        .filter(Objects::nonNull)
-                        .forEach(relations::add);
-            });
-        });
+        layouted.getChildren().forEach(layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
+            Item item = (Item) layoutedItem.getComponent();
+            LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+            item.getRelations().stream()
+                    .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                    .map(rel -> getSvgRelation(layoutedItem, item, rel))
+                    .filter(Objects::nonNull)
+                    .forEach(relations::add);
+        }));
 
         return relations;
     }
