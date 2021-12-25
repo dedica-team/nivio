@@ -128,10 +128,10 @@ class SVGItem extends Component {
         }
         ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
-        return SvgTagCreator.g(inner, icon, statusCircle)
+        return SvgTagCreator.g(inner, icon, statusCircle, SvgTagCreator.title(String.format("%s #(%s)", item.getName(), item.getFullyQualifiedIdentifier())))
                 .attr(DATA_IDENTIFIER, this.id)
                 .attr("class", "item " + VISUAL_FOCUS_UNSELECTED)
-                .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
+                .attr("transform", String.format("translate(%s,%s)", pixel.x, pixel.y));
     }
 
 }

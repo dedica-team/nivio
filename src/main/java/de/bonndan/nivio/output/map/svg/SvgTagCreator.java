@@ -54,4 +54,8 @@ public class SvgTagCreator {
     public static ContainerTag use(String path) {
         return new ContainerTag("use").attr("xlink:href", path);
     }
+
+    public static ContainerTag title(String title) {
+        return new ContainerTag("title").withText(title);
+    }
 }
