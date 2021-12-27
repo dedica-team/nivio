@@ -77,6 +77,8 @@ const Changes: React.FC = () => {
         );
       }
       return get(`/api/${key}`).then((group) => {
+        if (change.messages.length === 0) return null;
+
         const assessment = landscapeContext.getAssessmentSummary(group.fullyQualifiedIdentifier);
         return (
           <TableRow key={key}>
