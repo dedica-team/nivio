@@ -4,6 +4,8 @@ import de.bonndan.nivio.output.map.hex.Hex;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Factory for {@link Hex} objects created from coordinates.
@@ -43,7 +45,7 @@ public class HexFactory {
         return new Point2D.Double(x, y);
     }
 
-    public Point2D.Double[] hexCorners(Hex hex) {
+    public List<Point2D.Double> hexCorners(Hex hex) {
         Point2D.Double[] corners = new Point2D.Double[6];
         Point2D.Double center = hexCenter(hex);
         for (int i = 0; i < 6; i++) {
@@ -51,25 +53,8 @@ public class HexFactory {
             double y = size.getY() * orientation.getSinuses()[i] + center.getY();
             corners[i] = new Point2D.Double(x, y);
         }
-        return corners;
+        return Arrays.asList(corners);
     }
 
-    public Hex[] hexNeighbors(Hex hex, int layers) {
-        int total = (layers + 1) * layers * 3;
-        Hex[] neighbors = new Hex[total];
-        int i = 0;
-        for (long q = -layers; q <= layers; q++) {
-            long r1 = Math.max(-layers, -q - layers);
-            long r2 = Math.min(layers, -q + layers);
-            for (long r = r1; r <= r2; r++) {
-                if (q == 0 && r == 0) {
-                    continue;
-                }
-                neighbors[i] = new Hex((int) q + hex.getQ(), (int) r + hex.getR());
-                i++;
-            }
-        }
-        return neighbors;
-    }
 
 }
