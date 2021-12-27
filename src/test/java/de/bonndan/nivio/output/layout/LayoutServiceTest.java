@@ -23,6 +23,7 @@ class LayoutServiceTest {
     private Layouter layouter;
     private RenderingRepository renderingRepository;
     private LayoutService service;
+    @SuppressWarnings("rawtypes")
     private Renderer renderer;
     private ApplicationEventPublisher eventPublisher;
     private Landscape landscape;
@@ -47,7 +48,7 @@ class LayoutServiceTest {
         ProcessingChangelog changelog = new ProcessingChangelog();
         changelog.addEntry(landscape, ProcessingChangelog.ChangeType.CREATED);
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(landscapeDescription, landscape, changelog);
-        when(layouter.layout(eq(landscape))).thenReturn(mock(LayoutedComponent.class));
+        when(layouter.layout(landscape)).thenReturn(mock(LayoutedComponent.class));
         when(renderer.render(any(LayoutedComponent.class), eq(null), eq(false))).thenReturn(mock(SVGDocument.class));
         when(renderer.getRenderingType()).thenReturn(SVGDocument.class.getSimpleName());
 
@@ -55,8 +56,8 @@ class LayoutServiceTest {
         service.onApplicationEvent(e);
 
         //then
-        verify(appearanceProcessor).process(eq(landscape));
-        verify(layouter).layout(eq(landscape));
+        verify(appearanceProcessor).process(landscape);
+        verify(layouter).layout(landscape);
         verify(renderer).render(any(LayoutedComponent.class), eq(null), eq(false));
         verify(renderingRepository).save(eq(SVGDocument.class.getSimpleName()), eq(landscape), any(SVGDocument.class), eq(false));
         verify(eventPublisher).publishEvent(any(LayoutChangedEvent.class));
@@ -71,7 +72,7 @@ class LayoutServiceTest {
         ProcessingChangelog changelog = new ProcessingChangelog();
         changelog.addEntry(landscape, ProcessingChangelog.ChangeType.UPDATED);
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(landscapeDescription, landscape, changelog);
-        when(layouter.layout(eq(landscape))).thenReturn(mock(LayoutedComponent.class));
+        when(layouter.layout(landscape)).thenReturn(mock(LayoutedComponent.class));
         when(renderer.render(any(LayoutedComponent.class), eq(null), eq(false))).thenReturn(mock(SVGDocument.class));
         when(renderer.getRenderingType()).thenReturn(SVGDocument.class.getSimpleName());
 
@@ -79,8 +80,8 @@ class LayoutServiceTest {
         service.onApplicationEvent(e);
 
         //then
-        verify(appearanceProcessor).process(eq(landscape));
-        verify(layouter).layout(eq(landscape));
+        verify(appearanceProcessor).process(landscape);
+        verify(layouter).layout(landscape);
         verify(renderer).render(any(LayoutedComponent.class), eq(null), eq(false));
         verify(renderingRepository).save(eq(SVGDocument.class.getSimpleName()), eq(landscape), any(SVGDocument.class), eq(false));
         verify(eventPublisher, never()).publishEvent(any(LayoutChangedEvent.class));
