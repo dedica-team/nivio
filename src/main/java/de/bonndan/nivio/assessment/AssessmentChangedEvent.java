@@ -45,4 +45,8 @@ public class AssessmentChangedEvent extends ProcessingEvent {
     public Assessment getAssessment() {
         return assessment;
     }
+
+    public ProcessingChangelog getChangelog() {
+        return changelog;
+    }
 }
