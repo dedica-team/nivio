@@ -10,6 +10,7 @@ export interface LandscapeContextType {
   readonly identifier: string | null;
   readonly mapChanges: INotificationMessage | null;
   readonly landscapeChanges: INotificationMessage | null;
+  readonly assessmentChanges: INotificationMessage | null;
   next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
 }
@@ -20,6 +21,7 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
   identifier: null,
   mapChanges: null,
   landscapeChanges: null,
+  assessmentChanges: null,
   next: () => {},
   getAssessmentSummary: () => {
     return null;
@@ -128,6 +130,7 @@ const LandscapeContextProvider: React.FC = (props) => {
         identifier: identifier,
         mapChanges: mapChanges,
         landscapeChanges: landscapeChanges,
+        assessmentChanges: assessmentChanges,
         next: (nextId) => {
           if (identifier === nextId) return;
           console.debug('New identifier', nextId);

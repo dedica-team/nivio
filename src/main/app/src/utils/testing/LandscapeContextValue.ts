@@ -1,11 +1,4 @@
-import {
-  IAssessment,
-  IChanges,
-  IGroup,
-  IItem,
-  ILandscape,
-  INotificationMessage,
-} from '../../interfaces';
+import { IAssessment, IGroup, IItem, ILandscape, INotificationMessage } from '../../interfaces';
 import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
@@ -78,28 +71,48 @@ const assessments: IAssessment = {
     ],
   },
 };
-const changes: IChanges = {
-  test: {
-    changeType: '',
-    componentType: '',
-    messages: [],
-  },
-};
-const notification: INotificationMessage = {
+const landscapeChangeNotification: INotificationMessage = {
   timestamp: 'test',
   landscape: 'test',
   message: 'test',
   level: 'success',
   type: 'test',
   date: new Date(),
-  changelog: { changes },
+  changelog: {
+    changes: {
+      test: {
+        changeType: 'UPDATE',
+        componentType: 'Item',
+        messages: ['Label foo has changed to bar'],
+      },
+    },
+  },
+};
+
+const assessmentChangeNotification: INotificationMessage = {
+  timestamp: 'test',
+  landscape: 'test',
+  message: 'test',
+  level: 'success',
+  type: 'test',
+  date: new Date(),
+  changelog: {
+    changes: {
+      test: {
+        changeType: 'UPDATE',
+        componentType: 'Item',
+        messages: ['Status security has changed to RED'],
+      },
+    },
+  },
 };
 
 const landscapeContextValue: LandscapeContextType = {
   identifier: 'test',
   landscape: landscape,
   assessment: assessments,
-  landscapeChanges: notification,
+  landscapeChanges: landscapeChangeNotification,
+  assessmentChanges: assessmentChangeNotification,
   next: typeof jest != 'undefined' ? jest.fn() : () => {},
   getAssessmentSummary: (fqi) => {
     if (!assessments.results[fqi]) {
