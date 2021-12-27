@@ -216,7 +216,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
    * apply assessment values to all map components
    */
   const applyAssessment = useCallback(() => {
-    if (!landscapeContext.assessment) return;
+    if (landscapeContext.assessment == null) return;
     Object.keys(landscapeContext.assessment?.results).forEach((key) => {
       const node = document.querySelector(`[data-identifier='${key}'] .assessment`);
       if (node) {
@@ -227,7 +227,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
         }
       }
     });
-  }, [landscapeContext.getAssessmentSummary, landscapeContext.assessment]);
+  }, [landscapeContext]);
 
   /**
    * on identifier change, load map
