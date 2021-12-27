@@ -234,9 +234,8 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
    */
   useEffect(() => {
     loadMap();
-    setSidebarContent(null);
     applyAssessment();
-  }, [landscapeContext.identifier, loadMap, setSidebarContent, applyAssessment]);
+  }, [landscapeContext.identifier, loadMap, applyAssessment]);
 
   //load landscape
   useEffect(() => {
