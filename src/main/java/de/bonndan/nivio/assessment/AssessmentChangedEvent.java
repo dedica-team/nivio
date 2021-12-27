@@ -10,16 +10,13 @@ import java.util.Objects;
 public class AssessmentChangedEvent extends ProcessingEvent {
 
     private final Landscape landscape;
-    private final Assessment assessment;
     private final ProcessingChangelog changelog;
 
     public AssessmentChangedEvent(@NonNull final Landscape landscape,
-                                  @NonNull final Assessment assessment,
                                   @NonNull final ProcessingChangelog changes
     ) {
         super(Objects.requireNonNull(landscape).getFullyQualifiedIdentifier());
         this.landscape = landscape;
-        this.assessment = Objects.requireNonNull(assessment);
         this.changelog = changes;
     }
 
@@ -40,10 +37,6 @@ public class AssessmentChangedEvent extends ProcessingEvent {
 
     public Landscape getLandscape() {
         return landscape;
-    }
-
-    public Assessment getAssessment() {
-        return assessment;
     }
 
     public ProcessingChangelog getChangelog() {

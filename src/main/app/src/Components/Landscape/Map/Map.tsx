@@ -227,7 +227,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
         }
       }
     });
-  }, [landscapeContext]);
+  }, [landscapeContext.getAssessmentSummary, landscapeContext.assessment]);
 
   /**
    * on identifier change, load map

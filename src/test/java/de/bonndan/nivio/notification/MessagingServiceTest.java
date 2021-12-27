@@ -75,7 +75,6 @@ class MessagingServiceTest {
     void onAssessmentChangeEvent() {
         AssessmentChangedEvent event = new AssessmentChangedEvent(
                 LandscapeFactory.createForTesting("test", "testLandscape").build(),
-                Assessment.empty(),
                 new ProcessingChangelog()
         );
         messagingService.onAssessmentChangedEvent(event);

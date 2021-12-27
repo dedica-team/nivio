@@ -45,6 +45,7 @@ const LandscapeContextProvider: React.FC = (props) => {
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
   const [mapChanges, setMapChanges] = useState<INotificationMessage | null>(null);
   const [landscapeChanges, setLandscapeChanges] = useState<INotificationMessage | null>(null);
+  const [assessmentChanges, setAssessmentChanges] = useState<INotificationMessage | null>(null);
 
   const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
@@ -71,8 +72,8 @@ const LandscapeContextProvider: React.FC = (props) => {
             setLandscapeChanges(event);
           }
 
-          if (event.type === 'AssessmentChangedEvent' && event.assessment) {
-            setAssessment(event.assessment);
+          if (event.type === 'AssessmentChangedEvent') {
+            setAssessmentChanges(event);
           }
         });
 
@@ -95,26 +96,29 @@ const LandscapeContextProvider: React.FC = (props) => {
   }, [client, subscriptions]);
 
   /**
-   * Load the landscape and assessment data when the identifier changes.
+   * Load the landscape data when the identifier changes.
    */
   useEffect(() => {
-    setAssessment(null);
-    if (identifier == null) {
-      console.debug(`Identifier not present`);
-      return;
-    }
+    if (identifier == null) return;
 
     get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
       console.debug(`Loaded landscape data after identifier change: ${identifier}`);
     });
-    get(`/assessment/${identifier}`).then((response) => {
-      setAssessment(response);
-      console.debug(`Loaded assessment data after identifier change: ${identifier}`);
-    });
     setLandscapeChanges(null);
   }, [identifier]);
 
+  /**
+   * Load the landscape and assessment data when the identifier changes.
+   */
+  useEffect(() => {
+    if (identifier == null) return;
+    setAssessment(null);
+    get(`/assessment/${identifier}`).then((response) => {
+      setAssessment(response);
+      console.debug(`Loaded assessment for ${identifier}`);
+    });
+  }, [identifier, assessmentChanges]);
 
   return (
     <LandscapeContext.Provider
