@@ -2,7 +2,7 @@ package de.bonndan.nivio.output.map.hex.gojuno;
 
 import de.bonndan.nivio.output.map.hex.Hex;
 
-public class FractionalHex {
+class FractionalHex {
 
     private final double q;
     private final double r;
@@ -25,37 +25,24 @@ public class FractionalHex {
     }
 
     public Hex toHex() {
-        int q = (int) Math.round(getQ());
-        int r = (int) Math.round(getR());
+        int tmpQ = (int) Math.round(getQ());
+        int tmpR = (int) Math.round(getR());
         int s = (int) Math.round(getS());
-        double qDiff = Math.abs(q - getQ());
-        double rDiff = Math.abs(r - getR());
+        double qDiff = Math.abs(tmpQ - getQ());
+        double rDiff = Math.abs(tmpR - getR());
         double sDiff = Math.abs(s - getS());
 
         if (qDiff > rDiff && qDiff > sDiff) {
-            q = -(r + s);
+            tmpQ = -(tmpR + s);
         } else if (rDiff > sDiff) {
-            r = -(q + s);
+            tmpR = -(tmpQ + s);
         }
 
-        return new Hex(q, r);
+        return new Hex(tmpQ, tmpR);
     }
 
     @Override
     public String toString() {
-        return String.format("fraction_hex{q: %d, r: %d}", q, r);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (!FractionalHex.class.isAssignableFrom(obj.getClass())) {
-            return false;
-        }
-        FractionalHex other = (FractionalHex)obj;
-
-        return other.q == q && other.r == r;
+        return String.format("fraction_hex{q: %s, r: %s}", q, r);
     }
 }
