@@ -3,13 +3,13 @@ package de.bonndan.nivio.output.map.hex;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import de.bonndan.nivio.output.map.hex.gojuno.HexFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
+import java.awt.geom.Point2D;
 import java.util.*;
-
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
 /**
  * Representation of a hex map.
@@ -23,39 +23,13 @@ public class HexMap {
      */
     private final MapState mapState = new MapState();
 
-    public static Hex forCoordinates(long x, long y) {
-        var q = (2. / 3 * x) / (DEFAULT_ICON_SIZE);
-        var r = (-1. / 3 * x + Math.sqrt(3) / 3 * y) / (DEFAULT_ICON_SIZE);
-
-        double s = -q - r;
-        if (Math.round(q + r + s) != 0) {
-            throw new IllegalArgumentException("q + r + s must be 0");
-        }
-
-        int qi = (int) Math.round(q);
-        int ri = (int) Math.round(r);
-        int si = (int) Math.round(s);
-
-        var qDiff = Math.abs(qi - q);
-        var rDiff = Math.abs(ri - r);
-        var sDiff = Math.abs(si - s);
-
-        if (qDiff > rDiff && qDiff > sDiff) {
-            qi = -ri - si;
-        } else if (rDiff > sDiff) {
-            ri = -qi - si;
-        }
-
-        return new Hex(qi, ri);
-    }
-
     /**
      * Add a previously layouted item to the map.
      *
      * @return the created hex
      */
     public MapTile findFreeSpot(LayoutedComponent component) {
-        Hex hex = forCoordinates(component.getX(), component.getY());
+        Hex hex = HexFactory.getInstance().hexAt(new Point2D.Double(component.getX(), component.getY()));
         MapTile tile = mapState.getOrAdd(hex);
         if (!mapState.hasItem(hex)) {
             return tile;

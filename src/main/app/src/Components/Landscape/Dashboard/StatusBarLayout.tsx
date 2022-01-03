@@ -40,7 +40,7 @@ const StatusBarLayout: React.FC<Props> = ({ onItemClick, onGroupClick }) => {
       if (
         !assessmentSummary?.status ||
         assessmentSummary?.status === 'GREEN' ||
-        assessmentSummary.status === 'UNDEFINED'
+        assessmentSummary.status === 'UNKNOWN'
       )
         return null;
 

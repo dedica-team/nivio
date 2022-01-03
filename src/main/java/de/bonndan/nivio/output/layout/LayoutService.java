@@ -1,7 +1,8 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.assessment.AssessmentChangedEvent;
+import de.bonndan.nivio.input.ProcessingChangelog;
+import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.map.RenderingRepository;
@@ -20,7 +21,7 @@ import java.util.Objects;
  * Appearance must be determined after indexing, because values might be needed in api, too.
  */
 @Service
-public class LayoutService implements ApplicationListener<AssessmentChangedEvent> {
+public class LayoutService implements ApplicationListener<ProcessingFinishedEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LayoutService.class);
 
@@ -44,18 +45,29 @@ public class LayoutService implements ApplicationListener<AssessmentChangedEvent
     }
 
     @Override
-    public void onApplicationEvent(@NonNull final AssessmentChangedEvent event) {
+    public void onApplicationEvent(@NonNull final ProcessingFinishedEvent event) {
         Landscape landscape = event.getLandscape();
         LOGGER.info("Calculating layout for landscape {}", landscape);
         appearanceProcessor.process(landscape);
-        Assessment assessment = event.getAssessment();
         LayoutedComponent layout = layout(landscape);
 
         var debug = false;
-        var artefact = renderer.render(layout, assessment, debug);
+        var artefact = renderer.render(layout, null, debug);
         renderingRepository.save(renderer.getRenderingType(), landscape, artefact, debug);
         LOGGER.info("Generated {} rendering of landscape {} (debug: {})", renderer.getRenderingType(), landscape.getIdentifier(), debug);
-        eventPublisher.publishEvent(new LayoutChangedEvent(landscape, "Rendered landscape " + landscape.getIdentifier()));
+
+        if (hasStructureChange(event.getChangelog())) {
+            eventPublisher.publishEvent(new LayoutChangedEvent(landscape, "Rendered landscape " + landscape.getIdentifier()));
+        }
+    }
+
+    private boolean hasStructureChange(ProcessingChangelog changelog) {
+        return changelog.getChanges().entrySet().stream()
+                .anyMatch(entry -> {
+                    String changeType = entry.getValue().getChangeType();
+                    return ProcessingChangelog.ChangeType.CREATED.name().equalsIgnoreCase(changeType) ||
+                            ProcessingChangelog.ChangeType.DELETED.name().equalsIgnoreCase(changeType);
+                });
     }
 
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
