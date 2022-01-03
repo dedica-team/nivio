@@ -22,13 +22,13 @@ class HexMapTest {
         Item bar = getTestItem("foo", "bar");
 
         LayoutedComponent barComponent = new LayoutedComponent(bar);
-        barComponent.x = 0;
-        barComponent.y = 0;
+        barComponent.setX(0);
+        barComponent.setY(0);
 
         Item baz = getTestItem("moo", "baz");
         LayoutedComponent bazComponent = new LayoutedComponent(baz);
-        barComponent.x = 500;
-        barComponent.y = 500;
+        barComponent.setX(500);
+        barComponent.setY(500);
 
         HexMap hexMap = new HexMap();
         hexMap.add(bar, hexMap.findFreeSpot(barComponent));
@@ -44,7 +44,7 @@ class HexMapTest {
         tiles.forEach(pathTile -> assertThat(pathTile.getMapTile().getPathDirections()).isNotNull());
 
         List<Integer> pathTileDirs = path.get().getDirections();
-        assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
+        assertThat(pathTileDirs).isEqualTo(List.of(NORTH_WEST, NORTH_WEST, NORTH_WEST, NORTH, NORTH, NORTH));
 
 
         PathTile port = tiles.get(tiles.size() - 2);
@@ -56,8 +56,8 @@ class HexMapTest {
     void addCreatesHexWithItem() {
         Item bar = getTestItem("foo", "bar");
         LayoutedComponent barComponent = new LayoutedComponent(bar);
-        barComponent.x = 0;
-        barComponent.y = 0;
+        barComponent.setX(0);
+        barComponent.setY(0);
 
         HexMap hexMap = new HexMap();
 

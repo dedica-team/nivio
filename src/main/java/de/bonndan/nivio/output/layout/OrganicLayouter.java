@@ -2,17 +2,23 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LayoutConfig;
 import de.bonndan.nivio.output.map.hex.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Service;
 
-import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Applies {@link FastOrganicLayout} to landscape components and writes the rendered data to component labels.
  */
+@Service
 public class OrganicLayouter implements Layouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganicLayouter.class);
@@ -31,15 +37,16 @@ public class OrganicLayouter implements Layouter {
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
         Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
+        LayoutConfig layoutConfig = landscape.getConfig().getLayoutConfig();
         Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
             Set<Item> items = landscape.getItems().retrieve(group.getItems());
             if (items.isEmpty()) return;
-            SubLayout subLayout = new SubLayout(debug);
+            SubLayout subLayout = new SubLayout(debug, layoutConfig);
             subLayout.render(group, items);
             subGraphs.put(name, subLayout);
         });
 
-        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug);
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug, layoutConfig);
         LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(landscape, new LinkedHashMap<>(landscape.getGroups()), subGraphs);
         shiftGroupsAndItems(layoutedComponent);
         return layoutedComponent;
@@ -50,14 +57,28 @@ public class OrganicLayouter implements Layouter {
      */
     private void shiftGroupsAndItems(LayoutedComponent layoutedLandscape) {
 
-        Point2D.Double margin = getMargins(layoutedLandscape);
+        AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
+        layoutedLandscape.getChildren().forEach(groupBounds -> {
+            if (groupBounds.getX() < minX.get()) {
+                minX.set((int) groupBounds.getX());
+            }
+
+            if (groupBounds.getY() < minY.get()) {
+                minY.set((int) groupBounds.getY());
+            }
+        });
+
+        final int groupPadding = Hex.HEX_SIZE;
+
         layoutedLandscape.getChildren().forEach(groupBounds -> {
 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
             }
-            groupBounds.setX((long) (groupBounds.getX() + margin.x));
-            groupBounds.setY((long) (groupBounds.getY() + margin.y));
+            groupBounds.setX((groupBounds.getX() - minX.get()) + groupPadding);
+            groupBounds.setY(groupBounds.getY() - minY.get() + groupPadding);
+
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
             }
@@ -73,35 +94,6 @@ public class OrganicLayouter implements Layouter {
                 }
             });
         });
-    }
-
-    /**
-     * @return the left/top extra margin to shift all items into positive coordinates
-     */
-    private Point2D.Double getMargins(LayoutedComponent layoutedLandscape) {
-
-        List<Point2D.Double> minMaxBoundaries = layoutedLandscape.getMinMaxBoundaries();
-        var min = minMaxBoundaries.get(0);
-        var max = minMaxBoundaries.get(1);
-
-        layoutedLandscape.setWidth(max.x - min.x);
-        layoutedLandscape.setHeight(max.y - min.y);
-
-        int marginX = 2 * Hex.HEX_SIZE;
-        int marginY = 2 * Hex.HEX_SIZE;
-
-        if (min.x < 0) {
-            if (LOGGER.isDebugEnabled()) LOGGER.debug("fixing minX by {}", min.x * -1);
-            marginX += min.x * -1;
-        }
-
-        if (min.y < 0) {
-            if (LOGGER.isDebugEnabled()) LOGGER.debug("fixing minY by {}", min.y * -1);
-            marginY += min.y * -1;
-        }
-
-        if (LOGGER.isDebugEnabled()) LOGGER.debug("Map shift x {} y {} ", marginX, marginY);
-        return new Point2D.Double(marginX, marginY);
     }
 
 

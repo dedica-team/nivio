@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -63,10 +64,21 @@ public class IndexingDispatcher {
         handle(seedConfiguration);
     }
 
-    public LandscapeDescription createLandscapeDescriptionFromBody(String body) {
-        LandscapeDescription env = landscapeDescriptionFactory.fromString(body, "request body");
-        publisher.publishEvent(new IndexEvent(Collections.singletonList(env), null, "Creating landscape from request body"));
-        return env;
+    public LandscapeDescription createLandscapeDescriptionFromBody(@NonNull final String body) {
+        LandscapeDescription dto = landscapeDescriptionFactory.fromString(Objects.requireNonNull(body), "request body");
+        dto.setIsPartial(false);
+        publisher.publishEvent(new IndexEvent(Collections.singletonList(dto), null, "Creating landscape from request body"));
+        return dto;
+    }
+
+    public LandscapeDescription updateLandscapeDescriptionFromBody(@NonNull final String body, @Nullable String updateIdentifier) {
+        LandscapeDescription dto = landscapeDescriptionFactory.fromString(Objects.requireNonNull(body), "request body");
+        if (!dto.getIdentifier().equalsIgnoreCase(updateIdentifier)) {
+            throw new IllegalArgumentException("Identifier does not match identifier in body.");
+        }
+        dto.setIsPartial(true);
+        publisher.publishEvent(new IndexEvent(Collections.singletonList(dto), null, "Creating landscape from request body"));
+        return dto;
     }
 
     public LandscapeDescription createFromLandscapeDescriptionBodyItems(String identifier, String body) {

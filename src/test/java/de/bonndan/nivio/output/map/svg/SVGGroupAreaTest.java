@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
@@ -36,7 +35,7 @@ class SVGGroupAreaTest {
 
 
         Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, landscapeItem2));
-        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area,  Status.GREEN, false);
+        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, false);
 
         assertThat(svgGroupArea.render().render()).contains(group.getFullyQualifiedIdentifier().jsonValue());
     }
@@ -58,7 +57,7 @@ class SVGGroupAreaTest {
         hexMap.add(landscapeItem2, e2);
 
         Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, landscapeItem2));
-        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, Status.GREEN, false);
+        SVGGroupArea svgGroupArea = SVGGroupArea.forGroup(group, area, false);
 
         //then
         String render1 = svgGroupArea.render().render();

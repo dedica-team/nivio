@@ -13,16 +13,16 @@ import java.util.function.Supplier;
  */
 public class KPIFactory {
 
-    private final Map<String, Supplier<KPI>> defaultKPIs = new HashMap<>();
+    private final Map<String, Supplier<KPI>> builtInKPIs = new HashMap<>();
 
     public KPIFactory() {
 
         //replace this once https://github.com/dedica-team/nivio/issues/14 is implemented
-        defaultKPIs.put(HealthKPI.IDENTIFIER, HealthKPI::new);
-        defaultKPIs.put(ScalingKPI.IDENTIFIER, ScalingKPI::new);
-        defaultKPIs.put(ConditionKPI.IDENTIFIER, ConditionKPI::new);
-        defaultKPIs.put(LifecycleKPI.IDENTIFIER, LifecycleKPI::new);
-        defaultKPIs.put(KubernetesKPI.IDENTIFIER, KubernetesKPI::new);
+        builtInKPIs.put(HealthKPI.IDENTIFIER, HealthKPI::new);
+        builtInKPIs.put(ScalingKPI.IDENTIFIER, ScalingKPI::new);
+        builtInKPIs.put(ConditionKPI.IDENTIFIER, ConditionKPI::new);
+        builtInKPIs.put(LifecycleKPI.IDENTIFIER, LifecycleKPI::new);
+        builtInKPIs.put(KubernetesKPI.IDENTIFIER, KubernetesKPI::new);
     }
 
     /**
@@ -36,13 +36,12 @@ public class KPIFactory {
 
         Objects.requireNonNull(kpiConfigMap, "KPI config is null");
 
-        Map<String, KPI> kpis = new HashMap<>(defaultKPIs.size() + kpiConfigMap.size());
-        defaultKPIs.forEach((s, kpiSupplier) -> kpis.put(s, kpiSupplier.get()));
+        Map<String, KPI> kpis = new HashMap<>( kpiConfigMap.size());
 
         kpiConfigMap.forEach((s, kpiConfig) -> {
             KPI kpi = kpis.get(s);
             if (kpi == null) {
-                kpi = new CustomKPI();
+                kpi = builtInKPIs.containsKey(s) ? builtInKPIs.get(s).get() : new CustomKPI();
                 kpis.put(s, kpi);
             }
         });
@@ -56,12 +55,25 @@ public class KPIFactory {
                 if (e instanceof ProcessingException) {
                     p = (ProcessingException) e;
                 } else {
-                    p = new ProcessingException("Failed to initialize KPI " + s, e);
+                    p = new ProcessingException(String.format("Failed to initialize KPI %s", s), e);
                 }
                 throw p;
             }
         });
 
         return kpis;
+    }
+
+    /**
+     * Merged existing {@link KPI}s with newly configured.
+     *
+     * @param update   new configs
+     * @param existing existing kpi instances
+     * @return new instances
+     */
+    public Map<String, KPI> merge(Map<String, KPIConfig> update, Map<String, KPI> existing) {
+        HashMap<String, KPI> map = new HashMap<>(existing);
+        map.putAll(getConfiguredKPIs(update));
+        return map;
     }
 }

@@ -19,7 +19,7 @@ class ConfigurableEnvVarsTest {
      * Exports the configurable vars for the docs
      */
     @Test
-    public void getNotPresent()  {
+     void getNotPresent()  {
         Optional<String> s = ConfigurableEnvVars.GITLAB_PASSWORD.value();
         assertThat(s).isEmpty();
     }
@@ -28,7 +28,7 @@ class ConfigurableEnvVarsTest {
      * Exports the configurable vars for the docs
      */
     @Test
-    public void export() throws IOException {
+     void export() throws IOException {
         List<ConfigurableEnvVars> labelExport = Arrays.asList(ConfigurableEnvVars.values());
         labelExport.sort(Comparator.comparing(Enum::name));
 

@@ -1,23 +1,22 @@
-Dark Magic
-==========
+Shortcuts and convenience functions
+===================================
 
 Assigning items to groups
 -------------------------
 
-**Service configuration file, see groups**
+Often lots of items can be read from input data sources, but no information on logical grouping is available. To mitigate
+that, you can describe groups and use the ``contains`` field:
+
+* To pick items by their identifier, add single strings which are treated as identifiers.
+* Furthermore you can use SQL-like WHERE conditions to assign items to groups. In the following example ``identifier LIKE 'DB1%'`` is the query which would match both items.
 
 .. code-block:: yaml
    :linenos:
 
     items:
-      - identifier: blog-server
-        shortName: blog1
-        group: content
-
-      - identifier: auth-gateway
+      - identifier: DB1-gateway
         shortName: blog1
         layer: ingress
-        group: content
 
       - identifier: DB1
         software: MariaDB
@@ -30,7 +29,7 @@ Assigning items to groups
         team: Admins
         contains:
           - DB1
-          - "identifier LIKE 'DB1'" #same
+          - "identifier LIKE 'DB1%'"
 
 
 Using Templates to dynamically assign data

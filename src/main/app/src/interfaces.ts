@@ -186,7 +186,7 @@ export interface IAssessmentProps {
 export interface IChange {
   changeType: string;
   componentType: string;
-  message: string;
+  messages: string[];
 }
 
 /**
@@ -203,7 +203,8 @@ export interface INotificationMessage {
   level: 'success' | 'info' | 'warning' | 'error' | undefined;
   type: string;
   date: Date;
-  changelog: { changes: IChanges };
+  changelog?: { changes: IChanges };
+  assessment?: IAssessment;
 }
 
 export interface IFacet {

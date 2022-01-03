@@ -12,4 +12,5 @@ Documentation for Models
 *   - [KPIConfig](./Models/KPIConfig.rst)
 *   - [LandscapeConfig](./Models/LandscapeConfig.rst)
 *   - [LandscapeDescription](./Models/LandscapeDescription.rst)
+*   - [LayoutConfig](./Models/LayoutConfig.rst)
 *   - [Link](./Models/Link.rst)

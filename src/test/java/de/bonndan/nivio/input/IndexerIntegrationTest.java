@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.test.context.event.ApplicationEvents;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -19,7 +18,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -199,8 +197,8 @@ class IndexerIntegrationTest {
         assertThat(value).isNotNull();
         ProcessingChangelog changelog = value.getChangelog();
         assertThat(changelog).isNotNull();
-        assertThat(changelog.changes).hasSize(3);
-        assertThat(changelog.changes).containsKey("nivio:example/content/wordpress-web");
+        assertThat(changelog.getChanges()).hasSize(3);
+        assertThat(changelog.getChanges()).containsKey("nivio:example/content/wordpress-web");
     }
 
     /**

@@ -38,8 +38,8 @@ public class NivioConfigProperties {
 
     @Pattern(regexp = "[a-zA-Z ]+", message = "brandingMessage must be a valid string")
     private String brandingMessage;
-    //iconFolder: /a/local/path
 
+    private String iconFolder;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -105,6 +105,13 @@ public class NivioConfigProperties {
         this.brandingMessage = brandingMessage;
     }
 
+    public String getIconFolder() {
+        return iconFolder;
+    }
+
+    public void setIconFolder(String iconFolder) {
+        this.iconFolder = iconFolder;
+    }
 
     public ApiModel getApiModel() {
         java.net.URL brandingLogoUrl = null;

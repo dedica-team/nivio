@@ -1,8 +1,11 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.*;
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
 import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
@@ -17,7 +20,6 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static j2html.TagCreator.rawHtml;
 
@@ -27,6 +29,7 @@ import static j2html.TagCreator.rawHtml;
  */
 public class SVGDocument extends Component {
 
+    public static final int PADDING = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
     public static final int LABEL_WIDTH = 140;
     public static final String VISUAL_FOCUS_UNSELECTED = "unselected";
@@ -47,7 +50,7 @@ public class SVGDocument extends Component {
     public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
-        this.assessment = assessment == null ? AssessmentFactory.createAssessment(Map.of()) : assessment;
+        this.assessment = assessment == null ? Assessment.empty() : assessment;
         this.cssStyles = !StringUtils.hasLength(cssStyles) ? "" : cssStyles;
     }
 
@@ -58,7 +61,7 @@ public class SVGDocument extends Component {
     public DomContent render() {
 
         List<DomContent> defs = new ArrayList<>();
-        List<DomContent> items = new ArrayList<>();
+        List<SVGItem> items = new ArrayList<>();
 
         hexMap = new HexMap();
 
@@ -71,7 +74,8 @@ public class SVGDocument extends Component {
         defs.add(SVGStatus.patternFor(Status.BROWN));
         //transform all item positions to hex map positions
         layouted.getChildren().forEach(group -> {
-            if (debug) LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
+            if (debug)
+                LOGGER.debug("rendering group {} with items {}", group.getComponent().getIdentifier(), group.getChildren());
             group.getChildren().forEach(layoutedItem -> {
 
                 MapTile freeSpot = hexMap.findFreeSpot(layoutedItem);
@@ -89,26 +93,36 @@ public class SVGDocument extends Component {
                 Point2D.Double pos = hexMap.getTileForItem(item).getHex().toPixel();
 
                 List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
-                SVGItem svgItem = new SVGItem(label.render(), layoutedItem, itemStatuses, pos);
-                items.add(svgItem.render());
+                items.add(new SVGItem(label.render(), layoutedItem, itemStatuses, pos));
             });
         });
 
         List<SVGGroupArea> groupAreas = new ArrayList<>();
-        List<DomContent> groups = layouted.getChildren().stream().map(groupLayout -> {
+        layouted.getChildren().forEach(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
             Set<MapTile> groupArea = hexMap.getGroupArea(group, landscape.getItems().retrieve(group.getItems()));
-            List<StatusValue> groupStatuses = assessment.getResults().get(group.getFullyQualifiedIdentifier().toString());
-            Status groupStatus = Assessable.getWorst(groupStatuses).stream().map(StatusValue::getStatus).findFirst().orElse(Status.UNKNOWN);
-            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, groupStatus, debug);
+            SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, debug);
             groupAreas.add(area);
-            return area.render();
-        }).collect(Collectors.toList());
+        });
 
         defs.add(SVGRelation.dataflowMarker());
         List<SVGRelation> relations = getRelations(layouted);
 
+        /*
+         * Transformation from cartesian to hex coords can turn the resulting cartesian coords of the hexes into negative
+         * This could be fixed with a viewbox, but since the frontend svg lib is somehow broken (#438), we need to shift
+         * all components into the all-positive quadrant.
+         */
         SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas, relations);
+        double extraPadding = Hex.HEX_SIZE;
+        var offset = new Point2D.Double(
+                dimension.cartesian.horMin * -1 + extraPadding,
+                dimension.cartesian.vertMin * -1 + extraPadding
+        );
+
+        items.forEach(svgItem -> svgItem.shift(offset));
+        groupAreas.forEach(svgGroupArea -> svgGroupArea.shift(offset));
+        relations.forEach(svgRelation -> svgRelation.shift(offset));
 
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());
@@ -117,8 +131,8 @@ public class SVGDocument extends Component {
                 //SVGBackgroundFactory.getBackgroundTiles(dimension)
         );
 
-        DomContent title = getTitle(dimension);
-        DomContent logo = getLogo(dimension);
+        DomContent title = getTitle(dimension, offset);
+        DomContent logo = getLogo(dimension, offset);
 
         UnescapedText style = rawHtml("<style>\n" + cssStyles + "</style>");
 
@@ -127,30 +141,29 @@ public class SVGDocument extends Component {
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                .attr(WIDTH, dimension.cartesian.horMax)
-                .attr(HEIGHT, dimension.cartesian.vertMax)
-                .attr("viewBox", dimension.cartesian.asViewBox())
+                .attr(WIDTH, dimension.cartesian.horMax - dimension.cartesian.horMin + 3 * extraPadding)
+                .attr(HEIGHT, dimension.cartesian.vertMax - dimension.cartesian.vertMin + 3 * extraPadding)
                 .attr(CLASS, "map")
 
                 .with(background)
                 .with(logo, title)
-                .with(groups)
+                .with(groupAreas.stream().map(SVGGroupArea::render))
                 .with(relations.stream().map(SVGRelation::render))
                 //draw items above relations
-                .with(items)
+                .with(items.stream().map(SVGItem::render))
                 //defs contain reusable stuff
                 .with(SvgTagCreator.defs().with(defs));
     }
 
     @Nullable
-    private DomContent getLogo(SVGDimension dimension) {
+    private DomContent getLogo(SVGDimension dimension, Point2D.Double offset) {
         DomContent logo = null;
         String logoUrl = landscape.getLabel(Label._icondata); //has been set by appearance resolver
         if (StringUtils.hasLength(logoUrl)) {
             logo = SvgTagCreator.image()
                     .attr("xlink:href", logoUrl)
-                    .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
-                    .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 80)
+                    .attr("x", dimension.cartesian.horMin + PADDING + offset.x)
+                    .attr("y", dimension.cartesian.vertMin + PADDING + offset.x + 80)
                     .attr(WIDTH, LABEL_WIDTH)
                     .attr(HEIGHT, LABEL_WIDTH)
                     .attr(CLASS, "logo");
@@ -158,10 +171,10 @@ public class SVGDocument extends Component {
         return logo;
     }
 
-    private ContainerTag getTitle(SVGDimension dimension) {
+    private ContainerTag getTitle(SVGDimension dimension, Point2D.Double offset) {
         return SvgTagCreator.text(landscape.getName())
-                .attr("x", dimension.cartesian.horMin - dimension.cartesian.padding)
-                .attr("y", dimension.cartesian.vertMin - dimension.cartesian.padding + 60)
+                .attr("x", dimension.cartesian.horMin + PADDING + offset.x)
+                .attr("y", dimension.cartesian.vertMin + PADDING + 60 + offset.y)
                 .attr(CLASS, "title");
     }
 
@@ -170,19 +183,15 @@ public class SVGDocument extends Component {
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted) {
         List<SVGRelation> relations = new ArrayList<>();
-        layouted.getChildren().forEach(layoutedGroup -> {
-            layoutedGroup.getChildren().forEach(layoutedItem -> {
-                Item item = (Item) layoutedItem.getComponent();
-                LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                //parallel streaming enables must faster rendering with the drawback that two paths more likely use the
-                // same track.
-                item.getRelations().parallelStream()
-                        .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                        .map(rel -> getSvgRelation(layoutedItem, item, rel))
-                        .filter(Objects::nonNull)
-                        .forEach(relations::add);
-            });
-        });
+        layouted.getChildren().forEach(layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
+            Item item = (Item) layoutedItem.getComponent();
+            LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+            item.getRelations().stream()
+                    .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                    .map(rel -> getSvgRelation(layoutedItem, item, rel))
+                    .filter(Objects::nonNull)
+                    .forEach(relations::add);
+        }));
 
         return relations;
     }

@@ -62,7 +62,7 @@ class ItemRelationProcessorTest {
         ProcessingChangelog process = processor.process(input, landscape);
 
         //then
-        assertThat(process.changes).hasSize(1); //no updates, one created
+        assertThat(process.getChanges()).hasSize(1); //no updates, one created
     }
 
     //only changes are counted as updates
@@ -81,7 +81,7 @@ class ItemRelationProcessorTest {
         ProcessingChangelog process = processor.process(input, landscape);
 
         //then
-        assertThat(process.changes).hasSize(1); //one update
+        assertThat(process.getChanges()).hasSize(1); //one update
     }
 
     @Test
@@ -96,9 +96,9 @@ class ItemRelationProcessorTest {
         ProcessingChangelog process = processor.process(input, landscape);
 
         //then
-        assertThat(process.changes).hasSize(1); //no update, one delete
-        assertThat(process.changes).containsKey("test/a/foo;test/a/baz");
-        assertThat(process.changes.get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
+        assertThat(process.getChanges()).hasSize(1); //no update, one delete
+        assertThat(process.getChanges()).containsKey("test/a/foo;test/a/baz");
+        assertThat(process.getChanges().get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
 
         Item foo = landscape.getItems().pick("foo", "a");
         assertThat(foo.getRelations()).hasSize(1);
@@ -124,9 +124,9 @@ class ItemRelationProcessorTest {
         ProcessingChangelog process = processor.process(input, landscape);
 
         //then
-        assertThat(process.changes).hasSize(1); //no update, one delete
-        assertThat(process.changes).containsKey("test/a/foo;test/a/baz");
-        assertThat(process.changes.get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
+        assertThat(process.getChanges()).hasSize(1); //no update, one delete
+        assertThat(process.getChanges()).containsKey("test/a/foo;test/a/baz");
+        assertThat(process.getChanges().get("test/a/foo;test/a/baz").getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
 
         Item foo = landscape.getItems().pick("foo", "a");
         assertThat(foo.getRelations()).hasSize(1);

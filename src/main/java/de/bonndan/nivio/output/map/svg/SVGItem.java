@@ -58,6 +58,12 @@ class SVGItem extends Component {
         this.id = layoutedComponent.getComponent().getFullyQualifiedIdentifier().jsonValue();
     }
 
+    @Override
+    protected void applyShift(Point2D.Double offset) {
+        pixel.x = pixel.x + offset.x;
+        pixel.y = pixel.y + offset.y;
+    }
+
     /**
      * Renders the fill as background if possible, otherwise tries explicit icon or shortName.
      */
@@ -94,19 +100,17 @@ class SVGItem extends Component {
         }
 
         String stroke = "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY);
-        ContainerTag statusCircle = null;
+        Status status = Status.UNKNOWN;
         if (itemStatuses != null) {
-            Status worst = Assessable.getWorst(itemStatuses).stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
-            if (worst != Status.UNKNOWN) {
-                statusCircle = SvgTagCreator.circle()
-                        .attr("cx", 70)
-                        .attr("cy", 70)
-                        .attr("r", DEFAULT_ICON_SIZE / 2)
-                        .attr("stroke", "grey")
-                        .attr("fill", worst.getName())
-                ;
-            }
+             status = Assessable.getWorst(itemStatuses).stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
         }
+        ContainerTag statusCircle = SvgTagCreator.circle()
+                .attr("class", String.format("assessment %s", status.getName()))
+                .attr("cx", 70)
+                .attr("cy", 70)
+                .attr("r", DEFAULT_ICON_SIZE / 2)
+                .attr("stroke", "grey")
+                ;
 
         ContainerTag circle = SvgTagCreator.circle()
                 .attr("id", this.id)
@@ -122,10 +126,10 @@ class SVGItem extends Component {
         }
         ContainerTag inner = SvgTagCreator.g(circle, content, children);
 
-        return SvgTagCreator.g(inner, icon, statusCircle)
+        return SvgTagCreator.g(inner, icon, statusCircle, SvgTagCreator.title(String.format("%s #(%s)", item.getName(), item.getFullyQualifiedIdentifier())))
                 .attr(DATA_IDENTIFIER, this.id)
                 .attr("class", "item " + VISUAL_FOCUS_UNSELECTED)
-                .attr("transform", "translate(" + pixel.x + "," + pixel.y + ")");
+                .attr("transform", String.format("translate(%s,%s)", pixel.x, pixel.y));
     }
 
 }

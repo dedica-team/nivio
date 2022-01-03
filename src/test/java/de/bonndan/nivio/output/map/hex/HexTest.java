@@ -1,7 +1,9 @@
 package de.bonndan.nivio.output.map.hex;
 
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,4 +35,5 @@ class HexTest {
         assertThat(center.getDirectionTo(neighbours.get(0))).isEqualTo(Hex.SOUTH_EAST);
         assertThat(center.getDirectionTo(neighbours.get(1))).isEqualTo(Hex.SOUTH);
     }
+
 }

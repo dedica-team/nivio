@@ -44,7 +44,7 @@ public class ItemRelationProcessor extends Processor {
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
                                 processLog.info(String.format("%s: Updating relation between %s and %s", origin, update.getSource(), update.getTarget()));
-                                changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
+                                changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, changes);
                             }
                             return update;
                         })
@@ -112,13 +112,13 @@ public class ItemRelationProcessor extends Processor {
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
 
-        List<Item> source = landscape.findBy(relationDescription.getSource());
+        List<Item> source = landscape.getItems().findBy(relationDescription.getSource());
         if (source.isEmpty()) {
             processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
             return false;
         }
 
-        List<Item> target = landscape.findBy(relationDescription.getTarget());
+        List<Item> target = landscape.getItems().findBy(relationDescription.getTarget());
         if (target.isEmpty()) {
             processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
             return false;

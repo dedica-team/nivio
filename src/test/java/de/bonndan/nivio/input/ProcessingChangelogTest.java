@@ -7,10 +7,11 @@ import de.bonndan.nivio.model.RelationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ProcessingChangelogTest {
 
@@ -20,23 +21,23 @@ class ProcessingChangelogTest {
     @BeforeEach
     void setUp() {
         changelog = new ProcessingChangelog();
-         testItem = ItemFactory.getTestItem("a", "b");
+        testItem = ItemFactory.getTestItem("a", "b");
     }
 
     @Test
     void addEntry() {
         //when
-        changelog.addEntry(testItem, ProcessingChangelog.ChangeType.CREATED, "foo");
+        changelog.addEntry(testItem, ProcessingChangelog.ChangeType.CREATED, Collections.singletonList("foo"));
 
         //then
-        Map<String, ProcessingChangelog.Entry> changes = changelog.changes;
+        Map<String, ProcessingChangelog.Entry> changes = changelog.getChanges();
         assertThat(changes).isNotNull().hasSize(1);
 
         ProcessingChangelog.Entry actual = changes.get(testItem.getFullyQualifiedIdentifier().jsonValue());
         assertThat(actual).isNotNull();
         assertThat(actual.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.CREATED.name());
         assertThat(actual.getComponentType()).isEqualTo(testItem.getClass().getSimpleName());
-        assertThat(actual.getMessage()).isEqualTo("foo");
+        assertThat(actual.getMessages()).isEqualTo(List.of("foo"));
     }
 
     @Test
@@ -45,7 +46,7 @@ class ProcessingChangelogTest {
         changelog.addEntry(testItem, ProcessingChangelog.ChangeType.DELETED);
 
         //then
-        Map<String, ProcessingChangelog.Entry> changes = changelog.changes;
+        Map<String, ProcessingChangelog.Entry> changes = changelog.getChanges();
         assertThat(changes).isNotNull().hasSize(1);
 
         //then
@@ -53,7 +54,7 @@ class ProcessingChangelogTest {
         assertThat(actual).isNotNull();
         assertThat(actual.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
         assertThat(actual.getComponentType()).isEqualTo(testItem.getClass().getSimpleName());
-        assertThat(actual.getMessage()).isNull();
+        assertThat(actual.getMessages()).isNotNull().isEmpty();
     }
 
     @Test
@@ -64,7 +65,7 @@ class ProcessingChangelogTest {
         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
 
         //then
-        Map<String, ProcessingChangelog.Entry> changes = changelog.changes;
+        Map<String, ProcessingChangelog.Entry> changes = changelog.getChanges();
         assertThat(changes).isNotNull().hasSize(1);
 
         //then
@@ -73,42 +74,42 @@ class ProcessingChangelogTest {
         assertThat(actual).isNotNull();
         assertThat(actual.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
         assertThat(actual.getComponentType()).isEqualTo(relation.getClass().getSimpleName());
-        assertThat(actual.getMessage()).isNull();
+        assertThat(actual.getMessages()).isNotNull().isEmpty();
     }
 
     @Test
     void merge() {
         //given
-        changelog.addEntry(testItem, ProcessingChangelog.ChangeType.UPDATED, "foo");
+        changelog.addEntry(testItem, ProcessingChangelog.ChangeType.UPDATED, Collections.singletonList("foo"));
 
         ProcessingChangelog incoming = new ProcessingChangelog();
-        incoming.addEntry(testItem, ProcessingChangelog.ChangeType.UPDATED, "bar");
+        incoming.addEntry(testItem, ProcessingChangelog.ChangeType.UPDATED, Collections.singletonList("bar"));
 
         //when
         changelog.merge(incoming);
 
         //then
-        Map<String, ProcessingChangelog.Entry> changes = changelog.changes;
+        Map<String, ProcessingChangelog.Entry> changes = changelog.getChanges();
         assertThat(changes).isNotNull().hasSize(1);
         ProcessingChangelog.Entry actual = changes.get(testItem.getFullyQualifiedIdentifier().jsonValue());
         assertThat(actual).isNotNull();
-        assertThat(actual.getMessage()).isEqualTo("foo; bar");
+        assertThat(actual.getMessages()).isEqualTo(List.of("foo", "bar"));
 
     }
 
     @Test
     void mergeDifferent() {
         //given
-        changelog.addEntry(testItem, ProcessingChangelog.ChangeType.UPDATED, "foo");
+        changelog.addEntry(testItem, ProcessingChangelog.ChangeType.UPDATED, Collections.singletonList("foo"));
 
         ProcessingChangelog incoming = new ProcessingChangelog();
-        incoming.addEntry(ItemFactory.getTestItem("b", "hihi"), ProcessingChangelog.ChangeType.UPDATED, "bar");
+        incoming.addEntry(ItemFactory.getTestItem("b", "hihi"), ProcessingChangelog.ChangeType.UPDATED, Collections.singletonList("bar"));
 
         //when
         changelog.merge(incoming);
 
         //then
-        Map<String, ProcessingChangelog.Entry> changes = changelog.changes;
+        Map<String, ProcessingChangelog.Entry> changes = changelog.getChanges();
         assertThat(changes).isNotNull().hasSize(2);
 
     }

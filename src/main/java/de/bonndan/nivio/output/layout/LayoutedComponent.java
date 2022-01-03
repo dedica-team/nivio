@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.layout;
 import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.output.map.hex.Hex;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -11,7 +12,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -23,8 +23,8 @@ public class LayoutedComponent {
 
     private final Component component;
 
-    public long x = 0;
-    public long y = 0;
+    private long x = 0;
+    private long y = 0;
     public double width = 50;
     public double height = 50;
     public static double padding = 50;
@@ -42,15 +42,14 @@ public class LayoutedComponent {
 
         LayoutedComponent layoutedComponent = new LayoutedComponent(parent, children, new ArrayList<>());
 
-
         if (children.size() == 1) {
             layoutedComponent.setWidth(children.get(0).getWidth());
             layoutedComponent.setHeight(children.get(0).getHeight());
         } else {
-            var minX = new AtomicLong(0);
-            var maxX = new AtomicLong(0);
-            var minY = new AtomicLong(0);
-            var maxY = new AtomicLong(0);
+            var minX = new AtomicLong(Integer.MAX_VALUE);
+            var maxX = new AtomicLong(Integer.MIN_VALUE);
+            var minY = new AtomicLong(Integer.MAX_VALUE);
+            var maxY = new AtomicLong(Integer.MIN_VALUE);
 
             for (LayoutedComponent b : children) {
                 if (b.x < minX.get()) minX.set(b.x);
@@ -61,6 +60,8 @@ public class LayoutedComponent {
 
             layoutedComponent.setWidth((double) maxX.get() - minX.get() + padding);
             layoutedComponent.setHeight((double) maxY.get() - minY.get() + padding);
+            layoutedComponent.x = minX.get();
+            layoutedComponent.y = minY.get();
         }
 
         return layoutedComponent;
@@ -82,10 +83,16 @@ public class LayoutedComponent {
         opposites = new ArrayList<>();
     }
 
+    /**
+     * lowest x coord (top left)
+     */
     public long getX() {
         return x;
     }
 
+    /**
+     * lowest y coord (top left)
+     */
     public long getY() {
         return y;
     }
@@ -177,21 +184,7 @@ public class LayoutedComponent {
      */
     public double getRadius() {
         final var center = getCenter();
-
-
-        Optional<Double> farthest = children.stream().reduce((component1, component2) -> {
-            Point2D.Double center1 = component1.getCenter();
-            Point2D.Double center2 = component2.getCenter();
-            var dist1 = Geometry.getDistance(center1.x - center.x, center1.y - center.y) + component1.getRadius();
-            var dist2 = Geometry.getDistance(center2.x - center.x, center2.y - center.y) + component2.getRadius();
-            if (dist1 > dist2)
-                return component1;
-            return component2;
-        }).map(component1 -> {
-            Point2D.Double center1 = component1.getCenter();
-            return Geometry.getDistance(center1.x - center.x, center1.y - center.y) + component1.getRadius();
-        });
-        return farthest.orElse(Math.max(width / 2, height / 2));
+        return Geometry.getDistance(x - center.x, y - center.y) + 2 * Hex.HEX_SIZE;
     }
 
     /**

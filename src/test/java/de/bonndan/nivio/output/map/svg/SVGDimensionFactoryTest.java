@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.RelationFactory;
@@ -25,7 +24,7 @@ class SVGDimensionFactoryTest {
         MapTile one = new MapTile(new Hex(-3, -3));
         MapTile two = new MapTile(new Hex(10, 10));
         Set<MapTile> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
-        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(), Status.GREEN);
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
 
         //when
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of());
@@ -55,7 +54,7 @@ class SVGDimensionFactoryTest {
         MapTile one = new MapTile(new Hex(-3, -3));
         MapTile two = new MapTile(new Hex(10, 10));
         Set<MapTile> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
-        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of(),  Status.GREEN);
+        SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
 
         //when
         PathTile three = new PathTile(new MapTile(new Hex(-10, -10)));
