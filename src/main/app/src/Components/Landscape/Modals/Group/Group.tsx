@@ -122,7 +122,15 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
               <br />
               <Typography variant={'h6'}>Status</Typography>
               <StatusChip name={assessment.field} status={assessment?.status} />
-              {assessment.message}
+              <ul>
+                {assessment.message.split(';').map((message) => {
+                  return (
+                    <li style={{ textAlign: 'left' }} key={message}>
+                      {message}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
             <br />
             <br />
