@@ -1,15 +1,15 @@
-import React, {ReactElement, useContext, useEffect, useState} from 'react';
-import {IChange} from '../../interfaces';
-import {Box, Table, TableBody, TableCell, TableRow, Typography} from '@material-ui/core';
-import {get} from '../../utils/API/APIClient';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import { IChange } from '../../interfaces';
+import { Box, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core';
+import { get } from '../../utils/API/APIClient';
 import IconButton from '@material-ui/core/IconButton';
 import ItemAvatar from '../Landscape/Modals/Item/ItemAvatar';
 import componentStyles from '../../Resources/styling/ComponentStyles';
-import {LocateFunctionContext} from '../../Context/LocateFunctionContext';
+import { LocateFunctionContext } from '../../Context/LocateFunctionContext';
 import GroupAvatar from '../Landscape/Modals/Group/GroupAvatar';
-import {LinkOutlined} from '@material-ui/icons';
+import { LinkOutlined } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
-import {LandscapeContext} from '../../Context/LandscapeContext';
+import { LandscapeContext } from '../../Context/LandscapeContext';
 
 /**
  * Displays the changes of an ProcessingFinishedEvent
@@ -27,26 +27,55 @@ const Changes: React.FC = () => {
    */
   useEffect(() => {
     if (
-      landscapeContext.changes == null ||
-      landscapeContext.changes.landscape !== landscapeContext.identifier
+      landscapeContext.landscapeChanges == null ||
+      landscapeContext.landscapeChanges.landscape !== landscapeContext.identifier
     ) {
       setRenderedChanges([]);
       return;
     }
 
-    const getItemChange = (key: string, change: IChange): Promise<any> => {
-      if (change.changeType === 'DELETED') {
+    /**
+     * Generates a merged ul-li change list
+     * @param componentChange structural changes
+     * @param assessmentChange status changes
+     */
+    const changeList = (
+      componentChange: IChange | null,
+      assessmentChange: IChange | null
+    ): JSX.Element | null => {
+      const items: JSX.Element[] = [];
+      if (componentChange)
+        componentChange.messages.forEach((value, index) =>
+          items.push(<li key={'c_' + index}>{value}</li>)
+        );
+      if (assessmentChange)
+        assessmentChange.messages.forEach((value, index) =>
+          items.push(<li key={'a_' + index}>{value}</li>)
+        );
+      if (items.length === 0) return null;
+      return <ul>{items}</ul>;
+    };
+
+    const getItemChange = (
+      key: string,
+      componentChange: IChange | null,
+      assessmentChange: IChange | null
+    ): Promise<any> => {
+      if (componentChange && componentChange.changeType === 'DELETED') {
         return new Promise((resolve) =>
           resolve(
             <TableRow key={key}>
               <TableCell style={{ width: '25%' }}>Item {key}</TableCell>
-              <TableCell>{change.changeType}</TableCell>
+              <TableCell>{componentChange.changeType}</TableCell>
             </TableRow>
           )
         );
       }
+
       return get(`/api/${key}`).then((item) => {
         const assessment = landscapeContext.getAssessmentSummary(item.fullyQualifiedIdentifier);
+        const changeList1 = changeList(componentChange, assessmentChange);
+        if (!changeList1) return null;
         return (
           <TableRow key={key}>
             <TableCell style={{ width: '25%' }}>
@@ -54,25 +83,32 @@ const Changes: React.FC = () => {
                 <ItemAvatar item={item} statusColor={assessment ? assessment.status : ''} />
               </IconButton>
             </TableCell>
-            <TableCell>{change.message}</TableCell>
+            <TableCell>{changeList1}</TableCell>
           </TableRow>
         );
       });
     };
 
-    const getGroupChange = (key: string, change: IChange): Promise<any> => {
-      if (change.changeType === 'DELETED') {
+    const getGroupChange = (
+      key: string,
+      componentChange: IChange | null,
+      assessmentChange: IChange | null
+    ): Promise<any> => {
+      if (componentChange && componentChange.changeType === 'DELETED') {
         return new Promise((resolve) =>
           resolve(
             <TableRow key={key}>
               <TableCell style={{ width: '25%' }}>Group {key}</TableCell>
-              <TableCell>{change.changeType}</TableCell>
+              <TableCell>{componentChange.changeType}</TableCell>
             </TableRow>
           )
         );
       }
+
       return get(`/api/${key}`).then((group) => {
         const assessment = landscapeContext.getAssessmentSummary(group.fullyQualifiedIdentifier);
+        const changeList1 = changeList(componentChange, assessmentChange);
+        if (!changeList1) return null;
         return (
           <TableRow key={key}>
             <TableCell style={{ width: '25%' }}>
@@ -83,19 +119,29 @@ const Changes: React.FC = () => {
                 <GroupAvatar group={group} statusColor={assessment ? assessment.status : ''} />
               </IconButton>
             </TableCell>
-            <TableCell>{change.message}</TableCell>
+            <TableCell>{changeList1}</TableCell>
           </TableRow>
         );
       });
     };
 
-    const getRelationChange = (key: string, change: IChange): Promise<any> => {
+    const getRelationChange = (
+      key: string,
+      componentChange: IChange | null,
+      assessmentChange: IChange | null
+    ): Promise<any> => {
       const parts = key.split(';');
       const buttonText = (fqi: string): string => {
-        const parts = fqi.trim().split('/');
-        return `${parts[1]}/${parts[2]}`;
+        const strings = fqi.trim().split('/');
+        return `${strings[1]}/${strings[2]}`;
       };
 
+      if (!componentChange)
+        componentChange = {
+          changeType: 'UPDATE',
+          componentType: 'RELATION',
+          messages: [],
+        };
       return new Promise((resolve) =>
         resolve(
           <TableRow key={key}>
@@ -105,7 +151,7 @@ const Changes: React.FC = () => {
               </IconButton>
             </TableCell>
             <TableCell>
-              {change.changeType} Relation from{' '}
+              {componentChange?.changeType} Relation from{' '}
               <Button
                 onClick={() => locateFunctionContext.locateFunction(parts[0])}
                 size='small'
@@ -127,22 +173,48 @@ const Changes: React.FC = () => {
       );
     };
 
-    let promises: Promise<any>[] = [];
-    for (let key of Object.keys(landscapeContext.changes.changelog.changes)) {
-      let change = landscapeContext.changes.changelog.changes[key];
+    class ChangeSet {
+      componentChange: IChange | null = null;
+      assessmentChange: IChange | null = null;
+    }
 
-      switch (change.componentType) {
-        case 'Item':
-          promises.push(getItemChange(key, change));
-          break;
-        case 'Group':
-          promises.push(getGroupChange(key, change));
-          break;
-        case 'Relation':
-          promises.push(getRelationChange(key, change));
-          break;
+    const changes: Map<string, ChangeSet> = new Map();
+
+    if (landscapeContext.landscapeChanges.changelog) {
+      for (let key of Object.keys(landscapeContext.landscapeChanges.changelog.changes)) {
+        if (!changes.has(key)) changes.set(key, new ChangeSet());
+        // @ts-ignore
+        changes.get(key).componentChange = landscapeContext.landscapeChanges.changelog.changes[key];
       }
     }
+
+    if (landscapeContext.assessmentChanges?.changelog) {
+      for (let key of Object.keys(landscapeContext.assessmentChanges.changelog.changes)) {
+        if (!changes.has(key)) changes.set(key, new ChangeSet());
+        // @ts-ignore
+        changes.get(key).assessmentChange =
+          landscapeContext.assessmentChanges.changelog.changes[key];
+      }
+    }
+
+    let promises: Promise<any>[] = [];
+
+    changes.forEach((value, key) => {
+      let change = value.componentChange || value.assessmentChange;
+      if (!change) return;
+      switch (change.componentType) {
+        case 'Item':
+          promises.push(getItemChange(key, value.componentChange, value.assessmentChange));
+          break;
+        case 'Group':
+          promises.push(getGroupChange(key, value.componentChange, value.assessmentChange));
+          break;
+        case 'Relation':
+          promises.push(getRelationChange(key, value.componentChange, value.assessmentChange));
+          break;
+      }
+    });
+
     Promise.all<ReactElement>(promises).then((rows) => {
       setRenderedChanges(rows);
     });
@@ -154,7 +226,7 @@ const Changes: React.FC = () => {
         <Typography variant={'h5'}>Latest changes</Typography>
         <Typography variant={'h6'}>{landscapeContext.landscape?.name}</Typography>
       </div>
-      {landscapeContext.changes != null ? (
+      {landscapeContext.landscapeChanges != null ? (
         <Table aria-label={'changes'} style={{ tableLayout: 'fixed' }}>
           <TableBody>{renderedChanges}</TableBody>
         </Table>

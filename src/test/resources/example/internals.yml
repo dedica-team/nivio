@@ -175,6 +175,9 @@ items:
       - target: assessment/kpis
         type: dataflow
         label: ProcessingFinishedEvent
+      - target: rendering/sublayout
+        type: dataflow
+        label: ProcessingFinishedEvent
       - target: reports/html
 
   #
@@ -200,9 +203,6 @@ items:
     group: assessment
     description: Collects all KPIs from all components as map (containing FullyQualifiedIdenfiers)
     relations:
-      - target: rendering/sublayout
-        type: dataflow
-        label: AssessmentChangedEvent
       - target: search/search
         type: dataflow
         label: AssessmentChangedEvent

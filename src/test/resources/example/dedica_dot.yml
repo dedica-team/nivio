@@ -8,7 +8,6 @@ icon: https://dedica.team/images/logo_orange_weiss.png
 config:
   branding:
     mapStylesheet: http://localhost:8080/css/dedica_map.css
-    mapLogo: https://dedica.team/images/logo.png
 
 groups:
   dedica:

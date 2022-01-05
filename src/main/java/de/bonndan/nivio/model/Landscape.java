@@ -330,4 +330,35 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return getItems().findOneBy(term, group);
     }
 
+    /**
+     * Returns a landscape {@link Component} by an identifier.
+     *
+     * @param identifier assessment identifier (e.g. group, item, relation ...)
+     * @return a component if can be found
+     */
+    public Optional<? extends Component> findOneByAssessmentIdentifier(String identifier) {
+        if (identifier.contains(Relation.DELIMITER)) {
+            String[] split = identifier.split(Relation.DELIMITER);
+            try {
+                return Optional.ofNullable(getItems().pick(FullyQualifiedIdentifier.from(split[0])));
+            } catch (Exception e) {
+                return Optional.empty();
+            }
+        }
+
+        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(identifier);
+        if (fqi.isGroup()) {
+            return getGroup(fqi.getGroup());
+        }
+
+        if (fqi.isItem()) {
+            try {
+                return Optional.ofNullable(getItems().pick(fqi));
+            } catch (Exception e) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(this);
+    }
 }

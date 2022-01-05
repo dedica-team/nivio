@@ -1,12 +1,15 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.LayoutConfig;
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 
 import static de.bonndan.nivio.model.ItemFactory.getTestItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -30,7 +33,7 @@ class SubLayoutTest {
         objects.add(baz);
 
         //when
-        SubLayout subLayout = new SubLayout(true);
+        SubLayout subLayout = new SubLayout(true, new LayoutConfig());
         subLayout.render(foo, objects);
 
         //then
@@ -40,15 +43,14 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        var pos = -259;
-        assertEquals(pos, Math.round(one.getX()));
+        assertEquals(21, Math.round(one.getX()));
         assertEquals(0, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(-421, Math.round(two.getX()));
-        assertEquals(0, Math.round(two.getY()));
+        assertEquals(-550, Math.round(two.getX()));
+        assertEquals(-1, Math.round(two.getY()));
     }
 
     @Test
@@ -70,7 +72,7 @@ class SubLayoutTest {
         objects.add(baz);
 
         //when
-        SubLayout subLayout = new SubLayout(true);
+        SubLayout subLayout = new SubLayout(true, new LayoutConfig());
         subLayout.render(foo, objects);
 
         //then
@@ -80,13 +82,13 @@ class SubLayoutTest {
         LayoutedComponent one = outerBounds.getChildren().get(0);
         assertNotNull(one);
         assertEquals(bar, one.getComponent());
-        assertEquals(-259, Math.round(one.getX()));
+        assertEquals(21, Math.round(one.getX()));
         assertEquals(0, Math.round(one.getY()));
 
         LayoutedComponent two = outerBounds.getChildren().get(1);
         assertNotNull(two);
         assertEquals(baz, two.getComponent());
-        assertEquals(-421, Math.round(two.getX()));
-        assertEquals(0, Math.round(two.getY()));
+        assertEquals(-550, Math.round(two.getX()));
+        assertThat(two.getY()).isEqualTo(-1);
     }
 }

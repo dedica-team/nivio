@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.hex;
 
+import de.bonndan.nivio.output.map.hex.gojuno.HexFactory;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
@@ -16,9 +17,6 @@ import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
  * stackoverflow questions.
  */
 public class Hex {
-
-    //was layout origin
-    public static final Point2D.Double origin = new Point2D.Double(200, 200);
 
     /**
      * starting at east, right before the first neighbour (which is southeast (r+1) in clockwise direction)
@@ -145,20 +143,16 @@ public class Hex {
         throw new IllegalArgumentException(String.format("Hex %s: not an adjacent hex %s given to determine direction.", this, hex));
     }
 
-    /**
-     * flat orientation (flat top)
-     */
-    static class FlatOrientation {
-        public static final double f0 = 3.0 / 2.0;
-        public static final double f1 = 0.0;
-        public static final double f2 = Math.sqrt(3.0) / 2.0;
-        public static final double f3 = Math.sqrt(3.0);
+    public int getQ() {
+        return q;
+    }
+
+    public int getR() {
+        return r;
     }
 
     public Point2D.Double toPixel() {
-        double x = (FlatOrientation.f0 * this.q + FlatOrientation.f1 * this.r) * HEX_SIZE;
-        double y = (FlatOrientation.f2 * this.q + FlatOrientation.f3 * this.r) * HEX_SIZE;
-        return new Point2D.Double(x + origin.x, y + origin.y);
+        return HexFactory.getInstance().hexCenter(this);
     }
 
     /**

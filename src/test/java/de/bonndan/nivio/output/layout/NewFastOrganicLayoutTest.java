@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemFactory;
+import de.bonndan.nivio.model.LayoutConfig;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +49,7 @@ class NewFastOrganicLayoutTest {
         c.setHeight(500);
         layoutedComponents.add(c);
 
-        layout = new FastOrganicLayout(layoutedComponents, new CollisionRegardingForces(50, 150), SubLayout.INITIAL_TEMP);
+        layout = new FastOrganicLayout(layoutedComponents, new CollisionRegardingForces(50, 150), LayoutConfig.GROUP_LAYOUT_INITIAL_TEMP);
         layout.setDebug(true);
     }
 
@@ -64,14 +65,14 @@ class NewFastOrganicLayoutTest {
         var dist1 = Math.sqrt((xDelta1 * xDelta1) + (yDelta1 * yDelta1)) - 50 - 50; //two times the radius
 
         assertThat(Math.abs(dist1))
-                .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
+                .isGreaterThan((long) LayoutConfig.ITEM_MIN_DISTANCE_LIMIT);
 
         var xDelta = b.getX() - c.getX();
         var yDelta = b.getY()- c.getY();
         var dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - 50 - 50; //two times the radius
 
         assertThat(Math.abs(dist))
-                .isGreaterThan((long) SubLayout.MIN_DISTANCE_LIMIT);
+                .isGreaterThan((long) LayoutConfig.ITEM_MIN_DISTANCE_LIMIT);
     }
 
 

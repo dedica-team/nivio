@@ -74,7 +74,8 @@ class MessagingServiceTest {
     @Test
     void onAssessmentChangeEvent() {
         AssessmentChangedEvent event = new AssessmentChangedEvent(
-                LandscapeFactory.createForTesting("test", "testLandscape").build(), Assessment.empty()
+                LandscapeFactory.createForTesting("test", "testLandscape").build(),
+                new ProcessingChangelog()
         );
         messagingService.onAssessmentChangedEvent(event);
 
@@ -86,6 +87,7 @@ class MessagingServiceTest {
         assertThat(value.getLevel()).isEqualTo("info");
         assertThat(value.getType()).isEqualTo("AssessmentChangedEvent");
         assertThat(value.getLandscape()).isEqualTo("test");
+        assertThat(value.getChangelog()).isNotNull();
     }
 
     @Test

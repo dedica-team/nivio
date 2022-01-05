@@ -39,7 +39,7 @@ Other
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
 
-By default all shipped `KPIs (Key Performance Indicators)` are enabled. Set ``enabled`` to false in the config to disable them.
+By default all shipped `KPIs (Key Performance Indicators)` are disabled. Set ``enabled`` to true in the config to disable them.
 
 .. code-block:: yaml
    :linenos:
@@ -49,7 +49,7 @@ By default all shipped `KPIs (Key Performance Indicators)` are enabled. Set ``en
     config:
       kpis:
         scaling:
-          enabled: false
+          enabled: true
 
 
 Custom KPIs
@@ -87,3 +87,7 @@ label ``foo``.
             RED: "BAD;err.*"
         health:
           description: can be overridden
+
+The pet clinic demo uses a custom KPI which evaluates radiation levels. In this simulation a sensor item (see xray group)
+collects a made up radiation (in mrem) in a label also named ``radiation``. This label is then examined by the custom KPI.
+See https://github.com/dedica-team/nivio/blob/develop/src/test/resources/example/pet_clinic.yml

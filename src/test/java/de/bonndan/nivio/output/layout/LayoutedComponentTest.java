@@ -41,7 +41,7 @@ class LayoutedComponentTest {
         double radius = component.getRadius();
 
         //then
-        assertThat(radius).isEqualTo(50);
+        assertThat(radius).isEqualTo(270, Offset.offset(1D));
     }
 
     @Test
@@ -66,9 +66,7 @@ class LayoutedComponentTest {
         double radius = component.getRadius();
 
         //then
-        var center = component.getCenter();
-        var dist = Geometry.getDistance(center.x - child2.getCenter().x, center.y - child2.getCenter().y) + child2.getRadius();
-        assertThat(radius).isEqualTo(dist, Offset.offset(1D));
+        assertThat(radius).isEqualTo(270, Offset.offset(1D));
     }
 
     @Test
@@ -95,9 +93,7 @@ class LayoutedComponentTest {
         double radius = component.getRadius();
 
         //then
-        var center = component.getCenter();
-        var dist = Geometry.getDistance(center.x - child2.getCenter().x, center.y - child2.getCenter().y) + child2.getRadius();
-        assertThat(radius).isEqualTo(dist, Offset.offset(1D));
+        assertThat(radius).isEqualTo(270, Offset.offset(1D));
     }
 
     @Test

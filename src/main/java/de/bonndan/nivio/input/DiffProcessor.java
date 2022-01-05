@@ -70,7 +70,7 @@ public class DiffProcessor extends Processor {
 
                     List<String> changes = item.getChanges(newWithAssignedValues);
                     if (!changes.isEmpty()) {
-                        changelog.addEntry(newWithAssignedValues, ProcessingChangelog.ChangeType.UPDATED, String.join("; ", changes));
+                        changelog.addEntry(newWithAssignedValues, ProcessingChangelog.ChangeType.UPDATED,  changes);
                     }
                 }
         );

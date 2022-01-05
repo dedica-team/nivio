@@ -38,4 +38,9 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
      - Names or patterns of labels that should be ignored. Used to improve automatic scanning results.
      - optional, defaults to null
      - .*COMPOSITION.*
+   * - layoutConfig
+     - LayoutConfig<LayoutConfig>
+     - 
+     - optional, defaults to null
+     - null
 

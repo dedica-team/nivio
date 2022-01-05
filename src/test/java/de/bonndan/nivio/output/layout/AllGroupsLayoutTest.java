@@ -1,6 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.LayoutConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -54,7 +55,7 @@ class AllGroupsLayoutTest {
         landscape.getGroups().forEach(groupMap::put);
 
         //when
-        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true);
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true, landscape.getConfig().getLayoutConfig());
 
         //then
         LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(landscape, landscape.getGroups(), map);
@@ -65,12 +66,12 @@ class AllGroupsLayoutTest {
         //assert position is always the same
         LayoutedComponent child0 = layoutedLandscape.getChildren().get(0);
         assertEquals("test/a", child0.getComponent().getFullyQualifiedIdentifier().toString());
-        assertEquals(976, Math.round(child0.getX()));
-        assertEquals(687, Math.round(child0.getY()));
+        assertEquals(1240, Math.round(child0.getX()));
+        assertEquals(1431, Math.round(child0.getY()));
     }
 
     private SubLayout getSubLayout(Group group, Set<Item> items) {
-        SubLayout subLayout = new SubLayout(true);
+        SubLayout subLayout = new SubLayout(true, new LayoutConfig());
         subLayout.render(group, items);
         return subLayout;
     }

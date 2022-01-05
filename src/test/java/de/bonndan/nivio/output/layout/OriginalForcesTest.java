@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.model.LayoutConfig;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
@@ -17,7 +17,7 @@ class OriginalForcesTest {
 
     @BeforeEach
     void setup() {
-        originalForces = new OriginalForces(SubLayout.MIN_DISTANCE_LIMIT, SubLayout.MAX_DISTANCE_LIMIT, SubLayout.FORCE_CONSTANT);
+        originalForces = new OriginalForces(LayoutConfig.ITEM_MIN_DISTANCE_LIMIT, LayoutConfig.ITEM_MAX_DISTANCE_LIMIT, OriginalForces.FORCE_CONSTANT);
         radius[0] = 50;
         radius[1] = 50;
     }

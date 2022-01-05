@@ -24,9 +24,9 @@ const Notification: React.FC<Props> = ({ setSidebarContent }) => {
    * render changes,
    */
   useEffect(() => {
-    if (landscapeContext.changes == null) return;
+    if (landscapeContext.landscapeChanges == null) return;
     setNewChanges(true);
-  }, [landscapeContext.changes]);
+  }, [landscapeContext.landscapeChanges]);
 
   return (
     <Badge

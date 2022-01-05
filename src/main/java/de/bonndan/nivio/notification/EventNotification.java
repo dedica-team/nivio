@@ -2,6 +2,7 @@ package de.bonndan.nivio.notification;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingEvent;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
@@ -35,17 +36,26 @@ public class EventNotification {
      */
     public static EventNotification from(ProcessingEvent processingEvent) {
 
-        var changelog = (processingEvent instanceof ProcessingFinishedEvent) ?
-                ((ProcessingFinishedEvent)processingEvent).getChangelog() : null;
-
         return new EventNotification(
                 processingEvent.getSource(),
                 processingEvent.getType(),
                 processingEvent.getLevel(),
                 processingEvent.getTimestamp(),
                 processingEvent.getMessage(),
-                changelog
+                getChangelog(processingEvent)
         );
+    }
+
+    private static ProcessingChangelog getChangelog(ProcessingEvent processingEvent) {
+        if (processingEvent instanceof ProcessingFinishedEvent) {
+            return ((ProcessingFinishedEvent) processingEvent).getChangelog();
+        }
+
+        if (processingEvent instanceof AssessmentChangedEvent) {
+            return ((AssessmentChangedEvent) processingEvent).getChangelog();
+        }
+
+        return null;
     }
 
     public static EventNotification from(InputChangedEvent inputChangedEvent) {

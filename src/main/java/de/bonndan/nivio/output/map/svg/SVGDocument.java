@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.assessment.AssessmentFactory;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
@@ -51,7 +50,7 @@ public class SVGDocument extends Component {
     public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
-        this.assessment = assessment == null ? AssessmentFactory.createAssessment(Map.of()) : assessment;
+        this.assessment = assessment == null ? Assessment.empty() : assessment;
         this.cssStyles = !StringUtils.hasLength(cssStyles) ? "" : cssStyles;
     }
 
@@ -184,19 +183,15 @@ public class SVGDocument extends Component {
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted) {
         List<SVGRelation> relations = new ArrayList<>();
-        layouted.getChildren().forEach(layoutedGroup -> {
-            layoutedGroup.getChildren().forEach(layoutedItem -> {
-                Item item = (Item) layoutedItem.getComponent();
-                LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-                //parallel streaming enables must faster rendering with the drawback that two paths more likely use the
-                // same track.
-                item.getRelations().parallelStream()
-                        .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                        .map(rel -> getSvgRelation(layoutedItem, item, rel))
-                        .filter(Objects::nonNull)
-                        .forEach(relations::add);
-            });
-        });
+        layouted.getChildren().forEach(layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
+            Item item = (Item) layoutedItem.getComponent();
+            LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+            item.getRelations().stream()
+                    .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
+                    .map(rel -> getSvgRelation(layoutedItem, item, rel))
+                    .filter(Objects::nonNull)
+                    .forEach(relations::add);
+        }));
 
         return relations;
     }

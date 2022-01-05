@@ -1,17 +1,6 @@
 Output
 ======
 
-HTTP API
---------
-
-The API offers three types of output:
-
-* JSON under :file:`/api`
-* rendered maps under :file:`/render`
-* generated landscape documentation under :file:`/docs`
-* search under :file:`/api/{landscape}/search/{lucene style query}`
-
-Please see the swagger documentation under :file:`/v2/api-docs` (JSON) or :file:`/swagger-ui.html` (HTML GUI) for details.
 
 Searching
 ---------
@@ -27,7 +16,7 @@ Modifying Item Appearance
 Icons by Type
 ^^^^^^^^^^^^^
 
-The icon of an item is determined by its item type (e.g. server, database, ...) and defaults to a cog () .
+The icon of an item is determined by its item type (e.g. server, database, ...) and defaults to a cog symbol.
 
 .. code-block:: yaml
    :linenos:
@@ -141,47 +130,3 @@ You can also apply custom colors to the user interface. Set the following enviro
 * :envvar:`NIVIO_BRANDING_BACKGROUND` for the background color (dark grey is default)
 * :envvar:`NIVIO_BRANDING_SECONDARY` to set the accent color used for active elements
 
-Graph Layout Tweaking
-=====================
-
-In rare cases the layout needs some manual improvements. Internally Nivio uses a forced directed layout, which can be
-influenced by tweaking some parameters (although mxgraph is not used anymore, for further explanation see https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html).
-
-.. code-block:: yaml
-   :linenos:
-
-    identifier: nivio:example
-    name: Landscape example
-    sources:
-      - url: "./items/dashboard.yml"
-        format: nivio
-
-    # landscape configuration
-    config:
-      groupLayoutConfig:
-
-        # the higher, the longer the edges between groups
-        forceConstantFactor: 2.8
-
-        # higher value is CPU intensive, but can lead to better layouts
-        maxIterations: 1000
-
-        # can also influence edge length and layout
-        minDistanceLimitFactor: 3.05
-
-        # multiplies the max distance limit
-        maxDistanceLimitFactor: 2
-
-      itemLayoutConfig:
-
-        # the higher, the longer the edges between groups
-        forceConstantFactor: 2.8
-
-        # higher value is CPU intensive, but can lead to better layouts
-        maxIterations: 1000
-
-        # can also influence edge length and layout
-        minDistanceLimitFactor: 3.05
-
-        # multiplies the max distance limit
-        maxDistanceLimitFactor: 2

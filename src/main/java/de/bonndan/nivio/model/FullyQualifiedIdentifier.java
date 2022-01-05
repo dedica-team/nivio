@@ -166,4 +166,12 @@ public class FullyQualifiedIdentifier {
     public String getLandscape() {
         return landscape;
     }
+
+    public boolean isGroup() {
+        return StringUtils.hasLength(group) && !StringUtils.hasLength(item);
+    }
+
+    public boolean isItem() {
+        return StringUtils.hasLength(item);
+    }
 }
