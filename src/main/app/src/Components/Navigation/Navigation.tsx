@@ -127,11 +127,11 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
-      {userContext.user === 'anonymous' ? (
+      {!userContext.user ? (
         <LoginDialog />
       ) : (
         <a href={`/logout`}>
-          <Button>Logout, {userContext.user}</Button>
+          <Button>Logout, {userContext.user.name}</Button>
         </a>
       )}
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}

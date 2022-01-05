@@ -34,12 +34,4 @@ class LoginControllerTest {
         assertThat(contentTypeHeader).isNotNull();
     }
 
-//    @Test
-//    void checkShowLogoutPage() throws Exception {
-//        final MockHttpServletResponse response = mvc.perform(get("/logout")).andReturn().getResponse();
-//        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//
-//        final String contentTypeHeader = response.getHeader("Content-Type");
-//        assertThat(contentTypeHeader).isNotNull();
-//    }
 }
