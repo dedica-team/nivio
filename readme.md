@@ -6,14 +6,13 @@
 [![Documentation Status](https://readthedocs.org/projects/nivio/badge/?version=master)](https://nivio.readthedocs.io/en/master/?badge=master)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dedica-team_nivio&metric=alert_status)](https://sonarcloud.io/dashboard?id=dedica-team_nivio)
 
- ![layoutedArtifact graph](https://raw.githubusercontent.com/dedica-team/nivio/develop/docs/gui.png)
+ ![gui](https://user-images.githubusercontent.com/84507051/148235136-7078a8d2-f299-401f-9532-46209d028d3e.png)
  
 Nivio is an application landscape management for teams (developers, operators, managers). It follows a bottom-up no-op 
 approach, i.e. there is no interface for manual data maintenance. It is designed to gather the application landscape
 information from configurable items, preferably code repositories.
 
 
- 
 
 ## Getting Started
 
