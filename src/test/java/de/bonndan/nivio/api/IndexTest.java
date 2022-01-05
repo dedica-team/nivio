@@ -10,10 +10,10 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class IndexTest {
+class IndexTest {
 
     private NivioConfigProperties.ApiModel config;
-    private Index index = new Index(config);
+    private final Index index = new Index(config);
 
 
     @BeforeEach
@@ -23,7 +23,7 @@ public class IndexTest {
 
 
     @Test
-    public void getOauth2Links() {
+    void getOauth2Links() {
         // given
         String linkKey = "link1";
         Link link = new Link();

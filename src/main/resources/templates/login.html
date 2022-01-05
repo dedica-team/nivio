@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nivio login page</title>
+    <style>
+
+        body {
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #161618;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            place-items: center;
+            overflow: hidden;
+            font-family: Monospace, serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-radius: 20px;
+            padding: 40px;
+            box-sizing: border-box;
+            background: #161618;
+            box-shadow: 14px 14px 20px #6A6A73, -14px -14px 20px #6A6A73;
+        }
+
+        .welcome {
+            color: #22F2C2;
+        }
+
+        .brand-logo {
+            height: 65px;
+            width: 65px;
+            background: #A0A0A7;
+            margin: auto;
+            border-radius: 50%;
+            box-sizing: border-box;
+            box-shadow: 5px 5px 8px #6A6A73, -5px -5px 8px #6A6A73;
+        }
+
+        .brand-logo:hover {
+            box-shadow: 8px 8px 11px #6A6A73, -8px -8px 11px #6A6A73;
+        }
+
+        .brand-title {
+            margin-top: 10px;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: #A0A0A7;
+            letter-spacing: 1px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="nivio-logo"><img src="/icons/svg/nivio.svg" alt="nivio logo" width="80" height="80"></div>
+    <div class="welcome"><h2> welcome to nivio<sup>TM</sup> <br>please login</h2> <br></div>
+    <div class="brand-logo">
+        <a th:href="@{/oauth2/authorization/github}">
+            <img src="/icons/svg/github.svg" alt="github logo" width="65" height="65"></a>
+    </div>
+    <div class="brand-title">GITHUB</div>
+</div>
+
+</body>
+</html>

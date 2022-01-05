@@ -7,46 +7,34 @@ import de.bonndan.nivio.output.LocalServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class LinkFactoryTest {
+class LinkFactoryTest {
 
-    private LocalServer localServer;
-    private NivioConfigProperties configProperties;
-    private NivioConfigProperties.ApiModel config;
-    private Index index;
-    Iterable<Landscape> landscapes;
-    private LinkFactory linkFactory = new LinkFactory(localServer, configProperties);
+    private LinkFactory linkFactory;
+    private List<Landscape> landscapes;
 
     @BeforeEach
-    public void setup() {
-        configProperties = mock(NivioConfigProperties.class);
-        localServer = mock(LocalServer.class);
-        index = mock(Index.class);
-        config = mock(NivioConfigProperties.ApiModel.class);
-
+    void setup() {
+        NivioConfigProperties configProperties = mock(NivioConfigProperties.class);
+        LocalServer localServer = mock(LocalServer.class);
+        landscapes = List.of(mock(Landscape.class));
+        linkFactory = new LinkFactory(localServer, configProperties);
     }
 
     @Test
-    public void getIndex() {
-//        Index index = new Index(config);
-//        String linkKey = "link1";
-//        Link link = new Link();
-//        Map<String, Link> oauth2links = Map.of(linkKey, link);
-//        index.getLinks().put(linkKey, link);
-//
-//        when(linkFactory.getIndex(landscapes)).thenReturn(index);
-//        // when
-//        index.getLinks().put(linkKey, link);
-//
-//        assertEquals("test", linkFactory.getIndex(landscapes));
+    void getIndex() {
+        String linkKey = "link";
+        Link link = new Link();
+        Map<String, Link> oauth2links = Map.of(linkKey, link);
 
+        Index index = linkFactory.getIndex(landscapes);
+        index.getOauth2Links().put(linkKey, link);
+        assertThat(index.getOauth2Links()).isEqualTo(oauth2links);
     }
+
 }

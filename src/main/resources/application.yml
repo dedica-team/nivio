@@ -27,7 +27,9 @@ spring:
 
 logging:
   level:
-    root: INFO
+    org:
+      springframework:
+        security: DEBUG
     de:
       bonndan:
         nivio:
@@ -60,7 +62,7 @@ nivio:
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
   seed: ${SEED:}
   demo: ${DEMO:}
-#  loginType: ${LOGIN_TYPE:optional}
+  loginType: ${LOGIN_TYPE:required}
 
 
 observerconfig:
