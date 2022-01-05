@@ -44,14 +44,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                .antMatchers("/login/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
+                    .antMatchers("/login/**").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
                 .oauth2Login().defaultSuccessUrl("/")
-                .loginPage("/login")
-                .and()
+                    .loginPage("/login")
+                    .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/").permitAll();
+                    .logoutSuccessUrl("/").permitAll();
 
     }
 

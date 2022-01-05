@@ -29,4 +29,8 @@ public class CustomOAuth2User implements OAuth2User {
         return oauth2User.getAttribute("login");
     }
 
+    public String getAvatarUrl() {
+        return oauth2User.getAttribute("avatar_url");
+    }
+
 }
