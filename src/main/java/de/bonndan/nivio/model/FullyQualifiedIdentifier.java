@@ -34,23 +34,25 @@ public class FullyQualifiedIdentifier {
 
         FullyQualifiedIdentifier fqi = new FullyQualifiedIdentifier();
         fqi.landscape = StringUtils.trimAllWhitespace(landscapeIdentifier == null ? "" : landscapeIdentifier.toLowerCase());
-        if (!StringUtils.isEmpty(groupIdentifier))
+        if (StringUtils.hasLength(groupIdentifier)) {
             fqi.group = StringUtils.trimAllWhitespace(groupIdentifier.toLowerCase());
-        if (!StringUtils.isEmpty(itemIdentifier))
+        }
+        if (StringUtils.hasLength(itemIdentifier)) {
             fqi.item = StringUtils.trimAllWhitespace(itemIdentifier.toLowerCase());
+        }
 
         return fqi;
     }
 
     /**
      * Builds an fqi based on a string (path).
-     * <p>
+     *
      * It is assumed the path begins with the landscape identifier. This is for external use in the REST API.
      *
      * @param string raw path
      */
     public static FullyQualifiedIdentifier from(@NonNull String string) {
-        if (StringUtils.isEmpty(string)) {
+        if (!StringUtils.hasLength(string)) {
             throw new IllegalArgumentException("identifier must not be empty");
         }
 
@@ -94,7 +96,7 @@ public class FullyQualifiedIdentifier {
     @JsonValue
     public String jsonValue() {
 
-        if (StringUtils.isEmpty(landscape)) {
+        if (!StringUtils.hasLength(landscape)) {
             return "";
         }
 
@@ -103,7 +105,7 @@ public class FullyQualifiedIdentifier {
 
         //need to insert "common" here if an item is referenced by the fqi
         if (!StringUtils.isEmpty(group) || !StringUtils.isEmpty(item)) {
-            parts.add(StringUtils.isEmpty(group) ? Group.COMMON : group);
+            parts.add(StringUtils.isEmpty(group) ? Layer.domain.name() : group);
         }
         if (!StringUtils.isEmpty(item)) {
             parts.add(item);
@@ -119,7 +121,7 @@ public class FullyQualifiedIdentifier {
 
     @Override
     public boolean equals(Object obj) {
-        return hashCode() == obj.hashCode();
+        return obj instanceof FullyQualifiedIdentifier && hashCode() == obj.hashCode();
     }
 
     /**
@@ -132,10 +134,11 @@ public class FullyQualifiedIdentifier {
         FullyQualifiedIdentifier otherItemFQI = item.getFullyQualifiedIdentifier();
 
         boolean equalsLandscape;
-        if (StringUtils.isEmpty(landscape) || StringUtils.isEmpty(otherItemFQI.landscape))
+        if (!StringUtils.hasLength(landscape) || !StringUtils.hasLength(otherItemFQI.landscape)) {
             equalsLandscape = true; //ignoring landscape because not set
-        else
+        } else {
             equalsLandscape = landscape.equalsIgnoreCase(otherItemFQI.landscape);
+        }
 
         boolean equalsGroup;
         if (StringUtils.isEmpty(group) || StringUtils.isEmpty(otherItemFQI.group))
@@ -162,5 +165,13 @@ public class FullyQualifiedIdentifier {
 
     public String getLandscape() {
         return landscape;
+    }
+
+    public boolean isGroup() {
+        return StringUtils.hasLength(group) && !StringUtils.hasLength(item);
+    }
+
+    public boolean isItem() {
+        return StringUtils.hasLength(item);
     }
 }

@@ -14,4 +14,3 @@ Documentation for Models
 *   - [LandscapeDescription](./Models/LandscapeDescription.rst)
 *   - [LayoutConfig](./Models/LayoutConfig.rst)
 *   - [Link](./Models/Link.rst)
-*   - [SourceReference](./Models/SourceReference.rst)

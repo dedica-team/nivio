@@ -2,8 +2,8 @@ package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
+import de.bonndan.nivio.util.URLFactory;
 import de.bonndan.nivio.output.icons.LocalIcons;
-import de.bonndan.nivio.util.URLHelper;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -37,7 +37,7 @@ public class AppearanceProcessor {
         } else {
             String icon = labeled.getLabel(Label.icon);
             if (StringUtils.hasLength(icon)) {
-                URLHelper.getURL(icon)
+                URLFactory.getURL(icon)
                         .flatMap(iconService::getExternalUrl)
                         .ifPresent(s -> labeled.setLabel(Label._icondata, s));
             }
@@ -49,7 +49,7 @@ public class AppearanceProcessor {
 
         String fill = labeled.getLabel(Label.fill);
         if (StringUtils.hasLength(fill)) {
-            URLHelper.getURL(fill)
+            URLFactory.getURL(fill)
                     .flatMap(iconService::getExternalUrl)
                     .ifPresent(s -> labeled.setLabel(Label._filldata, s));
         }

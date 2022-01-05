@@ -78,8 +78,7 @@ public interface Assessable {
         });
 
         replaceAll(childrenValues, map.get(fqi));
-        List<StatusValue> worst = getWorst(childrenValues);
-        replace(map.get(fqi), StatusValue.summary(getAssessmentIdentifier(), worst));
+        replace(map.get(fqi), StatusValue.summary(getAssessmentIdentifier(), childrenValues));
 
         //sort in descending order, the worst first
         map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));
@@ -105,7 +104,7 @@ public interface Assessable {
         }
 
         values.sort(new StatusValue.Comparator());
-        Status worstStatus = values.get(values.size()-1).getStatus();
+        Status worstStatus = values.get(values.size() - 1).getStatus();
 
         return values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
     }

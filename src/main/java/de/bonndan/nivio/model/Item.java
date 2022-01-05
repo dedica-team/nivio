@@ -24,14 +24,8 @@ import static de.bonndan.nivio.model.ComponentDiff.*;
 //needed when internal models are serialized for debugging
 public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent {
 
-    public static final String LAYER_INFRASTRUCTURE = "infrastructure";
-    public static final String LAYER_APPLICATION = "applications";
-    public static final String LAYER_INGRESS = "ingress";
-
-    public static final String IDENTIFIER_VALIDATION = "^[a-zA-Z0-9\\.\\:_-]{2,256}$";
-
     @NotNull
-    @Pattern(regexp = IDENTIFIER_VALIDATION)
+    @Pattern(regexp = IdentifierValidation.PATTERN)
     private final String identifier;
 
     @NotNull
@@ -46,9 +40,12 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
 
     private final String description;
 
+    @NonNull
     private final String group;
 
     private final String type;
+
+    private final Layer layer;
 
     /**
      * technical address
@@ -67,9 +64,9 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     @JsonManagedReference
     private Set<ServiceInterface> interfaces = new HashSet<>();
 
-    public Item(final String identifier,
-                final Landscape landscape,
-                final String group,
+    public Item(@NotNull final String identifier,
+                @NotNull final Landscape landscape,
+                @NotNull final String group,
                 final String name,
                 final String owner,
                 final String contact,
@@ -77,7 +74,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
                 final String color,
                 final String icon,
                 final String type,
-                final URI address
+                final URI address,
+                final Layer layer
     ) {
         if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Identifier must not be empty");
@@ -95,6 +93,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         this.description = description;
         this.type = type;
         this.address = address;
+        this.layer = layer;
 
         //these are effectively mutable
         this.setLabel(Label.color, Color.safe(color));
@@ -144,6 +143,7 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
         return links;
     }
 
+    @NonNull
     public String getGroup() {
         return group;
     }
@@ -238,6 +238,14 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     @Override
     public void setLabel(String key, String value) {
         labels.put(key, value);
+    }
+
+    @Override
+    public String getLayer() {
+        if (layer == null) {
+            return Layer.domain.name();
+        }
+        return layer.name();
     }
 
     @Override

@@ -156,8 +156,11 @@ const Search: React.FC<SearchProps> = ({ setSearchTerm, searchTerm }) => {
       if (config.title) {
         urlSearchParams.set('title', config.title);
       }
+      if (config.reportType) {
+        urlSearchParams.set('reportType', config.reportType);
+      }
       const reportUrl = withBasePath(
-        '/docs/' + currentLandscape + '/owners.html?' + urlSearchParams.toString()
+        '/docs/' + currentLandscape + '/report/grouping.html?' + urlSearchParams.toString()
       );
       window.open(reportUrl, '_blank');
     };

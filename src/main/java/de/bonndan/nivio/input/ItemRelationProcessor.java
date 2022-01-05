@@ -44,18 +44,25 @@ public class ItemRelationProcessor extends Processor {
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
                                 processLog.info(String.format("%s: Updating relation between %s and %s", origin, update.getSource(), update.getTarget()));
-                                changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, String.join(";", changes));
+                                changelog.addEntry(update, ProcessingChangelog.ChangeType.UPDATED, changes);
                             }
                             return update;
                         })
                         .orElseGet(() -> {
-                            Relation created = RelationFactory.create(origin, relationDescription, landscape);
-                            processLog.info(String.format("%s: Adding relation between %s and %s", origin, created.getSource(), created.getTarget()));
-                            changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
-                            return created;
+                            try {
+                                Relation created = RelationFactory.create(origin, relationDescription, landscape);
+                                processLog.info(String.format("%s: Adding relation between %s and %s", origin, created.getSource(), created.getTarget()));
+                                changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
+                                return created;
+                            } catch (IllegalArgumentException e) {
+                                processLog.warn(String.format("%s: Failed to create relation: %s", origin, e.getMessage()));
+                                return null;
+                            }
                         });
-                assignToBothEnds(origin, current);
-                processed.add(current);
+                if (current != null) {
+                    assignToBothEnds(origin, current);
+                    processed.add(current);
+                }
             }
         });
 
@@ -105,13 +112,13 @@ public class ItemRelationProcessor extends Processor {
 
     private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
 
-        List<Item> source = landscape.findBy(relationDescription.getSource());
+        List<Item> source = landscape.getItems().findBy(relationDescription.getSource());
         if (source.isEmpty()) {
             processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
             return false;
         }
 
-        List<Item> target = landscape.findBy(relationDescription.getTarget());
+        List<Item> target = landscape.getItems().findBy(relationDescription.getTarget());
         if (target.isEmpty()) {
             processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
             return false;
@@ -135,6 +142,10 @@ public class ItemRelationProcessor extends Processor {
     ) {
         Item source = landscape.findOneBy(relationDescription.getSource(), origin.getGroup());
         Item target = landscape.findOneBy(relationDescription.getTarget(), origin.getGroup());
+
+        if (source.equals(target)) {
+            return Optional.empty();
+        }
 
         Iterator<Relation> iterator = origin.getRelations().iterator();
         Relation virtual = RelationFactory.createForTesting(source, target);

@@ -3,16 +3,13 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPIConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Global configuration for a landscape.
- *
- *
  */
 public class LandscapeConfig {
 
@@ -20,13 +17,10 @@ public class LandscapeConfig {
     private boolean greedy = true;
 
     @Schema(description = "Settings to tweak the positioning of groups in the map")
-    private LayoutConfig groupLayoutConfig = new LayoutConfig();
-
-    @Schema(description = "Settings to tweak the positioning of items in a group in the map")
-    private LayoutConfig itemLayoutConfig = new LayoutConfig();
+    private LayoutConfig layoutConfig = new LayoutConfig();
 
     @Schema(description = "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
-    example = ".*infra.*")
+            example = ".*infra.*")
     private final List<String> groupBlacklist = new ArrayList<>();
 
     @Schema(description = "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
@@ -38,16 +32,6 @@ public class LandscapeConfig {
 
     @Schema(description = "Key performance indicator configs. Each KPI must have a unique identifier.")
     private final Map<String, KPIConfig> kpis = new HashMap<>();
-
-    public LayoutConfig getGroupLayoutConfig() {
-        return groupLayoutConfig;
-    }
-
-    public void setGroupLayoutConfig(LayoutConfig groupLayoutConfig) {
-        if (groupLayoutConfig != null) {
-            this.groupLayoutConfig = groupLayoutConfig;
-        }
-    }
 
     public boolean isGreedy() {
         return greedy;
@@ -75,65 +59,6 @@ public class LandscapeConfig {
         return branding;
     }
 
-    public void setItemLayoutConfig(LayoutConfig itemLayoutConfig) {
-        if (itemLayoutConfig != null) {
-            this.itemLayoutConfig = itemLayoutConfig;
-        }
-    }
-
-    public LayoutConfig getItemLayoutConfig() {
-        return itemLayoutConfig;
-    }
-
-
-    @Schema(description = "Layout configuration. See https://jgraph.github.io/mxgraph/java/docs/com/mxgraph/layout/mxFastOrganicLayout.html")
-    public static class LayoutConfig {
-
-        @Schema(description = "The maximum number of iterations. More iterations theoretically lead to better results.")
-        private Integer maxIterations;
-
-        @Schema(description = "A factor to influence the attracting and repulsive forces in a layout.")
-        private Float forceConstantFactor = 1f;
-
-        @Schema(description = "A factor to influence maximum distance where forces are applied.")
-        private Float maxDistanceLimitFactor = 1f;
-
-        @Schema(description = "A factor to influence minimum distance where forces are applied.")
-        private Float minDistanceLimitFactor = 1f;
-
-        public Integer getMaxIterations() {
-            return maxIterations;
-        }
-
-        public void setMaxIterations(Integer maxIterations) {
-            this.maxIterations = maxIterations;
-        }
-
-        public Float getForceConstantFactor() {
-            return forceConstantFactor;
-        }
-
-        public void setForceConstantFactor(Float forceConstantFactor) {
-            this.forceConstantFactor = forceConstantFactor;
-        }
-
-        public Float getMinDistanceLimitFactor() {
-            return minDistanceLimitFactor;
-        }
-
-        public void setMinDistanceLimitFactor(Float minDistanceLimitFactor) {
-            this.minDistanceLimitFactor = minDistanceLimitFactor;
-        }
-
-        public Float getMaxDistanceLimitFactor() {
-            return maxDistanceLimitFactor;
-        }
-
-        public void setMaxDistanceLimitFactor(Float maxDistanceLimitFactor) {
-            this.maxDistanceLimitFactor = maxDistanceLimitFactor;
-        }
-    }
-
 
     /**
      * The configured KPIs.
@@ -142,6 +67,55 @@ public class LandscapeConfig {
      */
     public Map<String, KPIConfig> getKPIs() {
         return kpis;
+    }
+
+    public void setLayoutConfig(LayoutConfig layoutConfig) {
+        this.layoutConfig = Objects.requireNonNull(layoutConfig);
+    }
+
+    @NonNull
+    public LayoutConfig getLayoutConfig() {
+        return layoutConfig;
+    }
+
+    /**
+     * Merges the values of the update if present
+     *
+     * @param update object with values used to overwrite the current
+     * @return a new config
+     */
+    public LandscapeConfig merge(LandscapeConfig update) {
+        LandscapeConfig landscapeConfig = new LandscapeConfig();
+        landscapeConfig.layoutConfig = layoutConfig;
+        landscapeConfig.greedy = greedy;
+        landscapeConfig.groupBlacklist.addAll(groupBlacklist);
+        landscapeConfig.labelBlacklist.addAll(labelBlacklist);
+        landscapeConfig.branding.setMapStylesheet(branding.mapStylesheet);
+        landscapeConfig.kpis.putAll(kpis);
+
+        landscapeConfig.greedy = update.greedy;
+        landscapeConfig.kpis.putAll(update.kpis);
+
+        landscapeConfig.layoutConfig.setItemLayoutInitialTemp(update.layoutConfig.getItemLayoutInitialTemp());
+        landscapeConfig.layoutConfig.setGroupLayoutInitialTemp(update.layoutConfig.getGroupLayoutInitialTemp());
+        landscapeConfig.layoutConfig.setItemMinDistanceLimit(update.layoutConfig.getItemMinDistanceLimit());
+        landscapeConfig.layoutConfig.setItemMaxDistanceLimit(update.layoutConfig.getItemMaxDistanceLimit());
+        landscapeConfig.layoutConfig.setGroupMinDistanceLimit(update.layoutConfig.getGroupMinDistanceLimit());
+        landscapeConfig.layoutConfig.setGroupMaxDistanceLimit(update.layoutConfig.getGroupMaxDistanceLimit());
+
+        if (!update.groupBlacklist.isEmpty()) {
+            landscapeConfig.groupBlacklist.clear();
+            landscapeConfig.groupBlacklist.addAll(update.groupBlacklist);
+        }
+        if (!update.labelBlacklist.isEmpty()) {
+            landscapeConfig.labelBlacklist.clear();
+            landscapeConfig.labelBlacklist.addAll(update.labelBlacklist);
+        }
+        if (StringUtils.hasLength(update.branding.mapStylesheet)) {
+            landscapeConfig.branding.mapStylesheet = update.branding.mapStylesheet;
+        }
+
+        return landscapeConfig;
     }
 
     /**

@@ -5,8 +5,6 @@ import org.springframework.lang.Nullable;
 
 /**
  * Base for landscapes, groups and items.
- *
- *
  */
 public interface Component {
 

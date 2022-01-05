@@ -22,7 +22,7 @@ class ItemFactoryTest {
         landscapeItem.setName("test");
         landscapeItem.setLabel(Label.shortname, "t");
         landscapeItem.setType("loadbalancer");
-        landscapeItem.setLabel(Label.layer, Item.LAYER_INFRASTRUCTURE);
+        landscapeItem.setLayer(Layer.infrastructure.name());
         landscapeItem.setIdentifier("id");
         landscapeItem.setLink("homepage", new URL("http://home.page"));
         landscapeItem.setLink("repo", new URL("https://acme.git/repo1"));
@@ -66,6 +66,7 @@ class ItemFactoryTest {
         assertEquals(landscapeItem.getLabel(Label.costs), created.getLabel(Label.costs));
         assertEquals(landscapeItem.getLabel(Label.capability), created.getLabel(Label.capability));
         assertEquals(landscapeItem.getLabel(Label.lifecycle), created.getLabel(Label.lifecycle));
+        assertEquals(landscapeItem.getLayer(), created.getLayer());
         assertEquals(landscapeItem.getAddress(), created.getAddress());
     }
 
@@ -80,6 +81,7 @@ class ItemFactoryTest {
         update.setLabel(Label.version, "2000");
         update.setLabel("newlabel", "foo");
         update.setType("firewall");
+        update.setLayer(Layer.infrastructure.name());
 
         //when
         Item updated = ItemFactory.assignAll(existing, update);
@@ -90,5 +92,6 @@ class ItemFactoryTest {
         assertThat(updated.getType()).isEqualTo("firewall");
         assertThat(updated.getLabel(Label.version)).isEqualTo("2000");
         assertThat(updated.getLabel("newlabel")).isEqualTo("foo");
+        assertThat(updated.getLayer()).isEqualTo("infrastructure");
     }
 }

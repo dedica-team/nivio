@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment.kpi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
  * POJO representing the yaml configuration.
  */
 @Schema(description = "The configuration of landscape specific key performance indicators that derive status information from landscape components. Usually the KPIs work on labels")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class KPIConfig {
 
     @Schema(description = "Description of the purpose of the KPI")

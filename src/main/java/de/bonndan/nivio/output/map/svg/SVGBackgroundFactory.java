@@ -11,7 +11,6 @@ import static java.lang.Math.round;
 
 /**
  * This generates the background hex tiles.
- *
  */
 public class SVGBackgroundFactory {
 
@@ -45,8 +44,8 @@ public class SVGBackgroundFactory {
             for (int r = dimension.hex.vertMin - i; r < (horMax + dimension.hex.vertMax - q); r++) {
                 Point2D.Double hex = new Hex(q, r).toPixel();
                 int x = (int) hex.x - 2 * Hex.HEX_SIZE;
-                float y = (float) round((hex.y - yOffset)*10f)/10f ;
-                if (y < dimension.cartesian.vertMin - dimension.cartesian.padding) {
+                float y = (float) round((hex.y - yOffset) * 10f) / 10f;
+                if (y < dimension.cartesian.vertMin) {
                     continue;
                 }
 

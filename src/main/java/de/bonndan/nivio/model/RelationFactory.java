@@ -8,8 +8,6 @@ import java.util.Objects;
 
 /**
  * Factory to create {@link Relation} instances.
- *
- *
  */
 public class RelationFactory {
 
@@ -17,7 +15,8 @@ public class RelationFactory {
         return createProviderDescription(source.getIdentifier(), target);
     }
 
-    private RelationFactory() {}
+    private RelationFactory() {
+    }
 
     /**
      * Factory method to create a provider type relation.

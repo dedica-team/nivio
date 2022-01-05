@@ -1,7 +1,7 @@
 package de.bonndan.nivio.observation;
 
 
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.input.SourceReference;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
@@ -24,15 +24,17 @@ public class KubernetesObserver implements InputFormatObserver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesObserver.class);
 
-    private final Landscape landscape;
     private final ApplicationEventPublisher eventPublisher;
+    @NonNull
+    private final SourceReference sourceReference;
     private final KubernetesClient kubernetesClient;
     private final List<HasMetadata> eventUidList;
 
-    public KubernetesObserver(@NonNull final Landscape landscape,
+    public KubernetesObserver(@NonNull final SourceReference sourceReference,
                               @NonNull final ApplicationEventPublisher eventPublisher,
-                              @NonNull final KubernetesClient kubernetesClient) {
-        this.landscape = landscape;
+                              @NonNull final KubernetesClient kubernetesClient
+    ) {
+        this.sourceReference = sourceReference;
         this.kubernetesClient = kubernetesClient;
         this.eventPublisher = eventPublisher;
         this.eventUidList = getK8sComponents();
@@ -42,7 +44,7 @@ public class KubernetesObserver implements InputFormatObserver {
     public void run() {
         if (!new HashSet<>(eventUidList).equals(new HashSet<>(getK8sComponents()))) {
             LOGGER.info("K8s change detected");
-            eventPublisher.publishEvent(new InputChangedEvent(new ObservedChange(landscape, "k8s cluster changed")));
+            eventPublisher.publishEvent(new InputChangedEvent(sourceReference.getUrl(), new ObservedChange("k8s cluster changed")));
         }
     }
 

@@ -5,6 +5,8 @@ import j2html.tags.DomContent;
 
 public class SvgTagCreator {
 
+    private SvgTagCreator() {}
+
     public static ContainerTag text(String text) {
         return (new ContainerTag("text")).withText(text);
     }
@@ -51,5 +53,9 @@ public class SvgTagCreator {
 
     public static ContainerTag use(String path) {
         return new ContainerTag("use").attr("xlink:href", path);
+    }
+
+    public static ContainerTag title(String title) {
+        return new ContainerTag("title").withText(title);
     }
 }

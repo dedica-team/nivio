@@ -8,8 +8,9 @@ export interface LandscapeContextType {
   readonly landscape: ILandscape | null;
   readonly assessment: IAssessment | null;
   readonly identifier: string | null;
-  readonly notification: INotificationMessage | null;
-  readonly changes: INotificationMessage | null;
+  readonly mapChanges: INotificationMessage | null;
+  readonly landscapeChanges: INotificationMessage | null;
+  readonly assessmentChanges: INotificationMessage | null;
   next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
 }
@@ -18,8 +19,9 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
   landscape: null,
   assessment: null,
   identifier: null,
-  notification: null,
-  changes: null,
+  mapChanges: null,
+  landscapeChanges: null,
+  assessmentChanges: null,
   next: () => {},
   getAssessmentSummary: () => {
     return null;
@@ -30,17 +32,22 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
  * Provides the current landscape and assessment.
  *
  * - Responsible for loading objects from the API.
- * - Responsible to fetch change events (notification, subscribes via websockets to server events)
+ * - Responsible to fetch change events (subscribes via websockets to server events)
  *
  * @param props
  * @constructor
  */
 const LandscapeContextProvider: React.FC = (props) => {
+  /**
+   * Current landscape identifier. Can be changed through context.
+   */
+  const [identifier, setIdentifier] = useState<string | null>(null);
+
   const [landscape, setLandscape] = useState<ILandscape | null>(null);
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
-  const [notification, setNotification] = useState<INotificationMessage | null>(null);
-  const [changes, setChanges] = useState<INotificationMessage | null>(null);
-  const [identifier, setIdentifier] = useState<string | null>(null);
+  const [mapChanges, setMapChanges] = useState<INotificationMessage | null>(null);
+  const [landscapeChanges, setLandscapeChanges] = useState<INotificationMessage | null>(null);
+  const [assessmentChanges, setAssessmentChanges] = useState<INotificationMessage | null>(null);
 
   const backendUrl = withBasePath('/subscribe');
   const protocol = window.location.protocol !== 'https:' ? 'ws' : 'wss';
@@ -56,15 +63,19 @@ const LandscapeContextProvider: React.FC = (props) => {
       brokerURL: socketUrl,
       onConnect: () => {
         const subscriptions: StompSubscription[] = [];
-        const eventSubscription = client.subscribe('/topic/events', (message) => {
-          const notificationMessage: INotificationMessage = JSON.parse(message.body);
-
-          if (notificationMessage.type === 'LayoutChangedEvent') {
-            setNotification(notificationMessage);
+        const eventSubscription = client.subscribe('/topic/events', (m) => {
+          const event: INotificationMessage = JSON.parse(m.body);
+          console.debug(`Received event: ${event.type}`);
+          if (event.type === 'LayoutChangedEvent') {
+            setMapChanges(event);
           }
 
-          if (notificationMessage.type === 'ProcessingFinishedEvent') {
-            setChanges(notificationMessage);
+          if (event.type === 'ProcessingFinishedEvent') {
+            setLandscapeChanges(event);
+          }
+
+          if (event.type === 'AssessmentChangedEvent') {
+            setAssessmentChanges(event);
           }
         });
 
@@ -87,41 +98,29 @@ const LandscapeContextProvider: React.FC = (props) => {
   }, [client, subscriptions]);
 
   /**
-   * Load the landscape and assessment data when the identifier changes.
+   * Load the landscape data when the identifier changes.
    */
   useEffect(() => {
-    if (identifier == null) {
-      console.debug(`Identifier not present`);
-      return;
-    }
+    if (identifier == null) return;
 
     get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
       console.debug(`Loaded landscape data after identifier change: ${identifier}`);
     });
-    get(`/assessment/${identifier}`).then((response) => {
-      setAssessment(response);
-      console.debug(`Loaded assessment data after identifier change: ${identifier}`);
-    });
-    setChanges(null);
+    setLandscapeChanges(null);
   }, [identifier]);
 
   /**
-   * Load the assessment data on a notification
+   * Load the landscape and assessment data when the identifier changes.
    */
   useEffect(() => {
-    if (identifier == null) {
-      console.debug(`Identifier not present`);
-      return;
-    }
-
-    if (identifier === notification?.landscape) {
-      get(`/assessment/${identifier}`).then((response) => {
-        console.debug(`Loaded assessment data for ${identifier}`, response);
-        setAssessment(response);
-      });
-    }
-  }, [identifier, notification]);
+    if (identifier == null) return;
+    setAssessment(null);
+    get(`/assessment/${identifier}`).then((response) => {
+      setAssessment(response);
+      console.debug(`Loaded assessment for ${identifier}`);
+    });
+  }, [identifier, assessmentChanges]);
 
   return (
     <LandscapeContext.Provider
@@ -129,8 +128,9 @@ const LandscapeContextProvider: React.FC = (props) => {
         landscape: landscape,
         assessment: assessment,
         identifier: identifier,
-        notification: notification,
-        changes: changes,
+        mapChanges: mapChanges,
+        landscapeChanges: landscapeChanges,
+        assessmentChanges: assessmentChanges,
         next: (nextId) => {
           if (identifier === nextId) return;
           console.debug('New identifier', nextId);

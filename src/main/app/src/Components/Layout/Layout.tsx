@@ -82,7 +82,13 @@ const Layout: React.FC<Props> = ({ children, pageTitle, logo, version }) => {
           open={sidebarOpen}
         >
           <div style={{ position: 'absolute', right: '0.5em' }}>
-            <IconButton onClick={() => setSidebarOpen(false)} size={'small'}>
+            <IconButton
+              onClick={() => {
+                setSidebarOpen(false);
+                setSidebarContent(null);
+              }}
+              size={'small'}
+            >
               <CloseSharp />
             </IconButton>
           </div>

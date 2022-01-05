@@ -19,6 +19,14 @@ class RelationDescriptionTest {
     }
 
     @Test
+    void validatesIdentifiers() {
+        assertDoesNotThrow(() -> new RelationDescription("aGroup/foo", "bGroup/Bar"));
+        assertDoesNotThrow(() -> new RelationDescription("1fe96e39-0b63-49c0-97b7-6b79c27618f1", "76e6f2fc-a344-4590-9ec9-b78cdedd6c50"));
+        assertDoesNotThrow(() -> new RelationDescription("foo:bar.com", "foo:bar.com"));
+        assertThrows(IllegalArgumentException.class, () -> new RelationDescription("foo,bar$", "foobar$"));
+    }
+
+    @Test
     void findMatching() {
         var rel = new RelationDescription("aGroup/foo", "bGroup/Bar");
 

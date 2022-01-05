@@ -28,7 +28,7 @@ public class SonarConfig {
         SonarClient.Builder builder = SonarClient.builder().url(serverUrl.get());
 
 
-       Optional.ofNullable(sonarProperties.getLogin()) .ifPresent(builder::login);
+        Optional.ofNullable(sonarProperties.getLogin()).ifPresent(builder::login);
 
         Optional.ofNullable(sonarProperties.getPassword()).ifPresent(builder::password);
         Optional.ofNullable(sonarProperties.getProxyHost()).ifPresent(

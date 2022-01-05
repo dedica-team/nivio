@@ -19,6 +19,7 @@ import {
   Tabs,
   Theme,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import { get } from '../../../../utils/API/APIClient';
 import CardContent from '@material-ui/core/CardContent';
@@ -26,7 +27,15 @@ import { IAssessmentProps, IItem } from '../../../../interfaces';
 import { getItem, getLabelsWithPrefix, getMappedLabels } from '../../Utils/utils';
 import StatusChip from '../../../StatusChip/StatusChip';
 import IconButton from '@material-ui/core/IconButton';
-import { Close, Details, ExpandMore, Info, MoreVertSharp, Power } from '@material-ui/icons';
+import {
+  Close,
+  Details,
+  ExpandMore,
+  Info,
+  InfoOutlined,
+  MoreVertSharp,
+  Power,
+} from '@material-ui/icons';
 import Chip from '@material-ui/core/Chip';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
@@ -76,6 +85,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   const extraClasses = useStyles();
   let inboundRelations: ReactElement[] = [];
   let outboundRelations: ReactElement[] = [];
+  const theme = useTheme();
 
   const getInterfaces = (element: IItem): ReactElement | null => {
     if (!element?.interfaces) return null;
@@ -239,7 +249,22 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
               <ItemAvatar item={other} statusColor={status?.status || ''} />
             </IconButton>
           </ListItemIcon>
-          <ListItemText primary={primary} secondary={secondary} />
+          <ListItemText
+            data-testid={'testInfoIcon'}
+            primary={primary}
+            secondary={
+              <>
+                <span>{secondary}</span>
+                <span
+                  title={
+                    'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
+                  }
+                >
+                  <InfoOutlined style={{ color: theme.palette.info.main }} fontSize='small' data-testid={'InfoIcon'} />
+                </span>
+              </>
+            }
+          />
         </ListItem>
       );
       if (isInbound) inboundRelations.push(listItem);
@@ -250,7 +275,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
     if (item && assessmentItem) {
       return assessmentItem
-        .filter((assessment) => !assessment.field.includes('summary.'))
+        .filter((assessment) => !assessment.field.includes('summary'))
         .map((assessment) => {
           return (
             <TableRow key={assessment.field}>

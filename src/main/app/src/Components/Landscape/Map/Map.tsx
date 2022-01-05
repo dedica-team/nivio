@@ -6,7 +6,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 
@@ -25,7 +24,6 @@ import IconButton from '@material-ui/core/IconButton';
 import { createStyles, darken, Theme } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { LandscapeContext } from '../../../Context/LandscapeContext';
-import { getApproximateCenterCoordinates, getCorrected } from './MapUtils';
 import {
   fitToViewer,
   ReactSVGPanZoom,
@@ -67,7 +65,6 @@ interface Props {
 interface SVGData {
   width: number;
   height: number;
-  viewBox: SVGRect;
   xml: string;
   loaded: Date;
 }
@@ -89,8 +86,6 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const [visualFocus, setVisualFocus] = useState<string | null>(null);
-  const { identifier } = useParams<{ identifier: string }>();
-
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
@@ -104,15 +99,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
         let dataX = Number(element.getAttribute('data-x'));
         let dataY = Number(element.getAttribute('data-y'));
         if (dataX && dataY && data) {
-          const coords = getApproximateCenterCoordinates(
-            data.viewBox,
-            data.width,
-            data.height,
-            dataX,
-            dataY
-          );
-
-          setValue(setPointOnViewerCenter(value, coords.x, coords.y, 0.5));
+          setValue(setPointOnViewerCenter(value, dataX, dataY, 0.5));
           setRenderWithTransition(true);
           setHighlightElement(element);
           setIsZoomed(true);
@@ -129,12 +116,14 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     if (fqi && landscapeContext.landscape) {
       let item = getItem(landscapeContext.landscape, fqi);
       if (item) {
-        // @ts-ignore
-        setSidebarContent(<Item
+        const item1 = (
+          <Item
             fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
             key={`item_${item.fullyQualifiedIdentifier}_${Math.random()}`}
           />
         );
+        // @ts-ignore
+        setSidebarContent(item1);
       }
     }
   };
@@ -188,43 +177,65 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       const minY = Math.min(sourceY, targetY);
 
       let centerX = minX + (Math.max(sourceX, targetX) - minX) / 2;
-      const correctedX = getCorrected(data.viewBox.x, centerX, data.width);
       let centerY = minY + (Math.max(sourceY, targetY) - minY) / 2;
-      const correctedY = getCorrected(data.viewBox.y, centerY, data.height);
-      setValue(setPointOnViewerCenter(value, correctedX, correctedY, 0.3));
+      setValue(setPointOnViewerCenter(value, centerX, centerY, 0.3));
       setIsZoomed(true);
     }
 
     if (source && target && dataTarget) {
       const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
       let relation = source.relations[relId];
-      // @ts-ignore
-      setSidebarContent(<MapRelation
+      const mapRelation = (
+        <MapRelation
           relation={relation}
           source={source}
           target={target}
           key={`relation_${relId}_${Math.random()}`}
         />
       );
+      // @ts-ignore
+      setSidebarContent(mapRelation);
     }
   };
 
   const loadMap = useCallback(() => {
-    const route = withBasePath(`/render/${identifier}/map.svg`);
+    if (!landscapeContext.identifier) {
+      return;
+    }
+    const route = withBasePath(`/render/${landscapeContext.identifier}/map.svg`);
     get(route).then((svg) => {
       const parser = new DOMParser();
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
       const width = doc.firstElementChild.width.baseVal.value;
       const height = doc.firstElementChild.height.baseVal.value;
-      const viewBox: SVGRect = doc.firstElementChild.viewBox.baseVal;
-      setData({ width: width, height: height, viewBox: viewBox, xml: svg, loaded: new Date() });
+      setData({ width: width, height: height, xml: svg, loaded: new Date() });
     });
-  }, [identifier, setData]);
+  }, [landscapeContext.identifier, setData]);
 
+  /**
+   * apply assessment values to all map components
+   */
+  const applyAssessment = useCallback(() => {
+    if (landscapeContext.assessment == null) return;
+    Object.keys(landscapeContext.assessment?.results).forEach((key) => {
+      const node = document.querySelector(`[data-identifier='${key}'] .assessment`);
+      if (node) {
+        const assessmentSummary = landscapeContext.getAssessmentSummary(key);
+        if (assessmentSummary) {
+          node.classList.remove('UNKNOWN', 'GREEN', 'YELLOW', 'ORANGE', 'RED', 'BROWN');
+          node.classList.add(assessmentSummary?.status);
+        }
+      }
+    });
+  }, [landscapeContext]);
+
+  /**
+   * on identifier change, load map
+   */
   useEffect(() => {
     loadMap();
-    setSidebarContent(null);
-  }, [identifier, loadMap, setSidebarContent]);
+    applyAssessment();
+  }, [landscapeContext.identifier, loadMap, applyAssessment]);
 
   //load landscape
   useEffect(() => {
@@ -252,9 +263,9 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     });
 
     const current = document.querySelectorAll("[data-identifier='" + visualFocus + "']");
-    Array.from(current).forEach((visualFocus) => {
-      visualFocus.classList.add('selected');
-      visualFocus.classList.remove('unselected');
+    Array.from(current).forEach((vf) => {
+      vf.classList.add('selected');
+      vf.classList.remove('unselected');
     });
   }, [visualFocus, data]);
 
@@ -262,9 +273,18 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
    * Reload map on notification messages.
    */
   useEffect(() => {
-    console.debug('reloading map', landscapeContext.assessment);
+    if (!landscapeContext.mapChanges) return;
+    console.debug('reloading map after map change', landscapeContext.mapChanges);
     loadMap();
-  }, [landscapeContext.assessment, landscapeContext.identifier, loadMap]);
+    applyAssessment();
+  }, [landscapeContext.mapChanges, loadMap, applyAssessment]);
+
+  /**
+   * Apply values on assessment change.
+   */
+  useEffect(() => {
+    applyAssessment();
+  }, [landscapeContext.assessment, applyAssessment]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -369,7 +389,9 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
                 }}
                 tool={TOOL_AUTO}
                 onChangeValue={(newValue: Value) => setValue(newValue)}
-                onChangeTool={() => {}}
+                onChangeTool={() => {
+                  /* disabled */
+                }}
                 value={value}
                 className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
               >

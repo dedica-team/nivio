@@ -17,12 +17,13 @@ import { Close } from '@material-ui/icons';
 
 interface Props {
   group: IGroup;
+  sticky?: boolean;
 }
 
 /**
  * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({ group }) => {
+const Group: React.FC<Props> = ({ group, sticky }) => {
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
@@ -85,14 +86,16 @@ const Group: React.FC<Props> = ({ group }) => {
         className={componentClasses.cardHeader}
         action={
           <React.Fragment>
-            <IconButton
-              size={'small'}
-              onClick={() => {
-                setVisible(false);
-              }}
-            >
-              <Close />
-            </IconButton>
+            {!sticky ? (
+              <IconButton
+                size={'small'}
+                onClick={() => {
+                  setVisible(false);
+                }}
+              >
+                <Close />
+              </IconButton>
+            ) : null}
           </React.Fragment>
         }
       />
@@ -119,7 +122,15 @@ const Group: React.FC<Props> = ({ group }) => {
               <br />
               <Typography variant={'h6'}>Status</Typography>
               <StatusChip name={assessment.field} status={assessment?.status} />
-              {assessment.message}
+              <ul>
+                {assessment.message.split(';').map((message) => {
+                  return (
+                    <li style={{ textAlign: 'left' }} key={message}>
+                      {message}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
             <br />
             <br />

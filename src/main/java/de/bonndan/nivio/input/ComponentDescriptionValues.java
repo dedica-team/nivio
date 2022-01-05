@@ -38,10 +38,11 @@ public class ComponentDescriptionValues {
         existing.getLinks().putAll(increment.getLinks());
 
     }
+
     /**
      * Writes the values of the increment (second object) to the first where first is null/absent.
      *
-     * @param component     target
+     * @param component target
      * @param increment source
      */
     public static void assignSafeNotNull(ComponentDescription component, ComponentDescription increment) {

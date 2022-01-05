@@ -3,13 +3,14 @@ package de.bonndan.nivio.input;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.AnythingPattern;
-import de.bonndan.nivio.input.dto.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class RemoteFileTest {
+class RemoteFileTest {
 
     private WireMockServer wireMockServer;
 
@@ -38,7 +39,7 @@ public class RemoteFileTest {
     }
 
     @Test
-    void fetchesYaml() {
+    void fetchesYaml() throws MalformedURLException {
 
         String path = getRootPath() + "/src/test/resources/example/services/wordpress.yml";
         String yml = FileFetcher.readFile(new File(path));
@@ -47,15 +48,14 @@ public class RemoteFileTest {
                 get("/some/file.yml").willReturn(aResponse().withStatus(200).withBody(yml))
         );
 
-        String serverUrl = buildApiUrl();
-        SourceReference sourceReference = new SourceReference(serverUrl);
+        SourceReference sourceReference = new SourceReference(buildApiUrl());
         FileFetcher fetcher = new FileFetcher(new HttpService());
         String s = fetcher.get(sourceReference);
         assertEquals(yml, s);
     }
 
     @Test
-    void fetchesYamlWithHeader() {
+    void fetchesYamlWithHeader() throws MalformedURLException {
 
         String path = getRootPath() + "/src/test/resources/example/services/wordpress.yml";
         String yml = FileFetcher.readFile(new File(path));
@@ -66,8 +66,7 @@ public class RemoteFileTest {
                         .willReturn(aResponse().withStatus(200).withBody(yml))
         );
 
-        String serverUrl = buildApiUrl();
-        SourceReference sourceReference = new SourceReference(serverUrl);
+        SourceReference sourceReference = new SourceReference(buildApiUrl());
         sourceReference.setHeaderTokenName("PRIVATE_KEY");
         sourceReference.setHeaderTokenValue("xyz");
         FileFetcher fetcher = new FileFetcher(new HttpService());
@@ -76,7 +75,7 @@ public class RemoteFileTest {
     }
 
     @Test
-    void fetchesYamlWithBasicAuth() {
+    void fetchesYamlWithBasicAuth() throws MalformedURLException {
 
         String path = getRootPath() + "/src/test/resources/example/services/wordpress.yml";
         String yml = FileFetcher.readFile(new File(path));
@@ -87,8 +86,7 @@ public class RemoteFileTest {
                         .willReturn(aResponse().withStatus(200).withBody(yml))
         );
 
-        String serverUrl = buildApiUrl();
-        SourceReference sourceReference = new SourceReference(serverUrl);
+        SourceReference sourceReference = new SourceReference(buildApiUrl());
         sourceReference.setBasicAuthUsername("x");
         sourceReference.setBasicAuthPassword("y");
         FileFetcher fetcher = new FileFetcher(new HttpService());
@@ -97,7 +95,7 @@ public class RemoteFileTest {
     }
 
     @Test
-    void fetchingFails() {
+    void fetchingFails() throws MalformedURLException {
 
         givenThat(
                 get("/some/file.yml")
@@ -105,16 +103,15 @@ public class RemoteFileTest {
                         .willReturn(aResponse().withStatus(404))
         );
 
-        String serverUrl = buildApiUrl();
-        SourceReference sourceReference = new SourceReference(serverUrl);
+        SourceReference sourceReference = new SourceReference(buildApiUrl());
         sourceReference.setBasicAuthUsername("x");
         sourceReference.setBasicAuthPassword("y");
         FileFetcher fetcher = new FileFetcher(new HttpService());
-        assertThrows(ReadingException.class,() -> fetcher.get(sourceReference));
+        assertThrows(ReadingException.class, () -> fetcher.get(sourceReference));
     }
 
-    private String buildApiUrl() {
-        return String.format("http://localhost:%d/some/file.yml", wireMockServer.port());
+    private URL buildApiUrl() throws MalformedURLException {
+        return new URL(String.format("http://localhost:%d/some/file.yml", wireMockServer.port()));
     }
 
     private String getRootPath() {

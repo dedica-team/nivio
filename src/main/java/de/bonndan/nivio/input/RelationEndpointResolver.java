@@ -26,7 +26,7 @@ public class RelationEndpointResolver extends Resolver {
                 resolveRelations(itemDescription, landscape.getItemDescriptions());
             } catch (Exception e) {
                 processLog.error(
-                        new ProcessingException(String.format("Failed to resolve relation for item description %s", itemDescription), e)
+                        new ProcessingException(landscape, String.format("Failed to resolve relation for item description %s", itemDescription), e)
                 );
             }
         });

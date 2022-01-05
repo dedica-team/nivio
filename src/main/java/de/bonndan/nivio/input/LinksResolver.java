@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class LinksResolver extends Resolver {
     }
 
     @Override
-    public void resolve(LandscapeDescription input) {
+    public void resolve(@NonNull final LandscapeDescription input) {
         List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
         input.getGroups().forEach((s, groupItem) -> resolveLinks(groupItem));
         input.getItemDescriptions().all().forEach(item -> completableFutures.addAll(resolveLinks(item)));
@@ -43,7 +44,7 @@ public class LinksResolver extends Resolver {
         try {
             CompletableFuture.allOf(completableFutures.toArray(CompletableFuture[]::new)).get(2, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            processLog.error(new ProcessingException("Failed to complete all external data resolvers", e));
+            processLog.error(new ProcessingException(input, "Failed to complete all external data resolvers", e));
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }

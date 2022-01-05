@@ -40,7 +40,7 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - java: 8
    * - group
      - String
-     - The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to common.
+     - The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to its layer.
      - optional, defaults to null
      - shipping
    * - icon
@@ -63,6 +63,11 @@ List of configuration sources. Handled in the given order, latter extend/overwri
      - 
      - optional, defaults to null
      - null
+   * - layer
+     - String
+     - The technical layer
+     - optional, defaults to null
+     - infrastructure
    * - lifecycle
      - String
      - The lifecycle state of an item.

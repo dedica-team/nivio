@@ -8,8 +8,6 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 /**
  * Events are handled asynchronously in order not to block threads.
- *
- *
  */
 @Configuration
 public class AsyncEventsConfig {

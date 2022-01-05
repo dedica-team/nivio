@@ -2,7 +2,10 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Component;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.ItemFactory;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.search.ItemMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +70,7 @@ public class DiffProcessor extends Processor {
 
                     List<String> changes = item.getChanges(newWithAssignedValues);
                     if (!changes.isEmpty()) {
-                        changelog.addEntry(newWithAssignedValues, ProcessingChangelog.ChangeType.UPDATED, String.join("; ", changes));
+                        changelog.addEntry(newWithAssignedValues, ProcessingChangelog.ChangeType.UPDATED,  changes);
                     }
                 }
         );

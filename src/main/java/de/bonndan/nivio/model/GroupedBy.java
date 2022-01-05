@@ -5,17 +5,18 @@ import org.springframework.lang.NonNull;
 import java.util.*;
 import java.util.function.Function;
 
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.StringUtils.hasLength;
 
 /**
  * Helper to groups Items differently (e.g. by owner).
  */
 public class GroupedBy {
 
-    private final Map<String, List<Item>> groups = new HashMap<>();
+    private final Map<String, List<Item>> groups = new TreeMap<>();
+
 
     /**
-     * Groups services by any string field (e.g. owner).
+     * Groups services by any string field (e.g. owner or group).
      *
      * @param supplier function providing the group key for each item
      * @param items    items to group
@@ -45,12 +46,7 @@ public class GroupedBy {
      * @param item     service to add
      */
     private void add(String groupKey, Item item) {
-
-        String key = isEmpty(groupKey) ? Group.COMMON : groupKey;
-
-        if (!groups.containsKey(key)) {
-            groups.put(key, new ArrayList<>());
-        }
-        groups.get(key).add(item);
+        String key = !hasLength(groupKey) ? item.getLayer() : groupKey;
+        groups.computeIfAbsent(key, s -> new ArrayList<>()).add(item);
     }
 }

@@ -30,20 +30,20 @@ import java.util.ArrayList;
  */
 public class BezierListProducer implements PathHandler {
 
-	final ArrayList<Bezier> bezierSegs = new ArrayList<Bezier>();
-	float[] coords = new float[6];
-	float curveLength = 0f;
-	BezierHistory hist = new BezierHistory();
+    final ArrayList<Bezier> bezierSegs = new ArrayList<Bezier>();
+    float[] coords = new float[6];
+    float curveLength = 0f;
+    BezierHistory hist = new BezierHistory();
 
     @Override
     public void startPath() throws ParseException {
-    	curveLength = 0f;
-    	bezierSegs.clear();
+        curveLength = 0f;
+        bezierSegs.clear();
     }
 
     @Override
     public void movetoRel(float x, float y) throws ParseException {
-    	float offx = hist.lastPoint.x;
+        float offx = hist.lastPoint.x;
         float offy = hist.lastPoint.y;
 
         movetoAbs(offx + x, offy + y);
@@ -51,7 +51,7 @@ public class BezierListProducer implements PathHandler {
 
     @Override
     public void movetoAbs(float x, float y) throws ParseException {
-    	hist.setLastPoint(x, y);
+        hist.setLastPoint(x, y);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class BezierListProducer implements PathHandler {
 
     @Override
     public void linetoRel(float x, float y) throws ParseException {
-    	float offx = hist.lastPoint.x;
+        float offx = hist.lastPoint.x;
         float offy = hist.lastPoint.y;
 
         linetoAbs(offx + x, offy + y);
@@ -69,14 +69,14 @@ public class BezierListProducer implements PathHandler {
 
     @Override
     public void linetoAbs(float x, float y) throws ParseException {
-    	
-    	coords[0] = x;
-    	coords[1] = y;
-    	
-    	Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 1);
-    	bezierSegs.add(b);
-    	curveLength += b.getLength();
-    	
+
+        coords[0] = x;
+        coords[1] = y;
+
+        Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 1);
+        bezierSegs.add(b);
+        curveLength += b.getLength();
+
         hist.setLastPoint(x, y);
         hist.setLastKnot(x, y);
 
@@ -84,66 +84,66 @@ public class BezierListProducer implements PathHandler {
 
     @Override
     public void linetoHorizontalRel(float x) throws ParseException {
-    	linetoAbs(x + hist.lastPoint.x, hist.lastPoint.y);
+        linetoAbs(x + hist.lastPoint.x, hist.lastPoint.y);
     }
 
     @Override
     public void linetoHorizontalAbs(float x) throws ParseException {
-    	linetoAbs(x, hist.lastPoint.y);
+        linetoAbs(x, hist.lastPoint.y);
     }
 
     @Override
     public void linetoVerticalRel(float y) throws ParseException {
-    	linetoAbs(hist.lastPoint.x, y + hist.lastPoint.y);
+        linetoAbs(hist.lastPoint.x, y + hist.lastPoint.y);
     }
 
     @Override
     public void linetoVerticalAbs(float y) throws ParseException {
-    	linetoAbs(hist.lastPoint.x, y);
+        linetoAbs(hist.lastPoint.x, y);
     }
 
     @Override
-    public void curvetoCubicRel(float x1, float y1, 
-                                float x2, float y2, 
+    public void curvetoCubicRel(float x1, float y1,
+                                float x2, float y2,
                                 float x, float y) throws ParseException {
-    	float offx = hist.lastPoint.x;
+        float offx = hist.lastPoint.x;
         float offy = hist.lastPoint.y;
-        
+
         curvetoCubicAbs(x1 + offx, y1 + offy,
-                x2 + offx, y2 + offy, 
+                x2 + offx, y2 + offy,
                 x + offx, y + offy);
     }
 
     @Override
-    public void curvetoCubicAbs(float x1, float y1, 
-                                float x2, float y2, 
+    public void curvetoCubicAbs(float x1, float y1,
+                                float x2, float y2,
                                 float x, float y) throws ParseException {
-        
-    	coords[0] = x1;
-    	coords[1] = y1;
-    	coords[2] = x2;
-    	coords[3] = y2;
-    	coords[4] = x;
-    	coords[5] = y;
-        
-    	Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 3);
-    	bezierSegs.add(b);
-    	curveLength += b.getLength();
+
+        coords[0] = x1;
+        coords[1] = y1;
+        coords[2] = x2;
+        coords[3] = y2;
+        coords[4] = x;
+        coords[5] = y;
+
+        Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 3);
+        bezierSegs.add(b);
+        curveLength += b.getLength();
         hist.setLastPoint(x, y);
         hist.setLastKnot(x2, y2);
     }
 
     @Override
-    public void curvetoCubicSmoothRel(float x2, float y2, 
+    public void curvetoCubicSmoothRel(float x2, float y2,
                                       float x, float y) throws ParseException {
-    	float offx = hist.lastPoint.x;
+        float offx = hist.lastPoint.x;
         float offy = hist.lastPoint.y;
 
         curvetoCubicSmoothAbs(x2 + offx, y2 + offy, x + offx, y + offy);
     }
 
     @Override
-    public void curvetoCubicSmoothAbs(float x2, float y2, 
+    public void curvetoCubicSmoothAbs(float x2, float y2,
                                       float x, float y) throws ParseException {
 
         float oldKx = hist.lastKnot.x;
@@ -153,81 +153,81 @@ public class BezierListProducer implements PathHandler {
         //Calc knot as reflection of old knot
         float k1x = oldX * 2f - oldKx;
         float k1y = oldY * 2f - oldKy;
-        
+
         coords[0] = k1x;
         coords[1] = k1y;
-    	coords[2] = x2;
-    	coords[3] = y2;
-    	coords[4] = x;
-    	coords[5] = y; 
-    	
-    	Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 3);
-    	bezierSegs.add(b);
-    	curveLength += b.getLength();
+        coords[2] = x2;
+        coords[3] = y2;
+        coords[4] = x;
+        coords[5] = y;
+
+        Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 3);
+        bezierSegs.add(b);
+        curveLength += b.getLength();
         hist.setLastPoint(x, y);
         hist.setLastKnot(x2, y2);
     }
 
     @Override
-    public void curvetoQuadraticRel(float x1, float y1, 
+    public void curvetoQuadraticRel(float x1, float y1,
                                     float x, float y) throws ParseException {
-    	 float offx = hist.lastPoint.x;
-         float offy = hist.lastPoint.y;
+        float offx = hist.lastPoint.x;
+        float offy = hist.lastPoint.y;
 
-         curvetoQuadraticAbs(x1 + offx, y1 + offy, x + offx, y + offy);
+        curvetoQuadraticAbs(x1 + offx, y1 + offy, x + offx, y + offy);
     }
 
     @Override
-    public void curvetoQuadraticAbs(float x1, float y1, 
+    public void curvetoQuadraticAbs(float x1, float y1,
                                     float x, float y) throws ParseException {
 
-    	coords[0] = x1;
-    	coords[1] = y1;
-    	coords[2] = x;
-    	coords[3] = y;
-    	
-    	Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 2);
-    	bezierSegs.add(b);
-    	curveLength += b.getLength();
-    	
-    	hist.setLastPoint(x, y);
+        coords[0] = x1;
+        coords[1] = y1;
+        coords[2] = x;
+        coords[3] = y;
+
+        Bezier b = new Bezier(hist.lastPoint.x, hist.lastPoint.y, coords, 2);
+        bezierSegs.add(b);
+        curveLength += b.getLength();
+
+        hist.setLastPoint(x, y);
         hist.setLastKnot(x1, y1);
     }
 
     @Override
     public void curvetoQuadraticSmoothRel(float x, float y) {
-	    float offx = hist.lastPoint.x;
-	    float offy = hist.lastPoint.y;
-	
-	    curvetoQuadraticSmoothAbs(x + offx, y + offy);
+        float offx = hist.lastPoint.x;
+        float offy = hist.lastPoint.y;
+
+        curvetoQuadraticSmoothAbs(x + offx, y + offy);
     }
 
     @Override
     public void curvetoQuadraticSmoothAbs(float x, float y)
-        throws ParseException {
-    	
-    	curvetoQuadraticAbs(hist.lastKnot.x, hist.lastKnot.y, x, y);
+            throws ParseException {
+
+        curvetoQuadraticAbs(hist.lastKnot.x, hist.lastKnot.y, x, y);
     }
 
     @Override
-    public void arcRel(float rx, float ry, 
-                       float xAxisRotation, 
-                       boolean largeArcFlag, boolean sweepFlag, 
+    public void arcRel(float rx, float ry,
+                       float xAxisRotation,
+                       boolean largeArcFlag, boolean sweepFlag,
                        float x, float y) throws ParseException {
-        
+
     }
 
     @Override
-    public void arcAbs(float rx, float ry, 
-                       float xAxisRotation, 
-                       boolean largeArcFlag, boolean sweepFlag, 
+    public void arcAbs(float rx, float ry,
+                       float xAxisRotation,
+                       boolean largeArcFlag, boolean sweepFlag,
                        float x, float y) throws ParseException {
 
     }
 
     @Override
     public void endPath() throws ParseException {
-    	hist.setLastPoint(hist.startPoint.x, hist.startPoint.y);
+        hist.setLastPoint(hist.startPoint.x, hist.startPoint.y);
         hist.setLastKnot(hist.startPoint.x, hist.startPoint.y);
     }
 }

@@ -44,7 +44,7 @@ public class SearchDocumentFactory {
     public static final String LUCENE_FIELD_NETWORK = Label.network.name();
     private static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
     private static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
-    private static final String LUCENE_FIELD_LAYER = Label.layer.name();
+    private static final String LUCENE_FIELD_LAYER = "layer";
     public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
     public static final String KPI_FACET_PREFIX = "kpi_";
 
@@ -170,7 +170,7 @@ public class SearchDocumentFactory {
 
         addFacetField.accept(LUCENE_FIELD_LIFECYCLE, item.getLabel(Label.lifecycle));
         addFacetField.accept(LUCENE_FIELD_CAPABILITY, item.getLabel(Label.capability));
-        addFacetField.accept(LUCENE_FIELD_LAYER, item.getLabel(Label.layer));
+        addFacetField.accept(LUCENE_FIELD_LAYER, item.getLayer());
         addFacetField.accept(LUCENE_FIELD_OWNER, item.getOwner());
         addFacetField.accept(LUCENE_FIELD_GROUP, item.getGroup());
         addFacetField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());

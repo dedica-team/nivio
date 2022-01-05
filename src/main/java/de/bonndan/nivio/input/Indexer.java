@@ -7,28 +7,35 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeRepository;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
- * This component is a wrapper around all the steps to examine and index an landscape input dto.
+ * This component is a wrapper around all the steps to examine and index a landscape input dto.
  */
 @Component
 public class Indexer {
 
     private final LandscapeRepository landscapeRepo;
-    private final InputFormatHandlerFactory formatFactory;
     private final LinkHandlerFactory linkHandlerFactory;
     private final ApplicationEventPublisher eventPublisher;
 
     public Indexer(LandscapeRepository landscapeRepository,
-                   InputFormatHandlerFactory formatFactory,
                    LinkHandlerFactory linkHandlerFactory,
                    ApplicationEventPublisher eventPublisher
     ) {
         this.landscapeRepo = landscapeRepository;
-        this.formatFactory = formatFactory;
         this.linkHandlerFactory = linkHandlerFactory;
         this.eventPublisher = eventPublisher;
+    }
+
+    @EventListener(IndexEvent.class)
+    public void onIndexEvent(@NonNull final IndexEvent event) {
+        event.getLandscapeDescriptions().forEach(this::index);
+        event.getSeedConfiguration().ifPresent(
+                seedConfiguration -> eventPublisher.publishEvent(new SeedConfigurationProcessedEvent(seedConfiguration))
+        );
     }
 
     /**
@@ -64,11 +71,11 @@ public class Indexer {
         //a detailed textual log
         ProcessLog logger = landscape.getLog();
 
-        // read all input sources
-        new SourceReferencesResolver(formatFactory, logger, eventPublisher).resolve(input);
-
         // apply template values to items
         new TemplateResolver(logger).resolve(input);
+
+        // read special labels on items and assign the values to fields (must be run before links resolver)
+        new LabelToFieldResolver(logger).resolve(input);
 
         // resolve links on components to gather more data.
         new LinksResolver(logger, linkHandlerFactory).resolve(input);
@@ -76,14 +83,11 @@ public class Indexer {
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
 
-        // read special labels on items and assign the values to fields
-        new LabelToFieldResolver(logger).resolve(input);
-
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).resolve(input);
 
         // try to find "magic" relations by examining item labels for keywords and URIs
-        new LabelRelationResolver(logger, new HintFactory()).resolve(input);
+        //new LabelRelationResolver(logger, new HintFactory()).resolve(input);
 
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)

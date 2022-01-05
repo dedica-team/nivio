@@ -46,12 +46,14 @@ const StatusBar: React.FC<Props> = ({ setSidebarContent, landscape, assessments 
 
   const onItemClick = (item: IItem) => {
     locateFunctionContext.locateFunction(item.fullyQualifiedIdentifier);
-    setSidebarContent(<Item fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} />);
+    setSidebarContent(
+      <Item fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier} sticky={true} />
+    );
   };
 
   const onGroupClick = (group: IGroup) => {
     findGroup(group.fullyQualifiedIdentifier);
-    setSidebarContent(<Group group={group} />);
+    setSidebarContent(<Group group={group} sticky={true} />);
   };
 
   if (landscape && assessments)

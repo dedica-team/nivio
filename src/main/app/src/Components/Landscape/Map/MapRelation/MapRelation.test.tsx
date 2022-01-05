@@ -14,6 +14,8 @@ it('should render mapRelation component', () => {
     icon: '',
     type: 'service',
     fullyQualifiedIdentifier: 'abc/foo',
+    group: 'Customers',
+    networks: ['lan'],
   };
   const target = {
     identifier: 'bar',
@@ -26,6 +28,8 @@ it('should render mapRelation component', () => {
     icon: '',
     type: 'service',
     fullyQualifiedIdentifier: 'abc/bar',
+    group: 'Billing',
+    networks: ['vpn', 'lan'],
   };
 
   const relation = {
@@ -35,12 +39,14 @@ it('should render mapRelation component', () => {
     id: target.fullyQualifiedIdentifier,
     direction: 'outbound',
     name: 'bar',
+    labels: {},
   };
-  const { getByText } = render(
-    <MapRelation source={source} target={target} relation={relation} locateItem={() => {}} />
+  const { getByText, getByTestId } = render(
+    <MapRelation source={source} target={target} relation={relation} />
   );
   expect(getByText('fooName')).toBeInTheDocument();
   expect(getByText('barName')).toBeInTheDocument();
   expect(getByText('Type')).toBeInTheDocument();
   expect(getByText('PROVIDER')).toBeInTheDocument();
+  expect(getByTestId('InfoIconRelation')).toBeInTheDocument();
 });

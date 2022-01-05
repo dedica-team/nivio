@@ -3,17 +3,20 @@ import { fireEvent, getByTitle, queryByText, render, waitFor } from '@testing-li
 import * as APIClient from '../../../../utils/API/APIClient';
 import Item from './Item';
 import { IItem } from '../../../../interfaces';
+import { LandscapeContext } from '../../../../Context/LandscapeContext';
+import landscapeContextValue from '../../../../utils/testing/LandscapeContextValue';
 
 describe('<Item />', () => {
   const IRelations = {
     source: 'foo',
-    target: 'foo',
+    target: 'test/groupA/foo',
     description: 'foo',
     format: 'foo',
-    name: 'foo',
+    name: 'web',
     id: 'foo',
-    direction: 'foo',
+    direction: 'outbound',
     labels: {},
+    type: 'PROVIDER',
   };
   const Irelations = { foo: IRelations };
   const useItem: IItem = {
@@ -68,12 +71,29 @@ describe('<Item />', () => {
     const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
     fireEvent.click(getByTitle(container, 'API / Interfaces'));
 
-    console.log(mock);
     //then
     await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(queryByText('vpn')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('Networks')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('spring boot')).toBeInTheDocument());
     await waitFor(() => expect(queryByText('ops guys')).toBeInTheDocument());
+  });
+
+  it('check if mui info icon appears', async () => {
+    // given
+    const mock = jest.spyOn(APIClient, 'get');
+    mock.mockReturnValue(Promise.resolve(useItem));
+
+    //when
+    const { container, getByTestId } = render(
+      <LandscapeContext.Provider value={landscapeContextValue}>
+        <Item fullyQualifiedItemIdentifier={'foo'} />
+      </LandscapeContext.Provider>
+    );
+
+    fireEvent.click(getByTitle(container, 'Relations'));
+
+    // then
+    await waitFor(() => expect(getByTestId('InfoIcon')));
   });
 });

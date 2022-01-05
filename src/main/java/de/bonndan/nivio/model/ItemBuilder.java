@@ -22,7 +22,10 @@ public final class ItemBuilder {
     private String icon;
     private String type;
     private URI address;
+    private String layer;
     private Map<String, String> labels = new HashMap<>();
+
+
 
     private ItemBuilder() {
     }
@@ -96,6 +99,11 @@ public final class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder withLayer(String layer) {
+        this.layer = layer;
+        return this;
+    }
+
     public ItemBuilder withAddress(URI address) {
         this.address = address;
         return this;
@@ -103,7 +111,7 @@ public final class ItemBuilder {
 
     public Item build() {
         Item item = new Item(identifier, landscape, group, name, owner, contact,
-                description, color, icon, type, address);
+                description, color, icon, type, address, Layer.of(layer));
         item.setLinks(links);
         item.getLabels().putAll(labels);
         item.setRelations(relations);
@@ -115,8 +123,8 @@ public final class ItemBuilder {
         this.labels = labels;
         return this;
     }
-
     public String getGroup() {
         return group;
     }
+
 }

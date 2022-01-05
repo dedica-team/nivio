@@ -31,7 +31,7 @@ public interface Linked {
      * @param url        href
      */
     default void setLink(@NonNull String identifier, URL url) {
-        if (StringUtils.isEmpty(identifier)) {
+        if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Link identifier is empty");
         }
         getLinks().put(identifier, new Link(url, identifier));

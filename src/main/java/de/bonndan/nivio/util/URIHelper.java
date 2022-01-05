@@ -9,13 +9,15 @@ import java.util.Optional;
 
 public class URIHelper {
 
+    private URIHelper() {}
+
     /**
      * Returns an Optional of an URI object (empty on URISyntaxException).
      *
      * @param string uri
      */
     public static Optional<URI> getURI(@Nullable String string) {
-        if (StringUtils.isEmpty(string)) {
+        if (!StringUtils.hasLength(string)) {
             return Optional.empty();
         }
 

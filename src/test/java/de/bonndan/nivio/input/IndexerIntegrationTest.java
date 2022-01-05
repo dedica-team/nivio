@@ -1,21 +1,15 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.context.ApplicationEvent;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -28,26 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-public class IndexerIntegrationTest {
+class IndexerIntegrationTest {
 
-    @Autowired
-    LandscapeRepository landscapeRepository;
+    private IntegrationTestSupport integrationTestSupport;
 
-    @Autowired
-    InputFormatHandlerFactory formatFactory;
-
-    @Autowired
-    LandscapeDescriptionFactory landscapeDescriptionFactory;
-
-    @Mock
-    LinkHandlerFactory linkHandlerFactory;
-
-    @Mock
-    ApplicationEventPublisher applicationEventPublisher;
+    @BeforeEach
+    void setup() {
+         integrationTestSupport = new IntegrationTestSupport();
+    }
 
     private Landscape index() {
         return index("/src/test/resources/example/example_env.yml");
@@ -55,16 +37,30 @@ public class IndexerIntegrationTest {
 
     private Landscape index(String path) {
         File file = new File(getRootPath() + path);
-        LandscapeDescription landscapeDescription = landscapeDescriptionFactory.fromYaml(file);
-
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher);
-
-        indexer.index(landscapeDescription);
-        return landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        return integrationTestSupport.getFirstIndexedLandscape(file);
     }
 
     @Test
-        //first pass
+    void onIndexEvent() {
+        Indexer indexer = integrationTestSupport.getIndexer();
+        LandscapeDescription test = new LandscapeDescription("test");
+        SeedConfiguration configuration = new SeedConfiguration("test");
+        IndexEvent event = new IndexEvent(List.of(test), configuration, "");
+
+        //when
+        indexer.onIndexEvent(event);
+
+        //then
+        ArgumentCaptor<ApplicationEvent> captor = ArgumentCaptor.forClass(ApplicationEvent.class);
+        verify(integrationTestSupport.getEventPublisher(), times(2)).publishEvent(captor.capture());
+        ProcessingFinishedEvent value = (ProcessingFinishedEvent) captor.getAllValues().get(0);
+        assertThat(value.getInput()).isEqualTo(test);
+
+        SeedConfigurationProcessedEvent value2 = (SeedConfigurationProcessedEvent) captor.getAllValues().get(1);
+        assertThat(value2.getSource()).isEqualTo(configuration);
+    }
+
+    @Test
     void testIndexing() {
         Landscape landscape = index();
 
@@ -72,7 +68,7 @@ public class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         assertTrue(landscape.getDescription().contains("demonstrate"));
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(17, landscape.getItems().all().size());
+        assertEquals(18, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
@@ -89,7 +85,7 @@ public class IndexerIntegrationTest {
         Assertions.assertNotNull(webserver);
         assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
-        Relation push = (Relation) blog.getRelations().stream()
+        Relation push = blog.getRelations().stream()
                 .filter(d -> "hourly push KPI data".equals(d.getDescription()))
                 .findFirst()
                 .orElse(null);
@@ -111,15 +107,14 @@ public class IndexerIntegrationTest {
         assertEquals("http://acme.io/create", i.getUrl().toString());
     }
 
-    @Test
-        //second pass
+    @Test //second pass
     void testReIndexing() {
         Landscape landscape = index();
 
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getItems());
-        assertEquals(17, landscape.getItems().all().size());
+        assertEquals(18, landscape.getItems().all().size());
         Item blog = landscape.getItems().pick("blog-server", null);
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
@@ -182,11 +177,10 @@ public class IndexerIntegrationTest {
         exsistingWordPress.setName("Other name");
         landscapeDescription.getItemDescriptions().add(exsistingWordPress);
 
-        Indexer indexer = new Indexer(landscapeRepository, formatFactory, linkHandlerFactory, applicationEventPublisher);
 
         //created
-        indexer.index(landscapeDescription);
-        landscape = landscapeRepository.findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        integrationTestSupport.getIndexer().index(landscapeDescription);
+        landscape = integrationTestSupport.getLandscapeRepository().findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
         blog = landscape.getItems().pick("blog-server", "completelyNewGroup");
         assertEquals("completelyNewGroup", blog.getGroup());
         assertEquals(before + 1, landscape.getItems().all().size());
@@ -198,13 +192,13 @@ public class IndexerIntegrationTest {
 
         //testing changelog
         ArgumentCaptor<ProcessingFinishedEvent> captor = ArgumentCaptor.forClass(ProcessingFinishedEvent.class);
-        verify(applicationEventPublisher, times(2)).publishEvent(captor.capture());
+        verify(integrationTestSupport.getEventPublisher(), times(2)).publishEvent(captor.capture());
         ProcessingFinishedEvent value = captor.getAllValues().get(1);
         assertThat(value).isNotNull();
         ProcessingChangelog changelog = value.getChangelog();
         assertThat(changelog).isNotNull();
-        assertThat(changelog.changes).hasSize(3);
-        assertThat(changelog.changes).containsKey("nivio:example/content/wordpress-web");
+        assertThat(changelog.getChanges()).hasSize(3);
+        assertThat(changelog.getChanges()).containsKey("nivio:example/content/wordpress-web");
     }
 
     /**
@@ -304,7 +298,7 @@ public class IndexerIntegrationTest {
     @Test
     void labelRelations() {
         Landscape landscape = index("/src/test/resources/example/example_label_relations.yml");
-        assertEquals(2, landscape.getGroups().size()); //common group is present by default
+        assertEquals(3, landscape.getGroups().size()); //common group is present by default
         assertEquals(2, landscape.getItems().all().size());
 
         Item foo = landscape.getItems().all().iterator().next();

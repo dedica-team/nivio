@@ -6,7 +6,7 @@ import { IKpi } from '../../../interfaces';
 describe('<KPIConfigLayout />', () => {
   const kpi: IKpi = {
     description:
-      "Turns yellow if the 'scale' label is zero. Turns orange or red if is also is a data sink or provider.",
+      "Turns yellow if the 'scale' label is zero, orange if it is a data sink, and red if it is a provider.",
     enabled: true,
     ranges: {
       GREEN: {

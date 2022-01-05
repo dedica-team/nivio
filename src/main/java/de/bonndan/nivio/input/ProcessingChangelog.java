@@ -7,38 +7,38 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Schema(description = "Changelog for a single landscape processing run (update of landscape from different sources).")
 public class ProcessingChangelog {
 
     @Schema(description = "The key is the FullyQualifiedIdentifier of a component")
-    public final Map<String, Entry> changes = new HashMap<>();
+    private final Map<String, Entry> changes = new HashMap<>();
 
     /**
      * Add a change for a component.
      *
      * @param component  the affected component
      * @param changeType created, updated, deleted
-     * @param message    an optional message
+     * @param messages   an optional message
      */
     public void addEntry(
             @NonNull final Component component,
             @NonNull final ChangeType changeType,
-            @Nullable final String message
+            @Nullable final List<String> messages
     ) {
         String id = Objects.requireNonNull(component).getFullyQualifiedIdentifier().toString();
-        if (StringUtils.isEmpty(id)) {
-            throw new RuntimeException("Could not create a changelog entry id for " + component);
+        if (!StringUtils.hasLength(id)) {
+            throw new IllegalArgumentException("Could not create a changelog entry id for " + component);
         }
         Entry entry = new Entry(
                 component.getClass().getSimpleName(),
                 Objects.requireNonNull(changeType),
-                message
+                messages
         );
-        changes.put(id, entry);
+        getChanges().put(id, entry);
     }
 
     /**
@@ -57,23 +57,23 @@ public class ProcessingChangelog {
     /**
      * Adds a relation change
      *
-     * @param relation   the relation has has changed.
-     * @param changeType created, updated..
-     * @param message    the message
+     * @param relation   the relation that has changed.
+     * @param changeType created, updated ...
+     * @param messages   the messages
      */
     public void addEntry(
             @NonNull final Relation relation,
             @NonNull final ChangeType changeType,
-            @Nullable final String message
+            @Nullable final List<String> messages
     ) {
         Objects.requireNonNull(relation);
 
         Entry entry = new Entry(
                 Relation.class.getSimpleName(),
                 Objects.requireNonNull(changeType),
-                message
+                messages
         );
-        changes.put(relation.getIdentifier(), entry);
+        getChanges().put(relation.getIdentifier(), entry);
     }
 
     /**
@@ -85,29 +85,34 @@ public class ProcessingChangelog {
         if (changelog == null) {
             return;
         }
-        changelog.changes.forEach((s, value) -> changes.merge(
+        changelog.getChanges().forEach((s, value) -> getChanges().merge(
                 s,
                 value,
                 (entry1, entry2) -> new Entry(
                         entry1.componentType,
                         ChangeType.valueOf(entry1.changeType),
-                        entry1.message + "; " + entry2.message
+                        Stream.concat(entry1.getMessages().stream(), entry2.getMessages().stream())
+                                .collect(Collectors.toList())
                 )
         ));
+    }
+
+    public Map<String, Entry> getChanges() {
+        return changes;
     }
 
     public static class Entry {
         private final String componentType;
         private final String changeType;
-        private final String message;
+        private final List<String> messages;
 
         Entry(@NonNull final String componentType,
               @NonNull final ChangeType changeType,
-              @Nullable final String message
+              @Nullable final List<String> messages
         ) {
             this.componentType = componentType;
             this.changeType = changeType.name();
-            this.message = message;
+            this.messages = messages == null ? new ArrayList<>() : messages;
         }
 
         @Schema(description = "The component type", allowableValues = {"Group", "Item", "Relation"})
@@ -120,9 +125,9 @@ public class ProcessingChangelog {
             return changeType;
         }
 
-        @Nullable
-        public String getMessage() {
-            return message;
+        @NonNull
+        public List<String> getMessages() {
+            return messages;
         }
 
         @Override
@@ -130,12 +135,12 @@ public class ProcessingChangelog {
             return "Entry{" +
                     "componentType='" + componentType + '\'' +
                     ", changeType='" + changeType + '\'' +
-                    ", message='" + message + '\'' +
+                    ", messages='" + messages + '\'' +
                     '}';
         }
     }
 
-    enum ChangeType {
+    public enum ChangeType {
         CREATED,
         UPDATED,
         DELETED

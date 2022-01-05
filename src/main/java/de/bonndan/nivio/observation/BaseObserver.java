@@ -1,6 +1,5 @@
 package de.bonndan.nivio.observation;
 
-import de.bonndan.nivio.model.Landscape;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 
@@ -11,11 +10,9 @@ import java.util.Objects;
  */
 public abstract class BaseObserver implements InputFormatObserver {
 
-    protected final Landscape landscape;
     protected final ApplicationEventPublisher eventPublisher;
 
-    protected BaseObserver(@NonNull final Landscape landscape, @NonNull final ApplicationEventPublisher eventPublisher) {
-        this.landscape = Objects.requireNonNull(landscape);
+    protected BaseObserver(@NonNull final ApplicationEventPublisher eventPublisher) {
         this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 }

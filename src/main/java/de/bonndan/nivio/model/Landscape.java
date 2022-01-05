@@ -6,7 +6,7 @@ import de.bonndan.nivio.assessment.AssessableGroup;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.input.ProcessLog;
-import de.bonndan.nivio.input.dto.LandscapeSource;
+import de.bonndan.nivio.input.dto.Source;
 import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.search.ItemMatcher;
 import de.bonndan.nivio.search.SearchIndex;
@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.Item.IDENTIFIER_VALIDATION;
+import static de.bonndan.nivio.model.IdentifierValidation.PATTERN;
 
 /**
  * Think of a group of servers and apps, like a "project", "workspace" or stage.
@@ -35,7 +35,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
      * Immutable unique identifier. Maybe use an URN.
      */
     @NonNull
-    @Pattern(regexp = IDENTIFIER_VALIDATION)
+    @Pattern(regexp = PATTERN)
     private final String identifier;
 
     /**
@@ -56,7 +56,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     private final String description;
 
     @JsonIgnore
-    private final LandscapeSource source;
+    private final Source source;
 
     @JsonIgnore
     private final ItemIndex<Item> items;
@@ -81,16 +81,16 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
                      @Nullable final String contact,
                      @Nullable final String owner,
                      @Nullable final String description,
-                     @Nullable final LandscapeSource source,
+                     @Nullable final Source source,
                      @Nullable final LandscapeConfig config,
                      @Nullable final ProcessLog processLog,
                      @NonNull final Map<String, KPI> kpis
     ) {
-        this.identifier = validateIdentifier(Objects.requireNonNull(identifier));
+        this.identifier = IdentifierValidation.getValidIdentifier(identifier);
         this.groups = groups;
         this.searchIndex = new SearchIndex(identifier);
         this.items = new ItemIndex<>(Item.class);
-        this.name = Objects.requireNonNull(name);
+        this.name = StringUtils.hasLength(name) ? name : this.identifier;
         this.contact = contact;
 
         this.owner = owner;
@@ -112,13 +112,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return FullyQualifiedIdentifier.build(identifier, null, null);
     }
 
-    private String validateIdentifier(String identifier) {
-        if (!StringUtils.hasLength(identifier) || !identifier.matches(IDENTIFIER_VALIDATION)) {
-            throw new IllegalArgumentException("Invalid landscape identifier given: '" + identifier + "', it must match " + IDENTIFIER_VALIDATION);
-        }
-        return StringUtils.trimAllWhitespace(identifier);
-    }
-
     @NonNull
     public String getName() {
         return name;
@@ -135,7 +128,7 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
 
     @JsonIgnore
     @Nullable
-    public LandscapeSource getSource() {
+    public Source getSource() {
         return source;
     }
 
@@ -337,4 +330,35 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
         return getItems().findOneBy(term, group);
     }
 
+    /**
+     * Returns a landscape {@link Component} by an identifier.
+     *
+     * @param identifier assessment identifier (e.g. group, item, relation ...)
+     * @return a component if can be found
+     */
+    public Optional<? extends Component> findOneByAssessmentIdentifier(String identifier) {
+        if (identifier.contains(Relation.DELIMITER)) {
+            String[] split = identifier.split(Relation.DELIMITER);
+            try {
+                return Optional.ofNullable(getItems().pick(FullyQualifiedIdentifier.from(split[0])));
+            } catch (Exception e) {
+                return Optional.empty();
+            }
+        }
+
+        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(identifier);
+        if (fqi.isGroup()) {
+            return getGroup(fqi.getGroup());
+        }
+
+        if (fqi.isItem()) {
+            try {
+                return Optional.ofNullable(getItems().pick(fqi));
+            } catch (Exception e) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(this);
+    }
 }

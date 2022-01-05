@@ -1,47 +1,51 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Event is fired to (re)index a landscape.
  */
-public class IndexEvent extends ProcessingEvent {
+public class IndexEvent {
 
+    private final List<LandscapeDescription> landscapeDescriptions;
+    private final SeedConfiguration seedConfiguration;
     private final String message;
-    private final LandscapeDescription landscapeDescription;
 
     /**
-     * @param landscapeDescription landscape description
-     * @param message message for the UI
+     * @param landscapeDescriptions landscape descriptions belonging to the config
+     * @param seedConfiguration     an optional configuration (might be absent on web-based triggers)
+     * @param message               message for the UI
      */
-    public IndexEvent(LandscapeDescription landscapeDescription, String message) {
-        super(Objects.requireNonNull(landscapeDescription, "The IndexEvent must contain a landscape description.").getFullyQualifiedIdentifier());
-
-        this.landscapeDescription = landscapeDescription;
+    public IndexEvent(@NonNull final List<LandscapeDescription> landscapeDescriptions,
+                      @Nullable final SeedConfiguration seedConfiguration,
+                      @Nullable final String message
+    ) {
+        this.seedConfiguration = seedConfiguration;
+        this.landscapeDescriptions = Objects.requireNonNull(landscapeDescriptions);
         this.message = message;
     }
 
-    /**
-     * @return the {@link LandscapeDescription}, not the landscape!
-     */
-    public LandscapeDescription getLandscapeDescription() {
-        return landscapeDescription;
+    @NonNull
+    public List<LandscapeDescription> getLandscapeDescriptions() {
+        return landscapeDescriptions;
     }
 
-    @Override
-    public String getLevel() {
-        return LOG_LEVEL_INFO;
-    }
-
-    @Override
-    public String getType() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Returns an observable seed config.
+     *
+     * @return config. if present not present data has been pushed
+     */
+    public Optional<SeedConfiguration> getSeedConfiguration() {
+        return Optional.ofNullable(seedConfiguration);
     }
 }
