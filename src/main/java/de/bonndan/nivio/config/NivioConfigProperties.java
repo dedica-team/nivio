@@ -41,6 +41,8 @@ public class NivioConfigProperties {
 
     private String iconFolder;
 
+    private String loginType;
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -113,6 +115,14 @@ public class NivioConfigProperties {
         this.iconFolder = iconFolder;
     }
 
+    public String getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(String loginType) {
+        this.loginType = loginType;
+    }
+
     public ApiModel getApiModel() {
         java.net.URL brandingLogoUrl = null;
         try {
@@ -121,6 +131,7 @@ public class NivioConfigProperties {
         }
         return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl, brandingMessage);
     }
+
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ApiModel {

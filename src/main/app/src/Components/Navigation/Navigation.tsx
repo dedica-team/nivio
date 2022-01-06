@@ -57,6 +57,7 @@ interface Props {
  */
 const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, version }) => {
   const classes = useStyles();
+  const loginButton: JSX.Element[] = [];
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const userContext = useContext(UserContext);
@@ -86,6 +87,19 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       {...props}
     />
   ));
+
+  if (userContext.error === 401 || !userContext.error) {
+    if (!userContext.user) {
+      loginButton.push(<LoginDialog />);
+    } else {
+      loginButton.push(
+        <a href={`/logout`}>
+          <Button>Logout, {userContext.user.name}</Button>
+        </a>
+      );
+    }
+  }
+
   return (
     <Toolbar className={classes.appBar} variant={'dense'}>
       <IconButton
@@ -127,13 +141,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
-      {!userContext.user ? (
-        <LoginDialog />
-      ) : (
-        <a href={`/logout`}>
-          <Button>Logout, {userContext.user.name}</Button>
-        </a>
-      )}
+      {loginButton}
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (
