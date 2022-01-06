@@ -275,7 +275,7 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   const getItemAssessments = (assessmentItem: IAssessmentProps[]) => {
     if (item && assessmentItem) {
       return assessmentItem
-        .filter((assessment) => !assessment.field.includes('summary.'))
+        .filter((assessment) => !assessment.field.includes('summary'))
         .map((assessment) => {
           return (
             <TableRow key={assessment.field}>

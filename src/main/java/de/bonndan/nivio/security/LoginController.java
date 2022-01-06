@@ -32,10 +32,5 @@ public class LoginController {
         return "login";
     }
 
-    @CrossOrigin(methods = RequestMethod.GET)
-    @GetMapping(path = "/logout")
-    public String showLogoutPage() {
-        return "logout";
-    }
 
 }
