@@ -26,15 +26,15 @@ class InitialPlacementStrategyTest {
         assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
-        assertThat(place2.x).isEqualTo(0);
+        assertThat(place2.x).isEqualTo(-1);
         assertThat(place2.y).isEqualTo(300);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
         assertThat(place3.x).isEqualTo(-300);
-        assertThat(place3.y).isEqualTo(-0);
+        assertThat(place3.y).isEqualTo(-2);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
-        assertThat(place4.x).isEqualTo(0);
+        assertThat(place4.x).isEqualTo(4);
         assertThat(place4.y).isEqualTo(-300);
     }
 
@@ -52,16 +52,16 @@ class InitialPlacementStrategyTest {
         assertThat(place1.y).isEqualTo(0);
 
         Point2D.Double place2 = initialPlacementStrategy.place(1);
-        assertThat(place2.x).isEqualTo(277);
-        assertThat(place2.y).isEqualTo(115);
+        assertThat(place2.x).isEqualTo(184);
+        assertThat(place2.y).isEqualTo(237);
 
         Point2D.Double place3 = initialPlacementStrategy.place(2);
-        assertThat(place3.x).isEqualTo(-115);
-        assertThat(place3.y).isEqualTo(-277);
+        assertThat(place3.x).isEqualTo(-206);
+        assertThat(place3.y).isEqualTo(-218);
 
         Point2D.Double place4 = initialPlacementStrategy.place(3);
-        assertThat(place4.x).isEqualTo(277);
-        assertThat(place4.y).isEqualTo(-115);
+        assertThat(place4.x).isEqualTo(186);
+        assertThat(place4.y).isEqualTo(-235);
     }
 
     @Test

@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,9 +48,7 @@ public class GroupProcessor extends Processor {
                     changelog.addEntry(added, ProcessingChangelog.ChangeType.CREATED);
                 } else {
                     processLog.info(String.format("Updating group %s", g.getIdentifier()));
-                    String updates = existing.get().getChanges(added).isEmpty() ?
-                            String.format("Item(s) changed in group '%s'", g.getIdentifier()) : String.join("; ", existing.get().getChanges(added));
-                    changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, updates);
+                    changelog.addEntry(added, ProcessingChangelog.ChangeType.UPDATED, existing.get().getChanges(added));
                 }
             } else {
                 processLog.info(String.format("Ignoring blacklisted group %s", g.getIdentifier()));
@@ -67,7 +66,7 @@ public class GroupProcessor extends Processor {
             if (!isBlacklisted(group, specs)) {
                 if (!landscape.getGroups().containsKey(group)) {
                     Group fromDescription = GroupFactory.createFromDescription(group, landscape.getIdentifier(), null);
-                    changelog.addEntry(fromDescription, ProcessingChangelog.ChangeType.CREATED, String.format("Reference by item %s", item));
+                    changelog.addEntry(fromDescription, ProcessingChangelog.ChangeType.CREATED, Collections.singletonList(String.format("Reference by item %s", item)));
                     processLog.info("Adding group " + fromDescription.getIdentifier());
                     landscape.addGroup(fromDescription);
                 }

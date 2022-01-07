@@ -60,6 +60,11 @@ class OrganicLayouterTest extends RenderingTest {
     }
 
     @Test
+    void debugRenderInternals() throws IOException {
+        debugRender("/src/test/resources/example/internals");
+    }
+
+    @Test
     void debugRenderPetClinic() throws IOException {
         debugRender("/src/test/resources/example/pet_clinic");
     }
@@ -215,7 +220,7 @@ class OrganicLayouterTest extends RenderingTest {
         assertNotNull(itemComponent);
 
         //check items are shifted
-        assertEquals(2074, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(1337, itemComponent.getY()); //margin + group offset + own offset
+        assertEquals(3959, itemComponent.getX()); //margin + group offset + own offset
+        assertEquals(2420, itemComponent.getY()); //margin + group offset + own offset
     }
 }

@@ -27,6 +27,8 @@ interface Props {
  * @constructor
  */
 const KPIConfigLayout: React.FC<Props> = ({ name, kpi }) => {
+  if (!kpi.enabled) return null;
+
   let ranges: JSX.Element[] = [];
   if (kpi.ranges) {
     for (let key of Object.keys(kpi.ranges)) {

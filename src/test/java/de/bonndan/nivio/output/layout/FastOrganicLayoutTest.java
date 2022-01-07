@@ -138,8 +138,8 @@ class FastOrganicLayoutTest {
         layout.calcPositions();
 
         //then
-        assertThat(layout.distances[0][1]).isEqualTo(11, Offset.offset(1D));
-        assertThat(layout.distances[1][0]).isEqualTo(11, Offset.offset(1D));
+        assertThat(layout.distances[0][1]).isEqualTo(-429, Offset.offset(1D));
+        assertThat(layout.distances[1][0]).isEqualTo(-429, Offset.offset(1D));
     }
 
     @Test
@@ -161,8 +161,8 @@ class FastOrganicLayoutTest {
         layout.calcPositions();
 
         //then
-        assertThat(layout.distances[0][1]).isEqualTo(884, Offset.offset(1D));
-        assertThat(layout.distances[1][0]).isEqualTo(884, Offset.offset(1D));
+        assertThat(layout.distances[0][1]).isEqualTo(443, Offset.offset(1D));
+        assertThat(layout.distances[1][0]).isEqualTo(443, Offset.offset(1D));
     }
 
     @Test

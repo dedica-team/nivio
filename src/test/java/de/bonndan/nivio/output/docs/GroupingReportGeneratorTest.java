@@ -29,6 +29,7 @@ class GroupingReportGeneratorTest {
     private GroupingReportGenerator groupingReportGenerator;
     private ConditionKPI conditionKpi;
     private Map<String, KPI> map;
+    private AssessmentFactory factory;
     private FrontendMapping frontendMapping;
 
     @BeforeEach
@@ -36,6 +37,7 @@ class GroupingReportGeneratorTest {
         groupingReportGenerator = new GroupingReportGenerator(Mockito.mock(LocalServer.class), Mockito.mock(IconService.class));
         conditionKpi = new ConditionKPI();
         map = new HashMap<>();
+        factory = new AssessmentFactory();
         frontendMapping = Mockito.mock(FrontendMapping.class);
 
     }
@@ -51,7 +53,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}));
 
         //  when
@@ -76,7 +78,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"groups"}));
 
         //  when
@@ -102,7 +104,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).withLabels(Map.of("lifecycle", "PRODUCTION")).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"lifecycle"}));
 
         //  when
@@ -128,7 +130,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).withLabels(Map.of(Label._condition + ".test", "true")).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"kpis"}));
 
         //  when
@@ -154,7 +156,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}, "searchTerm", new String[]{"ownerz"}));
 
         //items need to be indexed before the search can execute
@@ -184,7 +186,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}));
 
         //  when
@@ -210,7 +212,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{""}));
 
         //  when
@@ -236,7 +238,7 @@ class GroupingReportGeneratorTest {
         Item foo = ItemBuilder.anItem().withLandscape(landscape).withIdentifier("nivio").withGroup("nivio").withAddress(uri).build();
         foo.setTags(tags);
         landscape.setItems(Set.of(foo));
-        var assessment = AssessmentFactory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(landscape, map);
 
         //  when
         String document = groupingReportGenerator.toDocument(landscape, assessment, null, frontendMapping);

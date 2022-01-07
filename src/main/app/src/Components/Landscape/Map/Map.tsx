@@ -6,7 +6,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { SvgLoaderSelectElement } from 'react-svg-pan-zoom-loader';
 
@@ -87,8 +86,6 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   const [renderWithTransition, setRenderWithTransition] = useState(false);
   const [highlightElement, setHighlightElement] = useState<Element | HTMLCollection | null>(null);
   const [visualFocus, setVisualFocus] = useState<string | null>(null);
-  const { identifier } = useParams<{ identifier: string }>();
-
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
@@ -119,12 +116,14 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     if (fqi && landscapeContext.landscape) {
       let item = getItem(landscapeContext.landscape, fqi);
       if (item) {
-        // @ts-ignore
-        setSidebarContent(<Item
+        const item1 = (
+          <Item
             fullyQualifiedItemIdentifier={item.fullyQualifiedIdentifier}
             key={`item_${item.fullyQualifiedIdentifier}_${Math.random()}`}
           />
         );
+        // @ts-ignore
+        setSidebarContent(item1);
       }
     }
   };
@@ -186,19 +185,24 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     if (source && target && dataTarget) {
       const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
       let relation = source.relations[relId];
-      // @ts-ignore
-      setSidebarContent(<MapRelation
+      const mapRelation = (
+        <MapRelation
           relation={relation}
           source={source}
           target={target}
           key={`relation_${relId}_${Math.random()}`}
         />
       );
+      // @ts-ignore
+      setSidebarContent(mapRelation);
     }
   };
 
   const loadMap = useCallback(() => {
-    const route = withBasePath(`/render/${identifier}/map.svg`);
+    if (!landscapeContext.identifier) {
+      return;
+    }
+    const route = withBasePath(`/render/${landscapeContext.identifier}/map.svg`);
     get(route).then((svg) => {
       const parser = new DOMParser();
       const doc: any = parser.parseFromString(svg, 'image/svg+xml');
@@ -206,12 +210,32 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       const height = doc.firstElementChild.height.baseVal.value;
       setData({ width: width, height: height, xml: svg, loaded: new Date() });
     });
-  }, [identifier, setData]);
+  }, [landscapeContext.identifier, setData]);
 
+  /**
+   * apply assessment values to all map components
+   */
+  const applyAssessment = useCallback(() => {
+    if (landscapeContext.assessment == null) return;
+    Object.keys(landscapeContext.assessment?.results).forEach((key) => {
+      const node = document.querySelector(`[data-identifier='${key}'] .assessment`);
+      if (node) {
+        const assessmentSummary = landscapeContext.getAssessmentSummary(key);
+        if (assessmentSummary) {
+          node.classList.remove('UNKNOWN', 'GREEN', 'YELLOW', 'ORANGE', 'RED', 'BROWN');
+          node.classList.add(assessmentSummary?.status);
+        }
+      }
+    });
+  }, [landscapeContext]);
+
+  /**
+   * on identifier change, load map
+   */
   useEffect(() => {
     loadMap();
-    setSidebarContent(null);
-  }, [identifier, loadMap, setSidebarContent]);
+    applyAssessment();
+  }, [landscapeContext.identifier, loadMap, applyAssessment]);
 
   //load landscape
   useEffect(() => {
@@ -249,9 +273,18 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
    * Reload map on notification messages.
    */
   useEffect(() => {
-    console.debug('reloading map', landscapeContext.assessment);
+    if (!landscapeContext.mapChanges) return;
+    console.debug('reloading map after map change', landscapeContext.mapChanges);
     loadMap();
-  }, [landscapeContext.assessment, landscapeContext.identifier, loadMap]);
+    applyAssessment();
+  }, [landscapeContext.mapChanges, loadMap, applyAssessment]);
+
+  /**
+   * Apply values on assessment change.
+   */
+  useEffect(() => {
+    applyAssessment();
+  }, [landscapeContext.assessment, applyAssessment]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -356,7 +389,9 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
                 }}
                 tool={TOOL_AUTO}
                 onChangeValue={(newValue: Value) => setValue(newValue)}
-                onChangeTool={() => { /* disabled */}}
+                onChangeTool={() => {
+                  /* disabled */
+                }}
                 value={value}
                 className={`ReactSVGPanZoom ${renderWithTransition ? 'with-transition' : ''}`}
               >

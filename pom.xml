@@ -5,7 +5,7 @@
 
     <groupId>de.bonndan</groupId>
     <artifactId>nivio</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -27,7 +27,7 @@
         <yarnVersion>v1.22.4</yarnVersion>
         <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
         <lucene.version>8.11.0</lucene.version>
-        <openapi.version>1.6.0</openapi.version>
+        <openapi.version>1.6.3</openapi.version>
         <sonar.projectKey>dedica-team_nivio</sonar.projectKey>
         <sonar.organization>dedica-team</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -185,7 +185,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-            <version>5.8.0</version>
+            <version>5.10.1</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
@@ -271,7 +271,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.133</version>
+            <version>1.301</version>
         </dependency>
 
         <dependency>

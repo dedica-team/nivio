@@ -32,36 +32,6 @@ class LandscapeTest {
     }
 
     @Test
-    void findByIdentifier() {
-
-        //when
-        List<Item> foo1 = landscape.findBy("foo");
-
-        //then
-        assertThat(foo1).hasSize(1);
-    }
-
-    @Test
-    void findByFQI() {
-
-        //when
-        List<Item> foo1 = landscape.findBy(foo.getFullyQualifiedIdentifier().toString());
-
-        //then
-        assertThat(foo1).hasSize(1);
-    }
-
-    @Test
-    void isAbsent() {
-
-        //when
-        List<Item> foo1 = landscape.findBy("oops");
-
-        //then
-        assertThat(foo1).hasSize(0);
-    }
-
-    @Test
     @DisplayName("findOne group param is not taken into concern when match is clear")
     void findOneWithoutGroup() {
 

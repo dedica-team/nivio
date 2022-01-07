@@ -46,7 +46,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
         List<ItemDescription> items = new ArrayList<>();
 
         try {
-            MutableGraph g = new Parser().read(content);
+            MutableGraph g = new Parser().notValidating().read(content);
             g.nodes().forEach(node -> {
                 ItemDescription itemDescription = new ItemDescription(node.name().toString());
                 node.attrs().forEach(entry -> {
