@@ -1,7 +1,7 @@
 package de.bonndan.nivio.security;
 
+import de.bonndan.nivio.config.NivioConfigProperties;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +18,7 @@ class SecurityConfigTest {
     private HttpSecurity http;
 
     @Spy
-    private final SecurityConfig securityConfig = new SecurityConfig();
+    private final SecurityConfig securityConfig = new SecurityConfig(new NivioConfigProperties());
 
     @BeforeEach
     public void setup() {

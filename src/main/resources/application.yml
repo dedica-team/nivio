@@ -62,7 +62,7 @@ nivio:
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
   seed: ${SEED:}
   demo: ${DEMO:}
-  loginType: ${LOGIN_TYPE:required}
+  loginMode: ${NIVIO_LOGIN_MODE:none}
 
 
 observerconfig:

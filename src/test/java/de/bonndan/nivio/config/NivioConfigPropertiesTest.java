@@ -1,5 +1,6 @@
 package de.bonndan.nivio.config;
 
+import de.bonndan.nivio.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -96,6 +97,25 @@ class NivioConfigPropertiesTest {
         assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingMessage must be a valid string");
     }
 
+    @Test
+    void defaultLogin() {
+        NivioConfigProperties props = new NivioConfigProperties();
+        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+
+        assertThat(validate).isEmpty();
+        assertThat(props.getLoginMode()).isEqualTo(SecurityConfig.LOGIN_MODE_NONE);
+    }
+
+    @Test
+    void loginValidated() {
+        NivioConfigProperties props = new NivioConfigProperties();
+        props.setLoginMode("foo");
+        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+
+        assertThat(validate).isNotEmpty();
+        ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
+        assertThat(constraintViolations[0].getMessage()).isEqualTo("Login mode must be one of none|optional|required");
+    }
 
 
 }

@@ -1,6 +1,6 @@
 package de.bonndan.nivio.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import de.bonndan.nivio.config.NivioConfigProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,21 +15,24 @@ import java.util.Optional;
 @Controller
 public class LoginController {
 
-    @Value("${nivio.loginType}")
-    private String loginType;
+    private final String loginMode;
+
+    public LoginController(NivioConfigProperties properties) {
+        this.loginMode = properties.getLoginMode();
+    }
 
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomOAuth2User> whoAmI(OAuth2AuthenticationToken token) {
-        if (!loginType.equalsIgnoreCase("none")) {
-            if (token != null) {
-                CustomOAuth2User customOAuth2User = (CustomOAuth2User) token.getPrincipal();
-                return ResponseEntity.of(Optional.ofNullable(customOAuth2User));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-        } else {
+    public ResponseEntity<CustomOAuth2User> user(OAuth2AuthenticationToken token) {
+        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_NONE)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (token != null) {
+            CustomOAuth2User customOAuth2User = (CustomOAuth2User) token.getPrincipal();
+            return ResponseEntity.of(Optional.ofNullable(customOAuth2User));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
     }
@@ -37,12 +40,11 @@ public class LoginController {
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/login")
     public String showLoginPage() {
-        if (!loginType.equalsIgnoreCase("none") && !loginType.equalsIgnoreCase("optional")) {
+        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
             return "login";
-        } else {
-            return "";
         }
-    }
 
+        return "";
+    }
 
 }

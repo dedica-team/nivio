@@ -1,6 +1,6 @@
 package de.bonndan.nivio.security;
 
-import org.springframework.beans.factory.annotation.Value;
+import de.bonndan.nivio.config.NivioConfigProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,24 +11,31 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${nivio.loginType}")
-    private String loginType;
+    public static final String LOGIN_MODE_REQUIRED = "required";
+    public static final String LOGIN_MODE_OPTIONAL = "optional";
+    public static final String LOGIN_MODE_NONE = "none";
+
+    private final String loginMode;
+
+    public SecurityConfig(NivioConfigProperties properties) {
+        loginMode = properties.getLoginMode();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        if ("required".equalsIgnoreCase(loginType)) {
+        if (LOGIN_MODE_REQUIRED.equalsIgnoreCase(loginMode)) {
             configureForRequired(http);
         }
-        if ("optional".equalsIgnoreCase(loginType)) {
+        if (LOGIN_MODE_OPTIONAL.equalsIgnoreCase(loginMode)) {
             configureForOptional(http);
         }
-        if ("none".equalsIgnoreCase(loginType)) {
+        if (LOGIN_MODE_NONE.equalsIgnoreCase(loginMode)) {
             configureForNone(http);
         }
     }
 
-    protected void configureForOptional(HttpSecurity http) throws Exception {
+    private void configureForOptional(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
@@ -40,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    protected void configureForRequired(HttpSecurity http) throws Exception {
+    private void configureForRequired(HttpSecurity http) throws Exception {
 
         http
                 .cors()
@@ -57,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-    protected void configureForNone(HttpSecurity http) throws Exception {
+    protected void configureForNone(HttpSecurity http) {
     }
 
 }

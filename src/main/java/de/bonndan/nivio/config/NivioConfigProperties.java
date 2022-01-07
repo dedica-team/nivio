@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.net.MalformedURLException;
 
@@ -41,7 +42,9 @@ public class NivioConfigProperties {
 
     private String iconFolder;
 
-    private String loginType;
+    @NotEmpty
+    @Pattern(regexp = "none|optional|required", message = "Login mode must be one of none|optional|required")
+    private String loginMode;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -115,12 +118,12 @@ public class NivioConfigProperties {
         this.iconFolder = iconFolder;
     }
 
-    public String getLoginType() {
-        return loginType;
+    public String getLoginMode() {
+        return loginMode;
     }
 
-    public void setLoginType(String loginType) {
-        this.loginType = loginType;
+    public void setLoginMode(String loginMode) {
+        this.loginMode = loginMode;
     }
 
     public ApiModel getApiModel() {
