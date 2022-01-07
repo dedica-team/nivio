@@ -10,16 +10,24 @@ import {
 import { LoginButtons } from './LoginButtons';
 import IconButton from "@material-ui/core/IconButton";
 import { Person } from "@material-ui/icons";
+import { useContext } from "react";
+import { OAuth2LinksContext } from "../../Context/OAuth2LinksContext";
 
 export default function LoginDialog() {
+  const [open, setOpen] = React.useState(false);
+  const oAuth2Links = useContext(OAuth2LinksContext);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
   };
+
+  if (Object.keys(oAuth2Links.oAuth2Link).length === 0) {
+    return null;
+  }
 
   return (
     <React.Fragment>
