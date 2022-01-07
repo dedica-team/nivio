@@ -32,6 +32,7 @@ import static de.bonndan.nivio.model.Link.LinkBuilder.linkTo;
 public class LinkFactory {
 
     public static final String REL_SELF = "self";
+    public static final String AUTH_LOGIN_GITHUB = "login_github";
 
     private final LocalServer localServer;
     private final NivioConfigProperties configProperties;
@@ -137,15 +138,26 @@ public class LinkFactory {
                     });
                 });
 
+        getAuthLinks().forEach((s, link) -> index.getOauth2Links().put(s, link));
+
+        return index;
+    }
+
+    /**
+     * Returns a list of links to auth start endpoints.
+     *
+     */
+    public Map<String, Link> getAuthLinks() {
+        Map<String, Link> map = new HashMap<>();
         Optional<URL> url = localServer.getUrl("/oauth2/authorization/github");
         url.ifPresent(url1 -> {
             Link oauth2 = linkTo(url1)
                     .withRel("github")
                     .build();
-            index.getOauth2Links().put("login_github", oauth2);
+            map.put(AUTH_LOGIN_GITHUB, oauth2);
         });
 
-        return index;
+        return map;
     }
 
     /**
