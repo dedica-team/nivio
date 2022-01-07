@@ -37,7 +37,6 @@ public class LoginController {
         if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_NONE)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         if (token != null) {
             CustomOAuth2User customOAuth2User = (CustomOAuth2User) token.getPrincipal();
             return ResponseEntity.of(Optional.ofNullable(customOAuth2User));
@@ -46,7 +45,6 @@ public class LoginController {
         }
 
     }
-
 
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/login")
