@@ -8,6 +8,8 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import { LoginButtons } from './LoginButtons';
+import IconButton from "@material-ui/core/IconButton";
+import { Person } from "@material-ui/icons";
 
 export default function LoginDialog() {
   const handleClickOpen = () => {
@@ -21,9 +23,9 @@ export default function LoginDialog() {
 
   return (
     <React.Fragment>
-      <Button variant='outlined' onClick={handleClickOpen}>
-        Login
-      </Button>
+      <IconButton onClick={handleClickOpen}>
+        <Person/>
+      </IconButton>
       <Dialog fullWidth={false} maxWidth={'xl'} open={open} onClose={handleClose}>
         <DialogTitle>Login options</DialogTitle>
         <DialogContent>
