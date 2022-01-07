@@ -66,6 +66,10 @@ Accent color used for active elements (hexadecimal only).
 
 A folder containing icons named similar to material design icons
 
+.. envvar:: NIVIO_LOGIN_MODE
+
+Authentication mode: none, optional, required
+
 .. envvar:: NIVIO_MAIL_HOST
 
 SMTP mail host.
