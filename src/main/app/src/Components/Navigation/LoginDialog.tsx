@@ -26,6 +26,7 @@ export default function LoginDialog() {
   };
 
   if (Object.keys(oAuth2Links.oAuth2Link).length === 0) {
+    console.debug(oAuth2Links);
     return null;
   }
 

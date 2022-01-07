@@ -1,5 +1,6 @@
 package de.bonndan.nivio.notification;
 
+import de.bonndan.nivio.security.SecurityConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -22,6 +23,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint(SUBSCRIBE).setAllowedOrigins("*");
+        registry.addEndpoint(SUBSCRIBE).setAllowedOriginPatterns(SecurityConfig.ALL_ORIGINS_HTTP, SecurityConfig.ALL_ORIGINS_HTTPS);
     }
 }

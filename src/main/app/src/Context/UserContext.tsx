@@ -23,10 +23,10 @@ const UserProvider: React.FC = ({ children }) => {
       (errorData) => {
         if (new Error(errorData).message.includes('401')) {
           setError(401);
+          console.debug("Not authenticated yet.")
         } else {
           setError(404);
         }
-        console.log(new Error(errorData).message);
       }
     );
   }, []);

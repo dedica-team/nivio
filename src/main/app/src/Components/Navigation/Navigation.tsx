@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import {
   Box,
-  Button,
   createStyles,
   Menu,
   MenuItem,
@@ -25,6 +24,7 @@ import { LandscapeContext } from '../../Context/LandscapeContext';
 import SearchField from '../Landscape/Search/SearchField';
 import LoginDialog from './LoginDialog';
 import { UserContext } from '../../Context/UserContext';
+import { ExitToApp, Person } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,12 +90,17 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
 
   if (userContext.error === 401 || !userContext.error) {
     if (!userContext.user) {
-      loginButton.push(<LoginDialog />);
+      loginButton.push(<LoginDialog key='login' />);
     } else {
       loginButton.push(
-        <a href={`/logout`}>
-          <Button>Logout, {userContext.user.name}</Button>
-        </a>
+        <IconButton
+          key='logout'
+          component={Link}
+          to='/logout'
+          title={`Logout, ${userContext.user.name}`}
+        >
+          <ExitToApp />
+        </IconButton>
       );
     }
   }

@@ -63,6 +63,7 @@ nivio:
   seed: ${SEED:}
   demo: ${DEMO:}
   loginMode: ${NIVIO_LOGIN_MODE:none}
+  allowedOriginPatterns: ${NIVIO_ALLOWED_ORIGINS:}
 
 
 observerconfig:

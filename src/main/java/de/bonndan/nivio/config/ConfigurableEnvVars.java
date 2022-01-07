@@ -11,6 +11,7 @@ public enum ConfigurableEnvVars {
     NIVIO_BASE_URL("The base URL of Nivio to be used for frontends if running behind a proxy."),
     NIVIO_ICON_FOLDER("A folder containing icons named similar to material design icons"),
     NIVIO_LOGIN_MODE("Authentication mode: none, optional, required"),
+    NIVIO_ALLOWED_ORIGINS("Patterns for allowed origins when the app requires authentication"),
     NIVIO_MAIL_HOST("SMTP mail host."),
     NIVIO_MAIL_PORT("SMTP mail port."),
     NIVIO_MAIL_USERNAME("SMTP mail username."),
