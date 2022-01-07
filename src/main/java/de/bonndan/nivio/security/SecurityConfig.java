@@ -14,7 +14,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String LOGIN_MODE_REQUIRED = "required";
     public static final String LOGIN_MODE_OPTIONAL = "optional";
     public static final String LOGIN_MODE_NONE = "none";
-
+    public static final String LOGIN_PATH = "/login";
+    public static final String LOGOUT_PATH = "/logout";
     private final String loginMode;
 
     public SecurityConfig(NivioConfigProperties properties) {
@@ -39,8 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
-                .and().oauth2Login().defaultSuccessUrl("/")
-                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .and().oauth2Login().defaultSuccessUrl("/").loginPage(LOGIN_PATH)
+                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_PATH))
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
@@ -53,14 +54,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login/**", "/icons/svg/nivio.svg", "/icons/svg/github.svg").permitAll()
+                .antMatchers(LOGIN_PATH + "/**", "/icons/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login().defaultSuccessUrl("/")
-                .loginPage("/login")
+                .loginPage(LOGIN_PATH)
                 .and()
-                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login").permitAll();
+                .logout().logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_PATH))
+                .logoutSuccessUrl(LOGIN_PATH).permitAll();
 
     }
 

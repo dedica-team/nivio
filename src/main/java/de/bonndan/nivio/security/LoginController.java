@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,6 +47,7 @@ public class LoginController {
 
     }
 
+
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/login")
     public String showLoginPage(Model model) {
@@ -62,8 +62,7 @@ public class LoginController {
             }
             return "login";
         }
-
-        return "";
+        return "redirect:/";
     }
 
 }
