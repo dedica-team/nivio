@@ -9,9 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +29,6 @@ public class LoginController {
         this.loginMode = properties.getLoginMode();
     }
 
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CustomOAuth2User> user(OAuth2AuthenticationToken token) {
         if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_NONE)) {
@@ -46,7 +43,6 @@ public class LoginController {
 
     }
 
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/login")
     public String showLoginPage(Model model) {
         if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {

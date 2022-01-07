@@ -21,6 +21,7 @@ class LoginControllerUnitTest {
 
     @BeforeEach
     void setup() {
+
         linkFactory = mock(LinkFactory.class);
         properties = mock(NivioConfigProperties.class);
         model = mock(Model.class);
@@ -48,6 +49,7 @@ class LoginControllerUnitTest {
         assertThat(Objects.requireNonNull(model.getAttribute("brandingForeground"))).isEqualTo("#FFFFFF");
         assertThat(Objects.requireNonNull(model.getAttribute("brandingBackground"))).isEqualTo("#FFFFFF");
         assertThat(Objects.requireNonNull(model.getAttribute("brandingMessage"))).isEqualTo("foo");
+
     }
 
 }

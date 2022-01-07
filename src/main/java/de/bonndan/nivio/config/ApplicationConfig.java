@@ -30,16 +30,6 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public WebMvcConfigurer configurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
-            }
-        };
-    }
-
-    @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }

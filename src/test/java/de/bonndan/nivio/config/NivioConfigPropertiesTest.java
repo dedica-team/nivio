@@ -117,5 +117,16 @@ class NivioConfigPropertiesTest {
         assertThat(constraintViolations[0].getMessage()).isEqualTo("Login mode must be one of none|optional|required");
     }
 
+    @Test
+    void allowedOrigins() {
+        NivioConfigProperties props = new NivioConfigProperties();
+        props.setLoginMode("required");
+        props.setAllowedOriginPatterns("http://*.foo.com;https://*.domain1.com:[8080,8081]");
 
+        Set<ConstraintViolation<NivioConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+        assertThat(validate).isEmpty();
+        assertThat(props.getAllowedOriginPatterns()).hasSize(2)
+                .contains("http://*.foo.com")
+                .contains("https://*.domain1.com:[8080,8081]");
+    }
 }

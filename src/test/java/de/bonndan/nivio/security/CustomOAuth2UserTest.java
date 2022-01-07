@@ -2,8 +2,11 @@ package de.bonndan.nivio.security;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,10 +18,14 @@ import static org.mockito.Mockito.when;
 class CustomOAuth2UserTest {
 
     OAuth2User oAuth2User;
+    GrantedAuthority grantedAuthority;
 
     @BeforeEach
     public void setup() {
+
         oAuth2User = mock(OAuth2User.class);
+        grantedAuthority = mock(GrantedAuthority.class);
+
     }
 
 
@@ -62,5 +69,21 @@ class CustomOAuth2UserTest {
         // then
         assertThat(customOAuth2User.getAttributes()).isEqualTo(attributes);
     }
+
+//    @Test
+//    void getAuthorities() {
+//        // given
+//        Collection<GrantedAuthority> authorities = new ArrayList<>();
+//
+//        authorities.add(grantedAuthority);
+//
+//        CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2User);
+//
+//        // when
+//        when(customOAuth2User.getAuthorities()).thenReturn(authorities);
+//
+//        // then
+//        assertThat(customOAuth2User.getAuthorities()).isEqualTo(authorities);
+//    }
 
 }

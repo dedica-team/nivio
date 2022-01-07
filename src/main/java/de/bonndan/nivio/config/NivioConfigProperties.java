@@ -1,14 +1,18 @@
 package de.bonndan.nivio.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.security.SecurityConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
 @Configuration
 @ConfigurationProperties("nivio")
@@ -44,7 +48,9 @@ public class NivioConfigProperties {
 
     @NotEmpty
     @Pattern(regexp = "none|optional|required", message = "Login mode must be one of none|optional|required")
-    private String loginMode;
+    private String loginMode = SecurityConfig.LOGIN_MODE_NONE;
+
+    private List<String> allowedOriginPatterns;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -127,14 +133,21 @@ public class NivioConfigProperties {
     }
 
     public ApiModel getApiModel() {
-        java.net.URL brandingLogoUrl = null;
+        java.net.URL url = null;
         try {
-            brandingLogoUrl = this.brandingLogoUrl != null ? new java.net.URL(getBrandingLogoUrl()) : null;
+            url = this.brandingLogoUrl != null ? new java.net.URL(getBrandingLogoUrl()) : null;
         } catch (MalformedURLException ignored) {
         }
-        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl, brandingMessage);
+        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, url, brandingMessage, loginMode);
     }
 
+    public List<String> getAllowedOriginPatterns() {
+        return allowedOriginPatterns.stream().filter(StringUtils::hasLength).toList();
+    }
+
+    public void setAllowedOriginPatterns(String allowedOriginPatterns) {
+        this.allowedOriginPatterns = List.of(allowedOriginPatterns.split(";"));
+    }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ApiModel {
@@ -143,18 +156,18 @@ public class NivioConfigProperties {
         public final String brandingForeground;
         public final String brandingBackground;
         public final String brandingSecondary;
-        public final java.net.URL brandingLogoUrl;
+        public final URL brandingLogoUrl;
         public final String brandingMessage;
-
+        public final String loginMode;
 
         public ApiModel(String baseUrl,
                         String version,
                         String brandingForeground,
                         String brandingBackground,
                         String brandingSecondary,
-                        java.net.URL brandingLogoUrl,
-                        String brandingMessage
-
+                        URL brandingLogoUrl,
+                        String brandingMessage,
+                        String loginMode
         ) {
             this.baseUrl = baseUrl;
             this.version = version;
@@ -163,7 +176,7 @@ public class NivioConfigProperties {
             this.brandingSecondary = brandingSecondary;
             this.brandingLogoUrl = brandingLogoUrl;
             this.brandingMessage = brandingMessage;
-
+            this.loginMode = loginMode;
         }
     }
 }
