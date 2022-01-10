@@ -25,13 +25,10 @@ class LoginControllerTestForOptional {
     @Test
     void testShowLoginPageForOptional() throws Exception {
 
-        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
-
             mvc.perform(get("/login"))
                     .andExpect(status().is3xxRedirection())
                     .andExpect(header().exists("Content-Type"));
 
-        }
     }
 
 }

@@ -24,13 +24,9 @@ class LoginControllerCaseNoneTest {
     @Test
     void testShowLoginPageForNone() throws Exception {
 
-        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
-
-            mvc.perform(get("/login"))
-                    .andExpect(status().is3xxRedirection())
-                    .andExpect(header().exists("Content-Type"));
-
-        }
+        mvc.perform(get("/login"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().exists("Content-Type"));
 
     }
 
