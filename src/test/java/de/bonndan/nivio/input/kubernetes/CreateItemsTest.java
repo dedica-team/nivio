@@ -11,6 +11,7 @@ import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,7 @@ class CreateItemsTest {
     @Test
     void getDeploymentItems() {
         var deployment = new DeploymentBuilder()
-                .withNewMetadata().withName("deployment").withCreationTimestamp("testCreation").withUid("testUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
+                .withNewMetadata().withName("deployment").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
                 .withNewSpec().withNewStrategy().withNewType("strategyType").endStrategy().endSpec()
                 .withNewStatus().addNewCondition().withType("testType").withStatus("testStatus").endCondition().endStatus()
                 .build();
@@ -34,10 +35,11 @@ class CreateItemsTest {
         assertThat(deploymentList.get(0).getItemAdapter().getLabels()).containsExactly(entry("testLabelKey", "testLabelValue"));
         assertThat(deploymentList.get(0).getItemAdapter().getOwnerReferences().size()).isOne();
         assertThat(deploymentList.get(0).getItemAdapter().getOwnerReferences().get(0).getUid()).isEqualTo("testOwnerUid");
-        assertThat(deploymentList.get(0).getUid()).isEqualTo("testUid");
+        assertThat(deploymentList.get(0).getUid()).isNotEmpty();
         assertThat(deploymentList.get(0).getClass()).isEqualTo(K8sItem.class);
-        assertThat(deploymentList.get(0).getDetails()).isEqualTo(Map.of("creation", "testCreation", InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition.testtype", "teststatus", "name", "deployment", "namespace", "test", "strategy", "strategyType"));
-        assertThat(deploymentList.get(0).getItemAdapter()).isEqualToComparingFieldByField(new DeploymentItemAdapter(deployment));
+        assertThat(deploymentList.get(0).getDetails().get("creation")).isNotEmpty();
+        assertThat(deploymentList.get(0).getDetails()).containsEntry(InputFormatHandlerKubernetes.LABEL_PREFIX + ".boolcondition.testtype", "teststatus");
+        assertThat(deploymentList.get(0).getItemAdapter().getName()).isEqualTo(new DeploymentItemAdapter(deployment).getName());
         assertThat(deploymentList.get(0).getType()).isEqualTo(ItemType.DEPLOYMENT);
     }
 
