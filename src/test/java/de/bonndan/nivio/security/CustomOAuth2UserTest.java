@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -19,7 +21,7 @@ class CustomOAuth2UserTest {
     private String userName;
     private String avatarUrl;
 
-    Map<String, Object> attributes;
+    private Map<String, Object> attributes;
 
     private Collection<OAuth2UserAuthority> authorities;
 

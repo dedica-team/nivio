@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = {"nivio.loginMode=none"})
 @AutoConfigureMockMvc
-class LoginControllerTestForNone {
+class LoginControllerCaseNoneTest {
 
     @Autowired
     private MockMvc mvc;
@@ -31,6 +31,7 @@ class LoginControllerTestForNone {
                     .andExpect(header().exists("Content-Type"));
 
         }
+
     }
 
 }

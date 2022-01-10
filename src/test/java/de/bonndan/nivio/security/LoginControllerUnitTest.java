@@ -16,7 +16,6 @@ class LoginControllerUnitTest {
 
     private LinkFactory linkFactory;
     private NivioConfigProperties properties;
-    private String loginMode;
     private Model model;
 
     @BeforeEach
@@ -26,8 +25,6 @@ class LoginControllerUnitTest {
         properties = mock(NivioConfigProperties.class);
         model = mock(Model.class);
         when(properties.getLoginMode()).thenReturn("required");
-        loginMode = properties.getLoginMode();
-
 
     }
 
