@@ -140,11 +140,6 @@ public class Group implements Component, Labeled, Linked {
     }
 
     @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
-    }
-
-    @Override
     public String getIcon() {
         return getLabel(Label._icondata);
     }
