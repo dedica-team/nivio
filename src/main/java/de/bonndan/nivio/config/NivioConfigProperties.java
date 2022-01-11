@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @ConfigurationProperties("nivio")
@@ -142,7 +143,7 @@ public class NivioConfigProperties {
     }
 
     public List<String> getAllowedOriginPatterns() {
-        return allowedOriginPatterns.stream().filter(StringUtils::hasLength).toList();
+        return allowedOriginPatterns.stream().filter(StringUtils::hasLength).collect(Collectors.toList());
     }
 
     public void setAllowedOriginPatterns(String allowedOriginPatterns) {
