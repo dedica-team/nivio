@@ -20,6 +20,7 @@ class LoginControllerUnitTest {
     void setup() {
 
         LinkFactory linkFactory = mock(LinkFactory.class);
+
         properties = mock(NivioConfigProperties.class);
         when(properties.getLoginMode()).thenReturn("required");
         when(properties.getBrandingLogoUrl()).thenReturn("nivio.icons.example.svg");

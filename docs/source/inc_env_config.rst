@@ -38,6 +38,10 @@ GitLab OAuth login username (optional). If used, :envvar:`GITLAB_PASSWORD` is al
 
 K8s master URL (optional). All variables from https://github.com/fabric8io/kubernetes-client#configuring-the-client can be used.
 
+.. envvar:: NIVIO_ALLOWED_ORIGINS
+
+Patterns for allowed origins when the app requires authentication
+
 .. envvar:: NIVIO_BASE_URL
 
 The base URL of Nivio to be used for frontends if running behind a proxy.

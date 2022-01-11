@@ -2,7 +2,6 @@ package de.bonndan.nivio.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
@@ -13,21 +12,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = {"nivio.loginMode=optional"})
 @AutoConfigureMockMvc
-class LoginControllerTestForOptional {
+class LoginControllerCaseOptionalTest {
 
     @Autowired
     private MockMvc mvc;
-
-    @Value("${nivio.loginMode}")
-    private String loginMode;
-
 
     @Test
     void testShowLoginPageForOptional() throws Exception {
 
             mvc.perform(get("/login"))
                     .andExpect(status().is3xxRedirection())
-                    .andExpect(header().exists("Content-Type"));
+                    .andExpect(header().doesNotExist("Content-Type"));
 
     }
 

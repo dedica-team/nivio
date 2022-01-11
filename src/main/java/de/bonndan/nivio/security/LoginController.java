@@ -43,7 +43,7 @@ public class LoginController {
 
     }
 
-    @GetMapping(path = "/login")
+    @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
     public String showLoginPage(Model model) {
         if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
             model.addAttribute("brandingLogoUrl", properties.getBrandingLogoUrl());

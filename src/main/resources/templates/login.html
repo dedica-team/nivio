@@ -30,11 +30,11 @@
             background: #[[@{(${brandingForeground})}]];
         }
 
-        .welcome {
+        .container #welcome {
             color: #22F2C2;
         }
 
-        .brand-logo {
+        .container #brand-logo {
             height: 65px;
             width: 65px;
             background: #A0A0A7;
@@ -43,28 +43,20 @@
             box-sizing: border-box;
         }
 
-        .brand-title {
-            margin-top: 10px;
-            font-weight: 900;
-            font-size: 1.8rem;
-            color: #A0A0A7;
-            letter-spacing: 1px;
-        }
-
     </style>
 </head>
 
 <body>
 
 <div class="container">
-    <div class="nivio-logo"><img src="/icons/svg/nivio.svg" alt="nivio logo" width="80" height="80"></div>
-    <div class="welcome"><h2 th:text="${brandingMessage}"></h2><h3>please login</h3><br></div>
-    <div class="brand-logo">
+    <div id="nivio-logo"><img src="/icons/svg/nivio.svg" alt="nivio logo" width="80" height="80"></div>
+    <div id="welcome"><h2 th:text="${brandingMessage}"></h2><h3>please login</h3><br></div>
+    <div id="brand-logo">
         <a th:if="${auth_github} != null" th:href="@{(${auth_github.href})}">
             <img src="/icons/svg/github.svg" alt="github logo" width="65" height="65">
         </a>
     </div>
-    <div class="brand-title">GITHUB</div>
+
 </div>
 
 </body>
