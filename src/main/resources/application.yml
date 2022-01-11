@@ -96,3 +96,13 @@ spring:
 
 server:
   port: 8080
+
+---
+spring:
+  datasource:
+    url: jdbc:h2:mem:jpadb
+    driver-class-name: org.h2.Driver
+    username: user
+    password: pwd
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
