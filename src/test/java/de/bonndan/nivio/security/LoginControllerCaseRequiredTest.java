@@ -24,14 +24,10 @@ class LoginControllerTestForRequired {
     @Test
     void testShowLoginPageForRequired() throws Exception {
 
+        mvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Content-Type"));
 
-        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
-
-            mvc.perform(get("/login"))
-                    .andExpect(status().isOk())
-                    .andExpect(header().exists("Content-Type"));
-
-        }
     }
 
 }

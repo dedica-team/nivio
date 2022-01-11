@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = {"nivio.loginMode=optional"})
+@SpringBootTest(properties = {"nivio.loginMode=none"})
 @AutoConfigureMockMvc
-class LoginControllerTestForOptional {
+class LoginControllerCaseNoneTest {
 
     @Autowired
     private MockMvc mvc;
@@ -21,17 +21,13 @@ class LoginControllerTestForOptional {
     @Value("${nivio.loginMode}")
     private String loginMode;
 
-
     @Test
-    void testShowLoginPageForOptional() throws Exception {
+    void testShowLoginPageForNone() throws Exception {
 
-        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
+        mvc.perform(get("/login"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().exists("Content-Type"));
 
-            mvc.perform(get("/login"))
-                    .andExpect(status().is3xxRedirection())
-                    .andExpect(header().exists("Content-Type"));
-
-        }
     }
 
 }

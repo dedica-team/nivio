@@ -24,7 +24,7 @@ import { LandscapeContext } from '../../Context/LandscapeContext';
 import SearchField from '../Landscape/Search/SearchField';
 import LoginDialog from './LoginDialog';
 import { UserContext } from '../../Context/UserContext';
-import { ExitToApp, Person } from '@material-ui/icons';
+import { ExitToApp} from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
