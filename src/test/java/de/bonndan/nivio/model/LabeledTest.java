@@ -166,4 +166,34 @@ class LabeledTest {
         assertThat(target.getLabel("foo2")).isEqualTo("1");
         assertThat(target.getLabel("bar")).isEqualTo("2");
     }
+
+    @Test
+    void setLabelWithNull() {
+        Item testItem = ItemFactory.getTestItem("foo", "bar");
+        testItem.getLabels().put("foo1", "1");
+
+        //when
+        testItem.setLabel("foo1", null);
+        testItem.setLabel("foox", null);
+
+        assertThat(testItem.getLabels()).doesNotContainKey("foo1");
+        assertThat(testItem.getLabels()).doesNotContainKey("foox");
+    }
+
+    @Test
+    void isConcurrent() {
+        Item testItem = ItemFactory.getTestItem("foo", "bar");
+        testItem.getLabels().put("foo1", "1");
+        testItem.getLabels().put("foo2", "2");
+        testItem.getLabels().put("foo3", "3");
+
+        assertDoesNotThrow(() -> {
+            testItem.getLabels().forEach((s, s2) -> {
+                testItem.indexedByPrefix("foo");
+                testItem.getLabels().put("foo4", "4");
+            });
+        });
+    }
+
+
 }

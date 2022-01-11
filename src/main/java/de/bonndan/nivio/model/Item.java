@@ -53,7 +53,8 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     private final URI address;
 
     private final Map<String, Link> links = new HashMap<>();
-    private final Map<String, String> labels = new HashMap<>();
+
+    private final Map<String, String> labels = new ConcurrentHashMap<>();
 
     /**
      * Can be both read and modified by {@link ItemRelationProcessor}
@@ -233,11 +234,6 @@ public class Item implements Linked, Tagged, Labeled, Assessable, ItemComponent 
     @Override
     public Map<String, String> getLabels(String prefix) {
         return Labeled.withPrefix(prefix, labels);
-    }
-
-    @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
     }
 
     @Override

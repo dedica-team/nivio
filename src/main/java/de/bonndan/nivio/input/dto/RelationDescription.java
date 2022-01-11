@@ -117,8 +117,8 @@ public class RelationDescription implements Labeled {
 
     @Override
     @JsonAnySetter
-    public void setLabel(String key, String value) {
-        getLabels().put(key, value);
+    public void setLabel(@NonNull final String key, @Nullable final String value) {
+        Labeled.super.setLabel(key, value);
     }
 
     /**
