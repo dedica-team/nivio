@@ -26,4 +26,15 @@ class LoginControllerCaseRequiredTest {
 
     }
 
+    @Test
+    void user() throws Exception {
+        mvc.perform(get("/user"))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    void api() throws Exception {
+        mvc.perform(get("/api/"))
+                .andExpect(status().is3xxRedirection());
+    }
 }
