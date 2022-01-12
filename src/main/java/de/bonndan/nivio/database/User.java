@@ -1,46 +1,70 @@
 package de.bonndan.nivio.database;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-@Entity
+@Entity(name = "User")
+@Table(
+        name = "user",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "user_email_unique",
+                        columnNames = "email")
+        }
+)
 public class User {
 
+    @Id
+    @SequenceGenerator(
+            name = "user_sequence",
+            sequenceName = "user_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "user_sequence"
+    )
+    @Column(
+            name = "id",
+            updatable = false
+    )
     private Long id;
-    private String firstName;
-    private String lastName;
+
+    @Column(
+            name = "user_name",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String userName;
+
+    @Column(
+            name = "email",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String email;
 
-    public User(Long id, String firstName, String lastName, String email) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String userName, String email) {
+        this.userName = userName;
         this.email = email;
+    }
+
+    public User() {
+
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    @Id
     public Long getId() {
         return id;
     }
 
     public String getFirstName() {
-        return firstName;
+        return userName;
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.userName = firstName;
     }
 
     public String getEmail() {
@@ -55,8 +79,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                ", user name='" + userName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }

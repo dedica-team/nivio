@@ -100,9 +100,15 @@ server:
 ---
 spring:
   datasource:
-    url: jdbc:h2:mem:jpadb
     driver-class-name: org.h2.Driver
-    username: user
-    password: pwd
+    username:
+    password:
+    url: jdbc:h2:./src/main/resources/data/user;AUTO_SERVER=TRUE
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
