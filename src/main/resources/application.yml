@@ -8,8 +8,8 @@ spring:
       client:
         registration:
           github:
-            clientId: cf182a21bb236a6e532a
-            clientSecret: bae9691c21929c14ad09efe4be633bd351bf65e2
+            clientId: ${NIVIO_AUTH_GITHUB_CLIENT_ID:}
+            clientSecret: ${NIVIO_AUTH_GITHUB_CLIENT_SECRET:}
 
   mail:
     host: ${NIVIO_MAIL_HOST:}
@@ -27,9 +27,6 @@ spring:
 
 logging:
   level:
-    org:
-      springframework:
-        security: DEBUG
     de:
       bonndan:
         nivio:

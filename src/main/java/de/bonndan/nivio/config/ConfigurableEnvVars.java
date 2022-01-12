@@ -8,6 +8,9 @@ public enum ConfigurableEnvVars {
     PORT("The port Nivio runs on."),
     SEED("A semicolon-separated list of file paths containing landscape configurations."),
 
+    NIVIO_AUTH_GITHUB_CLIENT_ID("GitHub app OAuth2 client id"),
+    NIVIO_AUTH_GITHUB_CLIENT_SECRET("GitHub app OAuth2 client secret"),
+
     NIVIO_BASE_URL("The base URL of Nivio to be used for frontends if running behind a proxy."),
     NIVIO_ICON_FOLDER("A folder containing icons named similar to material design icons"),
     NIVIO_LOGIN_MODE("Authentication mode: none, optional, required"),
