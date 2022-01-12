@@ -4,6 +4,7 @@ import de.bonndan.nivio.config.NivioConfigProperties;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.output.LocalServer;
+import de.bonndan.nivio.security.AuthConfigProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +27,10 @@ class LinkFactoryTest {
     @BeforeEach
     void setup() {
         NivioConfigProperties configProperties = mock(NivioConfigProperties.class);
+        AuthConfigProperties authConfigProperties = mock(AuthConfigProperties.class);
         localServer = mock(LocalServer.class);
         landscapes = List.of(mock(Landscape.class));
-        linkFactory = new LinkFactory(localServer, configProperties);
+        linkFactory = new LinkFactory(localServer, configProperties, authConfigProperties);
     }
 
     @Test

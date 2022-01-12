@@ -21,7 +21,7 @@ import static de.bonndan.nivio.notification.WebSocketConfig.SUBSCRIBE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(properties = {"nivio.loginMode=required"}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = {"auth.loginMode=required"}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketsSecuredTest {
 
     Integer port = 0;

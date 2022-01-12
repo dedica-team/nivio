@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = {"nivio.loginMode=optional"})
+@SpringBootTest(properties = {"auth.loginMode=optional"})
 @AutoConfigureMockMvc
 class LoginControllerCaseOptionalTest {
 

@@ -1,6 +1,5 @@
 package de.bonndan.nivio.api;
 
-import de.bonndan.nivio.config.NivioConfigProperties;
 import de.bonndan.nivio.model.Link;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,13 +11,13 @@ import static org.mockito.Mockito.mock;
 
 class IndexTest {
 
-    private NivioConfigProperties.ApiModel config;
+    private ConfigApiModel config;
     private final Index index = new Index(config);
 
 
     @BeforeEach
     public void setup() {
-        config = mock(NivioConfigProperties.ApiModel.class);
+        config = mock(ConfigApiModel.class);
     }
 
 

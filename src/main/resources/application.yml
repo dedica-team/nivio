@@ -8,8 +8,8 @@ spring:
       client:
         registration:
           github:
-            clientId: ${NIVIO_AUTH_GITHUB_CLIENT_ID:}
-            clientSecret: ${NIVIO_AUTH_GITHUB_CLIENT_SECRET:}
+            clientId: ${NIVIO_AUTH_GITHUB_CLIENT_ID:_}
+            clientSecret: ${NIVIO_AUTH_GITHUB_CLIENT_SECRET:_}
 
   mail:
     host: ${NIVIO_MAIL_HOST:}
@@ -59,9 +59,12 @@ nivio:
   brandingMessage: ${NIVIO_BRANDING_MESSAGE:All Landscapes}
   seed: ${SEED:}
   demo: ${DEMO:}
-  loginMode: ${NIVIO_LOGIN_MODE:none}
-  allowedOriginPatterns: ${NIVIO_ALLOWED_ORIGINS:}
 
+auth:
+  loginMode: ${NIVIO_AUTH_LOGIN_MODE:none}
+  allowedOriginPatterns: ${NIVIO_AUTH_ALLOWED_ORIGINS:}
+  githubNameAttribute: ${NIVIO_AUTH_GITHUB_NAME_ATTRIBUTE:name}
+  githubAliasAttribute: ${NIVIO_AUTH_GITHUB_ALIAS_ATTRIBUTE:login}
 
 observerconfig:
   scanDelay:

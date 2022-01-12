@@ -10,11 +10,13 @@ public enum ConfigurableEnvVars {
 
     NIVIO_AUTH_GITHUB_CLIENT_ID("GitHub app OAuth2 client id"),
     NIVIO_AUTH_GITHUB_CLIENT_SECRET("GitHub app OAuth2 client secret"),
+    NIVIO_AUTH_GITHUB_NAME_ATTRIBUTE("GitHub user attribute to use as name"),
+    NIVIO_AUTH_GITHUB_ALIAS_ATTRIBUTE("GitHub user attribute to use as alias"),
+    NIVIO_AUTH_LOGIN_MODE("Authentication mode: none, optional, required"),
+    NIVIO_AUTH_ALLOWED_ORIGINS("Patterns for allowed origins when the app requires authentication"),
 
     NIVIO_BASE_URL("The base URL of Nivio to be used for frontends if running behind a proxy."),
     NIVIO_ICON_FOLDER("A folder containing icons named similar to material design icons"),
-    NIVIO_LOGIN_MODE("Authentication mode: none, optional, required"),
-    NIVIO_ALLOWED_ORIGINS("Patterns for allowed origins when the app requires authentication"),
     NIVIO_MAIL_HOST("SMTP mail host."),
     NIVIO_MAIL_PORT("SMTP mail port."),
     NIVIO_MAIL_USERNAME("SMTP mail username."),

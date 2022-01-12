@@ -1,6 +1,5 @@
 package de.bonndan.nivio.security;
 
-import de.bonndan.nivio.config.NivioConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +33,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
-    private final NivioConfigProperties properties;
+    private final AuthConfigProperties properties;
 
-    public SecurityConfig(NivioConfigProperties properties) {
+    public SecurityConfig(AuthConfigProperties properties) {
         this.properties = properties;
     }
 
@@ -65,7 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
-                .and().oauth2Login().defaultSuccessUrl("/").loginPage(LOGIN_PATH)
+                .and().oauth2Login()
+                .defaultSuccessUrl("/")
+                .loginPage(LOGIN_PATH)
                 .and().logout().logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_PATH))
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
@@ -86,7 +87,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(LOGIN_PATH + "/**", "/icons/**", "/css/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .oauth2Login().defaultSuccessUrl("/")
+                .oauth2Login()
+                //.clientRegistrationRepository(clientRegistrationRepository())
+                .defaultSuccessUrl("/")
                 .loginPage(LOGIN_PATH)
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_PATH))

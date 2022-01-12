@@ -23,10 +23,10 @@ public class LoginController {
     private final NivioConfigProperties properties;
     private final String loginMode;
 
-    public LoginController(LinkFactory linkFactory, NivioConfigProperties properties) {
+    public LoginController(LinkFactory linkFactory, NivioConfigProperties properties, AuthConfigProperties authConfigProperties) {
         this.linkFactory = linkFactory;
         this.properties = properties;
-        this.loginMode = properties.getLoginMode();
+        this.loginMode = authConfigProperties.getLoginMode();
     }
 
     @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)

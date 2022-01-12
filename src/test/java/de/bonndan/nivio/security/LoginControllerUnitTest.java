@@ -15,6 +15,7 @@ class LoginControllerUnitTest {
     private NivioConfigProperties properties;
     private BindingAwareConcurrentModel model;
     private LoginController loginController;
+    private AuthConfigProperties authConfigProperties;
 
     @BeforeEach
     void setup() {
@@ -22,13 +23,14 @@ class LoginControllerUnitTest {
         LinkFactory linkFactory = mock(LinkFactory.class);
 
         properties = mock(NivioConfigProperties.class);
-        when(properties.getLoginMode()).thenReturn("required");
+        authConfigProperties = mock(AuthConfigProperties.class);
+        when(authConfigProperties.getLoginMode()).thenReturn(SecurityConfig.LOGIN_MODE_REQUIRED);
         when(properties.getBrandingLogoUrl()).thenReturn("nivio.icons.example.svg");
         when(properties.getBrandingForeground()).thenReturn("#FFFFFF");
         when(properties.getBrandingBackground()).thenReturn("#FFFFFF");
         when(properties.getBrandingMessage()).thenReturn("foo");
 
-        loginController = new LoginController(linkFactory, properties);
+        loginController = new LoginController(linkFactory, properties, authConfigProperties);
         model = new BindingAwareConcurrentModel();
 
     }

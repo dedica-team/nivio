@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = {"nivio.loginMode=required"})
+@SpringBootTest(properties = {"auth.loginMode=required"})
 @AutoConfigureMockMvc
 class LoginControllerCaseRequiredTest {
 

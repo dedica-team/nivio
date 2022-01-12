@@ -11,10 +11,12 @@ import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
 import de.bonndan.nivio.output.map.MapController;
+import de.bonndan.nivio.security.AuthConfigProperties;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,13 +35,19 @@ public class LinkFactory {
 
     public static final String REL_SELF = "self";
     public static final String AUTH_LOGIN_GITHUB = "login_github";
+    public static final String LANDSCAPE = "landscape";
 
     private final LocalServer localServer;
     private final NivioConfigProperties configProperties;
+    private final AuthConfigProperties authConfigProperties;
 
-    public LinkFactory(LocalServer localServer, NivioConfigProperties configProperties) {
+    public LinkFactory(LocalServer localServer,
+                       NivioConfigProperties configProperties,
+                       AuthConfigProperties authConfigProperties
+    ) {
         this.localServer = localServer;
         this.configProperties = configProperties;
+        this.authConfigProperties = authConfigProperties;
     }
 
     public Map<String, Link> getLandscapeLinks(LandscapeApiModel landscape) {
@@ -73,7 +81,7 @@ public class LinkFactory {
             );
         });
 
-        localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "log").ifPresent(url -> {
+        localServer.getUrl(ApiController.PATH, LANDSCAPE, landscape.getIdentifier(), "log").ifPresent(url -> {
             links.put("log", linkTo(url)
                     .withMedia(MediaType.APPLICATION_JSON_VALUE)
                     .withTitle("Processing log")
@@ -81,7 +89,7 @@ public class LinkFactory {
             );
         });
 
-        localServer.getUrl(ApiController.PATH, "landscape", landscape.getIdentifier(), "search/{lucene:query}").ifPresent(url -> {
+        localServer.getUrl(ApiController.PATH, LANDSCAPE, landscape.getIdentifier(), "search/{lucene:query}").ifPresent(url -> {
             links.put("search", linkTo(url)
                     .withMedia(MediaType.APPLICATION_JSON_VALUE)
                     .withTitle("Search for items")
@@ -124,14 +132,14 @@ public class LinkFactory {
      */
     Index getIndex(Iterable<Landscape> landscapes) {
 
-        Index index = new Index(configProperties.getApiModel());
+        Index index = new Index(getApiModel());
 
         StreamSupport.stream(landscapes.spliterator(), false)
                 .forEach((Landscape landscape) -> {
                     localServer.getUrl(ApiController.PATH, landscape.getIdentifier()).ifPresent(url -> {
                         Link link = linkTo(url)
                                 .withName(landscape.getName())
-                                .withRel("landscape")
+                                .withRel(LANDSCAPE)
                                 .withMedia("application/json")
                                 .build();
                         index.getLinks().put(landscape.getIdentifier(), link);
@@ -143,9 +151,25 @@ public class LinkFactory {
         return index;
     }
 
+    private ConfigApiModel getApiModel() {
+        java.net.URL url = null;
+        try {
+            url = configProperties.getBrandingLogoUrl() != null ? new java.net.URL(configProperties.getBrandingLogoUrl()) : null;
+        } catch (MalformedURLException ignored) {
+        }
+        return new ConfigApiModel(configProperties.getBaseUrl(),
+                configProperties.getVersion(),
+                configProperties.getBrandingForeground(),
+                configProperties.getBrandingBackground(),
+                configProperties.getBrandingSecondary(),
+                url,
+                configProperties.getBrandingMessage(),
+                authConfigProperties.getLoginMode()
+        );
+    }
+
     /**
      * Returns a list of links to auth start endpoints.
-     *
      */
     public Map<String, Link> getAuthLinks() {
         Map<String, Link> map = new HashMap<>();
