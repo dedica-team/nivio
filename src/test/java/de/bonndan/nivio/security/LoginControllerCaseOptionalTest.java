@@ -21,8 +21,8 @@ class LoginControllerCaseOptionalTest {
     @Test
     void testShowLoginPageForOptional() throws Exception {
         mvc.perform(get("/login"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(header().doesNotExist("Content-Type"));
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Content-Type"));
     }
 
     @Test

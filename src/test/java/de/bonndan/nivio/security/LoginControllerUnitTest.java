@@ -45,12 +45,11 @@ class LoginControllerUnitTest {
         model.addAttribute("brandingMessage", properties.getBrandingMessage());
 
         // then
-        assertThat(loginController.showLoginPage(model)).isEqualTo("login");
+        assertThat(loginController.showLoginPage(model, null)).isEqualTo("login");
         assertThat(model.getAttribute("brandingLogoUrl")).isEqualTo("nivio.icons.example.svg");
         assertThat(model.getAttribute("brandingForeground")).isEqualTo("#FFFFFF");
         assertThat(model.getAttribute("brandingBackground")).isEqualTo("#FFFFFF");
         assertThat(model.getAttribute("brandingMessage")).isEqualTo("foo");
-
     }
 
 }

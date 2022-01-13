@@ -43,20 +43,27 @@ public class LoginController {
 
     }
 
+    /**
+     * Login is shown for required and optional, although optional would usually be handled by the frontend.
+     */
     @GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
-    public String showLoginPage(Model model) {
-        if (loginMode.equalsIgnoreCase(SecurityConfig.LOGIN_MODE_REQUIRED)) {
-            model.addAttribute("brandingLogoUrl", properties.getBrandingLogoUrl());
-            model.addAttribute("brandingForeground", properties.getBrandingForeground());
-            model.addAttribute("brandingBackground", properties.getBrandingBackground());
-            model.addAttribute("brandingMessage", properties.getBrandingMessage());
-            Map<String, Link> authLinks = linkFactory.getAuthLinks();
-            if (authLinks.containsKey(AUTH_LOGIN_GITHUB)) {
-                model.addAttribute("auth_github", authLinks.get(AUTH_LOGIN_GITHUB));
-            }
-            return "login";
+    public String showLoginPage(Model model, OAuth2AuthenticationToken token) {
+
+        boolean modeMet = SecurityConfig.LOGIN_MODE_REQUIRED.equalsIgnoreCase(loginMode)
+                || SecurityConfig.LOGIN_MODE_OPTIONAL.equalsIgnoreCase(loginMode);
+        if (!modeMet || token != null) {
+            return "redirect:/";
         }
-        return "redirect:/";
+
+        model.addAttribute("brandingLogoUrl", properties.getBrandingLogoUrl());
+        model.addAttribute("brandingForeground", properties.getBrandingForeground());
+        model.addAttribute("brandingBackground", properties.getBrandingBackground());
+        model.addAttribute("brandingMessage", properties.getBrandingMessage());
+        Map<String, Link> authLinks = linkFactory.getAuthLinks();
+        if (authLinks.containsKey(AUTH_LOGIN_GITHUB)) {
+            model.addAttribute("auth_github", authLinks.get(AUTH_LOGIN_GITHUB));
+        }
+        return "login";
     }
 
 }

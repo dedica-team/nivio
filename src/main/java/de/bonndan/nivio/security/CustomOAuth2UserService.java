@@ -36,7 +36,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     /**
      * Factory method to create a custom user based on github oauth data.
      *
-     * @param user           retrived user
+     * @param user           retrieved user
      * @param aliasAttribute attribute for the alias (login)
      * @param nameAttribute  attribute for the name
      * @return custom user
@@ -45,10 +45,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                                   @Nullable final String aliasAttribute,
                                                   @Nullable final String nameAttribute
     ) {
+        var id = "";
+        if (StringUtils.hasLength(nameAttribute)) {
+            id = String.valueOf(user.getAttribute("id") == null ? "" : user.getAttribute("id"));
+        }
+
+        var name = "";
+        if (StringUtils.hasLength(nameAttribute)) {
+            name = String.valueOf(user.getAttribute(nameAttribute) == null ? "" : user.getAttribute(nameAttribute));
+        }
         return new CustomOAuth2User(
-                Optional.ofNullable((String) user.getAttribute("id")).orElse(""),
+                id,
                 StringUtils.hasLength(aliasAttribute) ? Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("") : "",
-                StringUtils.hasLength(nameAttribute) ? Optional.ofNullable((String) user.getAttribute(nameAttribute)).orElse("") : "",
+                name,
                 user.getAttributes(),
                 user.getAuthorities(),
                 user.getAttribute("avatar_url")
