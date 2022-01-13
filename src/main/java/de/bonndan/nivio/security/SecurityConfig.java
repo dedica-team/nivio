@@ -44,8 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         LOGGER.info("login mode: {}", properties.getLoginMode());
         if (LOGIN_MODE_NONE.equalsIgnoreCase(properties.getLoginMode())) {
-            configureForNone(http);
+            return;
         }
+
         if (LOGIN_MODE_REQUIRED.equalsIgnoreCase(properties.getLoginMode())) {
             configureForRequired(http);
         }
@@ -115,9 +116,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-    protected void configureForNone(HttpSecurity http) {
-    }
-
     /**
      * This header writer just adds "SameSite=Lax;" to the Set-Cookie response header
      * This is important for local development at least.
@@ -126,8 +124,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         private static final String SAME_SITE = "SameSite";
         private static final String SAME_SITE_LAX = "SameSite=Lax";
-
-        private static final String SECURE = "Secure";
 
         @Override
         public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {

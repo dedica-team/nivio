@@ -156,6 +156,7 @@ public class LinkFactory {
         try {
             url = configProperties.getBrandingLogoUrl() != null ? new java.net.URL(configProperties.getBrandingLogoUrl()) : null;
         } catch (MalformedURLException ignored) {
+            //ignored
         }
         return new ConfigApiModel(configProperties.getBaseUrl(),
                 configProperties.getVersion(),
