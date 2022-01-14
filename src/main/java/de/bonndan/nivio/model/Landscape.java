@@ -235,11 +235,6 @@ public class Landscape implements Linked, Component, Labeled, Assessable {
     }
 
     @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
-    }
-
-    @Override
     @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
         return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));

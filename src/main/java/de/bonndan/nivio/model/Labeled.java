@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import org.springframework.lang.NonNull;
@@ -56,7 +57,7 @@ public interface Labeled {
     /**
      * Returns all labels with the given prefix.
      */
-    default Map<String, String> getLabels(Label prefix) {
+    default Map<String, String> getLabels(@NonNull final Label prefix) {
         return getLabels(prefix.name().toLowerCase());
     }
 
@@ -66,7 +67,15 @@ public interface Labeled {
     @NonNull
     Map<String, String> getLabels();
 
-    void setLabel(String key, String value);
+    default void setLabel(@NonNull final String key, @Nullable final String value) {
+        Objects.requireNonNull(key, "Trying to set label with a null key.");
+        if (value == null) {
+            getLabels().remove(key);
+            return;
+        }
+
+        getLabels().put(key, value);
+    }
 
     /**
      * Sets the given label.
@@ -138,7 +147,7 @@ public interface Labeled {
 
     default Map<String, Map<String, String>> indexedByPrefix(String prefix) {
         Map<String, Map<String, String>> byValue = new HashMap<>();
-        getLabels().forEach((s, labelValue) -> {
+        ImmutableMap.copyOf(getLabels()).forEach((s, labelValue) -> {
             if (!s.startsWith(prefix)) {
                 return;
             }
