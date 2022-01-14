@@ -1,7 +1,8 @@
 package de.bonndan.nivio;
 
-import de.bonndan.nivio.database.User;
-import de.bonndan.nivio.database.UserRepository;
+import de.bonndan.nivio.appuser.AppUser;
+import de.bonndan.nivio.appuser.AppUserRole;
+import de.bonndan.nivio.appuser.AppUserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,9 +18,9 @@ public class Application {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(UserRepository userRepository) {
+    CommandLineRunner commandLineRunner(AppUserRepository userRepository) {
         return args -> {
-            User mary = new User("Mary", "m@online.com");
+            AppUser mary = new AppUser("Mary", "mary88", "m@online.com", "secret123", AppUserRole.USER, false, true );
             userRepository.save(mary);
         };
     }

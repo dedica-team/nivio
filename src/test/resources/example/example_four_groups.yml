@@ -12,12 +12,12 @@ groups:
 items:
 
   - identifier: user
-    name: User
+    name: AppUser
     type: humanuser
     group: input
     relations:
       - target: fe-react
-        description: User inputs data into React Frontend
+        description: AppUser inputs data into React Frontend
 
   - identifier: fe-react
     name: React
