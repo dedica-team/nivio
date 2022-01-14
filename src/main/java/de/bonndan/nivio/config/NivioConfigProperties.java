@@ -1,13 +1,11 @@
 package de.bonndan.nivio.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
-import java.net.MalformedURLException;
 
 @Configuration
 @ConfigurationProperties("nivio")
@@ -113,43 +111,5 @@ public class NivioConfigProperties {
         this.iconFolder = iconFolder;
     }
 
-    public ApiModel getApiModel() {
-        java.net.URL brandingLogoUrl = null;
-        try {
-            brandingLogoUrl = this.brandingLogoUrl != null ? new java.net.URL(getBrandingLogoUrl()) : null;
-        } catch (MalformedURLException ignored) {
-        }
-        return new ApiModel(baseUrl, version, brandingForeground, brandingBackground, brandingSecondary, brandingLogoUrl, brandingMessage);
-    }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class ApiModel {
-        public final String baseUrl;
-        public final String version;
-        public final String brandingForeground;
-        public final String brandingBackground;
-        public final String brandingSecondary;
-        public final java.net.URL brandingLogoUrl;
-        public final String brandingMessage;
-
-
-        public ApiModel(String baseUrl,
-                        String version,
-                        String brandingForeground,
-                        String brandingBackground,
-                        String brandingSecondary,
-                        java.net.URL brandingLogoUrl,
-                        String brandingMessage
-
-        ) {
-            this.baseUrl = baseUrl;
-            this.version = version;
-            this.brandingForeground = brandingForeground;
-            this.brandingBackground = brandingBackground;
-            this.brandingSecondary = brandingSecondary;
-            this.brandingLogoUrl = brandingLogoUrl;
-            this.brandingMessage = brandingMessage;
-
-        }
-    }
 }

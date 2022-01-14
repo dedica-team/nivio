@@ -1,6 +1,5 @@
 package de.bonndan.nivio.api;
 
-import de.bonndan.nivio.config.NivioConfigProperties;
 import de.bonndan.nivio.model.Link;
 import de.bonndan.nivio.model.Linked;
 
@@ -13,9 +12,10 @@ import java.util.Map;
 public class Index implements Linked {
 
     private final Map<String, Link> links = new HashMap<>();
-    private final NivioConfigProperties.ApiModel config;
+    private final Map<String, Link> oauth2links = new HashMap<>();
+    private final ConfigApiModel config;
 
-    public Index(NivioConfigProperties.ApiModel config) {
+    public Index(ConfigApiModel config) {
         this.config = config;
     }
 
@@ -24,7 +24,11 @@ public class Index implements Linked {
         return links;
     }
 
-    public NivioConfigProperties.ApiModel getConfig() {
+    public Map<String, Link> getOauth2Links() {
+        return oauth2links;
+    }
+
+    public ConfigApiModel getConfig() {
         return config;
     }
 }
