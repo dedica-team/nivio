@@ -31,10 +31,8 @@ import java.util.stream.Collectors;
 @RequestMapping(path = ApiController.PATH)
 public class ApiController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
-
     public static final String PATH = "/api";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
     private final LandscapeRepository landscapeRepository;
     private final LinkFactory linkFactory;
     private final IndexingDispatcher indexingDispatcher;
@@ -43,8 +41,8 @@ public class ApiController {
     public ApiController(LandscapeRepository landscapeRepository,
                          LinkFactory linkFactory,
                          IndexingDispatcher indexingDispatcher,
-                         FrontendMapping frontendMapping
-    ) {
+                         FrontendMapping frontendMapping) {
+
         this.landscapeRepository = landscapeRepository;
         this.linkFactory = linkFactory;
         this.indexingDispatcher = indexingDispatcher;
@@ -52,7 +50,6 @@ public class ApiController {
     }
 
     @Operation(summary = "Overview on all landscape and global configuration")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public Index index() {
         return linkFactory.getIndex(landscapeRepository.findAll());
@@ -60,7 +57,6 @@ public class ApiController {
 
 
     @Operation(summary = "This resource serves a landscape and can be addressed by using a fully qualified identifier")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LandscapeApiModel> landscape(@PathVariable String landscapeIdentifier) {
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(landscapeIdentifier).orElse(null);
@@ -74,7 +70,6 @@ public class ApiController {
     }
 
     @Operation(summary = "This resource serves a group in a landscape and can be addressed by using a fully qualified identifier")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GroupApiModel> group(@PathVariable String landscapeIdentifier,
                                                @PathVariable String groupIdentifier
@@ -95,7 +90,6 @@ public class ApiController {
     }
 
     @Operation(summary = "This resource serves an item in a landscape and can be addressed by using a fully qualified identifier")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{landscapeIdentifier}/{groupIdentifier}/{itemIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemApiModel> item(@PathVariable String landscapeIdentifier,
                                              @PathVariable String groupIdentifier,
@@ -155,7 +149,6 @@ public class ApiController {
     }
 
     @Operation(summary = "Returns the last processing log")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/landscape/{identifier}/log")
     public ResponseEntity<ProcessLog> log(@PathVariable String identifier) {
 
@@ -168,7 +161,6 @@ public class ApiController {
     }
 
     @Operation(summary = "Returns search results for the given lucene query")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/landscape/{identifier}/search/{query}", produces = "application/json")
     public ResponseEntity<Set<ItemApiModel>> search(@PathVariable String identifier, @PathVariable String query) {
 
@@ -191,7 +183,6 @@ public class ApiController {
     }
 
     @Operation(summary = "Returns all search facets for the landscape")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/landscape/{identifier}/facets", produces = "application/json")
     public ResponseEntity<List<FacetResult>> facets(@PathVariable String identifier) {
 
@@ -204,7 +195,6 @@ public class ApiController {
     }
 
     @Operation(summary = "Returns the mapping of internally used terms to terms to be displayed")
-    @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/mapping", produces = "application/json")
     public ResponseEntity<FrontendMappingApiModel> mapping() {
         return new ResponseEntity<>(
@@ -227,6 +217,7 @@ public class ApiController {
                 .map(uri -> ResponseEntity.created(uri).build())
                 .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
+
 
     private Optional<URI> getURIForDTO(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
         Optional<Link> link = linkFactory.generateComponentLink(fullyQualifiedIdentifier);

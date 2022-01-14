@@ -3,6 +3,13 @@ spring:
     name: nivio
   main:
     lazy-initialization: true
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: ${NIVIO_AUTH_GITHUB_CLIENT_ID:_}
+            clientSecret: ${NIVIO_AUTH_GITHUB_CLIENT_SECRET:_}
 
   mail:
     host: ${NIVIO_MAIL_HOST:}
@@ -20,7 +27,6 @@ spring:
 
 logging:
   level:
-    root: INFO
     de:
       bonndan:
         nivio:
@@ -54,6 +60,11 @@ nivio:
   seed: ${SEED:}
   demo: ${DEMO:}
 
+auth:
+  loginMode: ${NIVIO_AUTH_LOGIN_MODE:none}
+  allowedOriginPatterns: ${NIVIO_AUTH_ALLOWED_ORIGINS:}
+  githubNameAttribute: ${NIVIO_AUTH_GITHUB_NAME_ATTRIBUTE:name}
+  githubAliasAttribute: ${NIVIO_AUTH_GITHUB_ALIAS_ATTRIBUTE:login}
 
 observerconfig:
   scanDelay:
