@@ -18,6 +18,7 @@ const items: IItem[] = [
     tags: [],
     type: 'service',
     icon: '',
+    networks: ['lan'],
   },
 ];
 
@@ -27,6 +28,7 @@ const groups: IGroup[] = [
     name: 'groupName',
     items: items,
     identifier: 'groupIdentifier',
+    icon: '',
   },
 ];
 

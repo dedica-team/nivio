@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.SeedConfiguration;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.SourceReference;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.observation.KubernetesObserver;
 import io.fabric8.kubernetes.api.model.*;
@@ -18,13 +18,9 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @EnableKubernetesMockClient(crud = true, https = false)
 class InputFormatHandlerKubernetesTest {
@@ -50,7 +46,7 @@ class InputFormatHandlerKubernetesTest {
         sourceReference.setConfig(new SeedConfiguration("k8sLandscapeTest"));
         inputFormatHandlerKubernetes.applyData(sourceReference, landscapeDescription);
         assertThat(landscapeDescription.getItemDescriptions().all().size()).isZero();
-        setK8sTestEnvironment();
+        var identifierMap = setK8sTestEnvironment();
 
         //when
         landscapeDescription = new LandscapeDescription("test");
@@ -58,63 +54,79 @@ class InputFormatHandlerKubernetesTest {
 
         //then
         assertThat(landscapeDescription.getItemDescriptions().all().size()).isEqualTo(7);
-        assertThat(landscapeDescription.getItemDescriptions().find("deploymentUid", "deployment").orElseThrow().getRelations().size()).isZero();
-        assertThat(landscapeDescription.getItemDescriptions().find("replicaSetUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("deploymentUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("replicaSetUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo("replicaSetUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("podUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("replicaSetUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("podUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo("podUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("serviceUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("deploymentUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("serviceUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo("serviceUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("persistentVolumeUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("persistentVolumeClaimUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("persistentVolumeUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo("persistentVolumeUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("persistentVolumeClaimUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("podUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("persistentVolumeClaimUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo("persistentVolumeClaimUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("persistentVolumeClaimUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo("podUid");
-        assertThat(landscapeDescription.getItemDescriptions().find("persistentVolumeClaimUid", "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo("persistentVolumeClaimUid");
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("deployment"), "deployment").orElseThrow().getRelations().size()).isZero();
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("replicaSet"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("deployment"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("replicaSet"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("replicaSet"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("pod"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("replicaSet"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("pod"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("pod"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("service"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("deployment"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("service"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("service"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolume"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolume"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolume"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("pod"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("pod"));
+        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
     }
 
-    private void setK8sTestEnvironment() {
+    private Map<String, String> setK8sTestEnvironment() {
+        var identifier = new HashMap<String, String>();
         var service = new ServiceBuilder()
                 .withNewMetadata().withName("deployment").withCreationTimestamp("testCreation").withUid("serviceUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
                 .withNewSpec().withClusterIP("testIP").withNewType("testType").withSessionAffinity("testSessionAffinity").endSpec()
                 .build();
         kubernetesClient.services().create(service);
+        identifier.put("service", kubernetesClient.services().list().getItems().get(0).getMetadata().getUid());
+
         var deployment = new DeploymentBuilder()
                 .withNewMetadata().withName("deployment").withCreationTimestamp("testCreation").withUid("deploymentUid").withLabels(Map.of("testLabelKey", "testLabelValue", "1", "2")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
                 .withNewSpec().withNewStrategy().withNewType("strategyType").endStrategy().endSpec()
                 .withNewStatus().addNewCondition().withType("testType").withStatus("testStatus").endCondition().endStatus()
                 .build();
         kubernetesClient.apps().deployments().create(deployment);
+        identifier.put("deployment", kubernetesClient.apps().deployments().list().getItems().get(0).getMetadata().getUid());
+
         var replicaSet = new ReplicaSetBuilder()
-                .withNewMetadata().withName("replicaSet").withCreationTimestamp("testCreation").withUid("replicaSetUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("deploymentUid").build()).withNamespace("test").endMetadata()
+                .withNewMetadata().withName("replicaSet").withCreationTimestamp("testCreation").withUid("replicaSetUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid(identifier.get("deployment")).build()).withNamespace("test").endMetadata()
                 .withNewSpec().withReplicas(1).endSpec()
                 .withNewStatus().addNewCondition().withType("testType").withStatus("testStatus").endCondition().withReadyReplicas(1).endStatus()
                 .build();
         kubernetesClient.apps().replicaSets().create(replicaSet);
+        identifier.put("replicaSet", kubernetesClient.apps().replicaSets().list().getItems().get(0).getMetadata().getUid());
+
         var statefulSet = new StatefulSetBuilder()
                 .withNewMetadata().withName("statefulSet").withCreationTimestamp("testCreation").withUid("statefulSetUid").withLabels(Map.of("testLabelKey", "testLabelValue", "1", "2")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
                 .withNewSpec().withReplicas(1).endSpec()
                 .withNewStatus().addNewCondition().withType("testType").withStatus("testStatus").endCondition().withReadyReplicas(1).endStatus()
                 .build();
         kubernetesClient.apps().statefulSets().create(statefulSet);
+        identifier.put("statefulSet", kubernetesClient.apps().statefulSets().list().getItems().get(0).getMetadata().getUid());
+
         var pod = new PodBuilder()
-                .withNewMetadata().withName("pod").withCreationTimestamp("testCreation").withUid("podUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("replicaSetUid").build()).withNamespace("test").endMetadata()
-                .withNewSpec().addNewVolume().withNewPersistentVolumeClaim().withNewClaimName("persistentvolumeclaim").endPersistentVolumeClaim().endVolume().endSpec()
+                .withNewMetadata().withName("pod").withCreationTimestamp("testCreation").withUid("podUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid(identifier.get("replicaSet")).build()).withNamespace("test").endMetadata()
+                .withNewSpec().addNewVolume().withNewPersistentVolumeClaim().withNewClaimName("persistentVolumeClaim").endPersistentVolumeClaim().endVolume().endSpec()
                 .withNewStatus().addNewCondition().withType("testType").withStatus("testStatus").endCondition().endStatus()
                 .build();
         kubernetesClient.pods().create(pod);
+        identifier.put("pod", kubernetesClient.pods().list().getItems().get(0).getMetadata().getUid());
+
         var persistentVolumeClaim = new PersistentVolumeClaimBuilder()
-                .withNewMetadata().withName("persistentvolumeclaim").withCreationTimestamp("testCreation").withUid("persistentVolumeClaimUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
+                .withNewMetadata().withName("persistentVolumeClaim").withCreationTimestamp("testCreation").withUid("persistentVolumeClaimUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
                 .withNewSpec().withStorageClassName("testStorageName").endSpec()
-                .withNewStatus().withNewPhase("testPhase").endStatus()
+                .withNewStatus().endStatus()
                 .build();
         kubernetesClient.persistentVolumeClaims().create(persistentVolumeClaim);
+        identifier.put("persistentVolumeClaim", kubernetesClient.persistentVolumeClaims().list().getItems().get(0).getMetadata().getUid());
+
         var persistentVolume = new PersistentVolumeBuilder()
-                .withNewMetadata().withName("persistentvolume").withCreationTimestamp("testCreation").withUid("persistentVolumeUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
-                .withNewSpec().withStorageClassName("testStorageName").withPersistentVolumeReclaimPolicy("testReclaimPolicy").addNewAccessMode("testAccessMode").addToCapacity("testCapacity", new Quantity("8", "Gi")).withClaimRef(new ObjectReferenceBuilder().withUid("persistentVolumeClaimUid").build()).endSpec()
-                .withNewStatus().withNewPhase("testPhase").endStatus()
+                .withNewMetadata().withName("persistentVolume").withCreationTimestamp("testCreation").withUid("persistentVolumeUid").withLabels(Map.of("testLabelKey", "testLabelValue")).withOwnerReferences(new OwnerReferenceBuilder().withUid("testOwnerUid").build()).withNamespace("test").endMetadata()
+                .withNewSpec().withStorageClassName("testStorageName").withPersistentVolumeReclaimPolicy("testReclaimPolicy").addNewAccessMode("testAccessMode").addToCapacity("testCapacity", new Quantity("8", "Gi")).withClaimRef(new ObjectReferenceBuilder().withUid(identifier.get("persistentVolumeClaim")).build()).endSpec()
+                .withNewStatus().endStatus()
                 .build();
         kubernetesClient.persistentVolumes().create(persistentVolume);
+        identifier.put("persistentVolume", kubernetesClient.persistentVolumes().list().getItems().get(0).getMetadata().getUid());
+
+        return identifier;
     }
 
     @Test

@@ -56,6 +56,7 @@ const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
       if (landscapeLinks) {
         setLandscapesCount(Object.keys(landscapeLinks._links).length);
         for (const landscapeLink in landscapeLinks._links) {
+          if(landscapeLinks._links[landscapeLink].rel !== "landscape") return;
           const landscapeDescription: ILandscape | null = await get(
             landscapeLinks._links[landscapeLink].href
           );

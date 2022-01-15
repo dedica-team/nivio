@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
 import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
@@ -32,7 +33,7 @@ public class Relation implements Labeled, Assessable, Serializable {
 
     private final RelationType type;
 
-    private final Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> labels = new ConcurrentHashMap<>();
 
     public Relation(@NonNull final Item source,
                     @NonNull final Item target,
@@ -103,11 +104,6 @@ public class Relation implements Labeled, Assessable, Serializable {
     @Override
     public Map<String, String> getLabels() {
         return labels;
-    }
-
-    @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
     }
 
     @Override

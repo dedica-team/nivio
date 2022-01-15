@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static de.bonndan.nivio.model.ComponentDiff.compareCollections;
 import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
@@ -22,7 +23,7 @@ public class Group implements Component, Labeled, Linked {
     private final Map<String, Link> links = new HashMap<>();
 
     @NonNull
-    private final Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> labels = new ConcurrentHashMap<>();
 
     /**
      * Items belonging to this group. Order is important for layouting (until items are ordered there).
@@ -137,11 +138,6 @@ public class Group implements Component, Labeled, Linked {
     @Nullable
     public String getLabel(String key) {
         return labels.get(key);
-    }
-
-    @Override
-    public void setLabel(String key, String value) {
-        labels.put(key, value);
     }
 
     @Override

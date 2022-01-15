@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.util.*;
 
@@ -54,7 +55,7 @@ public class AssessableGroup implements Assessable, Labeled {
     }
 
     @Override
-    public void setLabel(String key, String value) {
+    public void setLabel(@NonNull final String key, @Nullable final String value) {
         // the decorator is not meant to be modified
     }
 }

@@ -1,5 +1,6 @@
 package de.bonndan.nivio.config;
 
+import de.bonndan.nivio.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -95,7 +96,6 @@ class NivioConfigPropertiesTest {
         ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
         assertThat(constraintViolations[0].getMessage()).isEqualTo("brandingMessage must be a valid string");
     }
-
 
 
 }
