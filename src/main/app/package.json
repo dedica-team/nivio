@@ -40,6 +40,9 @@
     "@testing-library/user-event": "^12.0.11",
     "prettier": "^2.4.1"
   },
+  "resolutions": {
+    "mini-css-extract-plugin": "2.4.5"
+  },
   "scripts": {
     "dev": "react-scripts start",
     "build": "react-scripts build",
