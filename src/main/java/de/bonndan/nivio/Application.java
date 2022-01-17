@@ -20,7 +20,7 @@ public class Application {
     @Bean
     CommandLineRunner commandLineRunner(AppUserRepository userRepository) {
         return args -> {
-            AppUser mary = new AppUser("Mary", "mary88", "m@online.com", "secret123", AppUserRole.USER, false, true );
+            AppUser mary = new AppUser("Mary", "mary88", "m@online.com", "avatarURL", AppUserRole.USER, false, true );
             userRepository.save(mary);
         };
     }

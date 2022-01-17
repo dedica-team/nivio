@@ -1,6 +1,9 @@
 package de.bonndan.nivio.appuser;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,11 +51,11 @@ public class AppUser implements UserDetails {
 
 
     @Column(
-            name = "user_name",
+            name = "alias",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String userName;
+    private String alias;
 
     @Column(
             name = "email",
@@ -62,11 +65,11 @@ public class AppUser implements UserDetails {
     private String email;
 
     @Column(
-            name = "password",
+            name = "avatar_url",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String password;
+    private String avatarUrl;
 
 
     @Column(
@@ -83,14 +86,14 @@ public class AppUser implements UserDetails {
     public AppUser(String name,
                    String userName,
                    String email,
-                   String password,
+                   String avatarUrl,
                    AppUserRole appUserRole,
                    Boolean locked,
                    Boolean enabled) {
         this.name = name;
-        this.userName = userName;
+        this.alias = userName;
         this.email = email;
-        this.password = password;
+        this.avatarUrl = avatarUrl;
         this.appUserRole = appUserRole;
         this.locked = locked;
         this.enabled = enabled;
@@ -105,12 +108,12 @@ public class AppUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return userName;
+        return alias;
     }
 
     @Override
