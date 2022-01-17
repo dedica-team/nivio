@@ -65,6 +65,13 @@ public class AppUser implements UserDetails {
     private String email;
 
     @Column(
+            name = "principal_id",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String principalId;
+
+    @Column(
             name = "avatar_url",
             nullable = false,
             columnDefinition = "TEXT"

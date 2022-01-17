@@ -17,11 +17,11 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
-    CommandLineRunner commandLineRunner(AppUserRepository userRepository) {
-        return args -> {
-            AppUser mary = new AppUser("Mary", "mary88", "m@online.com", "avatarURL", AppUserRole.USER, false, true );
-            userRepository.save(mary);
-        };
-    }
+//    @Bean
+//    CommandLineRunner commandLineRunner(AppUserRepository userRepository) {
+//        return args -> {
+//            AppUser mary = new AppUser("Mary", "mary88", "m@online.com", "avatarURL", AppUserRole.USER, false, true );
+//            userRepository.save(mary);
+//        };
+//    }
 }

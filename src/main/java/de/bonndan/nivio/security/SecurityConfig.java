@@ -1,17 +1,17 @@
 package de.bonndan.nivio.security;
 
+import de.bonndan.nivio.appuser.AppUser;
+import de.bonndan.nivio.appuser.AppUserRepository;
+import de.bonndan.nivio.appuser.AppUserRole;
 import de.bonndan.nivio.appuser.AppUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.header.HeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -156,23 +156,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-//    @Bean
-//    public PrincipalExtractor githubPrincipalExtractor() {
-//        return new GithubPrincipalExtractor();
-//    }
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(daoAuthenticationProvider());
-//    }
-//
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//        DaoAuthenticationProvider provider =
-//                new DaoAuthenticationProvider();
-//        provider.setUserDetailsService(appUserService);
-//
-//        return provider;
-//    }
+    @Bean
+    public PrincipalExtractor principalExtractor(AppUserRepository appUserRepository) {
+        return map -> {
+            String principalId = (String) map.get("id");
+            AppUser appUser = appUserRepository.findByPrincipalId(principalId);
+            if (appUser == null) {
+                LOGGER.info("No user found, generating profile for {}", principalId);
+                appUser = new AppUser();
+                appUser.setPrincipalId(principalId);
+                appUser.setEmail((String) map.get("email"));
+                appUser.setName((String) map.get("name"));
+                appUser.setAlias((String) map.get("alias"));
+                appUser.setAppUserRole(AppUserRole.USER);
+                appUser.setAvatarUrl((String) map.get("avatar_url"));
+            }
 
+            appUserRepository.save(appUser);
+            return appUser;
+        };
+    }
 }
