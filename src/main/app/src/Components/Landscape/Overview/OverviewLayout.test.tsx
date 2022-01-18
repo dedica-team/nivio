@@ -44,7 +44,7 @@ const landscapes: ILandscape = {
 it('should render LandscapeOverview component', () => {
   const { getByText } = render(
     <MemoryRouter>
-      <OverviewLayout landscapes={[landscapes]} setSidebarContent={() => {}} />
+      <OverviewLayout landscapes={[landscapes]} />
     </MemoryRouter>
   );
   expect(getByText('landscapeTestName')).toBeInTheDocument();
