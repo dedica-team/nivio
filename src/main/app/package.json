@@ -35,9 +35,12 @@
     "typescript": "~3.9.10"
   },
   "devDependencies": {
+    "@cypress/react": "^5.12.1",
+    "@cypress/webpack-dev-server": "^1.8.0",
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.0.11",
+    "cypress": "^9.2.1",
     "prettier": "^2.4.1"
   },
   "scripts": {
