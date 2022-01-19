@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -52,8 +53,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         var name = "";
         if (StringUtils.hasLength(nameAttribute)) {
-            name = String.valueOf(user.getAttribute(nameAttribute) == null ? "" : user.getAttribute(nameAttribute));
+            Object val = user.getAttribute(nameAttribute);
+            if (val == null) {
+                Object login = Objects.requireNonNull(user.getAttribute("login"));
+                name = String.valueOf(login);
+            } else {
+                name = String.valueOf(val);
+            }
         }
+
         return new CustomOAuth2User(
                 id,
                 StringUtils.hasLength(aliasAttribute) ? Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("") : "",
