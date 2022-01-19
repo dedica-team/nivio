@@ -57,6 +57,9 @@ const facets: IFacet[] = [
 ];
 describe('<Search />', () => {
   it('should render', () => {
+    const mock = jest.spyOn(APIClient, 'get');
+    mock.mockReturnValue(Promise.resolve(facets));
+
     const { getByText } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
         <Search searchTerm={'foo'} setSearchTerm={() => {}} />
