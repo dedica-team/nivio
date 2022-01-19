@@ -53,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         LOGGER.info("login mode: {}", properties.getLoginMode());
         if (LOGIN_MODE_NONE.equalsIgnoreCase(properties.getLoginMode())) {
-            return;
+            configureForNone(http);
         }
 
         if (LOGIN_MODE_REQUIRED.equalsIgnoreCase(properties.getLoginMode())) {
@@ -62,6 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         if (LOGIN_MODE_OPTIONAL.equalsIgnoreCase(properties.getLoginMode())) {
             configureForOptional(http);
         }
+    }
+
+    private void configureForNone(HttpSecurity http) throws Exception {
+        http
+                .cors().configurationSource(corsConfigurationSource());
     }
 
     private void configureForOptional(HttpSecurity http) throws Exception {

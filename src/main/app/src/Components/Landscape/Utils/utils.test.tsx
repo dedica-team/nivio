@@ -26,6 +26,7 @@ const item: IItem = {
   tags: [],
   type: 'service',
   icon: '',
+  networks:[]
 };
 
 describe('getLabels', () => {
