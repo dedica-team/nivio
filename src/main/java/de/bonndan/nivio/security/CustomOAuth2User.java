@@ -18,6 +18,8 @@ public class CustomOAuth2User implements OAuth2User {
     private final String alias;
     private final String name;
     private final String avatarUrl;
+    @NonNull
+    private final String idp;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
 
@@ -26,7 +28,8 @@ public class CustomOAuth2User implements OAuth2User {
                             @NonNull final String name,
                             @NonNull final Map<String, Object> attributes,
                             @NonNull final Collection<? extends GrantedAuthority> authorities,
-                            @Nullable final String avatarUrl
+                            @Nullable final String avatarUrl,
+                            @NonNull final String idp
     ) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
@@ -34,6 +37,7 @@ public class CustomOAuth2User implements OAuth2User {
         this.attributes = Objects.requireNonNull(attributes, "attributes must not be null");
         this.authorities = Objects.requireNonNull(authorities, "authorities must not be null");
         this.avatarUrl = avatarUrl;
+        this.idp = idp;
     }
 
     @Override
@@ -64,5 +68,10 @@ public class CustomOAuth2User implements OAuth2User {
     @NonNull
     public String getAlias() {
         return alias;
+    }
+
+    @NonNull
+    public String getIdp() {
+        return idp;
     }
 }

@@ -11,10 +11,14 @@ import java.util.Collections;
 
 @Entity(name = "AppUser")
 @Table(
-        name = "user",
+        name = "app_user",
         uniqueConstraints = {
                 @UniqueConstraint(name = "appuser_email_unique",
-                        columnNames = "email")
+                        columnNames = "email"),
+                @UniqueConstraint(name = "appuser_external_id_unique",
+                columnNames = {"external_id", "idp"})
+
+
         }
 )
 public class AppUser implements UserDetails {
@@ -36,6 +40,20 @@ public class AppUser implements UserDetails {
     private Long id;
 
     @Column(
+            name = "external_id",
+            nullable = false,
+            columnDefinition = "VARCHAR"
+    )
+    private String externalId;
+
+    @Column(
+            name = "idp",
+            nullable = false,
+            columnDefinition = "VARCHAR"
+    )
+    private String idp;
+
+    @Column(
             name = "name",
             nullable = false,
             columnDefinition = "TEXT"
@@ -52,14 +70,12 @@ public class AppUser implements UserDetails {
 
     @Column(
             name = "email",
-            nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "VARCHAR"
     )
     private String email;
 
     @Column(
             name = "avatar_url",
-            nullable = false,
             columnDefinition = "TEXT"
     )
     private String avatarUrl;
@@ -73,16 +89,11 @@ public class AppUser implements UserDetails {
     @Enumerated(EnumType.STRING)
     private AppUserRole appUserRole;
 
+    @Column
     private Boolean locked;
-    private Boolean enabled;
 
-    public AppUser(String name, String alias, String email, String avatarUrl, AppUserRole appUserRole) {
-        this.name = name;
-        this.alias = alias;
-        this.email = email;
-        this.avatarUrl = avatarUrl;
-        this.appUserRole = appUserRole;
-    }
+    @Column
+    private Boolean enabled;
 
     public AppUser() {
 
@@ -187,5 +198,21 @@ public class AppUser implements UserDetails {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public String getIdp() {
+        return idp;
+    }
+
+    public void setIdp(String idp) {
+        this.idp = idp;
     }
 }

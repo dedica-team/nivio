@@ -78,7 +78,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 name,
                 user.getAttributes(),
                 user.getAuthorities(),
-                user.getAttribute("avatar_url"));
+                user.getAttribute("avatar_url"),
+                "github");
     }
 
 
@@ -89,13 +90,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (appUser.isEmpty()) {
             LOGGER.info("No user found, generating profile for {}", customOAuth2User.getId());
             AppUser newAppUser = new AppUser();
-            newAppUser.setEmail(customOAuth2User.getId());
             newAppUser.setName(customOAuth2User.getName());
             newAppUser.setAlias(customOAuth2User.getAlias());
             newAppUser.setAvatarUrl(customOAuth2User.getAvatarUrl());
             newAppUser.setAppUserRole(AppUserRole.USER);
             newAppUser.setLocked(false);
             newAppUser.setEnabled(true);
+            newAppUser.setExternalId(customOAuth2User.getId());
+            newAppUser.setIdp(customOAuth2User.getIdp());
 
             appUserRepository.save(newAppUser);
         }
