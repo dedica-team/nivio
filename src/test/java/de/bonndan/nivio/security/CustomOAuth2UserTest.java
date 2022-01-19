@@ -45,10 +45,7 @@ class CustomOAuth2UserTest {
     }
 
     @Test
-    void getId() {
-        assertThat(customOAuth2User.getId()).isEqualTo("123");
-    }
-
+    void getExternalId() { assertThat(customOAuth2User.getExternalId()).isEqualTo("123"); }
 
     @Test
     void getName() {

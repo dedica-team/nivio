@@ -56,9 +56,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                                   @Nullable final String aliasAttribute,
                                                   @Nullable final String nameAttribute
     ) {
-        var id = "";
+        var externalId = "";
         if (StringUtils.hasLength(nameAttribute)) {
-            id = String.valueOf(user.getAttribute("id") == null ? "" : user.getAttribute("id"));
+            externalId = String.valueOf(user.getAttribute("id") == null ? "" : user.getAttribute("id"));
         }
 
         var name = "";
@@ -73,7 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         return new CustomOAuth2User(
-                id,
+                externalId,
                 StringUtils.hasLength(aliasAttribute) ? Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("") : "",
                 name,
                 user.getAttributes(),
@@ -84,11 +84,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 
     private void saveUser(CustomOAuth2User customOAuth2User) {
-        Optional<AppUser> appUser = appUserRepository.findByEmail(customOAuth2User.getId());
-
+        Optional<AppUser> appUser = appUserRepository.findByExternalId(customOAuth2User.getExternalId());
 
         if (appUser.isEmpty()) {
-            LOGGER.info("No user found, generating profile for {}", customOAuth2User.getId());
+            LOGGER.info("No user found, generating profile for {}", customOAuth2User.getExternalId());
             AppUser newAppUser = new AppUser();
             newAppUser.setName(customOAuth2User.getName());
             newAppUser.setAlias(customOAuth2User.getAlias());
@@ -96,7 +95,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newAppUser.setAppUserRole(AppUserRole.USER);
             newAppUser.setLocked(false);
             newAppUser.setEnabled(true);
-            newAppUser.setExternalId(customOAuth2User.getId());
+            newAppUser.setExternalId(customOAuth2User.getExternalId());
             newAppUser.setIdp(customOAuth2User.getIdp());
 
             appUserRepository.save(newAppUser);

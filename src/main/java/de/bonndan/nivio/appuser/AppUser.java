@@ -11,26 +11,25 @@ import java.util.Collections;
 
 @Entity(name = "AppUser")
 @Table(
-        name = "app_user",
+        name = "appUser",
         uniqueConstraints = {
-                @UniqueConstraint(name = "appuser_email_unique",
+                @UniqueConstraint(name = "emailUnique",
                         columnNames = "email"),
-                @UniqueConstraint(name = "appuser_external_id_unique",
-                columnNames = {"external_id", "idp"})
-
+                @UniqueConstraint(name = "externalIdAndIdpUnique",
+                        columnNames = {"externalId", "idp"})
 
         }
 )
 public class AppUser implements UserDetails {
 
     @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
+            name = "userSequence",
+            sequenceName = "userSequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence"
+            generator = "userSequence"
     )
     @Id
     @Column(
@@ -40,7 +39,7 @@ public class AppUser implements UserDetails {
     private Long id;
 
     @Column(
-            name = "external_id",
+            name = "externalId",
             nullable = false,
             columnDefinition = "VARCHAR"
     )
@@ -55,11 +54,9 @@ public class AppUser implements UserDetails {
 
     @Column(
             name = "name",
-            nullable = false,
             columnDefinition = "TEXT"
     )
     private String name;
-
 
     @Column(
             name = "alias",
@@ -75,11 +72,10 @@ public class AppUser implements UserDetails {
     private String email;
 
     @Column(
-            name = "avatar_url",
+            name = "avatarUrl",
             columnDefinition = "TEXT"
     )
     private String avatarUrl;
-
 
     @Column(
             name = "role",
@@ -99,7 +95,6 @@ public class AppUser implements UserDetails {
 
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(appUserRole.name());
@@ -113,7 +108,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return alias;
+        return null;
     }
 
     @Override
@@ -160,6 +155,14 @@ public class AppUser implements UserDetails {
         return appUserRole;
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public String getIdp() {
+        return idp;
+    }
+
     public Boolean getLocked() {
         return locked;
     }
@@ -200,16 +203,8 @@ public class AppUser implements UserDetails {
         this.enabled = enabled;
     }
 
-    public String getExternalId() {
-        return externalId;
-    }
-
     public void setExternalId(String externalId) {
         this.externalId = externalId;
-    }
-
-    public String getIdp() {
-        return idp;
     }
 
     public void setIdp(String idp) {

@@ -14,24 +14,24 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
  */
 public class CustomOAuth2User implements OAuth2User {
 
-    private final String id;
     private final String alias;
     private final String name;
     private final String avatarUrl;
     @NonNull
+    private final String externalId;
     private final String idp;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomOAuth2User(@NonNull final String id,
+    public CustomOAuth2User(@NonNull final String externalId,
                             @NonNull final String alias,
-                            @NonNull final String name,
+                            @Nullable final String name,
                             @NonNull final Map<String, Object> attributes,
                             @NonNull final Collection<? extends GrantedAuthority> authorities,
                             @Nullable final String avatarUrl,
                             @NonNull final String idp
     ) {
-        this.id = Objects.requireNonNull(id, "id must not be null");
+        this.externalId = Objects.requireNonNull(externalId, "id must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.alias = Objects.requireNonNull(alias, "alias must not be null");
         this.attributes = Objects.requireNonNull(attributes, "attributes must not be null");
@@ -61,11 +61,6 @@ public class CustomOAuth2User implements OAuth2User {
     }
 
     @NonNull
-    public String getId() {
-        return id;
-    }
-
-    @NonNull
     public String getAlias() {
         return alias;
     }
@@ -73,5 +68,10 @@ public class CustomOAuth2User implements OAuth2User {
     @NonNull
     public String getIdp() {
         return idp;
+    }
+
+    @NonNull
+    public String getExternalId() {
+        return externalId;
     }
 }
