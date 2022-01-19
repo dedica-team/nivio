@@ -2,7 +2,6 @@ package de.bonndan.nivio.security;
 
 import de.bonndan.nivio.appuser.AppUser;
 import de.bonndan.nivio.appuser.AppUserRepository;
-import de.bonndan.nivio.appuser.AppUserRole;
 import de.bonndan.nivio.appuser.AppUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -161,24 +161,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-    @Bean
-    public PrincipalExtractor principalExtractor(AppUserRepository appUserRepository) {
-        return map -> {
-            String principalId = (String) map.get("id");
-            AppUser appUser = appUserRepository.findByPrincipalId(principalId);
-            if (appUser == null) {
-                LOGGER.info("No user found, generating profile for {}", principalId);
-                appUser = new AppUser();
-                appUser.setPrincipalId(principalId);
-                appUser.setEmail((String) map.get("email"));
-                appUser.setName((String) map.get("name"));
-                appUser.setAlias((String) map.get("alias"));
-                appUser.setAppUserRole(AppUserRole.USER);
-                appUser.setAvatarUrl((String) map.get("avatar_url"));
-            }
 
-            appUserRepository.save(appUser);
-            return appUser;
-        };
-    }
 }

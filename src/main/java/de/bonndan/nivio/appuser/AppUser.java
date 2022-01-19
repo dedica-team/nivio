@@ -1,9 +1,5 @@
 package de.bonndan.nivio.appuser;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,15 +8,12 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@NoArgsConstructor
+
 @Entity(name = "AppUser")
 @Table(
         name = "user",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_unique",
+                @UniqueConstraint(name = "appuser_email_unique",
                         columnNames = "email")
         }
 )
@@ -31,14 +24,14 @@ public class AppUser implements UserDetails {
             sequenceName = "user_sequence",
             allocationSize = 1
     )
-    @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence"
     )
+    @Id
     @Column(
             name = "id",
-            updatable = false
+            nullable = false
     )
     private Long id;
 
@@ -65,13 +58,6 @@ public class AppUser implements UserDetails {
     private String email;
 
     @Column(
-            name = "principal_id",
-            nullable = false,
-            columnDefinition = "TEXT"
-    )
-    private String principalId;
-
-    @Column(
             name = "avatar_url",
             nullable = false,
             columnDefinition = "TEXT"
@@ -90,20 +76,16 @@ public class AppUser implements UserDetails {
     private Boolean locked;
     private Boolean enabled;
 
-    public AppUser(String name,
-                   String userName,
-                   String email,
-                   String avatarUrl,
-                   AppUserRole appUserRole,
-                   Boolean locked,
-                   Boolean enabled) {
+    public AppUser(String name, String alias, String email, String avatarUrl, AppUserRole appUserRole) {
         this.name = name;
-        this.alias = userName;
+        this.alias = alias;
         this.email = email;
         this.avatarUrl = avatarUrl;
         this.appUserRole = appUserRole;
-        this.locked = locked;
-        this.enabled = enabled;
+    }
+
+    public AppUser() {
+
     }
 
 
@@ -141,5 +123,69 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public AppUserRole getAppUserRole() {
+        return appUserRole;
+    }
+
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public void setAppUserRole(AppUserRole appUserRole) {
+        this.appUserRole = appUserRole;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

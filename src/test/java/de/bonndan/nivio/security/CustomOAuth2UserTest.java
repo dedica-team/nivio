@@ -21,6 +21,7 @@ class CustomOAuth2UserTest {
     private String userName = "Mary";
     private String login = "foo";
     private String avatarUrl = "https://www.avatar.com";
+    private String email = "email";
 
     private Collection<OAuth2UserAuthority> authorities;
 
@@ -32,6 +33,7 @@ class CustomOAuth2UserTest {
         when(oAuth2User.getAttribute("name")).thenReturn(userName);
         when(oAuth2User.getAttribute("avatar_url")).thenReturn(avatarUrl);
         when(oAuth2User.getAttribute("id")).thenReturn(123);
+        when(oAuth2User.getAttribute("email")).thenReturn(email);
         when(oAuth2User.getAttributes()).thenReturn(Map.of());
 
         Map<String, Object> authorityAttributes = Map.of("key", new Object());

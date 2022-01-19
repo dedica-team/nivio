@@ -114,7 +114,7 @@ spring:
     driver-class-name: org.h2.Driver
     username:
     password:
-    url: jdbc:h2:./src/main/resources/data/user;AUTO_SERVER=TRUE
+    url: jdbc:h2:./src/main/resources/data/appuser;AUTO_SERVER=TRUE
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -123,3 +123,15 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
+
+
+#security:
+#  oauth2:
+#    client:
+#      access-token-uri: https://github.com/login/oauth/access_token
+#      user-authorization-uri: https://github.com/login/oauth/authorize
+#      scope: read:user,user:email
+#      client-id: 89a7c4facbb3434d599d
+#      client-secret: 9b3b08e4a340bd20e866787e4645b54f73d74b6a
+#    resource:
+#      user-info-uri: https://api.github.com/user
