@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 /**
- * Implementation of {@link OAuth2User} which provides an id, alias and avatar url
+ * Implementation of {@link OAuth2User} which provides an alias, name, avatar url, external id, and idp
  */
 public class CustomOAuth2User implements OAuth2User {
 

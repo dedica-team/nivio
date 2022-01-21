@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * Configuration of authentication and related matters.
- *
- *
  */
 @Configuration
 @ConfigurationProperties("auth")
