@@ -17,7 +17,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = { ValidationAutoConfiguration.class })
+@SpringBootTest(classes = {ValidationAutoConfiguration.class})
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class AuthConfigPropertiesTest {
@@ -27,19 +27,23 @@ class AuthConfigPropertiesTest {
 
     @Test
     void defaultLogin() {
+        // given
         AuthConfigProperties props = new AuthConfigProperties();
+        // when
         Set<ConstraintViolation<AuthConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
-
+        // then
         assertThat(validate).isEmpty();
         assertThat(props.getLoginMode()).isEqualTo(SecurityConfig.LOGIN_MODE_NONE);
     }
 
     @Test
     void loginValidated() {
+        // given
         AuthConfigProperties props = new AuthConfigProperties();
+        // when
         props.setLoginMode("foo");
         Set<ConstraintViolation<AuthConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
-
+        // then
         assertThat(validate).isNotEmpty();
         ConstraintViolation<NivioConfigProperties>[] constraintViolations = (ConstraintViolation<NivioConfigProperties>[]) validate.toArray(ConstraintViolation[]::new);
         assertThat(constraintViolations[0].getMessage()).isEqualTo("Login mode must be one of none|optional|required");
@@ -47,11 +51,13 @@ class AuthConfigPropertiesTest {
 
     @Test
     void allowedOrigins() {
+        // given
         AuthConfigProperties props = new AuthConfigProperties();
+        // when
         props.setLoginMode("required");
         props.setAllowedOriginPatterns("http://*.foo.com;https://*.domain1.com:[8080,8081]");
-
         Set<ConstraintViolation<AuthConfigProperties>> validate = localValidatorFactoryBean.getValidator().validate(props);
+        // then
         assertThat(validate).isEmpty();
         assertThat(props.getAllowedOriginPatterns()).hasSize(2)
                 .contains("http://*.foo.com")

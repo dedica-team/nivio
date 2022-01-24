@@ -2,17 +2,20 @@ package de.bonndan.nivio.appuser;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AppUserRoleTest {
 
     @Test
     void valueOf() {
 
-        assertThat(AppUserRole.valueOf("ADMIN"), is(notNullValue()));
-        assertThat(AppUserRole.valueOf("USER"), is(notNullValue()));
+        // when
+        AppUserRole admin = AppUserRole.ADMIN;
+        AppUserRole user = AppUserRole.USER;
+
+        // then
+        assertEquals(AppUserRole.valueOf("ADMIN"), admin);
+        assertEquals(AppUserRole.valueOf("USER"), user);
 
     }
 }

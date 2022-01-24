@@ -20,7 +20,9 @@ class AppUserServiceTest {
     void loadUserByUsername() {
 
         // given
-        AppUser appUser = mock(AppUser.class);
+        AppUser appUser = new AppUser();
+        appUser.setLocked(false);
+
         AppUserRepository appUserRepository = mock(AppUserRepository.class);
         AppUserService appUserService = new AppUserService(appUserRepository);
 
@@ -32,9 +34,9 @@ class AppUserServiceTest {
         assertThat(userDetails).isEqualTo(appUser);
         assertNull(userDetails.getUsername());
         assertNull(userDetails.getPassword());
-        assertFalse(userDetails.isAccountNonExpired());
-        assertFalse(userDetails.isAccountNonLocked());
-        assertFalse(userDetails.isCredentialsNonExpired());
+        assertTrue(userDetails.isAccountNonExpired());
+        assertTrue(userDetails.isAccountNonLocked());
+        assertTrue(userDetails.isCredentialsNonExpired());
 
         assertThrows(UsernameNotFoundException.class, () -> {
             appUserService.loadUserByUsername("");

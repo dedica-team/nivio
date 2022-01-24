@@ -5,7 +5,7 @@ import de.bonndan.nivio.appuser.AppUserRepository;
 import de.bonndan.nivio.appuser.AppUserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 
@@ -28,7 +28,7 @@ class CustomOAuth2UserServiceTest {
     private Collection<OAuth2UserAuthority> authorities;
     private CustomOAuth2User customOAuth2User;
 
-    @MockBean
+    @Autowired
     AppUserRepository appUserRepository;
 
     @BeforeEach
@@ -51,11 +51,11 @@ class CustomOAuth2UserServiceTest {
     @Test
     void fromGitHubUser() {
 
-        //given
+        // when
         when(oAuth2User.getAttribute("name")).thenReturn(name);
         customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
 
-        //then
+        // then
         assertThat(customOAuth2User).isNotNull();
         assertThat(customOAuth2User.getAlias()).isEqualTo(login);
         assertThat(customOAuth2User.getExternalId()).isEqualTo(externalId);
@@ -65,11 +65,11 @@ class CustomOAuth2UserServiceTest {
     @Test
     void fromGitHubUserWithMissingNameFallsBackToLogin() {
 
-        //given
+        // when
         when(oAuth2User.getAttribute("name")).thenReturn(null);
         customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
 
-        //then
+        // then
         assertThat(customOAuth2User.getName()).isEqualTo(login);
     }
 
@@ -79,6 +79,8 @@ class CustomOAuth2UserServiceTest {
         // given
         customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
         AppUser appUser = new AppUser();
+
+        // when
         appUser.setName(customOAuth2User.getName());
         appUser.setAlias(customOAuth2User.getAlias());
         appUser.setAvatarUrl(customOAuth2User.getAvatarUrl());

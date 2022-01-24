@@ -15,11 +15,12 @@ class AppUserRepositoryTest {
     @Autowired
     private AppUserRepository appUserRepository;
 
-    AppUserService appUserService = new AppUserService(appUserRepository);
-
-
     @Test
     void findByExternalId() {
+
+        AppUser appUser1 = new AppUser();
+        appUserRepository.save(appUser1);
+        // given
         Optional<AppUser> appUser = Optional.of(new AppUser());
         appUser.get().setExternalId("100");
         appUser.get().setAlias("login");
@@ -27,9 +28,11 @@ class AppUserRepositoryTest {
         appUser.get().setId(1L);
         appUser.get().setIdp("github");
 
+        // when
         appUser.ifPresent(user -> appUserRepository.save(user));
         final Optional<AppUser> fetchedAppUser = appUserRepository.findByExternalId(appUser.get().getExternalId());
 
+        // then
         assertNotNull(appUser);
 
         assertThat(fetchedAppUser)
