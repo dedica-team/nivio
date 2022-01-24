@@ -46,7 +46,6 @@ class CustomOAuth2UserServiceTest {
         authorities = List.of(grantedAuthority);
         doReturn(authorities).when(oAuth2User).getAuthorities();
 
-        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
     }
 
     @Test
@@ -54,6 +53,7 @@ class CustomOAuth2UserServiceTest {
 
         //given
         when(oAuth2User.getAttribute("name")).thenReturn(name);
+        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
 
         //then
         assertThat(customOAuth2User).isNotNull();
@@ -67,6 +67,7 @@ class CustomOAuth2UserServiceTest {
 
         //given
         when(oAuth2User.getAttribute("name")).thenReturn(null);
+        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
 
         //then
         assertThat(customOAuth2User.getName()).isEqualTo(login);
@@ -76,6 +77,7 @@ class CustomOAuth2UserServiceTest {
     void saveUser() {
 
         // given
+        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
         AppUser appUser = new AppUser();
         appUser.setName(customOAuth2User.getName());
         appUser.setAlias(customOAuth2User.getAlias());
@@ -97,4 +99,5 @@ class CustomOAuth2UserServiceTest {
         assertThat(appUser.getIdp()).isEqualTo(idp);
 
     }
+
 }

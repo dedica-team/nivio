@@ -65,7 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (StringUtils.hasLength(nameAttribute)) {
             Object val = user.getAttribute(nameAttribute);
             if (val == null) {
-                Object login = Objects.requireNonNull(user.getAttribute("login"));
+                Object login = Objects.requireNonNull(user.getAttribute(aliasAttribute));
                 name = String.valueOf(login);
             } else {
                 name = String.valueOf(val);

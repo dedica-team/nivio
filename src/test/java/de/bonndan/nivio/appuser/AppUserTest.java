@@ -1,6 +1,5 @@
 package de.bonndan.nivio.appuser;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -143,4 +142,25 @@ class AppUserTest {
         appUser.setIdp(idp);
         assertEquals(idp, appUser.getIdp());
     }
+
+    @Test
+    void getPassword() { assertNull(appUser.getPassword()); }
+
+    @Test
+    void getUsername() { assertNull(appUser.getUsername()); }
+
+    @Test
+    void isAccountNonExpired() { assertTrue(appUser.isAccountNonExpired()); }
+
+    @Test
+    void isAccountNonLocked() {
+        Boolean locked = false;
+        appUser.setLocked(locked);
+        assertEquals(!locked, appUser.isAccountNonLocked()); }
+
+    @Test
+    void isCredentialsNonExpired() { assertTrue(appUser.isCredentialsNonExpired()); }
+
+    @Test
+    void testIsEnabled() { assertTrue(appUser.isEnabled()); }
 }
