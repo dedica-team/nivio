@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:3000",
+  "baseUrl": "https://nivio-demo.herokuapp.com",
   "viewportWidth": 1920,
   "viewportHeight": 1080,
   "experimentalStudio": true

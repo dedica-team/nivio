@@ -1,23 +1,20 @@
-name: End-to-end tests
+name: Java CI
 
 on:
   push:
     tags:
       - '*'
     branches:
-      - master
-      - develop
+      - 245_improve_frontend_tests
 
 jobs:
-  cypress-run:
+
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-
       - name: Cypress run
         uses: cypress-io/github-action@v1
         with:
-          build: npm run build
-          start: npm start
-          wait-on: http://localhost:3000
+          wait-on: https://nivio-demo.herokuapp.com
