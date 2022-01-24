@@ -17,4 +17,5 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v1
         with:
+          path: src/main/app
           wait-on: https://nivio-demo.herokuapp.com
