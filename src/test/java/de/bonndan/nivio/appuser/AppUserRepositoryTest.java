@@ -6,13 +6,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 class AppUserRepositoryTest {
 
     @Autowired
     private AppUserRepository appUserRepository;
+
+    AppUserService appUserService = new AppUserService(appUserRepository);
+
 
     @Test
     void findByExternalId() {

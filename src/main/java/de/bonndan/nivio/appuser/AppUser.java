@@ -91,10 +91,6 @@ public class AppUser implements UserDetails {
     @Column
     private Boolean enabled;
 
-    public AppUser() {
-
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(appUserRole.name());
@@ -207,7 +203,5 @@ public class AppUser implements UserDetails {
         this.externalId = externalId;
     }
 
-    public void setIdp(String idp) {
-        this.idp = idp;
-    }
+    public void setIdp(String idp) { this.idp = idp; }
 }
