@@ -14,10 +14,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
  */
 public class CustomOAuth2User implements OAuth2User {
 
-    private final String alias;
     private final String name;
     private final String avatarUrl;
     @NonNull
+    private final String alias;
     private final String externalId;
     private final String idp;
     private final Map<String, Object> attributes;
@@ -32,10 +32,10 @@ public class CustomOAuth2User implements OAuth2User {
                             @NonNull final String idp
     ) {
         this.externalId = Objects.requireNonNull(externalId, "id must not be null");
-        this.name = Objects.requireNonNull(name, "name must not be null");
         this.alias = Objects.requireNonNull(alias, "alias must not be null");
         this.attributes = Objects.requireNonNull(attributes, "attributes must not be null");
         this.authorities = Objects.requireNonNull(authorities, "authorities must not be null");
+        this.name = name;
         this.avatarUrl = avatarUrl;
         this.idp = idp;
     }

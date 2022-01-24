@@ -1,6 +1,5 @@
 package de.bonndan.nivio.security;
 
-import de.bonndan.nivio.appuser.AppUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +23,6 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final AppUserService appUserService;
-
     public static final String LOGIN_MODE_REQUIRED = "required";
     public static final String LOGIN_MODE_OPTIONAL = "optional";
     public static final String LOGIN_MODE_NONE = "none";
@@ -38,8 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthConfigProperties properties;
 
-    public SecurityConfig(AppUserService appUserService, AuthConfigProperties properties) {
-        this.appUserService = appUserService;
+    public SecurityConfig(AuthConfigProperties properties) {
         this.properties = properties;
     }
 
@@ -96,7 +92,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(LOGIN_PATH + "/**", "/icons/**", "/css/**").permitAll()
                 .anyRequest().authenticated()
-                .antMatchers("/registration/**").permitAll()
                 .and()
                 .oauth2Login()
                 //.clientRegistrationRepository(clientRegistrationRepository())
@@ -155,6 +150,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
     }
-
-
 }
