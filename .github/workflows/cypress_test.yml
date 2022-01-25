@@ -14,5 +14,3 @@ jobs:
     steps:
       - uses: actions/checkout@v22
       - run: cypress run
-        with:
-          config-file: cypress.json
