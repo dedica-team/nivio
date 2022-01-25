@@ -10,3 +10,5 @@ on:
 jobs:
   cypress_test:
     uses: dedica/nivio/.github/workflows/cypress_test.yml@main
+    with:
+      url: https://nivio-demo.herokuapp.com
