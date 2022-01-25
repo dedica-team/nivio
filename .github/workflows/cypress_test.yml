@@ -15,4 +15,4 @@ jobs:
       - uses: actions/checkout@v2
       - name: Cypress run
         working-directory: src/main/app
-        run: cypress run --env CYPRESS_BASE_URL=https://nivio-demo.herokuapp.com
+        run: cypress run --env url=https://nivio-demo.herokuapp.com
