@@ -1,4 +1,4 @@
-name: Reuse test
+name: CI reuse test
 
 on:
   push:
@@ -8,5 +8,5 @@ on:
       - 245_improve_frontend_tests
 
 jobs:
-  call-cypress_test-in-local-repo:
-    uses: nivio/.github/workflows/cypress_test.yml@v1
+  cypress_test:
+    uses: dedica/nivio/.github/workflows/cypress_test.yml@main
