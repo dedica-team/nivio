@@ -1,4 +1,4 @@
-name: Java CI
+name: Cypress CI
 
 on:
   workflow_call:
