@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Yarn install
         working-directory: src/main/app
-        run: yarn isntall
+        run: yarn install
       - name: Cypress run
         working-directory: src/main/app
         run: cypress run
