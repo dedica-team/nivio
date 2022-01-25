@@ -8,15 +8,9 @@ on:
       - 245_improve_frontend_tests
 
 jobs:
-
-  build-and-deploy:
+  cypress-run:
     runs-on: ubuntu-latest
+    container: cypress/included:9.3.1
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          build: npm run build
-          start: npm start
+      - uses: actions/checkout@v1
+      - run: cypress run
