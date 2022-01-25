@@ -1,7 +1,11 @@
 name: Java CI
 
 on:
-  workflow_call:
+  push:
+    tags:
+      - '*'
+    branches:
+      - 245_improve_frontend_tests
 
 jobs:
   cypress-run:
