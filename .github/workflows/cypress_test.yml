@@ -12,5 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     container: cypress/included:9.3.1
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v22
       - run: cypress run
+        with:
+          config-file: cypress.json
