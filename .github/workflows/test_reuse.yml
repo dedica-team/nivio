@@ -1,0 +1,12 @@
+name: Reuse test
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - 245_improve_frontend_tests
+
+jobs:
+  call-workflow-1-in-local-repo:
+    uses: nivio/.github/workflows/cypress_test.yml@v1
