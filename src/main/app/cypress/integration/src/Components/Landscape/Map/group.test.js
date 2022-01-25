@@ -1,6 +1,6 @@
 describe('Group test', () => {
   beforeEach(() => {
-    cy.visit('');
+    cy.visit(Cypress.env('url'));
   });
   it('Visits Nivio and checks the groups', () => {
     cy.wait(1000);
