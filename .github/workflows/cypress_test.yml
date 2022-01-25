@@ -13,4 +13,6 @@ jobs:
     container: cypress/included:9.3.1
     steps:
       - uses: actions/checkout@v2
-      - run: cypress run
+      - name: Cypress run
+        working-directory: ./source/main/app
+        run: cypress run
