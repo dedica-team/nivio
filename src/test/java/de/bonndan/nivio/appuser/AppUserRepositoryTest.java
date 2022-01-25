@@ -18,30 +18,28 @@ class AppUserRepositoryTest {
     @Test
     void findByExternalId() {
 
-        AppUser appUser1 = new AppUser();
-        appUserRepository.save(appUser1);
         // given
-        Optional<AppUser> appUser = Optional.of(new AppUser());
-        appUser.get().setExternalId("100");
-        appUser.get().setAlias("login");
-        appUser.get().setAppUserRole(AppUserRole.USER);
-        appUser.get().setId(1L);
-        appUser.get().setIdp("github");
+        AppUser appUser = new AppUser();
+        appUser.setExternalId("100");
+        appUser.setAlias("login");
+        appUser.setAppUserRole(AppUserRole.USER);
+        appUser.setId(1L);
+        appUser.setIdp("github");
+        appUserRepository.save(appUser);
 
         // when
-        appUser.ifPresent(user -> appUserRepository.save(user));
-        final Optional<AppUser> fetchedAppUser = appUserRepository.findByExternalId(appUser.get().getExternalId());
+        final Optional<AppUser> fetchedAppUser = appUserRepository.findByExternalId(appUser.getExternalId());
 
         // then
         assertNotNull(appUser);
 
         assertThat(fetchedAppUser)
                 .hasValueSatisfying(fetched -> {
-                    assertThat(fetched.getExternalId()).isNotNull().isEqualTo(appUser.get().getExternalId());
-                    assertThat(fetched.getAlias()).isNotNull().isEqualTo(appUser.get().getAlias());
-                    assertThat(fetched.getId()).isNotNull().isEqualTo(appUser.get().getId());
-                    assertThat(fetched.getIdp()).isNotNull().isEqualTo(appUser.get().getIdp());
-                    assertThat(fetched.getAppUserRole()).isNotNull().isEqualTo(appUser.get().getAppUserRole());
+                    assertThat(fetched.getExternalId()).isNotNull().isEqualTo(appUser.getExternalId());
+                    assertThat(fetched.getAlias()).isNotNull().isEqualTo(appUser.getAlias());
+                    assertThat(fetched.getId()).isNotNull().isEqualTo(appUser.getId());
+                    assertThat(fetched.getIdp()).isNotNull().isEqualTo(appUser.getIdp());
+                    assertThat(fetched.getAppUserRole()).isNotNull().isEqualTo(appUser.getAppUserRole());
 
                 });
     }
