@@ -11,12 +11,10 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    container: cypress/included:9.3.1
     steps:
       - uses: actions/checkout@v2
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+      - uses: cypress-io/github-action@v2
         with:
-          build: yarn build
+          build: npm run build
         env:
           CYPRESS_RECORD_KEY: ${{ inputs.cypress_key }}
