@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 
@@ -14,26 +13,28 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
-class CustomOAuth2UserServiceTest {
+class Oauth2LoginEventAndListenerTest {
 
     private OAuth2User oAuth2User;
 
-    private String name = "Mary";
-    private String login = "foo";
-    private String avatarUrl = "https://www.avatar.com";
-    private String externalId = "123";
-    private String idp = "github";
+    private final String name = "Mary";
+    private final String login = "foo";
+    private final String avatarUrl = "https://www.avatar.com";
+    private final String externalId = "123";
+    private final String idp = "github";
     private Collection<OAuth2UserAuthority> authorities;
     private CustomOAuth2User customOAuth2User;
     private ApplicationEventPublisher applicationEventPublisher;
-
+    OAuth2LoginEvent oAuth2LoginEvent;
+    Oauth2LoginEventListener oauth2LoginEventListener;
 
     @Autowired
-    AppUserRepository appUserRepository;
+    private AppUserRepository appUserRepository;
 
     @BeforeEach
     public void setup() {
@@ -49,32 +50,32 @@ class CustomOAuth2UserServiceTest {
         OAuth2UserAuthority grantedAuthority = new OAuth2UserAuthority(authorityAttributes);
         authorities = List.of(grantedAuthority);
         doReturn(authorities).when(oAuth2User).getAuthorities();
+        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
+
+        oAuth2LoginEvent = new OAuth2LoginEvent(customOAuth2User);
+        oauth2LoginEventListener = new Oauth2LoginEventListener(appUserRepository);
+    }
+
+    @Test
+    void onLogin() {
+
+        // when
+        oauth2LoginEventListener.onLogin(oAuth2LoginEvent);
+
+        // then
+        assertThat(appUserRepository.findByExternalId(customOAuth2User.getExternalId()).isPresent());
+        assertThat(appUserRepository.findByExternalId(customOAuth2User.getExternalId()).equals(customOAuth2User));
 
     }
 
     @Test
-    void fromGitHubUser() {
+    void getSource() {
 
-        // when
-        when(oAuth2User.getAttribute("name")).thenReturn(name);
-        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
+        System.out.println("HUHU: " + oAuth2LoginEvent.getSource());
 
         // then
-        assertThat(customOAuth2User).isNotNull();
-        assertThat(customOAuth2User.getAlias()).isEqualTo(login);
-        assertThat(customOAuth2User.getExternalId()).isEqualTo(externalId);
-        assertThat(customOAuth2User.getName()).isEqualTo((name));
+        assertThat(oAuth2LoginEvent.getSource()).isNotNull();
+        assertThat(oAuth2LoginEvent.getSource()).isEqualTo(customOAuth2User);
+
     }
-
-    @Test
-    void fromGitHubUserWithMissingNameFallsBackToLogin() {
-
-        // when
-        when(oAuth2User.getAttribute("name")).thenReturn(null);
-        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
-
-        // then
-        assertThat(customOAuth2User.getName()).isEqualTo(login);
-    }
-
 }
