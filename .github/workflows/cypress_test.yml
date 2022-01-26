@@ -18,3 +18,4 @@ jobs:
           working-directory: src/main/app
         env:
           CYPRESS_RECORD_KEY: ${{ inputs.cypress_key }}
+          URL: ${{ inputs.url }}

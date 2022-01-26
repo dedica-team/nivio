@@ -1,6 +1,6 @@
 describe('Item test', () => {
   beforeEach(() => {
-    cy.visit(Cypress.env('url'));
+    cy.visit(Cypress.env('URL'));
   });
   it('Visits Nivio and checks the items', () => {
     cy.wait(1000);
