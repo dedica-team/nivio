@@ -18,4 +18,4 @@ jobs:
         working-directory: src/main/app
         run: cypress run --env url=${{ inputs.url }}
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_DASHBOARD_KEY }}
+          CYPRESS_RECORD_KEY: ${{ inputs.cypress_key }}
