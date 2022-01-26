@@ -61,3 +61,11 @@ jobs:
         heroku container:release web -a nivio-demo
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+
+  cypress_test:
+    uses: dedica-team/nivio/.github/workflows/cypress_test.yml@develop
+    with:
+      url: https://nivio-demo.herokuapp.com
+    secrets:
+      cypress_key: ${{ secrets.CYPRESS_DASHBOARD_KEY }}
