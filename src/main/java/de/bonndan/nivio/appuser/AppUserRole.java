@@ -4,7 +4,6 @@ public enum AppUserRole {
     USER,
     ADMIN;
 
-
     // declare your defaults with constant values
     private static final AppUserRole defaultValue = USER;
 

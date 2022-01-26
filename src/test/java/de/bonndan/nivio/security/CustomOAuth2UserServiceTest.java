@@ -1,11 +1,12 @@
 package de.bonndan.nivio.security;
 
-import de.bonndan.nivio.appuser.AppUser;
 import de.bonndan.nivio.appuser.AppUserRepository;
-import de.bonndan.nivio.appuser.AppUserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+@DataJpaTest
 class CustomOAuth2UserServiceTest {
 
     private OAuth2User oAuth2User;
@@ -27,6 +29,8 @@ class CustomOAuth2UserServiceTest {
     private String idp = "github";
     private Collection<OAuth2UserAuthority> authorities;
     private CustomOAuth2User customOAuth2User;
+    private ApplicationEventPublisher applicationEventPublisher;
+
 
     @Autowired
     AppUserRepository appUserRepository;
@@ -74,31 +78,44 @@ class CustomOAuth2UserServiceTest {
     }
 
     @Test
-    void saveUser() {
+    void loadUser() {
 
         // given
-        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
-        AppUser appUser = new AppUser();
+        AuthConfigProperties authConfigProperties = new AuthConfigProperties();
+        OAuth2UserRequest userRequest;
+        userRequest = mock(OAuth2UserRequest.class);
+        applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        CustomOAuth2UserService customOAuth2UserService = new CustomOAuth2UserService(authConfigProperties, applicationEventPublisher);
 
         // when
-        appUser.setName(customOAuth2User.getName());
-        appUser.setAlias(customOAuth2User.getAlias());
-        appUser.setAvatarUrl(customOAuth2User.getAvatarUrl());
-        appUser.setAppUserRole(AppUserRole.USER);
-        appUser.setLocked(false);
-        appUser.setEnabled(true);
-        appUser.setExternalId(customOAuth2User.getExternalId());
-        appUser.setIdp(customOAuth2User.getIdp());
+        customOAuth2UserService.loadUser(userRequest);
+
 
         // then
-        assertThat(appUser.getName()).isEqualTo(name);
-        assertThat(appUser.getAlias()).isEqualTo(login);
-        assertThat(appUser.getAvatarUrl()).isEqualTo(avatarUrl);
-        assertThat(appUser.getAppUserRole()).isEqualTo(AppUserRole.USER);
-        assertThat(appUser.getLocked()).isFalse();
-        assertThat(appUser.getEnabled()).isTrue();
-        assertThat(appUser.getExternalId()).isEqualTo(externalId);
-        assertThat(appUser.getIdp()).isEqualTo(idp);
+
+
+//        customOAuth2User = CustomOAuth2UserService.fromGitHubUser(oAuth2User, "login", "name");
+
+//        AppUser appUser = new AppUser();
+
+//        appUser.setName(customOAuth2User.getName());
+//        appUser.setAlias(customOAuth2User.getAlias());
+//        appUser.setAvatarUrl(customOAuth2User.getAvatarUrl());
+//        appUser.setAppUserRole(AppUserRole.USER);
+//        appUser.setLocked(false);
+//        appUser.setEnabled(true);
+//        appUser.setExternalId(customOAuth2User.getExternalId());
+//        appUser.setIdp(customOAuth2User.getIdp());
+
+        // then
+//        assertThat(appUser.getName()).isEqualTo(name);
+//        assertThat(appUser.getAlias()).isEqualTo(login);
+//        assertThat(appUser.getAvatarUrl()).isEqualTo(avatarUrl);
+//        assertThat(appUser.getAppUserRole()).isEqualTo(AppUserRole.USER);
+//        assertThat(appUser.getLocked()).isFalse();
+//        assertThat(appUser.getEnabled()).isTrue();
+//        assertThat(appUser.getExternalId()).isEqualTo(externalId);
+//        assertThat(appUser.getIdp()).isEqualTo(idp);
 
     }
 

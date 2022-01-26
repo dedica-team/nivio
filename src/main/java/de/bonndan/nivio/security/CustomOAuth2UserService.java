@@ -1,8 +1,6 @@
 package de.bonndan.nivio.security;
 
-import de.bonndan.nivio.appuser.AppUser;
-import de.bonndan.nivio.appuser.AppUserRepository;
-import de.bonndan.nivio.appuser.AppUserRole;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -15,21 +13,19 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
-
 /**
  * Service that ensures that {@link CustomOAuth2User} users are used in the application.
  */
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final AppUserRepository appUserRepository;
-
     private final AuthConfigProperties authConfigProperties;
 
-    public CustomOAuth2UserService(AppUserRepository appUserRepository, AuthConfigProperties authConfigProperties) {
-        this.appUserRepository = appUserRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public CustomOAuth2UserService(AuthConfigProperties authConfigProperties, ApplicationEventPublisher applicationEventPublisher) {
         this.authConfigProperties = authConfigProperties;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -37,7 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User user = super.loadUser(userRequest);
         try {
             CustomOAuth2User customOAuth2User = fromGitHubUser(user, authConfigProperties.getGithubAliasAttribute(), authConfigProperties.getGithubNameAttribute());
-            saveUser(customOAuth2User);
+            applicationEventPublisher.publishEvent(new OAuth2LoginEvent(customOAuth2User));
             return customOAuth2User;
         } catch (NullPointerException e) {
             throw new OAuth2AuthenticationException(String.format("Failed to create custom user: %s", e.getMessage()));
@@ -82,24 +78,4 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 "github");
     }
 
-
-    private void saveUser(CustomOAuth2User customOAuth2User) {
-        Optional<AppUser> appUser = appUserRepository.findByExternalId(customOAuth2User.getExternalId());
-
-        if (appUser.isEmpty()) {
-            LOGGER.info("No user found, generating profile for {}", customOAuth2User.getExternalId());
-            AppUser newAppUser = new AppUser();
-            newAppUser.setName(customOAuth2User.getName());
-            newAppUser.setAlias(customOAuth2User.getAlias());
-            newAppUser.setAvatarUrl(customOAuth2User.getAvatarUrl());
-            newAppUser.setAppUserRole(AppUserRole.USER);
-            newAppUser.setLocked(false);
-            newAppUser.setEnabled(true);
-            newAppUser.setExternalId(customOAuth2User.getExternalId());
-            newAppUser.setIdp(customOAuth2User.getIdp());
-
-            appUserRepository.save(newAppUser);
-        }
-
-    }
 }
