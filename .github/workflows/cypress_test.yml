@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: bahmutov/npm-install@v1
       - uses: cypress-io/github-action@v2
+        with:
+          working-directory: src/main/app
         env:
           CYPRESS_RECORD_KEY: ${{ inputs.cypress_key }}
