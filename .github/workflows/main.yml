@@ -51,7 +51,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
 
-    # https://github.com/actions/heroku/issues/9
+      # https://github.com/actions/heroku/issues/9
     - name: Heroku Release develop
       if: github.ref != 'refs/heads/master'
       run: |
@@ -61,3 +61,8 @@ jobs:
         heroku container:release web -a nivio-demo
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+  cypress_test:
+    uses: dedica-team/nivio/.github/workflows/cypress_test.yml@245_improve_frontend_tests
+    with:
+      url: https://nivio-demo.herokuapp.com
