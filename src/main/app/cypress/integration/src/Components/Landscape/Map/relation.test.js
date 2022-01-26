@@ -1,6 +1,6 @@
 describe('Relation test', () => {
   beforeEach(() => {
-    cy.visit(Cypress.env('URL'));
+    cy.visit(Cypress.env('url'));
   });
   it('Visits Nivio and checks the relations', () => {
     cy.wait(1000);

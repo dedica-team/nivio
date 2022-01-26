@@ -16,4 +16,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Cypress run
         working-directory: src/main/app
-        run: cypress run --record --key ${{ secrets.cypress_key }} --env url=${{ inputs.url }}
+        run: cypress run --record --env url=${{ inputs.url }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.cypress_key }}
