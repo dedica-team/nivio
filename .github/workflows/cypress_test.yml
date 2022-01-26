@@ -11,11 +11,11 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+    container: cypress/included:9.3.1
     steps:
       - uses: actions/checkout@v2
-      - uses: cypress-io/github-action@v2
-        with:
-          working-directory: src/main/app
+      - name: Cypress run
+        working-directory: src/main/app
+        run: cypress run --record --env url=${{ inputs.url }}
         env:
           CYPRESS_RECORD_KEY: ${{ inputs.cypress_key }}
-          URL: ${{ inputs.url }}
