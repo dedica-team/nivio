@@ -11,5 +11,5 @@ jobs:
   cypress_test:
     uses: dedica-team/nivio/.github/workflows/cypress_test.yml@245_improve_frontend_tests
     with:
+      cypress_key: ${{ secrets.CYPRESS_DASHBOARD_KEY }}
       url: https://nivio-demo.herokuapp.com
-      cypress_dashboard_key: ${{ secrets.CYPRESS_DASHBOARD_KEY }}
