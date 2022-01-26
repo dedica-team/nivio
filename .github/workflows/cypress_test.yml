@@ -4,9 +4,9 @@ on:
       url:
         required: true
         type: string
+    secrets:
       cypress_key:
         required: false
-        type: string
 
 jobs:
   cypress-run:
