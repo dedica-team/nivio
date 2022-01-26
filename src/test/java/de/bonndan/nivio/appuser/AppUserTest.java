@@ -194,27 +194,4 @@ class AppUserTest {
         assertEquals(idp, appUser.getIdp());
     }
 
-    @Test
-    void getPassword() { assertNull(appUser.getPassword()); }
-
-    @Test
-    void getUsername() { assertNull(appUser.getUsername()); }
-
-    @Test
-    void isAccountNonExpired() { assertTrue(appUser.isAccountNonExpired()); }
-
-    @Test
-    void isAccountNonLocked() {
-        // given
-        Boolean locked = false;
-        // when
-        appUser.setLocked(locked);
-        // then
-        assertEquals(!locked, appUser.isAccountNonLocked()); }
-
-    @Test
-    void isCredentialsNonExpired() { assertTrue(appUser.isCredentialsNonExpired()); }
-
-    @Test
-    void testIsEnabled() { assertTrue(appUser.isEnabled()); }
 }
