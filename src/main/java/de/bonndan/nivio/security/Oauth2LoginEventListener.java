@@ -35,7 +35,7 @@ public class Oauth2LoginEventListener {
             newAppUser.setLocked(false);
             newAppUser.setEnabled(true);
             newAppUser.setExternalId(customOAuth2User.getExternalId());
-            newAppUser.setIdp(customOAuth2User.getIdp());
+            newAppUser.setIdProvider(customOAuth2User.getIdProvider());
 
             appUserRepository.save(newAppUser);
         }

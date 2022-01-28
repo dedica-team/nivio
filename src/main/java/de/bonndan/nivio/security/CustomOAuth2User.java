@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 /**
- * Implementation of {@link OAuth2User} which provides an alias, name, avatar url, external id, and idp
+ * Implementation of {@link OAuth2User} which provides an alias, name, avatar url, external id, and idProvider
  */
 public class CustomOAuth2User implements OAuth2User {
 
@@ -19,7 +19,7 @@ public class CustomOAuth2User implements OAuth2User {
     @NonNull
     private final String alias;
     private final String externalId;
-    private final String idp;
+    private final String idProvider;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
 
@@ -29,13 +29,13 @@ public class CustomOAuth2User implements OAuth2User {
                             @NonNull final Map<String, Object> attributes,
                             @NonNull final Collection<? extends GrantedAuthority> authorities,
                             @Nullable final String avatarUrl,
-                            @NonNull final String idp
+                            @NonNull final String idProvider
     ) {
         this.externalId = Objects.requireNonNull(externalId, "id must not be null");
         this.alias = Objects.requireNonNull(alias, "alias must not be null");
         this.attributes = Objects.requireNonNull(attributes, "attributes must not be null");
         this.authorities = Objects.requireNonNull(authorities, "authorities must not be null");
-        this.idp = Objects.requireNonNull(idp, "idp must not be null");
+        this.idProvider = Objects.requireNonNull(idProvider, "idp must not be null");
         this.name = name;
         this.avatarUrl = avatarUrl;
 
@@ -67,8 +67,8 @@ public class CustomOAuth2User implements OAuth2User {
     }
 
     @NonNull
-    public String getIdp() {
-        return idp;
+    public String getIdProvider() {
+        return idProvider;
     }
 
     @NonNull

@@ -20,13 +20,14 @@ import static org.mockito.Mockito.*;
 @DataJpaTest
 class CustomOAuth2UserServiceTest {
 
+
     private OAuth2User oAuth2User;
 
     private String name = "Mary";
     private String login = "foo";
     private String avatarUrl = "https://www.avatar.com";
     private String externalId = "123";
-    private String idp = "github";
+    private String idProvider = "github";
     private Collection<OAuth2UserAuthority> authorities;
     private CustomOAuth2User customOAuth2User;
     private ApplicationEventPublisher applicationEventPublisher;

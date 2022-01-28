@@ -9,8 +9,8 @@ import javax.persistence.*;
         uniqueConstraints = {
                 @UniqueConstraint(name = "emailUnique",
                         columnNames = "email"),
-                @UniqueConstraint(name = "externalIdAndIdpUnique",
-                        columnNames = {"externalId", "idp"})
+                @UniqueConstraint(name = "externalIdAndIdProviderUnique",
+                        columnNames = {"externalId", "idProvider"})
 
         }
 )
@@ -40,11 +40,11 @@ public class AppUser {
     private String externalId;
 
     @Column(
-            name = "idp",
+            name = "idProvider",
             nullable = false,
             columnDefinition = "VARCHAR"
     )
-    private String idp;
+    private String idProvider;
 
     @Column(
             name = "name",
@@ -111,8 +111,8 @@ public class AppUser {
         return externalId;
     }
 
-    public String getIdp() {
-        return idp;
+    public String getIdProvider() {
+        return idProvider;
     }
 
     public Boolean getLocked() {
@@ -159,6 +159,6 @@ public class AppUser {
         this.externalId = externalId;
     }
 
-    public void setIdp(String idp) { this.idp = idp; }
+    public void setIdProvider(String idProvider) { this.idProvider = idProvider; }
 
 }

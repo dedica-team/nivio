@@ -1,5 +1,7 @@
 package de.bonndan.nivio.appuser;
 
+import java.util.Objects;
+
 public enum AppUserRole {
     USER,
     ADMIN;
@@ -9,14 +11,13 @@ public enum AppUserRole {
 
     // `of` as a substitute for `valueOf` handling the default value
     public static AppUserRole of(String value) {
-
-        if(!value.equals("ADMIN")) return defaultValue;
-        return AppUserRole.valueOf(value);
-    }
-
-    // `defaultOr` for handling default value for null
-    public static AppUserRole defaultOr(AppUserRole value) {
-        return value != null ? value : defaultValue;
+        if (Objects.isNull(value)) {
+            return defaultValue;
+        }
+        else if (!ADMIN.name().equalsIgnoreCase(value)){
+            return defaultValue;
+        }
+        else return AppUserRole.valueOf(value);
     }
 
 }

@@ -22,7 +22,7 @@ class CustomOAuth2UserTest {
     private String login = "foo";
     private String avatarUrl = "https://www.avatar.com";
     private String email = "email";
-    String idp = "github";
+    String idProvider = "github";
     String externalId = "123";
 
     private Collection<OAuth2UserAuthority> authorities;
@@ -77,6 +77,6 @@ class CustomOAuth2UserTest {
     }
 
     @Test
-    void getIdp() { assertThat(customOAuth2User.getIdp()).isEqualTo(idp); }
+    void getIdProvider() { assertThat(customOAuth2User.getIdProvider()).isEqualTo(idProvider); }
 
 }

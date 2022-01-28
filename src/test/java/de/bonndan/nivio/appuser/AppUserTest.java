@@ -73,11 +73,11 @@ class AppUserTest {
     }
 
     @Test
-    void getIdp() {
+    void getIdProvider() {
         // when
-        appUser.setIdp("github");
+        appUser.setIdProvider("github");
         // then
-        assertEquals("github", appUser.getIdp());
+        assertEquals("github", appUser.getIdProvider());
     }
 
     @Test
@@ -185,13 +185,13 @@ class AppUserTest {
     }
 
     @Test
-    void setIdp() {
+    void setIdProvider() {
         // given
-        String idp = "github";
+        String idProvider = "github";
         // when
-        appUser.setIdp(idp);
+        appUser.setIdProvider(idProvider);
         // then
-        assertEquals(idp, appUser.getIdp());
+        assertEquals(idProvider, appUser.getIdProvider());
     }
 
 }
