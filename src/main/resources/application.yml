@@ -114,7 +114,10 @@ spring:
     username:
     password:
     jpa.show-sql: true
-#  h2:
-#    console:
-#      enabled: false
+    platform: h2
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+  h2:
+    console:
+      enabled: false
+
 
