@@ -10,6 +10,6 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface AppUserRepository extends CrudRepository<AppUser, Long> {
 
-    Optional<AppUser> findByExternalId(String externalId);
+    Optional<AppUser> findByExternalIdAndIdProvider(String externalId, String idProvider);
 
 }

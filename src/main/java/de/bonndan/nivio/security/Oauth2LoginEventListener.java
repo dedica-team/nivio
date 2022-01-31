@@ -23,7 +23,7 @@ public class Oauth2LoginEventListener {
     public void onLogin(final OAuth2LoginEvent oAuth2LoginEvent) {
 
         CustomOAuth2User customOAuth2User = oAuth2LoginEvent.getSource();
-        Optional<AppUser> appUser = appUserRepository.findByExternalId(customOAuth2User.getExternalId());
+        Optional<AppUser> appUser = appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider());
 
         if (appUser.isEmpty()) {
             LOGGER.info("No user found, generating profile for {}", customOAuth2User.getExternalId());

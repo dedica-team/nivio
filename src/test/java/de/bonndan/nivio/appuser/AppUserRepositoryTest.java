@@ -16,7 +16,7 @@ class AppUserRepositoryTest {
     private AppUserRepository appUserRepository;
 
     @Test
-    void findByExternalId() {
+    void findByExternalIdAndIdProvider() {
 
         // given
         AppUser appUser = new AppUser();
@@ -27,7 +27,7 @@ class AppUserRepositoryTest {
         appUserRepository.save(appUser);
 
         // when
-        final Optional<AppUser> fetchedAppUser = appUserRepository.findByExternalId(appUser.getExternalId());
+        final Optional<AppUser> fetchedAppUser = appUserRepository.findByExternalIdAndIdProvider(appUser.getExternalId(), appUser.getIdProvider());
 
         // then
         assertNotNull(appUser);

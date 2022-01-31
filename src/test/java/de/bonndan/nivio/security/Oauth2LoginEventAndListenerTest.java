@@ -59,15 +59,13 @@ class Oauth2LoginEventAndListenerTest {
         oauth2LoginEventListener.onLogin(oAuth2LoginEvent);
 
         // then
-        assertThat(appUserRepository.findByExternalId(customOAuth2User.getExternalId()).isPresent());
-        assertThat(appUserRepository.findByExternalId(customOAuth2User.getExternalId()).equals(customOAuth2User));
+        assertThat(appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider()).isPresent());
+        assertThat(appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider()).equals(customOAuth2User));
 
     }
 
     @Test
     void getSource() {
-
-        System.out.println("HUHU: " + oAuth2LoginEvent.getSource());
 
         // then
         assertThat(oAuth2LoginEvent.getSource()).isNotNull();
