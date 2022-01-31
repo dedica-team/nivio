@@ -123,4 +123,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: false
 
