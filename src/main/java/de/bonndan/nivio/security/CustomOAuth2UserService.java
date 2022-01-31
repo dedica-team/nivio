@@ -31,13 +31,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User user = super.loadUser(userRequest);
-        try {
-            CustomOAuth2User customOAuth2User = fromGitHubUser(user, authConfigProperties.getGithubAliasAttribute(), authConfigProperties.getGithubNameAttribute());
-            applicationEventPublisher.publishEvent(new OAuth2LoginEvent(customOAuth2User));
-            return customOAuth2User;
-        } catch (NullPointerException e) {
-            throw new OAuth2AuthenticationException(String.format("Failed to create custom user: %s", e.getMessage()));
-        }
+        CustomOAuth2User customOAuth2User = fromGitHubUser(user, authConfigProperties.getGithubAliasAttribute(), authConfigProperties.getGithubNameAttribute());
+        applicationEventPublisher.publishEvent(new OAuth2LoginEvent(customOAuth2User));
+        return customOAuth2User;
     }
 
     /**

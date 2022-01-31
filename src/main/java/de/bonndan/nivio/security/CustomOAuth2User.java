@@ -35,7 +35,7 @@ public class CustomOAuth2User implements OAuth2User {
         this.alias = Objects.requireNonNull(alias, "alias must not be null");
         this.attributes = Objects.requireNonNull(attributes, "attributes must not be null");
         this.authorities = Objects.requireNonNull(authorities, "authorities must not be null");
-        this.idProvider = Objects.requireNonNull(idProvider, "idp must not be null");
+        this.idProvider = Objects.requireNonNull(idProvider, "idProvider must not be null");
         this.name = name;
         this.avatarUrl = avatarUrl;
 

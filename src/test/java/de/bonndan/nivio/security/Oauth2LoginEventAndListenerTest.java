@@ -1,7 +1,10 @@
 package de.bonndan.nivio.security;
 
+import de.bonndan.nivio.appuser.AppUser;
 import de.bonndan.nivio.appuser.AppUserRepository;
+import de.bonndan.nivio.appuser.AppUserRole;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -12,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
@@ -53,16 +56,48 @@ class Oauth2LoginEventAndListenerTest {
     }
 
     @Test
-    void onLogin() {
+    @DisplayName("Test if user is not present before login")
+    void noExistingUser() {
+
+        // given
+        var user = appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider());
+
+        user.ifPresent(user1 -> appUserRepository.delete(user1));
 
         // when
         oauth2LoginEventListener.onLogin(oAuth2LoginEvent);
+        user = appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider());
 
         // then
-        assertThat(appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider()).isPresent());
-        assertThat(appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider()).equals(customOAuth2User));
+        assertThat(user).isPresent();
 
     }
+
+    @Test
+    @DisplayName("Test if user is present before login")
+    void existingUser() {
+
+        // given
+        var user = appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider());
+
+        if (user.isEmpty()) {
+            AppUser appUser = new AppUser();
+            appUser.setExternalId(externalId);
+            appUser.setIdProvider("github");
+            appUser.setAlias(login);
+            appUser.setAppUserRole(AppUserRole.USER);
+            appUserRepository.save(appUser);
+        }
+
+        // when
+        oauth2LoginEventListener.onLogin(oAuth2LoginEvent);
+        user = appUserRepository.findByExternalIdAndIdProvider(customOAuth2User.getExternalId(), customOAuth2User.getIdProvider());
+
+        // then
+        assertThat(user).isPresent();
+
+    }
+
 
     @Test
     void getSource() {
