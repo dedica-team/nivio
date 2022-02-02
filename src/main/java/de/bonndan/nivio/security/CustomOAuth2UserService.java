@@ -50,7 +50,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     ) {
         var externalId = "";
         if (StringUtils.hasLength(nameAttribute)) {
-            externalId = String.valueOf(user.getAttribute("id") == null ? "" : user.getAttribute("id"));
+            final var id = user.getAttribute("id");
+            if (id == null) {
+                externalId = "";
+            } else {
+                externalId = String.valueOf(id);
+            }
         }
 
         var name = "";
@@ -64,9 +69,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
 
+        var alias = "";
+        if (StringUtils.hasLength(aliasAttribute)) {
+            alias = Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("");
+        } else {
+            alias = "";
+        }
+
         return new CustomOAuth2User(
                 externalId,
-                StringUtils.hasLength(aliasAttribute) ? Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("") : "",
+                alias,
                 name,
                 user.getAttributes(),
                 user.getAuthorities(),
