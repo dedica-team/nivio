@@ -84,7 +84,7 @@ environment variable.
 
 Smoke tests:
 
-In Nivio smoke tests are executed, for new commits to develop branch and master branch.
+In Nivio, smoke tests are executed for new commits to the develop and master branch.
 
 The tests use the [Cypress framework](https://docs.cypress.io/) and are located in the cypress directory:
 src/main/app/cypress/integration.
