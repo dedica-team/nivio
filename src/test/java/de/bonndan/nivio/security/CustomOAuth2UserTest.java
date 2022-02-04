@@ -21,6 +21,9 @@ class CustomOAuth2UserTest {
     private String userName = "Mary";
     private String login = "foo";
     private String avatarUrl = "https://www.avatar.com";
+    private String email = "email";
+    String idProvider = "github";
+    String externalId = "123";
 
     private Collection<OAuth2UserAuthority> authorities;
 
@@ -31,7 +34,8 @@ class CustomOAuth2UserTest {
         when(oAuth2User.getAttribute("login")).thenReturn(login);
         when(oAuth2User.getAttribute("name")).thenReturn(userName);
         when(oAuth2User.getAttribute("avatar_url")).thenReturn(avatarUrl);
-        when(oAuth2User.getAttribute("id")).thenReturn(123);
+        when(oAuth2User.getAttribute("email")).thenReturn(email);
+        when(oAuth2User.getAttribute("id")).thenReturn(externalId);
         when(oAuth2User.getAttributes()).thenReturn(Map.of());
 
         Map<String, Object> authorityAttributes = Map.of("key", new Object());
@@ -43,10 +47,9 @@ class CustomOAuth2UserTest {
     }
 
     @Test
-    void getId() {
-        assertThat(customOAuth2User.getId()).isEqualTo("123");
+    void getExternalId() {
+        assertThat(customOAuth2User.getExternalId()).isEqualTo(externalId);
     }
-
 
     @Test
     void getName() {
@@ -72,5 +75,8 @@ class CustomOAuth2UserTest {
     void getAuthorities() {
         assertThat(customOAuth2User.getAuthorities()).isEqualTo(authorities);
     }
+
+    @Test
+    void getIdProvider() { assertThat(customOAuth2User.getIdProvider()).isEqualTo(idProvider); }
 
 }
