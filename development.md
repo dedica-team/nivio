@@ -68,13 +68,29 @@ The `LandscapeRespository` gives access to the stored landscapes.
 The `LandscapeDescriptionFactory` is used to generate a `LandscapeDescription` from various sources, such as a `String` input, 
 or e.g. from a yaml file. 
 
-This `LandscapeDescription` has to be enriched with the `ItemDescription` for all items in the landscape.
-This is managed by the `InputFormatHandler`, which are able to read several input formats such as e.g. kubernetes files, or the
+This `LandscapeDescription` has to be enriched with the `ItemDescription` for all items in the landscape. This is
+managed by the `InputFormatHandler`, which are able to read several input formats such as e.g. kubernetes files, or the
 nivio description format. Access to these handlers is managed by the `InputFormatHandlerFactory`.
 
-To actually create a landscape, the `Indexer` is used. This is able to compute the landscape graph from a `LandscapeDescription`.
-The `Indexer` uses several `Resolver` to resolve groups and item relations in landscapes and e.g. the appearance of the graph.
+To actually create a landscape, the `Indexer` is used. This is able to compute the landscape graph from
+a `LandscapeDescription`. The `Indexer` uses several `Resolver` to resolve groups and item relations in landscapes and
+e.g. the appearance of the graph.
 
-The `Indexer` can be triggered either directly through the `ApiController` to index or reindex a landscape, or it is triggered
-by an observer mechanism on files. These are the files located under the path provided through the `SEED` environment variable.
+The `Indexer` can be triggered either directly through the `ApiController` to index or reindex a landscape, or it is
+triggered by an observer mechanism on files. These are the files located under the path provided through the `SEED`
+environment variable.
 
+**Testing**
+
+Smoke tests:
+
+In Nivio, smoke tests are executed for new commits to the develop and master branch.
+
+The tests use the [Cypress framework](https://docs.cypress.io/) and are located in the cypress directory:
+src/main/app/cypress/integration.
+
+Every test is executed against the [Nivio demo](https://nivio-demo.herokuapp.com/#/landscape/petclinic) and the results
+will then be sent to our Cypress Dashboard.
+
+The configuration for this workflow is located in nivio/.github/workflows/cypress_test.yml and called in the
+nivio/.github/workflows/main.yml.
