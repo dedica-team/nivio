@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.Test;
@@ -41,8 +38,8 @@ class SVGRendererTest {
 
         LayoutedComponent lc = new LayoutedComponent(foo);
 
-        Group group = new Group("bar", "landscapeIdentifier");
-        foo.addGroup(group);
+        Group group = GroupBuilder.aGroup().withIdentifier("bar").withName("landscapeIdentifier").withParent(ContextBuilder.aTestContext("default").build()).build();
+        foo.getIndexWriteAccess().addOrReplaceChild(group);
 
         LayoutedComponent glc = new LayoutedComponent(group);
         glc.setWidth(100);

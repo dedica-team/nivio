@@ -40,7 +40,7 @@ class LinksResolverTest {
 
         landscapeDescription = new LandscapeDescription("foo", "foo", null);
         aGroup = new GroupDescription();
-        landscapeDescription.getGroups().put("foo", aGroup);
+        landscapeDescription.getWriteAccess().addOrReplaceChild( aGroup);
     }
 
     @Test
@@ -84,7 +84,7 @@ class LinksResolverTest {
         Link link = new Link(new URL("https://github.com/dedica-team/nivio/"), GITHUB);
         ItemDescription item = new ItemDescription("foo");
         item.setLinks(Map.of(GITHUB, link));
-        landscapeDescription.getItemDescriptions().add(item);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(item);
 
         ExternalLinkHandler mockResolver = mock(ExternalLinkHandler.class);
         when(linkHandlerFactory.getResolver(eq(GITHUB))).thenReturn(ofNullable(mockResolver));
@@ -125,7 +125,7 @@ class LinksResolverTest {
         item.setIcon("foo");
         item.setName("bar");
         item.setLinks(Map.of("github", link));
-        landscapeDescription.getItemDescriptions().add(item);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(item);
 
         ExternalLinkHandler mockResolver = mock(ExternalLinkHandler.class);
         when(linkHandlerFactory.getResolver(eq(GITHUB))).thenReturn(ofNullable(mockResolver));

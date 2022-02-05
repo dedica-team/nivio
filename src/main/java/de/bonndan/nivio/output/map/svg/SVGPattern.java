@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 import j2html.tags.DomContent;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static j2html.TagCreator.rawHtml;
@@ -16,7 +17,7 @@ class SVGPattern extends Component {
     }
 
     static String idForLink(String link) {
-        return Base64.getEncoder().encodeToString(link.getBytes());
+        return Base64.getEncoder().encodeToString(link.getBytes(StandardCharsets.UTF_8));
     }
 
     public DomContent render() {

@@ -9,13 +9,13 @@ import java.util.Map;
 /**
  * API root object.
  */
-public class Index implements Linked {
+public class ApiRootModel implements Linked {
 
     private final Map<String, Link> links = new HashMap<>();
     private final Map<String, Link> oauth2links = new HashMap<>();
     private final ConfigApiModel config;
 
-    public Index(ConfigApiModel config) {
+    public ApiRootModel(ConfigApiModel config) {
         this.config = config;
     }
 

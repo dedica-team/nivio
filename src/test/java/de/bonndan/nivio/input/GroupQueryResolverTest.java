@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +33,7 @@ class GroupQueryResolverTest {
         groupDescription = new GroupDescription();
         groupDescription.setIdentifier("groupIdentifier");
 
-        input.getGroups().put("group", groupDescription);
+        input.getWriteAccess().addOrReplaceChild(groupDescription);
 
     }
 
@@ -49,7 +48,7 @@ class GroupQueryResolverTest {
 
         groupResolver.resolve(input);
 
-        Set<ItemDescription> matched = input.getItemDescriptions().all().stream()
+        Set<ItemDescription> matched = input.getItemDescriptions().stream()
                 .filter(itemDescription -> itemDescription.getGroup().equals(groupDescription.getIdentifier()))
                 .collect(Collectors.toSet());
         assertThat(matched).containsExactly(item);
@@ -68,7 +67,7 @@ class GroupQueryResolverTest {
         groupResolver.resolve(input);
 
         //then
-        Set<ItemDescription> matched = input.getItemDescriptions().all().stream()
+        Set<ItemDescription> matched = input.getItemDescriptions().stream()
                 .filter(itemDescription -> itemDescription.getGroup().equals(groupDescription.getIdentifier()))
                 .collect(Collectors.toSet());
         assertThat(matched).containsExactly(item);

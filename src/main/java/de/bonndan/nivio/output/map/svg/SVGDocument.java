@@ -92,7 +92,7 @@ public class SVGDocument extends Component {
                 SVGItemLabel label = new SVGItemLabel(item);
                 Point2D.Double pos = hexMap.getTileForItem(item).getHex().toPixel();
 
-                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier().toString());
+                List<StatusValue> itemStatuses = assessment.getResults().get(item.getFullyQualifiedIdentifier());
                 items.add(new SVGItem(label.render(), layoutedItem, itemStatuses, pos));
             });
         });
@@ -100,7 +100,7 @@ public class SVGDocument extends Component {
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         layouted.getChildren().forEach(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
-            Set<MapTile> groupArea = hexMap.getGroupArea(group, landscape.getItems().retrieve(group.getItems()));
+            Set<MapTile> groupArea = hexMap.getGroupArea(group, group.getChildren());
             SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, debug);
             groupAreas.add(area);
         });
@@ -197,7 +197,7 @@ public class SVGDocument extends Component {
     }
 
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
-        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget(), debug);
+        Optional<HexPath> bestPath = hexMap.getPath(source, (Item) rel.getTarget(), debug);
         if (bestPath.isPresent()) {
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
             LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());

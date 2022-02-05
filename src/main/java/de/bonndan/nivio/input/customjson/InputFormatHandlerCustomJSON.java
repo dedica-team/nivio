@@ -91,14 +91,11 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
                 }
             });
             ItemDescription itemDescription = objectMapper.convertValue(itemMap, ItemDescription.class);
-            if (!StringUtils.hasLength(itemDescription.getFullyQualifiedIdentifier().getLandscape())) {
-                itemDescription.setEnvironment(landscapeDescription.getIdentifier());
-            }
-            String landscapeId = itemDescription.getFullyQualifiedIdentifier().getLandscape();
+
             LandscapeDescription applyToLandscape = landscapeDescriptionMap.computeIfAbsent(
-                    landscapeId, LandscapeDescription::new
+                    itemDescription.getFullyQualifiedIdentifier().getAuthority(), LandscapeDescription::new
             );
-            applyToLandscape.getItemDescriptions().add(itemDescription);
+            applyToLandscape.getWriteAccess().addOrReplaceChild(itemDescription);
         });
 
         return landscapeDescriptionMap.values().stream().collect(Collectors.toUnmodifiableList());

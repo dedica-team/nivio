@@ -9,6 +9,7 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -20,7 +21,7 @@ public class ProcessingErrorEvent extends ProcessingEvent {
 
     private final ProcessingException exception;
 
-    public ProcessingErrorEvent(@NonNull final FullyQualifiedIdentifier fqi, @NonNull final ProcessingException exception) {
+    public ProcessingErrorEvent(@NonNull final URI fqi, @NonNull final ProcessingException exception) {
         super(fqi);
         this.exception = Objects.requireNonNull(exception);
     }

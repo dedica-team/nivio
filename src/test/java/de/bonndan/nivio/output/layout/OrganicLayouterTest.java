@@ -7,15 +7,9 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
-import de.bonndan.nivio.output.icons.ExternalIcons;
-import de.bonndan.nivio.output.icons.ExternalIconsProvider;
-import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -92,11 +86,9 @@ class OrganicLayouterTest extends RenderingTest {
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
-            gd.setEnvironment(input.getIdentifier());
-            input.getGroups().put(groupIdentifier, gd);
+            input.getWriteAccess().addOrReplaceChild(gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
-                itemDescription.setEnvironment(input.getIdentifier());
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
                 input.getItemDescriptions().add(itemDescription);
@@ -149,7 +141,7 @@ class OrganicLayouterTest extends RenderingTest {
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
-            input.getGroups().put(groupIdentifier, gd);
+            input.getWriteAccess().addOrReplaceChild(gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);

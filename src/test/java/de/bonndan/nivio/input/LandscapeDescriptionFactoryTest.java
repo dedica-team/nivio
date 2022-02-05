@@ -29,10 +29,6 @@ class LandscapeDescriptionFactoryTest {
         factory = new LandscapeDescriptionFactory();
     }
 
-    @Test
-    void readsMinimalWithIdentifier() {
-        assertDoesNotThrow(() -> new LandscapeDescriptionFactory().fromString("yaml", ""));
-    }
 
     @Test
     void readFails() {

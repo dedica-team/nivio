@@ -3,6 +3,7 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import org.springframework.lang.NonNull;
 
+import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +14,10 @@ import java.util.Objects;
  */
 public class Assessment {
 
-    private final Map<String, List<StatusValue>> results;
+    private final Map<URI, List<StatusValue>> results;
     private final ZonedDateTime date;
 
-    public Assessment(@NonNull final Map<String, List<StatusValue>> results) {
+    public Assessment(@NonNull final Map<URI, List<StatusValue>> results) {
         date = ZonedDateTime.now();
         this.results = Objects.requireNonNull(results);
     }
@@ -30,7 +31,7 @@ public class Assessment {
         return new Assessment(Map.of());
     }
 
-    public Map<String, List<StatusValue>> getResults() {
+    public Map<URI, List<StatusValue>> getResults() {
         return results;
     }
 

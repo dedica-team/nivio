@@ -1,71 +1,64 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.GraphTestSupport;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LayoutConfig;
+import de.bonndan.nivio.model.RelationFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
+import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AllGroupsLayoutTest {
 
+    private GraphTestSupport graph;
+
+    @BeforeEach
+    void setup() {
+        graph = new GraphTestSupport();
+    }
+
     @Test
     void testWithARelation() {
 
-        Group a = new Group("a", "test");
-        Item bara = getTestItem("a", "bara");
-        Item fooa = getTestItem("a", "fooa");
-        a.addOrReplaceItem(bara);
-        a.addOrReplaceItem(fooa);
+        Item bara = graph.getTestItem("a", "bara");
+        Item fooa = graph.getTestItem("a", "fooa");
 
-        Group b = new Group("b", "test");
-        Item barb = getTestItem("b", "barb");
-        Item foob = getTestItem("b", "foob");
-        b.addOrReplaceItem(barb);
-        b.addOrReplaceItem(foob);
+        Item barb = graph.getTestItem("b", "barb");
+        Item foob = graph.getTestItem("b", "foob");
 
-        Group c = new Group("c", "test");
-        Item barc = getTestItem("c", "barc");
-        Item fooc = getTestItem("c", "fooc");
-        c.addOrReplaceItem(barc);
-        c.addOrReplaceItem(fooc);
+        Item barc = graph.getTestItem("c", "barc");
+        Item fooc = graph.getTestItem("c", "fooc");
 
-        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").withItems(Set.of(fooa, bara, foob, barb, fooc, barc)).build();
 
-        landscape.addGroup(a);
-        landscape.addGroup(b);
-        landscape.addGroup(c);
-
-        Map<String, SubLayout> map = Map.of(
-                "a", getSubLayout(a, Set.of(bara, fooa)),
-                "b", getSubLayout(b, Set.of(barb, foob)),
-                "c", getSubLayout(c, Set.of(barc, fooc))
+        Map<URI, SubLayout> map = Map.of(
+                graph.groupA.getFullyQualifiedIdentifier(), getSubLayout(graph.groupA, Set.of(bara, fooa)),
+                graph.groupB.getFullyQualifiedIdentifier(), getSubLayout(graph.groupB, Set.of(barb, foob)),
+                graph.groupC.getFullyQualifiedIdentifier(), getSubLayout(graph.groupC, Set.of(barc, fooc))
         );
 
         //add some inter-group relations
-        bara.addOrReplace(RelationFactory.createForTesting(bara, barb));
-        barb.addOrReplace(RelationFactory.createForTesting(barb, barc));
-
-        Map<String, Group> groupMap = new LinkedHashMap<>();
-        landscape.getGroups().forEach(groupMap::put);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(bara, barb));
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(barb, barc));
 
         //when
-        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true, landscape.getConfig().getLayoutConfig());
+        AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true, graph.landscape.getConfig().getLayoutConfig());
 
         //then
-        LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(landscape, landscape.getGroups(), map);
+        LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(graph.landscape, graph.landscape.getGroups(), map);
         assertNotNull(layoutedLandscape);
-        assertEquals(landscape, layoutedLandscape.getComponent());
+        assertEquals(graph.landscape, layoutedLandscape.getComponent());
         assertEquals(3, layoutedLandscape.getChildren().size());
 
         //assert position is always the same
         LayoutedComponent child0 = layoutedLandscape.getChildren().get(0);
-        assertEquals("test/a", child0.getComponent().getFullyQualifiedIdentifier().toString());
+        assertEquals(graph.groupA.getFullyQualifiedIdentifier().toString(), child0.getComponent().getFullyQualifiedIdentifier().toString());
         assertEquals(1240, Math.round(child0.getX()));
         assertEquals(1431, Math.round(child0.getY()));
     }

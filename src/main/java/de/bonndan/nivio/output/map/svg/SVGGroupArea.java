@@ -89,7 +89,7 @@ class SVGGroupArea extends Component {
     @Override
     public DomContent render() {
         List<Component> territoryHexes = components != null ? new ArrayList<>(components) : new ArrayList<>();
-        String fqi = group.getFullyQualifiedIdentifier().jsonValue();
+        String fqi = group.getFullyQualifiedIdentifier().getPath();
         if (!StringUtils.hasLength(fqi)) {
             // we can still render an svg, but area will not be clickable
             LOGGER.warn("Empty group fqi in SVG group area, group {}", group);
@@ -116,7 +116,7 @@ class SVGGroupArea extends Component {
         var x = anchor.x;
         var y = anchor.y + SVGRenderer.DEFAULT_ICON_SIZE * 2;
         var fontSize = 8;
-        boolean small = group.getItems().size() < 4;
+        boolean small = group.getChildren().size() < 4;
         if (!small) {
             fontSize = 16;
             //calculate center

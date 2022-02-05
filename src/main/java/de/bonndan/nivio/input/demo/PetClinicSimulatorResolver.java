@@ -32,7 +32,7 @@ public class PetClinicSimulatorResolver extends Resolver {
     }
 
     private void simulateHealth(LandscapeDescription input) {
-        List<ItemDescription> all = new ArrayList<>(input.getItemDescriptions().all());
+        List<ItemDescription> all = new ArrayList<>(input.getItemDescriptions());
 
         ItemDescription picked = all.stream()
                 .filter(itemDescription -> Optional.ofNullable(itemDescription.getLabel(Label.health)).map(s -> s.equals(HealthKPI.UNHEALTHY)).orElse(false))
@@ -54,7 +54,7 @@ public class PetClinicSimulatorResolver extends Resolver {
         int mrem = r.nextInt(high - low) + low;
         ItemDescription sensor;
         try {
-            sensor = input.getItemDescriptions().pick("sensor", "xray");
+            sensor = input.getIndexReadAccess().findOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
         } catch (Exception e) {
             processLog.warn("Failed to run simulation: " + e.getMessage());
             return;
@@ -65,12 +65,17 @@ public class PetClinicSimulatorResolver extends Resolver {
             mrem--;
         }
         processLog.info(String.format("Simulating radiation of %d mrem on item %s", mrem, sensor));
-        sensor.setLabel(RADIATION, mrem);
+        sensor.setLabel(RADIATION.toLowerCase(Locale.ROOT), String.valueOf(mrem));
 
-        ItemDescription customerDb = input.getItemDescriptions().pick("customer-db", "xray");
+        try {
+
+        ItemDescription customerDb = input.getIndexReadAccess().findOneByIdentifiers("customer-db", "xray", ItemDescription.class).orElseThrow();
         int scale = mrem > 300 ? 0 : 1;
         customerDb.setLabel(Label.scale, String.valueOf(scale));
         processLog.info(String.format("Customer DB is scaled to %s", scale));
+        } catch (Exception e) {
+            processLog.warn("Failed to run simulation: " + e.getMessage());
+        }
     }
 
 }

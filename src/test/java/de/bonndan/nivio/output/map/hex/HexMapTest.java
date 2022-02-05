@@ -1,8 +1,9 @@
 package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,6 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class HexMapTest {
 
+
+    private GraphTestSupport graph;
+
+    @BeforeEach
+    void setup() {
+        graph = new GraphTestSupport();
+    }
 
     @Test
     void getPath() {
@@ -74,19 +82,13 @@ class HexMapTest {
         MapTile one = new MapTile(new Hex(1, 1));
         MapTile two = new MapTile(new Hex(3, 3));
 
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-        group.addOrReplaceItem(target);
 
         HexMap hexMap = new HexMap();
-        hexMap.add(landscapeItem, one);
-        hexMap.add(target, two);
+        hexMap.add(graph.itemAA, one);
+        hexMap.add(graph.itemAB, two);
 
         //when
-        Set<MapTile> groupArea = hexMap.getGroupArea(group, Set.of(landscapeItem, target));
+        Set<MapTile> groupArea = hexMap.getGroupArea(graph.groupA, Set.of(graph.itemAA, graph.itemAB));
 
         //then
         long count = groupArea.stream().filter(hex -> hex.getGroup() != null).count();

@@ -26,7 +26,7 @@ class LabelRelationResolverTest {
 
     @Test
     @DisplayName("label blacklist is used")
-    public void blacklistPreventsRelations() {
+     void blacklistPreventsRelations() {
         //given
         LandscapeDescription landscape = new LandscapeDescription("identifier");
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
@@ -37,7 +37,8 @@ class LabelRelationResolverTest {
         ItemDescription target = new ItemDescription( "baz");
         target.setAddress("http://baz-composition-service:80");
 
-        landscape.setItems(List.of(hihi, target));
+        landscape.getWriteAccess().addOrReplaceChild(hihi);
+        landscape.getWriteAccess().addOrReplaceChild(target);
 
         //when
         resolver.resolve(landscape);
@@ -48,7 +49,7 @@ class LabelRelationResolverTest {
 
     @Test
     @DisplayName("label blacklist is used case insensitive")
-    public void blacklistPreventsRelationsCaseInsensitive() {
+     void blacklistPreventsRelationsCaseInsensitive() {
         //given
         LandscapeDescription landscape = new LandscapeDescription("identifier");
         landscape.getConfig().getLabelBlacklist().add(".*COMPOSITION.*");
@@ -59,7 +60,8 @@ class LabelRelationResolverTest {
         ItemDescription target = new ItemDescription( "baz");
         target.setAddress("http://baz-composition-service:80");
 
-        landscape.setItems(List.of(hihi, target));
+        landscape.getWriteAccess().addOrReplaceChild(hihi);
+        landscape.getWriteAccess().addOrReplaceChild(target);
 
         //when
         resolver.resolve(landscape);
@@ -75,13 +77,14 @@ class LabelRelationResolverTest {
         ItemDescription db = new ItemDescription("x.y.z");
         db.setLabel(LabelToFieldResolver.LINK_LABEL_PREFIX + "foo", "http://foo.bar.baz");
         LandscapeDescription landscape = new LandscapeDescription("identifier");
-        landscape.setItems(List.of(db));
+
+        landscape.getWriteAccess().addOrReplaceChild(db);
 
         //when
         resolver.resolve(landscape);
 
         //then
-        assertThat(landscape.getItemDescriptions().all().size()).isEqualTo(1);
+        assertThat(landscape.getItemDescriptions().size()).isEqualTo(1);
         verify(hintFactory, never()).createForLabel(eq(landscape), any(), any());
     }
 

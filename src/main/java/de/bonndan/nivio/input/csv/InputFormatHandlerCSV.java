@@ -84,7 +84,8 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
             itemDescriptions.add(itemDescription);
         });
 
-        landscapeDescription.setItems(itemDescriptions);
+        itemDescriptions.forEach(itemDescription -> landscapeDescription.getWriteAccess().addOrReplaceChild(itemDescription));
+
         return Collections.emptyList();
     }
 

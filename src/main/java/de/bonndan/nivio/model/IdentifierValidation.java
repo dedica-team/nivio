@@ -4,6 +4,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 public class IdentifierValidation {
 
     /**
@@ -46,5 +48,14 @@ public class IdentifierValidation {
         String trimmed = StringUtils.trimWhitespace(identifier);
         IdentifierValidation.assertValid(trimmed);
         return trimmed;
+    }
+
+    @NonNull
+    public static Optional<String> getIdentifier(@Nullable final String identifier) {
+        try {
+            return Optional.of(getValidIdentifier(identifier));
+        } catch (IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
     }
 }

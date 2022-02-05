@@ -1,4 +1,5 @@
 Models/Branding.rst
+Models/ContextDescription.rst
 Models/GroupDescription.rst
 Models/InterfaceDescription.rst
 Models/ItemDescription.rst
@@ -7,4 +8,5 @@ Models/LandscapeConfig.rst
 Models/LandscapeDescription.rst
 Models/LayoutConfig.rst
 Models/Link.rst
+Models/UnitDescription.rst
 README.rst

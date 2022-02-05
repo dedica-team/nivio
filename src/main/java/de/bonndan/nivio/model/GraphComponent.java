@@ -9,23 +9,22 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import static de.bonndan.nivio.model.ComponentDiff.compareCollections;
 import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 
 /**
  * Base class for graph elements
- *
- * @param <P> Parent
- * @param <C> Child
  */
-public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> implements Component, Labeled, Linked, Assessable {
+public abstract class GraphComponent implements Component, Assessable {
 
     @NotNull
     @Pattern(regexp = IdentifierValidation.PATTERN)
-    private final String identifier;
+    protected final String identifier;
 
     private final String name;
 
@@ -35,25 +34,25 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
 
     private final String description;
 
-    private final String type;
-
-    private final Set<C> children = ConcurrentHashMap.newKeySet();
-
     private final Map<String, Link> links = new HashMap<>();
 
     private final Map<String, String> labels = new ConcurrentHashMap<>();
 
-    private P parent;
+    private final String type;
 
-    private final FullyQualifiedIdentifier fullyQualifiedIdentifier;
+    private final URI fullyQualifiedIdentifier;
 
-    protected GraphNode(@NonNull final String identifier,
-                        @Nullable final String name,
-                        @Nullable final String owner,
-                        @Nullable final String contact,
-                        @Nullable final String description,
-                        @Nullable final String type,
-                        @NonNull final P parent
+    private final URI parent;
+
+    protected IndexReadAccess<? extends GraphComponent> indexReadAccess;
+
+    protected GraphComponent(@NonNull final String identifier,
+                             @Nullable final String name,
+                             @Nullable final String owner,
+                             @Nullable final String contact,
+                             @Nullable final String description,
+                             @Nullable final String type,
+                             @NonNull final URI parent
     ) {
         if (!StringUtils.hasLength(identifier)) {
             throw new IllegalArgumentException("Identifier must not be empty");
@@ -64,10 +63,28 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
         this.contact = contact;
         this.description = description;
         this.type = type;
-        this.parent = Objects.requireNonNull(parent);
-        this.fullyQualifiedIdentifier = FullyQualifiedIdentifier.from(parent.getFullyQualifiedIdentifier(), this.identifier);
+        this.parent = verifyParent(parent);
+        this.fullyQualifiedIdentifier = FullyQualifiedIdentifier.from(parent, this);
     }
 
+    protected void attach(@NonNull final IndexReadAccess<? extends GraphComponent> index) {
+        this.indexReadAccess = Objects.requireNonNull(index);
+    }
+
+    protected void detach() {
+        this.indexReadAccess = null;
+    }
+
+    /**
+     * @return true if the index has been attached
+     */
+    public boolean isAttached() {
+        return indexReadAccess != null;
+    }
+
+    protected URI verifyParent(final URI parent) {
+        return Objects.requireNonNull(parent, "parent must not be null");
+    }
 
     @NonNull
     public String getIdentifier() {
@@ -75,10 +92,27 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
     }
 
     @NonNull
-    @Override
-    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
-        return Objects.requireNonNull(fullyQualifiedIdentifier, "FQI not present, nodes requires parent to be set");
+    public URI getFullyQualifiedIdentifier() {
+        return fullyQualifiedIdentifier;
     }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    @NonNull
+    @Override
+    public Set<StatusValue> getAdditionalStatusValues() {
+        return StatusValue.fromMapping(getFullyQualifiedIdentifier(), indexedByPrefix(Label.status));
+    }
+
+    @NonNull
+    @Override
+    public Set<Assessable> getAssessables() {
+        return Set.copyOf(getChildren(component -> true, GraphComponent.class));
+    }
+
 
     @Override
     @NonNull
@@ -110,76 +144,6 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
     }
 
     @Override
-    public String getType() {
-        return type;
-    }
-
-    @JsonIgnore
-    @NonNull
-    public P getParent() {
-        return parent;
-    }
-
-    @NonNull
-    @Override
-    public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
-    }
-
-    @NonNull
-    @Override
-    public String getAssessmentIdentifier() {
-        return getFullyQualifiedIdentifier().toString();
-    }
-
-    @NonNull
-    @Override
-    public Set<? extends Assessable> getAssessables() {
-        return getChildren();
-    }
-
-    /**
-     * Returns an immutable copy of the child nodes.
-     */
-    @JsonIgnore
-    @NonNull
-    public Set<C> getChildren() {
-        return Set.copyOf(children);
-    }
-
-    /**
-     * Adds a child or replaces the similar one.
-     *
-     * @param child to add or replace
-     */
-    public void addOrReplaceChild(@NonNull final C child) {
-        Objects.requireNonNull(child, "child is null");
-        if (child.getParent() != this) {
-            throw new IllegalArgumentException("GraphNode cannot be added as child, has different parent");
-        }
-        children.stream().filter(graphNode -> graphNode.equals(child)).findFirst().ifPresent(this::removeChild);
-        children.add(child);
-    }
-
-    /**
-     * @param child to delete
-     * @return true if the child has been removed or was not present.
-     */
-    public boolean removeChild(@NonNull final C child) {
-        child.detach();
-        return children.remove(child);
-    }
-
-    /**
-     * Clears the references to parent and children
-     */
-    protected void detach() {
-        parent = null;
-        children.clear();
-    }
-
-
-    @Override
     public String getLabel(String key) {
         return labels.get(key);
     }
@@ -202,7 +166,7 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
      * @return a list of changes if any changes are present
      * @throws IllegalArgumentException if the arg is not comparable
      */
-    public List<String> getChanges(final GraphNode<P,C> newer) {
+    public List<String> getChanges(final GraphComponent newer) {
         if (!newer.equals(this)) {
             throw new IllegalArgumentException(String.format("Cannot compare component %s against %s", newer, this));
         }
@@ -212,12 +176,14 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
         changes.addAll(compareStrings(this.description, newer.description, "Description"));
         changes.addAll(compareStrings(this.name, newer.name, "Name"));
         changes.addAll(compareStrings(this.owner, newer.owner, "Owner"));
-        changes.addAll(compareStrings(this.type, newer.type, "Type"));
         changes.addAll(compareCollections(this.links.keySet(), newer.links.keySet(), "Links"));
+
+        changes.addAll(compareStrings(this.type, newer.type, "Type"));
         changes.addAll(newer.diff(this));
 
         return changes;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -226,10 +192,10 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
         if (o == null)
             return false;
 
-        if (!(o instanceof Item))
+        if (!(o instanceof GraphComponent))
             return false;
 
-        GraphNode node = (GraphNode) o;
+        GraphComponent node = (GraphComponent) o;
         if (toString() == null)
             return false;
 
@@ -238,7 +204,7 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
 
     @Override
     public int hashCode() {
-        return Objects.hash(toString());
+        return toString().hashCode();
     }
 
     /**
@@ -246,6 +212,42 @@ public /* abstract */ class GraphNode<P extends GraphNode, C extends GraphNode> 
      */
     @Override
     public String toString() {
-        return getFullyQualifiedIdentifier().toString();
+        return fullyQualifiedIdentifier == null ? identifier : getFullyQualifiedIdentifier().toString();
+    }
+
+
+    protected <T extends GraphComponent> T _getParent(Class<T> cls) {
+        if (parent == null) {
+            return null;
+        }
+        if (Landscape.class.equals(cls)) {
+            return (T) indexReadAccess.get(FullyQualifiedIdentifier.build(Landscape.class, parent.getAuthority())).orElseThrow();
+        }
+        return indexReadAccess.get(parent)
+                .map(graphComponent -> (T) graphComponent)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Parent %s not present in graph", parent)));
+    }
+
+
+    @NonNull
+    protected <T extends Component> Set<T> getChildren(@NonNull final Predicate<Component> predicate, @NonNull final Class<T> cls) {
+        Set<T> set = new LinkedHashSet<>();
+        indexReadAccess.getChildren(this.getFullyQualifiedIdentifier()).stream()
+                .filter(predicate)
+                .forEach(component -> set.add((T) component));
+        return set;
+    }
+
+    @JsonIgnore //for internal debuggin
+    @NonNull
+    public abstract GraphComponent getParent();
+
+    @NonNull
+    public abstract Set<? extends GraphComponent> getChildren();
+
+    @NonNull
+    @Override
+    public String getParentIdentifier() {
+        return getParent().getIdentifier();
     }
 }

@@ -37,7 +37,7 @@ public class RelationFactory {
     /**
      * Creates a new relation description of type dataflow and adds it to the source.
      */
-    public static RelationDescription createDataflowDescription(ItemDescription source, String target) {
+    public static RelationDescription createDataflowDescription(Component source, String target) {
         RelationDescription relationDescription = new RelationDescription();
         relationDescription.setSource(source.getIdentifier());
         relationDescription.setTarget(target);
@@ -62,21 +62,28 @@ public class RelationFactory {
      *
      * @param existing    existing relation
      * @param description incoming data
-     * @param landscape   the landscape containing source and target items
      * @return new copy
      */
     @NonNull
     public static Relation update(@NonNull final Relation existing,
                                   @NonNull final RelationDescription description,
-                                  @NonNull final Landscape landscape
+                                  @NonNull final Item origin,
+                                  @NonNull final Item target
     ) {
+        if (!Objects.requireNonNull(origin).isAttached()) {
+            throw new IllegalArgumentException("Origin must be a non-null graph attached item");
+        }
+
+        if (!Objects.requireNonNull(target).isAttached()) {
+            throw new IllegalArgumentException("Target must be a non-null graph attached item");
+        }
+
         Objects.requireNonNull(existing);
         Objects.requireNonNull(description);
-        Objects.requireNonNull(landscape);
 
         Relation relation = new Relation(
-                landscape.findOneBy(description.getSource(), existing.getSource().getGroup()),
-                landscape.findOneBy(description.getTarget(), existing.getTarget().getGroup()),
+                origin,
+                target,
                 description.getDescription(),
                 description.getFormat(),
                 description.getType()
@@ -89,28 +96,27 @@ public class RelationFactory {
     /**
      * Create a new relation object
      *
-     * @param origin              the item the description relates to
-     * @param relationDescription the input dto
-     * @param landscape           the landscape to pick ends from
+     * @param origin      the item the description relates to
+     * @param target      the item the description targets at
+     * @param description the input dto
      * @return a new relation object
      */
     @NonNull
     public static Relation create(@NonNull final Item origin,
-                                  @NonNull final RelationDescription relationDescription,
-                                  @NonNull final Landscape landscape
+                                  @NonNull final Item target,
+                                  @NonNull final RelationDescription description
     ) {
-        Objects.requireNonNull(relationDescription);
-        Objects.requireNonNull(landscape);
+        Objects.requireNonNull(description);
 
         Relation relation = new Relation(
-                landscape.findOneBy(relationDescription.getSource(), origin.getGroup()),
-                landscape.findOneBy(relationDescription.getTarget(), origin.getGroup()),
-                relationDescription.getDescription(),
-                relationDescription.getFormat(),
-                relationDescription.getType()
+                Objects.requireNonNull(origin),
+                Objects.requireNonNull(target),
+                description.getDescription(),
+                description.getFormat(),
+                description.getType()
         );
 
-        Labeled.merge(relationDescription, relation);
+        Labeled.merge(description, relation);
         return relation;
     }
 
@@ -119,5 +125,27 @@ public class RelationFactory {
      */
     public static Relation createForTesting(Item source, Item target) {
         return new Relation(source, target, null, null, null);
+    }
+
+    public static Relation createChild(@NonNull final GraphComponent parent, @NonNull final GraphComponent child) {
+        if (!Objects.requireNonNull(parent, "Parent is null").isAttached()) {
+            throw new IllegalArgumentException(String.format("Parent %s is not attached to graph.", parent));
+        }
+
+        if (!Objects.requireNonNull(child, "Child is null").isAttached()) {
+            throw new IllegalArgumentException(String.format("Child %s is not attached to graph.", child));
+        }
+
+        var cls = child.getParent().getClass();
+        if (!cls.equals(parent.getClass())) {
+            throw new IllegalArgumentException(
+                    String.format("Child %s requires parent of class %s, but got %s",
+                            child.getClass().getSimpleName(),
+                            cls.getSimpleName(),
+                            parent.getClass().getSimpleName()
+                    )
+            );
+        }
+        return new Relation(parent, child, null, null, RelationType.CHILD);
     }
 }

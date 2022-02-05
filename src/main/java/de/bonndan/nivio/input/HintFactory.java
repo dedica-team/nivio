@@ -1,10 +1,11 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.ComponentDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.model.IndexReadAccess;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
@@ -76,7 +77,7 @@ public class HintFactory {
             return Optional.empty();
         }
 
-        List<ItemDescription> targets = getTarget(landscape.getItemDescriptions(), value, optionalURI);
+        List<ItemDescription> targets = getTarget(landscape.getIndexReadAccess(), value, optionalURI);
         if (targets.size() > 1) {
             LOGGER.info("Found ambiguous results searching for target {}", value);
             return Optional.empty();
@@ -112,16 +113,16 @@ public class HintFactory {
         return Optional.of(hint);
     }
 
-    private static List<ItemDescription> getTarget(ItemIndex<ItemDescription> itemDescriptions, String value, Optional<URI> optionalURI) {
+    private static List<ItemDescription> getTarget(IndexReadAccess<ComponentDescription> readAccess, String value, Optional<URI> optionalURI) {
 
         List<ItemDescription> results = new ArrayList<>();
         if (optionalURI.isPresent()) {
             String query = String.format("address = '%s'", optionalURI.get());
-            itemDescriptions.query(query).stream().findFirst().ifPresent(results::add);
+            readAccess.findMatching(query, ItemDescription.class).stream().findFirst().ifPresent(results::add);
             return results;
         }
 
-        Collection<ItemDescription> query = itemDescriptions.query(value);
+        Collection<ItemDescription> query = readAccess.findMatching(value, ItemDescription.class);
         if (query.size() != 1) {
             LOGGER.debug("Found ambiguous results {}  for query for target '{}'", query, value);
         }

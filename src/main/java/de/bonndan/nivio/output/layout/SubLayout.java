@@ -14,7 +14,6 @@ import java.util.Set;
 
 /**
  * Layout for one group (for the items INSIDE the group).
- *
  */
 public class SubLayout {
 
@@ -50,16 +49,18 @@ public class SubLayout {
         List<LayoutedComponent> list = new ArrayList<>();
         items.forEach(item -> {
             List<Component> relationTargets = new ArrayList<>();
-            item.getRelations().forEach(relationItem -> {
-                if (!relationItem.getSource().equals(item))
-                    return;
+            item.getRelations().stream()
+                    .filter(relation -> relation.getTarget() instanceof Item)
+                    .forEach(relationItem -> {
+                        if (!relationItem.getSource().equals(item))
+                            return;
 
-                Item other = relationItem.getTarget();
-                if (item.getGroup().equals(other.getGroup())) {
-                    relationTargets.add(other);
-                }
+                        Item other = (Item) relationItem.getTarget();
+                        if (item.getParent().equals(other.getParent())) {
+                            relationTargets.add(other);
+                        }
 
-            });
+                    });
             LayoutedComponent e = new LayoutedComponent(item, relationTargets);
             e.setDefaultColor(group.getColor());
             list.add(e);

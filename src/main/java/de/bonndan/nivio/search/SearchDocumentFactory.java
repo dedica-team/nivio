@@ -24,9 +24,11 @@ public class SearchDocumentFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchDocumentFactory.class);
 
-    private SearchDocumentFactory() {}
+    private SearchDocumentFactory() {
+    }
 
     public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
+    public static final String LUCENE_FIELD_PARENT_IDENTIFIER = "parentIdentifier";
     public static final String LUCENE_FIELD_NAME = "name";
     public static final String LUCENE_FIELD_DESCRIPTION = "description";
 
@@ -34,17 +36,17 @@ public class SearchDocumentFactory {
      * This is used to collect strings which should be directly searchable
      */
     public static final String LUCENE_FIELD_GENERIC = "generic";
-    public static final String LUCENE_FIELD_CONTACT = "contact";
     public static final String LUCENE_FIELD_FQI = "fqi";
-    public static final String LUCENE_FIELD_COMPONENT_TYPE = "component";
+    public static final String LUCENE_FIELD_COMPONENT_CLASS = "component";
     public static final String LUCENE_FIELD_GROUP = "group";
-    public static final String LUCENE_FIELD_ITEM_TYPE = "type";
+    public static final String LUCENE_FIELD_TYPE = "type";
     public static final String LUCENE_FIELD_OWNER = "owner";
     public static final String LUCENE_FIELD_TAG = "tag";
     public static final String LUCENE_FIELD_NETWORK = Label.network.name();
     private static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
     private static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
-    private static final String LUCENE_FIELD_LAYER = "layer";
+    public static final String LUCENE_FIELD_LAYER = "layer";
+    public static final String LUCENE_FIELD_ADDRESS = "address";
     public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
     public static final String KPI_FACET_PREFIX = "kpi_";
 
@@ -59,13 +61,15 @@ public class SearchDocumentFactory {
     /**
      * Creates a new lucene document containing item fields and labels.
      *
-     * @param item         the item to index
+     * @param component    the item to index
      * @param statusValues kpi values for the item
      * @return searchable document
      */
     @NonNull
-    public static Document from(@NonNull final Item item, @Nullable List<StatusValue> statusValues) {
-        Objects.requireNonNull(item, "Item to build search document from is null");
+    public static Document from(@NonNull final SearchDocumentValueObject component,
+                                @Nullable List<StatusValue> statusValues
+    ) {
+        Objects.requireNonNull(component, "component to build search document from is null");
         if (statusValues == null) {
             statusValues = new ArrayList<>();
         }
@@ -77,19 +81,22 @@ public class SearchDocumentFactory {
                         () -> document.add(new TextField(field, "", Field.Store.YES))
                 );
 
-        addTextField.accept(LUCENE_FIELD_COMPONENT_TYPE, "item");
-        addTextField.accept(LUCENE_FIELD_FQI, item.getFullyQualifiedIdentifier().toString());
-        addTextField.accept(LUCENE_FIELD_IDENTIFIER, item.getIdentifier());
-        addTextField.accept(LUCENE_FIELD_NAME, item.getName());
-        addTextField.accept(LUCENE_FIELD_CONTACT, item.getContact());
-        addTextField.accept(LUCENE_FIELD_DESCRIPTION, item.getDescription());
-        addTextField.accept(LUCENE_FIELD_GROUP, item.getGroup());
-        addTextField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());
-        addTextField.accept(LUCENE_FIELD_OWNER, item.getOwner());
+        addTextField.accept(LUCENE_FIELD_COMPONENT_CLASS, component.getComponentClass());
+        addTextField.accept(LUCENE_FIELD_FQI, component.getFullyQualifiedIdentifier().toString());
+        addTextField.accept(LUCENE_FIELD_IDENTIFIER, component.getIdentifier());
+        addTextField.accept(LUCENE_FIELD_PARENT_IDENTIFIER, component.getParentIdentifier());
+        addTextField.accept(LUCENE_FIELD_NAME, component.getName());
+        addTextField.accept(LUCENE_FIELD_DESCRIPTION, component.getDescription());
+        addTextField.accept(LUCENE_FIELD_TYPE, component.getType());
+        addTextField.accept(LUCENE_FIELD_OWNER, component.getOwner());
+
+        component.getLayer().ifPresent(s -> addTextField.accept(LUCENE_FIELD_LAYER, s));
+        component.getGroup().ifPresent(s -> addTextField.accept(LUCENE_FIELD_GROUP, s));
+        component.getAddress().ifPresent(s -> addTextField.accept(LUCENE_FIELD_ADDRESS, s));
 
         List<String> genericStrings = new ArrayList<>();
         //add all labels by their key
-        item.getLabels().forEach((labelKey, val) -> {
+        component.getLabels().forEach((labelKey, val) -> {
             if (!StringUtils.hasLength(val))
                 return;
             addTextField.accept(labelKey, val);
@@ -101,7 +108,7 @@ public class SearchDocumentFactory {
         });
 
         //add links, title as key (duplicates are ok)
-        item.getLinks().forEach((s, link) -> {
+        component.getLinks().forEach((s, link) -> {
             if (link == null)
                 return;
             String val = !StringUtils.hasLength(link.getName()) ? "" : link.getName() + " ";
@@ -110,16 +117,16 @@ public class SearchDocumentFactory {
         });
 
         //tags (searchable)
-        Arrays.stream(item.getTags())
+        Arrays.stream(component.getTags())
                 .map(tag -> tag.toLowerCase(Locale.ROOT))
                 .forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag));
 
         //networks
-        item.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
+        component.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
         //frameworks
         List<String> frameworks = new ArrayList<>();
-        item.getLabels(Label.framework).forEach((key, value) -> {
+        component.getLabels(Label.framework).forEach((key, value) -> {
             String val = value.toLowerCase(Locale.ROOT);
             String unprefixed = Label.framework.unprefixed(key);
             frameworks.add(unprefixed);
@@ -136,44 +143,49 @@ public class SearchDocumentFactory {
         //frameworks name (label keys)
         addTextField.accept(LUCENE_FIELD_GENERIC, StringUtils.collectionToDelimitedString(genericStrings, " "));
 
-        addFacets(document, item, statusValues);
+        addFacets(document, component, statusValues);
         return document;
     }
 
     /**
      * facets (categories)  not stored/searchable, but can be drilled down into
      *
-     * @param document     the doc to add facets to
-     * @param statusValues kpi values for the item
+     * @param document      the doc to add facets to
+     * @param valueProvider component values
+     * @param statusValues  kpi values for the item
      */
-    private static void addFacets(final Document document, final Item item, List<StatusValue> statusValues) {
+    private static void addFacets(final Document document,
+                                  final SearchDocumentValueObject valueProvider,
+                                  final List<StatusValue> statusValues
+    ) {
 
         BiConsumer<String, String> addFacetField = (field, value) ->
                 Optional.ofNullable(value).ifPresent(val -> {
                     if (field != null) {
-                        LOGGER.debug("Adding facet {} to document {}", field, item.getFullyQualifiedIdentifier());
+                        LOGGER.debug("Adding facet {} to document {}", field, valueProvider.getFullyQualifiedIdentifier());
                         document.add(new FacetField(field, val));
                     }
                 });
 
         //tag facets
-        Arrays.stream(item.getTags())
+        Arrays.stream(valueProvider.getTags())
                 .forEach(tag -> addFacetField.accept(LUCENE_FIELD_TAG, tag.toLowerCase(Locale.ROOT)));
 
         //network facets
-        item.getLabels(Label.network)
+        valueProvider.getLabels(Label.network)
                 .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
         //framework facets (only key, not version)
-        item.getLabels(Label.framework)
+        valueProvider.getLabels(Label.framework)
                 .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_FRAMEWORK, Label.framework.unprefixed(key)));
 
-        addFacetField.accept(LUCENE_FIELD_LIFECYCLE, item.getLabel(Label.lifecycle));
-        addFacetField.accept(LUCENE_FIELD_CAPABILITY, item.getLabel(Label.capability));
-        addFacetField.accept(LUCENE_FIELD_LAYER, item.getLayer());
-        addFacetField.accept(LUCENE_FIELD_OWNER, item.getOwner());
-        addFacetField.accept(LUCENE_FIELD_GROUP, item.getGroup());
-        addFacetField.accept(LUCENE_FIELD_ITEM_TYPE, item.getType());
+        addFacetField.accept(LUCENE_FIELD_LIFECYCLE, valueProvider.getLabels().get(Label.lifecycle.name()));
+        addFacetField.accept(LUCENE_FIELD_CAPABILITY, valueProvider.getLabels().get(Label.capability.name()));
+        addFacetField.accept(LUCENE_FIELD_OWNER, valueProvider.getOwner());
+        addFacetField.accept(LUCENE_FIELD_TYPE, valueProvider.getType());
+
+        valueProvider.getGroup().ifPresent(s -> addFacetField.accept(LUCENE_FIELD_GROUP, s));
+        valueProvider.getLayer().ifPresent(s -> addFacetField.accept(LUCENE_FIELD_LAYER, s));
 
         //kpis, facets are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {

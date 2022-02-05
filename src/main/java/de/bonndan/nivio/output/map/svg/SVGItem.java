@@ -55,7 +55,7 @@ class SVGItem extends Component {
         this.layoutedComponent = Objects.requireNonNull(layoutedComponent);
         this.itemStatuses = itemStatuses;
         this.pixel = Objects.requireNonNull(position);
-        this.id = layoutedComponent.getComponent().getFullyQualifiedIdentifier().jsonValue();
+        this.id = layoutedComponent.getComponent().getFullyQualifiedIdentifier().getPath();
     }
 
     @Override

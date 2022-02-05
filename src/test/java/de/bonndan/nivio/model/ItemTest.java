@@ -1,6 +1,9 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.input.dto.RelationDescription;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
@@ -17,19 +20,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ItemTest {
 
+    @BeforeEach
+    void setup() {
+
+    }
+
     @Test
     void equalsWithGroup() {
+        Item s1 = getTestItem("g1", "a");
 
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        Item s2 = getTestItem("g1", "a");
 
+        Item s3 = getTestItem("g2", "a");
 
-        Item s1 = getTestItem("g1", "a", landscape);
-
-        Item s2 = getTestItem("g1", "a", landscape);
-
-        Item s3 = getTestItem("g2", "a", landscape);
-
-        Item s4 = getTestItem(Layer.domain.name(), "a", landscape);
+        Item s4 = getTestItem(Layer.domain.name(), "a");
 
         assertEquals(s1, s2);
         assertEquals(s2, s1);
@@ -42,28 +46,21 @@ class ItemTest {
     @Test
     void equalsWithLandscape() {
 
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
+        Item s1 = getTestItem("g1", "a");
 
-        Item s1 = getTestItem("g1", "a", landscape);
-
-        Item s2 = getTestItem("g1", "a", landscape);
+        Item s2 = getTestItem("g1", "a");
 
         assertEquals(s1, s2);
-
-        Item s3 = getTestItem("g1", "a");
-
-        assertNotEquals(s1, s3);
     }
 
 
     @Test
     void getChangesInLabels() {
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
 
-        Item s1 = getTestItem("g1", "a", landscape);
+        Item s1 = getTestItem("g1", "a");
         s1.getLabels().put("foo.one", "one");
 
-        Item s2 = getTestItem("g1", "a", landscape);
+        Item s2 = getTestItem("g1", "a");
         s2.getLabels().put("foo.one", "two");
 
         List<String> changes = s1.getChanges(s2);
@@ -136,32 +133,17 @@ class ItemTest {
     }
 
     @Test
-    void setRelations() {
-
-        Item s1 = getTestItemBuilder("g1", "a").build();
-        Item s2 = getTestItemBuilder("g1", "b").build();
-        Item s3 = getTestItemBuilder("g1", "c").build();
-
-        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s2)));
-        assertThat(s1.getRelations()).hasSize(1);
-
-        //when
-        s1.setRelations(Set.of(RelationFactory.createForTesting(s1, s3)));
-        assertThat(s1.getRelations()).hasSize(1);
-    }
-
-    @Test
     void relationsAsAssessmentChildren() {
 
-        Item s1 = getTestItemBuilder("g1", "a").build();
-        Item s2 = getTestItemBuilder("g2", "b").build();
-        Relation forTesting = RelationFactory.createForTesting(s1, s2);
-        s1.addOrReplace(forTesting);
+        var graph = new GraphTestSupport();
+
+        Relation forTesting = RelationFactory.create(graph.itemAA, graph.itemAC, new RelationDescription());
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(forTesting);
 
         //when
-        List<? extends Assessable> children = s1.getChildren();
+        Set<? extends Assessable> children = graph.itemAA.getAssessables();
         assertThat(children).hasSize(1);
-        assertThat(children.get(0)).isEqualTo(forTesting);
+        assertThat(children.iterator().next()).isEqualTo(forTesting);
 
     }
 }

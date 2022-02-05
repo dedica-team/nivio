@@ -1,6 +1,7 @@
 package de.bonndan.nivio.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -37,11 +38,11 @@ public enum Lifecycle {
     /**
      * @return true if the label "lifecycle" is "PLANNED"
      */
-    public static boolean isPlanned(Labeled labeled) {
+    public static boolean isPlanned(@NonNull final Labeled labeled) {
         return PLANNED.name().equals(labeled.getLabel(Label.lifecycle));
     }
 
-    public static boolean isEndOfLife(Labeled labeled) {
+    public static boolean isEndOfLife(@NonNull final Labeled labeled) {
         return END_OF_LIFE.name().equals(labeled.getLabel(Label.lifecycle));
     }
 }

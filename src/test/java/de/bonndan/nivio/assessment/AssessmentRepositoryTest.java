@@ -1,28 +1,22 @@
 package de.bonndan.nivio.assessment;
 
-import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.GraphTestSupport;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AssessmentRepositoryTest {
 
-    private static Landscape landscape;
 
     private static AssessmentRepository assessmentRepository;
+    private static GraphTestSupport graph;
 
     @BeforeAll
     static void setup() {
-        var foo = ItemFactory.getTestItem("a", "foo");
-        var bar = ItemFactory.getTestItem("b", "bar");
-        landscape = LandscapeFactory.createForTesting("test", "test").withItems(Set.of(foo, bar)).build();
+        graph = new GraphTestSupport();
         assessmentRepository = new AssessmentRepository();
     }
 
@@ -35,10 +29,10 @@ class AssessmentRepositoryTest {
     void testSaveAndGet() {
         //given
         var assessment = Assessment.empty();
-        assessmentRepository.save(landscape.getFullyQualifiedIdentifier(), assessment);
+        assessmentRepository.save(graph.landscape.getFullyQualifiedIdentifier(), assessment);
 
         //when
-        var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
+        var storedAssessment = assessmentRepository.getAssessment(graph.landscape.getFullyQualifiedIdentifier());
 
         //then
         assertThat(storedAssessment).isPresent().contains(assessment);
@@ -46,7 +40,7 @@ class AssessmentRepositoryTest {
 
     @Test
     void testGetNonExistingElement() {
-        var storedAssessment = assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier());
+        var storedAssessment = assessmentRepository.getAssessment(graph.landscape.getFullyQualifiedIdentifier());
         assertThat(storedAssessment).isNotPresent();
     }
 

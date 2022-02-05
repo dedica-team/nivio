@@ -1,8 +1,8 @@
 package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MapTile {
 
-    private FullyQualifiedIdentifier item;
+    private URI item;
     private String group;
     private final Set<Integer> pathDirections = new HashSet<>();
     private final Hex hex;
@@ -23,11 +23,11 @@ public class MapTile {
         this.hex = Objects.requireNonNull(hex);
     }
 
-    public FullyQualifiedIdentifier getItem() {
+    public URI getItem() {
         return item;
     }
 
-    public void setItem(FullyQualifiedIdentifier item) {
+    public void setItem(URI item) {
         this.item = item;
     }
 

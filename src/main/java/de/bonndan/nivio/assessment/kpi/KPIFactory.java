@@ -64,16 +64,4 @@ public class KPIFactory {
         return kpis;
     }
 
-    /**
-     * Merged existing {@link KPI}s with newly configured.
-     *
-     * @param update   new configs
-     * @param existing existing kpi instances
-     * @return new instances
-     */
-    public Map<String, KPI> merge(Map<String, KPIConfig> update, Map<String, KPI> existing) {
-        HashMap<String, KPI> map = new HashMap<>(existing);
-        map.putAll(getConfiguredKPIs(update));
-        return map;
-    }
 }

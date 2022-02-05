@@ -5,7 +5,8 @@ import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.GraphComponent;
+import de.bonndan.nivio.model.IndexReadAccess;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class SearchIndexingEventListenerTest {
     void setUp() {
         landscape = mock(Landscape.class);
         assessmentRepository = mock(AssessmentRepository.class);
-        when(landscape.getFullyQualifiedIdentifier()).thenReturn(FullyQualifiedIdentifier.from("foo"));
+        when(landscape.getFullyQualifiedIdentifier()).thenReturn(FullyQualifiedIdentifier.build(Landscape.class, "foo"));
         listener = new SearchIndexingEventListener(assessmentRepository);
     }
 
@@ -32,10 +33,8 @@ class SearchIndexingEventListenerTest {
     void onAssessmentChangedEvent() {
         //given
         AssessmentChangedEvent e = new AssessmentChangedEvent(landscape, new ProcessingChangelog());
-        SearchIndex searchIndex = mock(SearchIndex.class);
-        when(landscape.getSearchIndex()).thenReturn(searchIndex);
-        ItemIndex<Item> itemIndex = mock(ItemIndex.class);
-        when(landscape.getItems()).thenReturn(itemIndex);
+        IndexReadAccess<GraphComponent> readAccess = mock(IndexReadAccess.class);
+        when(landscape.getIndexReadAccess()).thenReturn(readAccess);
         when(landscape.getKpis()).thenReturn(Map.of());
         when(assessmentRepository.getAssessment(any())).thenReturn(java.util.Optional.of(Assessment.empty()));
 
@@ -43,7 +42,7 @@ class SearchIndexingEventListenerTest {
         listener.onProcessingFinishedEvent(e);
 
         //then
-        verify(landscape).getSearchIndex();
-        verify(searchIndex).indexForSearch(eq(landscape), any(Assessment.class));
+        verify(landscape).getIndexReadAccess();
+        verify(readAccess).indexForSearch(any(Assessment.class));
     }
 }

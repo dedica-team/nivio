@@ -46,8 +46,8 @@ public class TemplateResolver extends Resolver {
             LandscapeDescription landscape
     ) {
         templateTargets.forEach(term ->
-                landscape.getItemDescriptions().query(term)
-                        .forEach(item -> ItemDescriptionValues.assignSafeNotNull(item, template))
+                landscape.getIndexReadAccess().findMatching(term, ItemDescription.class)
+                        .forEach(item -> item.assignSafeNotNull(template))
         );
     }
 }

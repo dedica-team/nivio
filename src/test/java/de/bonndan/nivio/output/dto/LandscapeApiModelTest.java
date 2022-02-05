@@ -1,11 +1,9 @@
 package de.bonndan.nivio.output.dto;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.Source;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,13 +18,16 @@ class LandscapeApiModelTest {
     Source source;
     LandscapeConfig landscapeConfig;
     ProcessLog processLog;
+    private Landscape landscape;
 
     @BeforeEach
     void setUp() {
         source = Mockito.mock(Source.class);
         landscapeConfig = Mockito.mock(LandscapeConfig.class);
         processLog = Mockito.mock(ProcessLog.class);
-        var landscape = new Landscape("test", Map.of(), "testName", "testContact", "testOwner", "testDescription", source, landscapeConfig, processLog, Map.of());
+
+        var graph = new GraphTestSupport();
+        landscape = graph.landscape;
         landscape.setLabel(Label.icon, "icon");
         landscape.setLabel(Label._icondata, "icon,base64");
         landscapeApiModel = new LandscapeApiModel(landscape);
@@ -34,7 +35,7 @@ class LandscapeApiModelTest {
 
     @Test
     void getFullyQualifiedIdentifier() {
-        assertThat(landscapeApiModel.getFullyQualifiedIdentifier()).isEqualTo(FullyQualifiedIdentifier.build("test", "", ""));
+        assertThat(landscapeApiModel.getFullyQualifiedIdentifier()).isEqualTo(landscape.getFullyQualifiedIdentifier());
     }
 
     @Test

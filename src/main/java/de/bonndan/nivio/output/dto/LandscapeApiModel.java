@@ -9,6 +9,7 @@ import de.bonndan.nivio.model.LandscapeConfig;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class LandscapeApiModel extends ComponentApiModel {
     }
 
     @NonNull
-    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+    public URI getFullyQualifiedIdentifier() {
         return landscape.getFullyQualifiedIdentifier();
     }
 
@@ -52,7 +53,7 @@ public class LandscapeApiModel extends ComponentApiModel {
 
     public Set<GroupApiModel> getGroups() {
         return landscape.getGroupItems().stream()
-                .map(group -> new GroupApiModel(group, landscape.getItems().retrieve(group.getItems())))
+                .map(group -> new GroupApiModel(group, Set.copyOf(group.getChildren())))
                 .collect(Collectors.toSet());
     }
 

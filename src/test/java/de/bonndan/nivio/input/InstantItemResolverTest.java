@@ -22,48 +22,51 @@ class InstantItemResolverTest {
     }
 
     @Test
-    public void addsNewItems() {
+    void addsNewItems() {
 
         landscapeDescription = new LandscapeDescription("identifier", "name", null);
         ItemDescription a = new ItemDescription();
         a.setIdentifier("a");
         a.setGroup("a");
         a.getProvidedBy().add("providerA");
-        landscapeDescription.getItemDescriptions().add(a);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(a);
 
         ItemDescription b = new ItemDescription();
         b.setIdentifier("b");
         b.setGroup("b");
         a.setRelations(Arrays.asList("adistanttarget"));
 
-        landscapeDescription.getItemDescriptions().add(b);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(b);
         landscapeDescription.getConfig().setGreedy(true);
 
+        //when
         instantItemResolver.resolve(landscapeDescription);
-        assertEquals(4, landscapeDescription.getItemDescriptions().all().size());
+
+        //then
+        assertEquals(4, landscapeDescription.getItemDescriptions().size());
     }
 
     @Test
-    public void addsNewItemsOnlyOnce() {
+    void addsNewItemsOnlyOnce() {
 
         landscapeDescription = new LandscapeDescription("identifier", "name", null);
         ItemDescription a = new ItemDescription();
         a.setIdentifier("a");
         a.setGroup("a");
         a.getProvidedBy().add("providerA");
-        landscapeDescription.getItemDescriptions().add(a);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(a);
 
         ItemDescription b = new ItemDescription();
         b.setIdentifier("b");
         b.setGroup("b");
         a.setRelations(Arrays.asList("adistanttarget"));
-        landscapeDescription.getItemDescriptions().add(b);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(b);
 
         ItemDescription c = new ItemDescription();
         c.setIdentifier("c");
         c.setGroup("c");
         c.setRelations(Arrays.asList("adistanttarget"));
-        landscapeDescription.getItemDescriptions().add(c);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(c);
 
         landscapeDescription.getConfig().setGreedy(true);
 
@@ -71,13 +74,13 @@ class InstantItemResolverTest {
         instantItemResolver.resolve(landscapeDescription);
 
         //3 given plus 2 resolved (like above)
-        assertEquals(5, landscapeDescription.getItemDescriptions().all().size());
+        assertEquals(5, landscapeDescription.getItemDescriptions().size());
 
-        assertTrue(landscapeDescription.getItemDescriptions().all().stream()
+        assertTrue(landscapeDescription.getItemDescriptions().stream()
                 .anyMatch(itemDescription -> itemDescription.getIdentifier().equals("providera"))
         );
 
-        assertTrue(landscapeDescription.getItemDescriptions().all().stream()
+        assertTrue(landscapeDescription.getItemDescriptions().stream()
                 .anyMatch(itemDescription -> itemDescription.getIdentifier().equals("adistanttarget"))
         );
     }

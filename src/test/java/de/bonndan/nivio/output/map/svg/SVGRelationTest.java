@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,18 +28,21 @@ class SVGRelationTest {
     private Item bar;
     private HexPath hexpath;
     private StatusValue statusValue;
+    private GraphTestSupport graph;
 
 
     @BeforeEach
     void setup() {
-        Landscape landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-        foo = getTestItem(Layer.domain.name(), "foo", landscape);
-        bar = getTestItem(Layer.domain.name(), "bar", landscape);
+        graph = new GraphTestSupport();
+        graph.getTestGroup(Layer.domain.name());
+
+        foo = graph.getTestItem(Layer.domain.name(), "foo");
+        bar = graph.getTestItem(Layer.domain.name(), "bar");
         hexpath = new HexPath(List.of(
                 new PathTile(new MapTile(new Hex(1, 2))),
                 new PathTile(new MapTile(new Hex(1, 3))))
         );
-        statusValue = new StatusValue("foo", "bar", Status.GREEN, "");
+        statusValue = new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.GREEN, "");
     }
 
     @Test
@@ -60,6 +63,7 @@ class SVGRelationTest {
     void providerRelationsContainsEndpoint() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -75,6 +79,7 @@ class SVGRelationTest {
 
         //only works with provider relations, because dataflow inner path is dashed
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -89,6 +94,7 @@ class SVGRelationTest {
     void dataflowRelationIsDashed() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -103,6 +109,7 @@ class SVGRelationTest {
     void supportsVisualFocus() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
 
         //when
@@ -120,6 +127,7 @@ class SVGRelationTest {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
         itemRelationItem.setLabel(Label.weight, "2.44");
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -143,6 +151,7 @@ class SVGRelationTest {
     @DisplayName("Is translated based on port count")
     void hasTranslation() {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
         List<PathTile> tiles = hexpath.getTiles();
         hexpath.setPortCount(20);
         PathTile penultimate = tiles.get(tiles.size() - 2);

@@ -1,11 +1,11 @@
 package de.bonndan.nivio.output.dto;
 
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
 import org.springframework.lang.NonNull;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -19,10 +19,10 @@ public class GroupApiModel extends ComponentApiModel {
     public GroupApiModel(@NonNull final Group group, final Set<Item> items) {
         this.group = Objects.requireNonNull(group);
         this.hateoasLinks.putAll(group.getLinks());
-        this.items = items.stream().map(item -> new ItemApiModel(item, group)).collect(Collectors.toSet());
+        this.items = items.stream().map(ItemApiModel::new).collect(Collectors.toSet());
     }
 
-    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
+    public URI getFullyQualifiedIdentifier() {
         return group.getFullyQualifiedIdentifier();
     }
 
@@ -63,7 +63,4 @@ public class GroupApiModel extends ComponentApiModel {
         return group.getLabel(Label._icondata);
     }
 
-    public String getLandscapeIdentifier() {
-        return group.getLandscapeIdentifier();
-    }
 }

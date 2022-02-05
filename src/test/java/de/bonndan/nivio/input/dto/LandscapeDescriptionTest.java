@@ -2,9 +2,7 @@ package de.bonndan.nivio.input.dto;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,8 +15,9 @@ class LandscapeDescriptionTest {
     }
 
     @Test
-    void mergeItemsAddsEnv() {
+    void mergeItems() {
         LandscapeDescription landscapeDescription = new LandscapeDescription("identifier", "name", null);
+
         ItemDescription d = new ItemDescription();
         d.setIdentifier("foo");
         List<ItemDescription> items = new ArrayList<>();
@@ -28,8 +27,7 @@ class LandscapeDescriptionTest {
         landscapeDescription.mergeItems(items);
 
         //then
-        assertEquals(1, landscapeDescription.getItemDescriptions().all().size());
-        assertEquals(landscapeDescription.getIdentifier(), d.getEnvironment());
+        assertEquals(1, landscapeDescription.getItemDescriptions().size());
     }
 
     @Test
@@ -41,12 +39,13 @@ class LandscapeDescriptionTest {
 
 
         //when
-        landscapeDescription.mergeGroups(Map.of("foo", incoming));
+        landscapeDescription.mergeGroups(Set.of(incoming));
 
         //then
-        assertEquals(1, landscapeDescription.getGroups().size());
-        assertThat(landscapeDescription.getGroups().get("foo")).isNotNull();
-        assertThat(landscapeDescription.getGroups().get("foo").getColor()).isEqualTo("00aabb");
+        assertEquals(1, landscapeDescription.getIndexReadAccess().all(GroupDescription.class).size());
+        Optional<GroupDescription> foo = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("foo", null, GroupDescription.class);
+        assertThat(foo).isPresent();
+        assertThat(foo.get().getColor()).isEqualTo("00aabb");
     }
 
     @Test
@@ -56,7 +55,7 @@ class LandscapeDescriptionTest {
         existing.setIdentifier("foo");
         existing.setColor("00aabb");
         existing.setDescription(null);
-        landscapeDescription.getGroups().put("foo", existing);
+        landscapeDescription.getWriteAccess().addOrReplaceChild( existing);
 
         GroupDescription incoming = new GroupDescription();
         incoming.setIdentifier("foo");
@@ -65,16 +64,18 @@ class LandscapeDescriptionTest {
 
 
         //when
-        landscapeDescription.mergeGroups(Map.of("foo", incoming));
+        landscapeDescription.mergeGroups(Set.of(incoming));
 
         //then
-        assertEquals(1, landscapeDescription.getGroups().size());
-        assertThat(landscapeDescription.getGroups().get("foo")).isNotNull();
+        Set<GroupDescription> all = landscapeDescription.getIndexReadAccess().all(GroupDescription.class);
+        assertEquals(1, all.size());
+        Optional<GroupDescription> foo = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("foo", null, GroupDescription.class);
+        assertThat(foo).isPresent();
 
         //would not be overwritten
-        assertThat(landscapeDescription.getGroups().get("foo").getColor()).isEqualTo("00aabb");
+        assertThat(foo.get().getColor()).isEqualTo("00aabb");
 
         //would be set since not existing
-        assertThat(landscapeDescription.getGroups().get("foo").getDescription()).isEqualTo("bar");
+        assertThat(foo.get().getDescription()).isEqualTo("bar");
     }
 }

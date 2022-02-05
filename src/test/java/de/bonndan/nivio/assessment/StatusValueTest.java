@@ -1,5 +1,8 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -14,17 +17,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StatusValueTest {
 
+    private Landscape foo;
+
+    @BeforeEach
+    void setup() {
+        foo = LandscapeFactory.createForTesting("foo", "foo").build();
+    }
+
     @Test
     void mustHaveField() {
-        assertThrows(IllegalArgumentException.class, () -> new StatusValue(null, "foo", Status.GREEN, ""));
-        assertThrows(IllegalArgumentException.class, () -> new StatusValue("foo", null, Status.GREEN, ""));
+        assertThrows(NullPointerException.class, () -> new StatusValue(null, "foo", Status.GREEN, ""));
+        assertThrows(IllegalArgumentException.class, () -> new StatusValue(foo.getFullyQualifiedIdentifier(), null, Status.GREEN, ""));
     }
 
     @Test
     void comparator() {
-        StatusValue green = new StatusValue("foo", "bar", Status.GREEN, "");
-        StatusValue red = new StatusValue("foo", "bar", Status.RED, "");
-        StatusValue yellow = new StatusValue("foo", "bar", Status.YELLOW, "");
+        StatusValue green = new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.GREEN, "");
+        StatusValue red = new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.RED, "");
+        StatusValue yellow = new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.YELLOW, "");
         assertEquals(-3, new StatusValue.Comparator().compare(green, red));
         assertEquals(0, new StatusValue.Comparator().compare(green, green));
         assertEquals(1, new StatusValue.Comparator().compare(yellow, green));
@@ -33,16 +43,16 @@ class StatusValueTest {
 
     @Test
     void isNotSummary() {
-        StatusValue statusValue = new StatusValue("foo", "security", Status.BROWN, "epically broken");
+        StatusValue statusValue = new StatusValue(foo.getFullyQualifiedIdentifier(), "security", Status.BROWN, "epically broken");
         assertFalse(statusValue.isSummary());
     }
 
 
     @Test
     void summary() {
-        StatusValue summary = StatusValue.summary("foo",  Collections.singletonList(new StatusValue("foo", "security", Status.BROWN, "epically broken")));
+        StatusValue summary = StatusValue.summary(foo.getFullyQualifiedIdentifier(), Collections.singletonList(new StatusValue(foo.getFullyQualifiedIdentifier(), "security", Status.BROWN, "epically broken")));
         assertNotNull(summary);
-        assertEquals("foo", summary.getIdentifier());
+        assertEquals(foo.getFullyQualifiedIdentifier(), summary.getIdentifier());
         assertEquals(StatusValue.SUMMARY_FIELD_VALUE, summary.getField());
         assertThat(summary.getMessage()).contains("epically broken").contains("security");
         assertEquals(Status.BROWN, summary.getStatus());
@@ -59,7 +69,7 @@ class StatusValueTest {
         input.get("security").put(LABEL_SUFFIX_MESSAGE, "foobar");
 
         //when
-        Set<StatusValue> statusValues = StatusValue.fromMapping("foo", input);
+        Set<StatusValue> statusValues = StatusValue.fromMapping(foo.getFullyQualifiedIdentifier(), input);
         assertFalse(statusValues.isEmpty());
         StatusValue security = statusValues.iterator().next();
         assertEquals("security", security.getField());
@@ -70,16 +80,20 @@ class StatusValueTest {
     @Test
     void isEqual() {
         //equality on field basis only to guarantee uniqueness
-        assertThat(new StatusValue("foo", "bar", Status.GREEN, ""))
-                .isEqualTo(new StatusValue("foo", "bar", Status.RED, ""));
-        assertThat(new StatusValue("baz", "bar", Status.GREEN, ""))
-                .isNotEqualTo(new StatusValue("foo", "bar", Status.RED, ""));
+        assertThat(new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.GREEN, ""))
+                .isEqualTo(new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.RED, ""));
+    }
+
+    @Test
+    void isNotEqual() {
+        assertThat(new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.GREEN, ""))
+                .isNotEqualTo(new StatusValue(foo.getFullyQualifiedIdentifier(), "baz", Status.RED, ""));
     }
 
     @Test
     void toStringTest() {
         //equality on field basis only to guarantee uniqueness
-        assertThat(new StatusValue("foo", "bar", Status.GREEN, "").toString())
-                .isEqualTo("StatusValue{identifier='foo', field='bar', status=green, message='', summary=false}");
+        assertThat(new StatusValue(foo.getFullyQualifiedIdentifier(), "bar", Status.GREEN, "").toString())
+                .hasToString("StatusValue{identifier='" + foo.getFullyQualifiedIdentifier() + "', field='bar', status=green, message='', summary=false}");
     }
 }

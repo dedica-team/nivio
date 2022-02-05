@@ -26,9 +26,7 @@ class MapStyleSheetFactoryTest {
         fileFetcher = mock(FileFetcher.class);
         factory = new MapStyleSheetFactory(fileFetcher);
         processLog = mock(ProcessLog.class);
-        landscape = LandscapeFactory.createForTesting("test", "testLandscape")
-                .withProcessLog(processLog)
-                .build();
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
         landscape.getConfig().getBranding().setMapStylesheet("http://acme.com/test.css");
     }
 

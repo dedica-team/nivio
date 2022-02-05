@@ -26,13 +26,13 @@ public class SecureLabelsResolver extends Resolver {
     @Override
     public void resolve(LandscapeDescription input) {
 
-        input.getItemDescriptions().all().forEach(itemDescription -> {
+        input.getItemDescriptions().forEach(itemDescription -> {
             Map<String, Object> cleaned = new HashMap<>();
             itemDescription.getLabels().forEach((s, s2) -> {
                 Optional<Object> cleanedValue = getCleanedValue(s, s2);
                 cleaned.put(s, cleanedValue.orElse(null));
             });
-            cleaned.forEach(itemDescription::setLabel);
+            cleaned.forEach((s, o) -> itemDescription.setLabel(s, String.valueOf(o)));
         });
     }
 

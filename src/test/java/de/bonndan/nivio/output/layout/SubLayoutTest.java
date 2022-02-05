@@ -1,32 +1,42 @@
 package de.bonndan.nivio.output.layout;
 
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.GraphTestSupport;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.LayoutConfig;
-import org.assertj.core.data.Offset;
+import de.bonndan.nivio.model.RelationFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SubLayoutTest {
 
+    private Group foo;
+    private Item bar;
+    private Item baz;
+
+    @BeforeEach
+    void setup() {
+        GraphTestSupport graph = new GraphTestSupport();
+
+        foo = graph.getTestGroup("foo");
+        bar = graph.getTestItem(foo.getIdentifier(), "bar");
+        baz = graph.getTestItem(foo.getIdentifier(), "baz");
+
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
+    }
+
     @Test
     void testWithARelation() {
 
         //given
-        Group foo = new Group("foo", "landscapeIdentifier");
-
-        Item bar = getTestItem(foo.getIdentifier(), "bar");
-        foo.addOrReplaceItem(bar);
-
-        Item baz = getTestItem(foo.getIdentifier(), "baz");
-        foo.addOrReplaceItem(baz);
-        baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
 
         HashSet<Item> objects = new HashSet<>();
         objects.add(bar);
@@ -58,15 +68,6 @@ class SubLayoutTest {
     void ignoresRedundantRelations() {
 
         //given
-        Group foo = new Group("foo", "landscapeIdentifier");
-        Item bar = getTestItem(foo.getIdentifier(), "bar");
-        foo.addOrReplaceItem(bar);
-
-        Item baz = getTestItem(foo.getIdentifier(), "baz");
-        foo.addOrReplaceItem(baz);
-        baz.addOrReplace(RelationFactory.createForTesting(baz, bar));
-        bar.addOrReplace(RelationFactory.createForTesting(bar, baz));
-
         HashSet<Item> objects = new HashSet<>();
         objects.add(bar);
         objects.add(baz);

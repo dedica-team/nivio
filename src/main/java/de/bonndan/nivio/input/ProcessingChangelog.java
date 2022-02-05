@@ -5,8 +5,8 @@ import de.bonndan.nivio.model.Relation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,8 +14,11 @@ import java.util.stream.Stream;
 @Schema(description = "Changelog for a single landscape processing run (update of landscape from different sources).")
 public class ProcessingChangelog {
 
+    /**
+     * changes are ordered from top level components to lower level components
+     */
     @Schema(description = "The key is the FullyQualifiedIdentifier of a component")
-    private final Map<String, Entry> changes = new HashMap<>();
+    private final Map<URI, Entry> changes = new LinkedHashMap<>();
 
     /**
      * Add a change for a component.
@@ -29,16 +32,19 @@ public class ProcessingChangelog {
             @NonNull final ChangeType changeType,
             @Nullable final List<String> messages
     ) {
-        String id = Objects.requireNonNull(component).getFullyQualifiedIdentifier().toString();
-        if (!StringUtils.hasLength(id)) {
-            throw new IllegalArgumentException("Could not create a changelog entry id for " + component);
-        }
-        Entry entry = new Entry(
-                component.getClass().getSimpleName(),
-                Objects.requireNonNull(changeType),
-                messages
-        );
-        getChanges().put(id, entry);
+        URI id = Objects.requireNonNull(component).getFullyQualifiedIdentifier();
+
+        getChanges().compute(id, (uri, oldEntry) -> {
+            var mergedMessages = oldEntry == null ? new ArrayList<String>() : oldEntry.getMessages();
+            if (messages != null) {
+                mergedMessages.addAll(messages);
+            }
+            return new Entry(
+                    component.getClass().getSimpleName(),
+                    Objects.requireNonNull(changeType),
+                    mergedMessages
+            );
+        });
     }
 
     /**
@@ -73,7 +79,7 @@ public class ProcessingChangelog {
                 Objects.requireNonNull(changeType),
                 messages
         );
-        getChanges().put(relation.getIdentifier(), entry);
+        getChanges().put(relation.getFullyQualifiedIdentifier(), entry);
     }
 
     /**
@@ -90,20 +96,20 @@ public class ProcessingChangelog {
                 value,
                 (entry1, entry2) -> new Entry(
                         entry1.componentType,
-                        ChangeType.valueOf(entry1.changeType),
+                        entry1.changeType,
                         Stream.concat(entry1.getMessages().stream(), entry2.getMessages().stream())
                                 .collect(Collectors.toList())
                 )
         ));
     }
 
-    public Map<String, Entry> getChanges() {
+    public Map<URI, Entry> getChanges() {
         return changes;
     }
 
     public static class Entry {
         private final String componentType;
-        private final String changeType;
+        private final ChangeType changeType;
         private final List<String> messages;
 
         Entry(@NonNull final String componentType,
@@ -111,7 +117,7 @@ public class ProcessingChangelog {
               @Nullable final List<String> messages
         ) {
             this.componentType = componentType;
-            this.changeType = changeType.name();
+            this.changeType = changeType;
             this.messages = messages == null ? new ArrayList<>() : messages;
         }
 
@@ -122,7 +128,7 @@ public class ProcessingChangelog {
 
         @Schema(description = "The change type", allowableValues = {"CREATED", "UPDATED", "DELETED"})
         public String getChangeType() {
-            return changeType;
+            return changeType.name();
         }
 
         @NonNull
@@ -143,6 +149,6 @@ public class ProcessingChangelog {
     public enum ChangeType {
         CREATED,
         UPDATED,
-        DELETED
+        DELETED;
     }
 }

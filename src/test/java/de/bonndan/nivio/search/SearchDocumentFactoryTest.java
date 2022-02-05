@@ -1,9 +1,11 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.SearchDocumentValueObjectFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetField;
 import org.apache.lucene.index.IndexableField;
@@ -17,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
 import static de.bonndan.nivio.search.SearchDocumentFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +26,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class SearchDocumentFactoryTest {
 
     private Item item;
+    private SearchDocumentValueObject valueObject;
 
     @BeforeEach
     void setup() throws MalformedURLException {
-        item = getTestItemBuilder("agroup", "foo")
+        var graph = new GraphTestSupport();
+        item = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo")
                 .withName("Hans")
                 .withDescription("Lorem ipsum")
                 .withContact("info@acme.com")
@@ -43,29 +46,32 @@ class SearchDocumentFactoryTest {
         item.setTags(new String[]{"one", "two"});
         item.setLabel(Label.framework.withPrefix("java"), "8");
         item.setLabel(Label.framework.withPrefix("Spring Boot"), "2.0.1");
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(item);
+
+        valueObject = SearchDocumentValueObjectFactory.createForItem(item);
     }
 
     @Test
     void generatesDocument() {
-        //given
-
 
         //when
-        Document document = SearchDocumentFactory.from(item, List.of());
+        Document document = SearchDocumentFactory.from(valueObject, List.of());
 
         //then
         assertNotNull(document);
         assertEquals(item.getIdentifier(), document.get(LUCENE_FIELD_IDENTIFIER));
         assertEquals(item.getName(), document.get(LUCENE_FIELD_NAME));
-        assertEquals(item.getContact(), document.get(LUCENE_FIELD_CONTACT));
         assertEquals(item.getDescription(), document.get(LUCENE_FIELD_DESCRIPTION));
         assertEquals(item.getOwner(), document.get(LUCENE_FIELD_OWNER));
 
         assertEquals(item.getLabel("foo"), document.get("foo"));
         assertEquals(item.getLabel("foo2"), document.get("foo2"));
-        assertEquals(item.getType(), document.get("type"));
+        assertEquals(item.getType(), document.get(LUCENE_FIELD_TYPE));
+        assertThat(document.get(LUCENE_FIELD_LAYER)).isEqualTo(item.getLayer());
+        assertThat(document.get(LUCENE_FIELD_ADDRESS)).isEqualTo(item.getAddress());
 
-        assertEquals(item.getLinks().get("wiki").getHref().toString(), document.get("wiki"));
+        String wikiLink = item.getLinks().get("wiki").getHref().toString();
+        assertEquals(wikiLink, document.get("wiki"));
         String[] tag = document.getValues("tag");
         List<String> tags = List.of(tag);
         assertTrue(tags.contains("one"));
@@ -94,15 +100,15 @@ class SearchDocumentFactoryTest {
     void addsKPIFacets() {
         //given
         List<StatusValue> statusValues = new ArrayList<>();
-        StatusValue foo = new StatusValue("test", "foo", Status.RED, "xyz");
+        StatusValue foo = new StatusValue(item.getFullyQualifiedIdentifier(), "foo", Status.RED, "xyz");
         statusValues.add(foo);
-        StatusValue bar = new StatusValue("test", "bar", Status.GREEN, "bar");
+        StatusValue bar = new StatusValue(item.getFullyQualifiedIdentifier(), "bar", Status.GREEN, "bar");
         statusValues.add(bar);
-        StatusValue summary = StatusValue.summary("test", new ArrayList<>(List.of(foo, bar)));
+        StatusValue summary = StatusValue.summary(item.getFullyQualifiedIdentifier(), new ArrayList<>(List.of(foo, bar)));
         statusValues.add(summary);
 
         //when
-        Document document = SearchDocumentFactory.from(item, statusValues);
+        Document document = SearchDocumentFactory.from(valueObject, statusValues);
 
         //then
         assertNotNull(document);

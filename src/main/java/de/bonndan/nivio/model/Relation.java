@@ -1,11 +1,12 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.lang.NonNull;
 
-import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,15 +18,13 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  *
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-public class Relation implements Labeled, Assessable, Serializable {
+public class Relation implements Component, Assessable {
 
     public static final String DELIMITER = ";";
 
-    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
-    private final Item source;
+    protected final URI sourceURI;
 
-    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
-    private final Item target;
+    protected final URI targetURI;
 
     private final String description;
 
@@ -35,8 +34,11 @@ public class Relation implements Labeled, Assessable, Serializable {
 
     private final Map<String, String> labels = new ConcurrentHashMap<>();
 
-    public Relation(@NonNull final Item source,
-                    @NonNull final Item target,
+    private final URI fullyQualifiedIdentifier;
+    private IndexReadAccess<? extends GraphComponent> indexReadAccess;
+
+    public Relation(@NonNull final GraphComponent source,
+                    @NonNull final GraphComponent target,
                     final String description,
                     final String format,
                     final RelationType type
@@ -45,19 +47,67 @@ public class Relation implements Labeled, Assessable, Serializable {
             throw new IllegalArgumentException(String.format("Relation source and target are equal.%s %s", source, target));
         }
 
-        this.source = Objects.requireNonNull(source, "Source is null");
-        this.target = Objects.requireNonNull(target, "Target is null");
+        this.sourceURI = Objects.requireNonNull(source, "Source is null").getFullyQualifiedIdentifier();
+        this.targetURI = Objects.requireNonNull(target, "Target is null").getFullyQualifiedIdentifier();
         this.description = description;
         this.format = format;
         this.type = type;
+        try {
+            this.fullyQualifiedIdentifier = new URI(Relation.class.getSimpleName().toLowerCase(Locale.ROOT),
+                    source.getFullyQualifiedIdentifier().getAuthority(),
+                    source.getFullyQualifiedIdentifier().getPath(),
+                    "to=" + target.getFullyQualifiedIdentifier(),
+                    null
+            );
+        } catch (URISyntaxException e) {
+            throw new ProcessingException("Failed to generate fqi", e);
+        }
     }
 
+    @Override
+    @NonNull
     public String getIdentifier() {
-        return source.getFullyQualifiedIdentifier().jsonValue() + DELIMITER + target.getFullyQualifiedIdentifier().jsonValue();
+        return getFullyQualifiedIdentifier().toString();
     }
 
-    public RelationType getType() {
-        return type;
+    @Override
+    @NonNull
+    public String getName() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
+    public String getOwner() {
+        return null;
+    }
+
+    @Override
+    public String getIcon() {
+        return null;
+    }
+
+    @Override
+    public String getColor() {
+        return null;
+    }
+
+    @Override
+    @NonNull
+    public URI getFullyQualifiedIdentifier() {
+        return fullyQualifiedIdentifier;
+    }
+
+    @NonNull
+    @Override
+    public String getParentIdentifier() {
+        return getSource().getFullyQualifiedIdentifier().toString();
+    }
+
+    public String getType() {
+        if (type == null) {
+            return null;
+        }
+        return type.name();
     }
 
     public String getDescription() {
@@ -68,31 +118,24 @@ public class Relation implements Labeled, Assessable, Serializable {
         return format;
     }
 
+    protected URI getSourceURI() {
+        return sourceURI;
+    }
+
+    public URI getTargetURI() {
+        return targetURI;
+    }
+
+    @NonNull
     public Item getTarget() {
-        return target;
+        return (Item) indexReadAccess.get(targetURI)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Source %s not in index.", sourceURI)));
     }
 
+    @NonNull
     public Item getSource() {
-        return source;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Relation relation = (Relation) o;
-        return Objects.equals(source, relation.source) && Objects.equals(target, relation.target);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(source, target);
-    }
-
-    @Override
-    public String toString() {
-        return "Relation{" + getIdentifier() + '}';
+        return (Item) indexReadAccess.get(sourceURI)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Source %s not in index.", sourceURI)));
     }
 
     @Override
@@ -109,19 +152,13 @@ public class Relation implements Labeled, Assessable, Serializable {
     @Override
     @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getFullyQualifiedIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
     @NonNull
-    public String getAssessmentIdentifier() {
-        return getIdentifier();
-    }
-
-    @Override
-    @NonNull
-    public List<? extends Assessable> getChildren() {
-        return new ArrayList<>();
+    public Set<Assessable> getAssessables() {
+        return Set.of();
     }
 
     /**
@@ -142,5 +179,40 @@ public class Relation implements Labeled, Assessable, Serializable {
         changes.addAll(compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type"));
 
         return changes;
+    }
+
+    @Override
+    public Map<String, Link> getLinks() {
+        return Map.of();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Relation)) return false;
+        Relation relation = (Relation) o;
+        return Objects.equals(sourceURI, relation.sourceURI) && Objects.equals(targetURI, relation.targetURI);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sourceURI, targetURI);
+    }
+
+    @Override
+    public String toString() {
+        return fullyQualifiedIdentifier.toString();
+    }
+
+    void attach(IndexReadAccess<? extends GraphComponent> indexReadAccess) {
+        this.indexReadAccess = indexReadAccess;
+    }
+
+    void detach() {
+        this.indexReadAccess = null;
+    }
+
+    boolean isAttached() {
+        return indexReadAccess != null;
     }
 }

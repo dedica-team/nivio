@@ -1,12 +1,11 @@
 package de.bonndan.nivio.input.compose2;
 
 import de.bonndan.nivio.input.FileFetcher;
+import de.bonndan.nivio.input.SourceReference;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.http.HttpService;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,9 +36,8 @@ class InputFormatHandlerCompose2Test {
         factoryCompose2.applyData(file, landscapeDescription);
 
         //then
-        ItemIndex<ItemDescription> services = landscapeDescription.getItemDescriptions();
-        assertEquals(3, services.all().size());
-        ItemDescription service = services.pick("web", null);
+        assertEquals(3, landscapeDescription.getIndexReadAccess().all(ItemDescription.class).size());
+        ItemDescription service = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(service);
 
         assertEquals("web", service.getIdentifier());

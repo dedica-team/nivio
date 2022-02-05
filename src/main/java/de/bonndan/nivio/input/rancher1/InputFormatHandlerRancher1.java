@@ -31,7 +31,7 @@ public class InputFormatHandlerRancher1 implements InputFormatHandler {
         String combine = URLFactory.combine(reference.getSeedConfig().getBaseUrl(), reference.getUrl().toString());
         try {
             URL url = new URL(combine);
-            PrometheusExporter prometheusExporter = new PrometheusExporter(identifier, url);
+            PrometheusExporter prometheusExporter = new PrometheusExporter(url);
             landscapeDescription.mergeItems(prometheusExporter.getDescriptions());
         } catch (MalformedURLException e) {
             logger.error("Could not work on prometheus url {}", combine);

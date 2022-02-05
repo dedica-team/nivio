@@ -1,6 +1,8 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.ComponentDescription;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,7 @@ import static de.bonndan.nivio.util.SafeAssign.assignSafe;
  * @param <O> Output
  * @param <P> Parent
  */
-public abstract class GraphNodeBuilder<B extends GraphNodeBuilder<B, O, P>, O extends GraphNode<?,?>, P extends GraphNode<?,?>> {
+public abstract class GraphNodeBuilder<B extends GraphNodeBuilder<B, O, P>, O extends GraphComponent, P extends GraphComponent> {
 
     protected Map<String, Link> links = new HashMap<>();
     protected Map<String, String> labels = new ConcurrentHashMap<>();
@@ -84,8 +86,13 @@ public abstract class GraphNodeBuilder<B extends GraphNodeBuilder<B, O, P>, O ex
         return links;
     }
 
-    public B withComponentDescription(ComponentDescription description) {
+    public B withComponentDescription(@Nullable final ComponentDescription description) {
         if (description != null) {
+            if (!StringUtils.hasLength(identifier)) {
+                identifier = description.getIdentifier();
+            }
+            withName(description.getName());
+            withType(description.getType());
             withContact(description.getContact());
             withOwner(description.getOwner());
             withDescription(description.getDescription());

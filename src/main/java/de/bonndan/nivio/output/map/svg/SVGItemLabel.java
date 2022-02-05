@@ -20,7 +20,7 @@ class SVGItemLabel extends Component {
     SVGItemLabel(Item item) {
         name = !StringUtils.hasLength(item.getName()) ? item.getIdentifier() : item.getName();
         id = getId(item);
-        identifier = item.getFullyQualifiedIdentifier().jsonValue();
+        identifier = item.getFullyQualifiedIdentifier().getPath();
     }
 
     public DomContent render() {
@@ -34,7 +34,7 @@ class SVGItemLabel extends Component {
     }
 
     private String getId(Item item) {
-        return "label_" + item.getFullyQualifiedIdentifier().jsonValue()
+        return "label_" + item.getFullyQualifiedIdentifier().toString()
                 .replace(FullyQualifiedIdentifier.SEPARATOR, "_")
                 .replace(".", "_")
                 .replace(":", "_")

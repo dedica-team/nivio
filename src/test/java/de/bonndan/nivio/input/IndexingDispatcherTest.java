@@ -3,8 +3,8 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.Source;
-import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeBuilder;
 import de.bonndan.nivio.observation.InputChangedEvent;
 import de.bonndan.nivio.observation.ObservedChange;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +14,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -59,10 +57,8 @@ class IndexingDispatcherTest {
     @Test
     void fromExisting() {
         String stringSource = "foo";
-        Landscape existing = new Landscape(
-                "foobar", Map.of("agroup", new Group("agroup", "foobar")),
-                "foobar", null, null, null, new Source(stringSource), null, null, Collections.emptyMap()
-        );
+        Landscape existing = LandscapeBuilder.aLandscape().withIdentifier("foobar").withSource(new Source(stringSource)).build();
+
         SeedConfiguration configuration = new SeedConfiguration("foobar");
         when(configurationFactory.fromString(eq(stringSource), any(Source.class))).thenReturn(configuration);
 

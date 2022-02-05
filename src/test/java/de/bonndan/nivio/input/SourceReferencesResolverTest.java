@@ -4,7 +4,6 @@ import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,9 +51,9 @@ class SourceReferencesResolverTest {
 
         assertThat(resolve).isNotEmpty();
 
-        ItemIndex<ItemDescription> itemDescriptions = resolve.get(0).getItemDescriptions();
-        assertThat(itemDescriptions.all()).isNotEmpty();
-        ItemDescription mapped = itemDescriptions.all().stream()
+        Set<ItemDescription> itemDescriptions = resolve.get(0).getItemDescriptions();
+        assertThat(itemDescriptions).isNotEmpty();
+        ItemDescription mapped = itemDescriptions.stream()
                 .filter(itemDescription -> "blog-server".equals(itemDescription.getIdentifier()))
                 .findFirst()
                 .orElseThrow();

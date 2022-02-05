@@ -9,10 +9,10 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class IndexTest {
+class ApiRootModelTest {
 
     private ConfigApiModel config;
-    private final Index index = new Index(config);
+    private final ApiRootModel index = new ApiRootModel(config);
 
 
     @BeforeEach

@@ -42,6 +42,10 @@ K8s master URL (optional). All variables from https://github.com/fabric8io/kuber
 
 Patterns for allowed origins when the app requires authentication
 
+.. envvar:: NIVIO_AUTH_GITHUB_ALIAS_ATTRIBUTE
+
+GitHub user attribute to use as alias
+
 .. envvar:: NIVIO_AUTH_GITHUB_CLIENT_ID
 
 GitHub app OAuth2 client id
@@ -49,6 +53,10 @@ GitHub app OAuth2 client id
 .. envvar:: NIVIO_AUTH_GITHUB_CLIENT_SECRET
 
 GitHub app OAuth2 client secret
+
+.. envvar:: NIVIO_AUTH_GITHUB_NAME_ATTRIBUTE
+
+GitHub user attribute to use as name
 
 .. envvar:: NIVIO_AUTH_LOGIN_MODE
 

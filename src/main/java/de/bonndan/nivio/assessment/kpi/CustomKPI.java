@@ -85,7 +85,7 @@ public class CustomKPI extends AbstractKPI {
         for (Status status : Status.values()) {
             Optional<Status> statusByRange = getStatusByRange(value);
             if (statusByRange.isPresent()) {
-                values.add(new StatusValue(assessable.getAssessmentIdentifier(), label, statusByRange.get(), message));
+                values.add(new StatusValue(assessable.getFullyQualifiedIdentifier(), label, statusByRange.get(), message));
                 break;
             }
 
@@ -97,7 +97,7 @@ public class CustomKPI extends AbstractKPI {
                 anyMatch = matchSpecs.get(status).stream().anyMatch(stringBooleanFunction -> stringBooleanFunction.apply(value));
             }
             if (anyMatch) {
-                values.add(new StatusValue(assessable.getAssessmentIdentifier(), label, status, message));
+                values.add(new StatusValue(assessable.getFullyQualifiedIdentifier(), label, status, message));
                 break;
             }
         }

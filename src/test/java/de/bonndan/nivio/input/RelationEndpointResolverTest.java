@@ -38,15 +38,23 @@ class RelationEndpointResolverTest {
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
         relationEndpointResolver.resolve(landscapeDescription);
 
-        ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
+        ItemDescription one = landscapeDescription.getIndexReadAccess()
+                .findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
+                .orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = landscapeDescription.getItemDescriptions().pick("crappy_dockername-2343a", null);
+        ItemDescription two = landscapeDescription.getIndexReadAccess()
+                .findOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
+                .orElseThrow();
+
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = landscapeDescription.getItemDescriptions().pick("other_crappy_name-2343a", null);
+        ItemDescription three = landscapeDescription.getIndexReadAccess()
+                .findOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
+                .orElseThrow();
+
         assertNotNull(three);
         assertEquals("beta", three.getGroup());
     }
@@ -59,7 +67,9 @@ class RelationEndpointResolverTest {
         relationEndpointResolver.resolve(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
-        ItemDescription providedbyBar = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
+        ItemDescription providedbyBar = landscapeDescription.getIndexReadAccess()
+                .findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
+                .orElseThrow();
         assertNotNull(providedbyBar);
 
         List<RelationDescription> relations = providedbyBar.getRelations().stream()
@@ -77,7 +87,9 @@ class RelationEndpointResolverTest {
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
         relationEndpointResolver.resolve(landscapeDescription);
 
-        ItemDescription hasdataFlow = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
+        ItemDescription hasdataFlow = landscapeDescription.getIndexReadAccess()
+                .findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
+                .orElseThrow();
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getRelations());
         List<RelationDescription> relations = hasdataFlow.getRelations().stream()

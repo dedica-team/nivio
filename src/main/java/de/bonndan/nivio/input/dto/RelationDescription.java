@@ -3,19 +3,17 @@ package de.bonndan.nivio.input.dto;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.RelationType;
-import de.bonndan.nivio.search.ItemMatcher;
+import de.bonndan.nivio.search.ComponentMatcher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.Null;
 import java.util.*;
 
 
 @Schema(description = "A directed relation between two landscape items. Also known as edge in a directed graph.")
 public class RelationDescription implements Labeled {
-
-    public static final String ENDPOINT_VALIDATION = "^[\\w.:\\-/]{2,256}$";
 
     @Schema(description = "The type of the relation, i.e. whether it is a hard or a soft dependency.")
     private RelationType type;
@@ -39,18 +37,12 @@ public class RelationDescription implements Labeled {
     }
 
     public RelationDescription(@NonNull final String source, @NonNull final String target) {
-        if (!validateEndpoint(source)) {
-            throw new IllegalArgumentException(String.format("Invalid source identifier used: '%s'", source));
-        }
-        if (!validateEndpoint(target)) {
-            throw new IllegalArgumentException(String.format("Invalid target identifier used: '%s'", target));
-        }
-        this.source = source.trim();
-        this.target = target.trim();
+        setSource(source);
+        setTarget(target);
     }
 
     public static boolean validateEndpoint(@Nullable final String endpoint) {
-        return endpoint != null && endpoint.trim().matches(ENDPOINT_VALIDATION);
+        return StringUtils.hasLength(endpoint);
     }
 
     public String getDescription() {
@@ -78,10 +70,16 @@ public class RelationDescription implements Labeled {
     }
 
     public void setSource(String source) {
+        if (!validateEndpoint(source)) {
+            throw new IllegalArgumentException(String.format("Invalid source identifier used: '%s'", source));
+        }
         this.source = source;
     }
 
     public void setTarget(String target) {
+        if (!validateEndpoint(target)) {
+            throw new IllegalArgumentException(String.format("Invalid target identifier used: '%s'", target));
+        }
         this.target = target;
     }
 
@@ -129,15 +127,20 @@ public class RelationDescription implements Labeled {
      */
     Optional<RelationDescription> findMatching(@NonNull final Collection<RelationDescription> relations) {
         return Objects.requireNonNull(relations).stream()
-                .filter(rel -> matches(source, rel.getSource()))
-                .filter(rel -> matches(target, rel.getTarget()))
+                .filter(rel -> {
+                    try {
+                        return matches(source, rel.getSource()) && matches(target, rel.getTarget());
+                    } catch (IllegalArgumentException e) {
+                        return false;
+                    }
+                })
                 .findFirst();
     }
 
     private boolean matches(String end1, String end2) {
-        Optional<ItemMatcher> m1 = ItemMatcher.forTarget(end1);
-        Optional<ItemMatcher> m2 = ItemMatcher.forTarget(end2);
-        return m1.isPresent() && m2.isPresent() && m1.map(m -> m.equals(m2.get())).orElse(false);
+        var m1 = ComponentMatcher.forTarget(end1);
+        var m2 = ComponentMatcher.forTarget(end2);
+        return m1.equals(m2);
     }
 
     /**

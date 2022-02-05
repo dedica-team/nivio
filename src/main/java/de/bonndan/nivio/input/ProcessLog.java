@@ -24,6 +24,7 @@ public class ProcessLog {
     private final List<Entry> messages = new ArrayList<>();
 
     private final String landscapeIdentifier;
+    private ProcessingChangelog changelog;
 
     public ProcessLog(@NonNull final Logger logger, @NonNull final String landscapeIdentifier) {
         this.logger = Objects.requireNonNull(logger);
@@ -76,6 +77,14 @@ public class ProcessLog {
             return messages.get(messages.size() - 1).date;
         }
         return null;
+    }
+
+    public void setChangelog(ProcessingChangelog changelog) {
+        this.changelog = Objects.requireNonNull(changelog);
+    }
+
+    public ProcessingChangelog getChangelog() {
+        return changelog;
     }
 
     public static class Entry {

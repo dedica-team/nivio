@@ -5,6 +5,10 @@ public final class UnitBuilder extends GraphNodeBuilder<UnitBuilder, Unit, Lands
     private UnitBuilder() {
     }
 
+    public static UnitBuilder aTestUnit(String identifier) {
+        return new UnitBuilder().withIdentifier(identifier).withParent(LandscapeFactory.createForTesting("test", "test").build());
+    }
+
     @Override
     public UnitBuilder getThis() {
         return this;

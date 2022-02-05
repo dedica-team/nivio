@@ -1,10 +1,10 @@
 package de.bonndan.nivio.notification;
 
-import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.observation.InputChangedEvent;
 import de.bonndan.nivio.observation.ObservedChange;
@@ -36,9 +36,10 @@ class MessagingServiceTest {
 
     @Test
     void onProcessingFinishedEvent() {
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
         ProcessingFinishedEvent processingFinishedEvent = new ProcessingFinishedEvent(
                 new LandscapeDescription("test", "testLandscape", null),
-                LandscapeFactory.createForTesting("test", "testLandscape").build(),
+                landscape,
                 new ProcessingChangelog()
         );
         messagingService.onProcessingFinishedEvent(processingFinishedEvent);
@@ -50,7 +51,7 @@ class MessagingServiceTest {
         assertNotNull(value);
         assertThat(value.getLevel()).isEqualTo("info");
         assertThat(value.getType()).isEqualTo("ProcessingFinishedEvent");
-        assertThat(value.getLandscape()).isEqualTo("test");
+        assertThat(value.getLandscape()).isEqualTo(landscape.getFullyQualifiedIdentifier().toString());
         assertThat(value.getChangelog()).isNotNull();
     }
 
@@ -73,8 +74,9 @@ class MessagingServiceTest {
 
     @Test
     void onAssessmentChangeEvent() {
+        Landscape landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
         AssessmentChangedEvent event = new AssessmentChangedEvent(
-                LandscapeFactory.createForTesting("test", "testLandscape").build(),
+                landscape,
                 new ProcessingChangelog()
         );
         messagingService.onAssessmentChangedEvent(event);
@@ -86,7 +88,7 @@ class MessagingServiceTest {
         assertNotNull(value);
         assertThat(value.getLevel()).isEqualTo("info");
         assertThat(value.getType()).isEqualTo("AssessmentChangedEvent");
-        assertThat(value.getLandscape()).isEqualTo("test");
+        assertThat(value.getLandscape()).isEqualTo(landscape.getFullyQualifiedIdentifier().toString());
         assertThat(value.getChangelog()).isNotNull();
     }
 
@@ -103,7 +105,7 @@ class MessagingServiceTest {
         EventNotification[] last = messagingService.getLast();
         assertNotNull(last);
         assertEquals(1, last.length);
-        assertEquals(processingFinishedEvent.getLandscape().getFullyQualifiedIdentifier().jsonValue(), last[0].getLandscape());
+        assertEquals(processingFinishedEvent.getLandscape().getFullyQualifiedIdentifier().toString(), last[0].getLandscape());
         assertEquals(processingFinishedEvent.getMessage(), last[0].getMessage());
     }
 }

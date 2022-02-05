@@ -2,18 +2,22 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.search.ItemIndex;
-import de.bonndan.nivio.search.ItemMatcher;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.search.ComponentMatcher;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Examines the labels of an item for parts that might be an url and could point to targets in the landscape.
+ *
+ * @todo collect hints and display to user instead of directly linking things
  */
 public class LabelRelationResolver extends Resolver {
 
@@ -29,9 +33,9 @@ public class LabelRelationResolver extends Resolver {
 
         List<Function<String, Boolean>> blacklistSpecs = getBlacklistSpecs(input.getConfig().getLabelBlacklist());
 
-        for (ItemDescription description : input.getItemDescriptions().all()) {
+        for (ItemDescription description : input.getItemDescriptions()) {
             getHints(input, description, blacklistSpecs)
-                    .forEach(hint -> applyDescriptionsFromHint(input.getItemDescriptions(), hint));
+                    .forEach(hint -> applyDescriptionsFromHint(input.getItemDescriptions(), hint.getCreatedOrModifiedDescriptions()));
         }
     }
 
@@ -78,15 +82,18 @@ public class LabelRelationResolver extends Resolver {
      * Every hint can produce item descriptions to update existing items or lead to new ones.
      *
      * @param itemDescriptions current descriptions
-     * @param hint             hint
+     * @param hintDescriptions hint
      */
-    private void applyDescriptionsFromHint(ItemIndex<ItemDescription> itemDescriptions, Hint hint) {
-        hint.getCreatedOrModifiedDescriptions().forEach(itemDescription -> {
-            Optional<ItemDescription> target = itemDescriptions.find(ItemMatcher.forTarget(itemDescription));
+    private void applyDescriptionsFromHint(Set<ItemDescription> itemDescriptions, List<ItemDescription> hintDescriptions) {
+        hintDescriptions.forEach(hintDescription -> {
+            ComponentMatcher matcher = ComponentMatcher.forTarget(hintDescription.getFullyQualifiedIdentifier());
+            Optional<ItemDescription> target =itemDescriptions.stream()
+                    .filter(dto -> matcher.isSimilarTo(dto.getFullyQualifiedIdentifier()))
+                    .findFirst();
             if (target.isPresent()) {
-                ItemDescriptionValues.assignSafeNotNull(target.get(), itemDescription);
+                target.get().assignSafeNotNull(hintDescription);
             } else {
-                itemDescriptions.add(itemDescription);
+                itemDescriptions.add(hintDescription);
             }
         });
     }

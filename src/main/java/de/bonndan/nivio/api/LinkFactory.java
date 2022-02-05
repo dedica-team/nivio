@@ -17,6 +17,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,8 +116,8 @@ public class LinkFactory {
      * @return link based on the {@link FullyQualifiedIdentifier}
      */
     @NonNull
-    public Optional<Link> generateComponentLink(@NonNull FullyQualifiedIdentifier fullyQualifiedIdentifier) {
-        return localServer.getUrl(ApiController.PATH, Objects.requireNonNull(fullyQualifiedIdentifier).jsonValue())
+    public Optional<Link> generateComponentLink(@NonNull URI fullyQualifiedIdentifier) {
+        return localServer.getUrl(ApiController.PATH, Objects.requireNonNull(fullyQualifiedIdentifier).getPath())
                 .map(url -> linkTo(url)
                         .withMedia(MediaType.APPLICATION_JSON_VALUE)
                         .withTitle("JSON representation")
@@ -130,9 +131,9 @@ public class LinkFactory {
      * @param landscapes all landscape
      * @return the index
      */
-    Index getIndex(Iterable<Landscape> landscapes) {
+    ApiRootModel getIndex(Iterable<Landscape> landscapes) {
 
-        Index index = new Index(getApiModel());
+        ApiRootModel index = new ApiRootModel(getApiModel());
 
         StreamSupport.stream(landscapes.spliterator(), false)
                 .forEach((Landscape landscape) -> {

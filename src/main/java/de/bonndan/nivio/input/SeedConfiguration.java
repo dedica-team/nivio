@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.bonndan.nivio.input.dto.ComponentDescription;
-import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.Source;
+import de.bonndan.nivio.input.dto.*;
 import de.bonndan.nivio.model.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
@@ -27,7 +24,7 @@ import java.util.*;
  * {@link SourceReferencesResolver}. A single seed config can result in multiple landscape description dtos.
  */
 @JsonIgnoreType
-public class SeedConfiguration implements ComponentDescription {
+public class SeedConfiguration  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SeedConfiguration.class);
 
@@ -72,6 +69,10 @@ public class SeedConfiguration implements ComponentDescription {
     @Schema(description = "Additional labels for the landscape.")
     private final Map<String, String> labels = new HashMap<>();
 
+    private List<UnitDescription> units = new ArrayList<>();
+
+    private List<ContextDescription> contexts = new ArrayList<>();
+
     private List<ItemDescription> items = new ArrayList<>();
 
     private URL baseUrl;
@@ -105,12 +106,6 @@ public class SeedConfiguration implements ComponentDescription {
         return identifier;
     }
 
-    @Override
-    @NonNull
-    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
-        return FullyQualifiedIdentifier.from(getIdentifier());
-    }
-
     @Nullable
     public String getName() {
         return name;
@@ -129,9 +124,8 @@ public class SeedConfiguration implements ComponentDescription {
         this.contact = contact;
     }
 
-    @Override
     public void setIcon(String icon) {
-        this.setLabel(Label.icon, icon);
+        this.getLabels().put(Label.icon.name(), icon);
     }
 
     public String getDescription() {
@@ -197,6 +191,22 @@ public class SeedConfiguration implements ComponentDescription {
         return groups;
     }
 
+    public List<UnitDescription> getUnits() {
+        return units;
+    }
+
+    public void setUnits(List<UnitDescription> units) {
+        this.units = units;
+    }
+
+    public List<ContextDescription> getContexts() {
+        return contexts;
+    }
+
+    public void setContexts(List<ContextDescription> contexts) {
+        this.contexts = contexts;
+    }
+
     /**
      * Manually set Identifiers are overridden by keys.
      *
@@ -210,7 +220,6 @@ public class SeedConfiguration implements ComponentDescription {
                 LOGGER.warn("Group map key {} and identifier {} are both set and differ. Overriding with map key.", s, groupItem.getIdentifier());
             }
             groupItem.setIdentifier(s);
-            groupItem.setEnvironment(identifier);
         });
         this.groups = groups;
     }

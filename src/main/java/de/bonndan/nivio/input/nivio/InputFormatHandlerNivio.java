@@ -35,7 +35,9 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription defaultLandscape) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference,
+                                                @NonNull final LandscapeDescription defaultLandscape
+    ) {
 
         String yml = fileFetcher.get(reference);
         Source source;
@@ -51,8 +53,10 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
             return new ArrayList<>();
         }
 
+        defaultLandscape.mergeUnits(source.units);
+        defaultLandscape.mergeContexts(source.contexts);
         defaultLandscape.mergeItems(source.items);
-        defaultLandscape.mergeGroups(source.groups);
+        defaultLandscape.mergeGroups(source.groups.values());
 
         if (source.templates != null) {
             source.templates.forEach((s, template) -> defaultLandscape.getTemplates().put(s, template));

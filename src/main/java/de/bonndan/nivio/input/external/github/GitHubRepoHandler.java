@@ -11,6 +11,7 @@ import org.kohsuke.github.GitHub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,7 +47,7 @@ public class GitHubRepoHandler implements ExternalLinkHandler, RepositoryLinkHan
             int openPRs = repository.getPullRequests(GHIssueState.OPEN).size();
             itemDescription.setLabel(OPEN_PRS, String.valueOf(openPRs));
 
-            String readme = new String(repository.getReadme().read().readNBytes(1024));
+            String readme = new String(repository.getReadme().read().readNBytes(1024), StandardCharsets.UTF_8);
             itemDescription.setLabel(README, readme);
 
             String description = repository.getDescription();

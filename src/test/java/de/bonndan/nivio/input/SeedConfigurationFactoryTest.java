@@ -199,7 +199,7 @@ class SeedConfigurationFactoryTest {
 
         ItemDescription template = configuration.getTemplates().get("addDataFlow");
         RelationDescription df = (RelationDescription) template.getRelations().toArray()[0];
-        assertEquals("identifier LIKE 'other_crappy_name%'", df.getTarget());
+        assertEquals("identifier:other_crappy_name*", df.getTarget());
     }
 
     @Test
@@ -246,24 +246,6 @@ class SeedConfigurationFactoryTest {
         GroupDescription b = groups.get("B");
         assertNotNull(b);
         assertEquals("B", b.getIdentifier());
-    }
-
-    @Test
-    void testGroupsHaveEnv() {
-        final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
-        File file = new File(FILE_PATH_GROUPS);
-        SeedConfiguration seedConfiguration = factory.fromFile(file);
-
-        Map<String, GroupDescription> groups = seedConfiguration.getGroups();
-        assertNotNull(groups);
-        assertEquals(2, groups.size());
-        GroupDescription groupDescription = groups.get("groupA");
-        assertNotNull(groupDescription);
-        assertEquals(seedConfiguration.getIdentifier(), groupDescription.getFullyQualifiedIdentifier().getLandscape());
-
-        GroupDescription b = groups.get("B");
-        assertNotNull(b);
-        assertEquals(seedConfiguration.getIdentifier(), b.getFullyQualifiedIdentifier().getLandscape());
     }
 
     @Test

@@ -5,13 +5,19 @@ public final class ContextBuilder extends GraphNodeBuilder<ContextBuilder, Conte
     private ContextBuilder() {
     }
 
-    @Override
-    public ContextBuilder getThis() {
-        return this;
+    public static ContextBuilder aTestContext(String identifier) {
+        return new ContextBuilder()
+                .withIdentifier(identifier)
+                .withParent(UnitBuilder.aTestUnit("testUnit").build());
     }
 
     public static ContextBuilder aContext() {
         return new ContextBuilder();
+    }
+
+    @Override
+    public ContextBuilder getThis() {
+        return this;
     }
 
     @Override

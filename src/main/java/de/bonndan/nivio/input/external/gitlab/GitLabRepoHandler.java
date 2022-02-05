@@ -47,16 +47,16 @@ public class GitLabRepoHandler implements ExternalLinkHandler, RepositoryLinkHan
             itemDescription.setLabel(RepositoryLinkHandler.DESCRIPTION, description);
             itemDescription.setDescription(description);
 
-            itemDescription.setLabel(RepositoryLinkHandler.OPEN_ISSUES, project.getOpenIssuesCount());
+            itemDescription.setLabel(RepositoryLinkHandler.OPEN_ISSUES, String.valueOf(project.getOpenIssuesCount()));
 
             String avatarUrl = project.getAvatarUrl();
-            if (!StringUtils.isEmpty(avatarUrl)) {
+            if (StringUtils.hasLength(avatarUrl)) {
                 itemDescription.setLabel(RepositoryLinkHandler.ICON, avatarUrl);
                 itemDescription.setIcon(avatarUrl);
             }
 
             int size = api.getMergeRequestApi().getMergeRequests(repoName).size();
-            itemDescription.setLabel(RepositoryLinkHandler.OPEN_PRS, size);
+            itemDescription.setLabel(RepositoryLinkHandler.OPEN_PRS, String.valueOf(size));
 
             //TODO link collaborators
         } catch (Exception e) {

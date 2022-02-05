@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 /**
  * Modifies the target landscape using input.
  */
+@Deprecated
 abstract class Processor {
 
     protected final ProcessLog processLog;

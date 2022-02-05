@@ -6,63 +6,61 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ItemFactory {
+import static de.bonndan.nivio.util.SafeAssign.assignSafe;
+
+public class ItemFactory implements GraphNodeFactory<Item, ItemDescription, Group> {
+
+    public static final ItemFactory INSTANCE = new ItemFactory();
 
     private ItemFactory() {
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemFactory.class);
 
-    public static Item getTestItem(String group, String identifier) {
-        var landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
-        return getTestItem(group, identifier, landscape);
+    @Override
+    public Item merge(@NonNull final Item existing, @NonNull final Item added) {
+        ItemBuilder builder = ItemBuilder.anItem().withParent(existing.getParent());
+        if (added.isAttached()) {
+            builder.withParent(added.getParent());
+        }
+        mergeValuesIntoBuilder(existing, added, builder);
+
+        assignSafe(added.getLayer(), builder::withLayer);
+        assignSafe(added.getAddress(), s -> builder.withAddress(URI.create(s)));
+        assignSafe(added.getInterfaces(), builder::withInterfaces);
+
+        return builder.build();
     }
 
-    public static Item getTestItem(String group, String identifier, Landscape landscape) {
-        return new Item(identifier, landscape, group, null, null, null,
-                null, null, null, null, null, null);
-    }
-
-    public static ItemBuilder getTestItemBuilder(String group, String identifier) {
-        var landscape = LandscapeBuilder.aLandscape().withIdentifier("test").withName("test").build();
-        return ItemBuilder.anItem().withGroup(group).withIdentifier(identifier).withLandscape(landscape);
-    }
-
-    public static Item fromDescription(@NonNull ItemDescription description, Landscape landscape) {
-        Objects.requireNonNull(description, "description is null");
+    public Item createFromDescription(@NonNull final String identifier,
+                                      @NonNull final Group parent, @Nullable final ItemDescription description
+    ) {
+        Objects.requireNonNull(identifier, "identifier is null");
 
         ItemBuilder builder = ItemBuilder.anItem()
-                .withIdentifier(description.getIdentifier())
-                .withDescription(description.getDescription())
-                .withName(description.getName())
-                .withContact(description.getContact())
-                .withOwner(description.getOwner())
-                .withGroup(description.getGroup())
-                .withIcon(description.getIcon())
-                .withType(description.getType())
-                .withLayer(description.getLayer())
-                .withLandscape(landscape);
+                .withIdentifier(identifier)
+                .withComponentDescription(description)
+                .withParent(parent);
 
-        if (description.getAddress() != null) {
-            builder.withAddress(URI.create(description.getAddress()));
+        if (description != null) {
+            if (description.getAddress() != null) {
+                builder.withAddress(URI.create(description.getAddress()));
+            }
+
+            if (description.getLayer() != null) {
+                builder.withLayer(description.getLayer());
+            }
+
+            builder.withInterfaces(description.getInterfaces().stream()
+                    .map(ServiceInterface::new)
+                    .collect(Collectors.toSet()));
         }
 
-        builder.withInterfaces(description.getInterfaces().stream()
-                .map(ServiceInterface::new)
-                .collect(Collectors.toSet()));
-
-        builder.withLinks(description.getLinks());
-        builder.withLabels(description.getLabels());
-
-        if (!StringUtils.hasLength(builder.getGroup())) {
-            builder.withGroup(Layer.of(description.getLayer()).name());
-        }
         return builder.build();
     }
 
@@ -75,7 +73,7 @@ public class ItemFactory {
     public static Item assignAll(@NonNull final Item item, @Nullable final ItemDescription description) {
         Objects.requireNonNull(item, "Item is null");
         if (description == null) {
-            logger.warn("ItemDescription for item {} is null in assignAllValues", item.getIdentifier());
+            LOGGER.warn("ItemDescription for item {} is null in assignAllValues", item.getIdentifier());
             return item;
         }
 
@@ -85,12 +83,10 @@ public class ItemFactory {
                 .withDescription(item.getDescription())
                 .withContact(item.getContact())
                 .withOwner(item.getOwner())
-                .withGroup(item.getGroup())
+                .withParent(item.getParent())
                 .withIcon(item.getIcon())
                 .withType(item.getType())
                 .withLayer(item.getLayer())
-                .withLandscape(item.getLandscape())
-                .withRelations(item.getRelations())
                 .withInterfaces(item.getInterfaces())
                 .withLabels(item.getLabels())
                 .withLinks(item.getLinks());
@@ -113,5 +109,19 @@ public class ItemFactory {
         builder.withLabels(description.getLabels());
 
         return builder.build();
+    }
+
+    //todo move to GraphTestSupport
+    @Deprecated
+    public static Item getTestItem(String group, String identifier) {
+        return new Item(identifier, null, null, null,
+                null, null, null, null, null, null, GroupBuilder.aTestGroup(group).build());
+    }
+
+    //todo move to GraphTestSupport
+    @Deprecated
+    public static ItemBuilder getTestItemBuilder(String group, String identifier) {
+        var parent = GroupBuilder.aTestGroup(group).build();
+        return ItemBuilder.anItem().withParent(parent).withIdentifier(identifier);
     }
 }

@@ -28,9 +28,19 @@ A group of items. Could be used as bounded context, for instance.
      - A list of item identifiers or SQL-like queries to easily assign items to this group.
      - optional, defaults to null
      - identifier LIKE 'DB1'
+   * - context
+     - String
+     - 
+     - optional, defaults to null
+     - null
    * - description
      - String
      - A brief description.
+     - optional, defaults to null
+     - null
+   * - fullyQualifiedIdentifier
+     - URI<URI>
+     - 
      - optional, defaults to null
      - null
    * - identifier
@@ -50,12 +60,27 @@ A group of items. Could be used as bounded context, for instance.
      - github: https://github.com/dedica-team/nivio
    * - name
      - String
-     - 
-     - optional, defaults to null
+     - A human-readable name
+     - **required**, defaults to null
      - null
    * - owner
      - String
      - The business owner of the group.
+     - optional, defaults to null
+     - null
+   * - parentIdentifier
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - tags
+     - List
+     - 
+     - optional, defaults to null
+     - null
+   * - type
+     - String
+     - The type of the component. A string describing its nature. If no icon is set, the type determines the displayed icon.
      - optional, defaults to null
      - null
 

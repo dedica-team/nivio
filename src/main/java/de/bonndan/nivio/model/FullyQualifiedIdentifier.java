@@ -1,177 +1,130 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.*;
+import joptsimple.internal.Strings;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Identifies a landscape {@link Component}.
- * <p>
+ *
  * Resembles a slash-separated path beginning with landscape name, then group, then item.
  */
 public class FullyQualifiedIdentifier {
 
-    private String landscape;
-    private String group;
-    private String item;
+    public static final String UNDEFINED = "_";
 
     public static final String SEPARATOR = "/";
 
-    FullyQualifiedIdentifier() {
+    private static final Map<Class<? extends ComponentDescription>, Class<? extends GraphComponent>> mapping = Map.of(
+            LandscapeDescription.class, Landscape.class,
+            UnitDescription.class, Unit.class,
+            ContextDescription.class, Context.class,
+            GroupDescription.class, Group.class,
+            ItemDescription.class, Item.class,
+            PartDescription.class, Part.class
+    );
+
+    private FullyQualifiedIdentifier() {
     }
 
-    public static FullyQualifiedIdentifier build(
-            @Nullable final String landscapeIdentifier,
-            @Nullable final String groupIdentifier,
-            @Nullable final String itemIdentifier
+    /**
+     * Creates a fqi for a DTO.
+     *
+     * @param dtoClass  dto class
+     * @param landscape identifier
+     * @param unit      unit
+     * @param context         item / context
+     * @param group         part / null
+     * @return uri with placeholders if needed
+     */
+    public static URI forDescription(@NonNull final Class<? extends ComponentDescription> dtoClass,
+                                     @Nullable final String landscape,
+                                     @Nullable final String unit,
+                                     @Nullable final String context,
+                                     @Nullable final String group,
+                                     @Nullable final String item,
+                                     @Nullable final String part
     ) {
-
-        FullyQualifiedIdentifier fqi = new FullyQualifiedIdentifier();
-        fqi.landscape = StringUtils.trimAllWhitespace(landscapeIdentifier == null ? "" : landscapeIdentifier.toLowerCase());
-        if (StringUtils.hasLength(groupIdentifier)) {
-            fqi.group = StringUtils.trimAllWhitespace(groupIdentifier.toLowerCase());
-        }
-        if (StringUtils.hasLength(itemIdentifier)) {
-            fqi.item = StringUtils.trimAllWhitespace(itemIdentifier.toLowerCase());
-        }
-
-        return fqi;
+        return build(getNodeClass(dtoClass),
+                validOrSubstitute(landscape),
+                validOrSubstitute(unit),
+                validOrSubstitute(context),
+                validOrSubstitute(group),
+                validOrSubstitute(item),
+                validOrSubstitute(part)
+        );
     }
 
     /**
-     * Builds an fqi based on a string (path).
-     *
-     * It is assumed the path begins with the landscape identifier. This is for external use in the REST API.
-     *
-     * @param string raw path
+     * Returns the {@link GraphComponent} implementation for a {@link ComponentDescription} dto.
      */
-    public static FullyQualifiedIdentifier from(@NonNull String string) {
-        if (!StringUtils.hasLength(string)) {
-            throw new IllegalArgumentException("identifier must not be empty");
-        }
-
-        String[] split = string.split(SEPARATOR);
-        if (split.length == 1) {
-            return FullyQualifiedIdentifier.build(split[0], null, null);
-        }
-
-        if (split.length == 2) {
-            return FullyQualifiedIdentifier.build(split[0], split[1], null);
-        }
-
-        if (split.length == 3) {
-            return FullyQualifiedIdentifier.build(split[0], split[1], split[2]);
-        }
-
-        throw new IllegalArgumentException("Given string '" + string + "' contains too many parts to build a fqi.");
+    public static Class<? extends GraphComponent> getNodeClass(Class<? extends ComponentDescription> o) {
+        return Optional.ofNullable(mapping.get(o)).orElseThrow(() -> new NoSuchElementException(String.format("Unknown dto type %s", o)));
     }
 
-    @Override
-    public String toString() {
-
-        List<String> parts = new ArrayList<>();
-        parts.add(landscape);
-        if (!StringUtils.isEmpty(group) || !StringUtils.isEmpty(item)) {
-            parts.add(StringUtils.isEmpty(group) ? "" : group);
-        }
-        if (!StringUtils.isEmpty(item))
-            parts.add(StringUtils.isEmpty(item) ? "" : item);
-
-        return StringUtils.collectionToDelimitedString(parts, SEPARATOR);
+    private static String validOrSubstitute(String identifier) {
+        return IdentifierValidation.getIdentifier(identifier).orElse(UNDEFINED);
     }
 
     /**
-     * Like toString, but alway returns a complete path.
+     * Creates a URI for a linked component.
      *
-     * Inserts "common" group if necessary.
-     *
-     * @return complete path or empty if landscape is not set
+     * @param cls       scheme
+     * @param landscape landscape
+     * @param other     rest
+     * @return a fqi based on the parts
      */
-    @JsonValue
-    public String jsonValue() {
+    public static URI build(@NonNull final Class<? extends GraphComponent> cls,
+                            @NonNull final String landscape,
+                            String... other
+    ) {
+        String rest = other == null ? "" : SEPARATOR + join(new ArrayList<>(Arrays.asList(other)));
+        try {
+            return new URI(cls.getSimpleName().toLowerCase(Locale.ROOT), Objects.requireNonNull(landscape), rest, null, null);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(String.format("Cannot create uri from %s %s %s", cls, landscape, Arrays.toString(other)));
+        }
+    }
 
-        if (!StringUtils.hasLength(landscape)) {
-            return "";
+    private static String join(List<String> other) {
+        for (int i = other.size() - 1; i >= 0; i--) {
+            String s = other.get(i);
+            if (isUndefined(s)) {
+                other.remove(i);
+            } else {
+                break;
+            }
         }
 
-        List<String> parts = new ArrayList<>();
-        parts.add(landscape);
+        return Strings.join(other.stream().filter(StringUtils::hasLength).collect(Collectors.toList()), SEPARATOR);
+    }
 
-        //need to insert "common" here if an item is referenced by the fqi
-        if (!StringUtils.isEmpty(group) || !StringUtils.isEmpty(item)) {
-            parts.add(StringUtils.isEmpty(group) ? Layer.domain.name() : group);
-        }
-        if (!StringUtils.isEmpty(item)) {
-            parts.add(item);
+    @NonNull
+    static URI from(@Nullable final URI parent, GraphComponent child) {
+        if (!StringUtils.hasLength(child.identifier)) {
+            throw new IllegalArgumentException("Identifier must not be empty.");
         }
 
-        return StringUtils.collectionToDelimitedString(parts, SEPARATOR);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(toString());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof FullyQualifiedIdentifier && hashCode() == obj.hashCode();
-    }
-
-    /**
-     * Compares landscape items by landscape, group and identifier (ignoring case).
-     *
-     * @param item other item
-     * @return true if group and identifier match (if group is null, it is not taken into account)
-     */
-    public boolean isSimilarTo(ItemDescription item) {
-        FullyQualifiedIdentifier otherItemFQI = item.getFullyQualifiedIdentifier();
-
-        boolean equalsLandscape;
-        if (!StringUtils.hasLength(landscape) || !StringUtils.hasLength(otherItemFQI.landscape)) {
-            equalsLandscape = true; //ignoring landscape because not set
-        } else {
-            equalsLandscape = landscape.equalsIgnoreCase(otherItemFQI.landscape);
+        Class<GraphComponent> aClass = (Class<GraphComponent>) child.getClass();
+        if (parent == null) {
+            return build(aClass, child.getIdentifier());
         }
 
-        boolean equalsGroup;
-        if (StringUtils.isEmpty(group) || StringUtils.isEmpty(otherItemFQI.group))
-            equalsGroup = true;
-        else
-            equalsGroup = this.group.equalsIgnoreCase(otherItemFQI.group);
-
-        boolean equalsItem;
-        if (StringUtils.isEmpty(this.item) || StringUtils.isEmpty(otherItemFQI.item))
-            equalsItem = true;
-        else
-            equalsItem = this.item.equalsIgnoreCase(otherItemFQI.item);
-
-        return equalsLandscape && equalsGroup && equalsItem;
+        return build(aClass, parent.getAuthority(), getPath(parent), child.getIdentifier());
     }
 
-    public String getItem() {
-        return item;
+    public static String getPath(URI parent) {
+        return StringUtils.trimLeadingCharacter(parent.getPath().toLowerCase(Locale.ROOT), SEPARATOR.charAt(0));
     }
 
-    public String getGroup() {
-        return group;
-    }
-
-    public String getLandscape() {
-        return landscape;
-    }
-
-    public boolean isGroup() {
-        return StringUtils.hasLength(group) && !StringUtils.hasLength(item);
-    }
-
-    public boolean isItem() {
-        return StringUtils.hasLength(item);
+    public static boolean isUndefined(String s) {
+        return !StringUtils.hasLength(s) || UNDEFINED.equals(s);
     }
 }

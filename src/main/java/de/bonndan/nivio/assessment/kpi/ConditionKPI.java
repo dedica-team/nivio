@@ -58,7 +58,7 @@ public class ConditionKPI implements KPI {
         if (Status.UNKNOWN.equals(status)) {
             return new ArrayList<>();
         }
-        return Collections.singletonList(new StatusValue(component.getAssessmentIdentifier(), IDENTIFIER, status, message));
+        return Collections.singletonList(new StatusValue(component.getFullyQualifiedIdentifier(), IDENTIFIER, status, message));
     }
 
     @Override

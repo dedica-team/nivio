@@ -116,7 +116,7 @@ class SVGRelation extends Component {
             path.attr("opacity", "0.5");
         }
 
-        if (RelationType.DATAFLOW.equals(relation.getType())) {
+        if (RelationType.DATAFLOW.name().equals(relation.getType())) {
             path.attr("fill", fillId);
             path.attr("stroke-dasharray", 15);
         }
@@ -124,7 +124,7 @@ class SVGRelation extends Component {
         var lastDirection = hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size() - 1);
         SvgRelationEndMarker marker = new SvgRelationEndMarker(
                 new Point2D.Double(hexPath.getEndPoint().x + offset.x, hexPath.getEndPoint().y + offset.y),
-                relation.getType(),
+                RelationType.from(relation.getType()),
                 fillId,
                 lastDirection
         );
@@ -147,11 +147,11 @@ class SVGRelation extends Component {
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
-        String type = relation.getType() != null ? relation.getType().name() : "-";
+        String type = relation.getType() != null ? relation.getType() : "-";
         g.attr("data-type", type)
-                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
-                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
-                .attr(DATA_IDENTIFIER, relation.getIdentifier())
+                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().getPath())
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().getPath())
+                .attr(DATA_IDENTIFIER, relation.getFullyQualifiedIdentifier())
                 .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
 
         return g;

@@ -2,29 +2,30 @@ package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.UnitDescription;
 import org.springframework.lang.NonNull;
-
-import java.util.Objects;
+import org.springframework.lang.Nullable;
 
 public class UnitFactory implements GraphNodeFactory<Unit, UnitDescription, Landscape> {
 
     public static final UnitFactory INSTANCE = new UnitFactory();
 
+    @NonNull
     @Override
-    public Unit merge(@NonNull final Unit existing, Unit added) {
+    public Unit merge(@NonNull final Unit existing, @NonNull final Unit added) {
         UnitBuilder builder = UnitBuilder.aUnit();
-        mergeIntoBuilder(existing, added, builder);
+        mergeValuesIntoBuilder(existing, added, builder);
         return builder.build();
     }
 
+    @NonNull
     @Override
     public Unit createFromDescription(@NonNull final String identifier,
-                                      @NonNull final UnitDescription description,
-                                      @NonNull final Landscape landscape
+                                      @NonNull final Landscape landscape,
+                                      @Nullable final UnitDescription description
     ) {
         return UnitBuilder.aUnit()
                 .withIdentifier(identifier)
                 .withParent(landscape)
-                .withComponentDescription(Objects.requireNonNull(description))
+                .withComponentDescription(description)
                 .build();
     }
 }

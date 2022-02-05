@@ -1,81 +1,34 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.output.Color;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
-import static de.bonndan.nivio.util.SafeAssign.assignSafe;
+public class GroupFactory implements GraphNodeFactory<Group, GroupDescription, Context> {
 
-public class GroupFactory {
+    public static final GroupFactory INSTANCE = new GroupFactory();
 
-    private GroupFactory() {
-    }
-
-    /**
-     * Merges all absent values from the second param into the first.
-     *
-     * @param group copy base
-     * @param added group that carries additional values
-     * @return a new group, or the first one if the second one is null
-     */
-    public static Group merge(final Group group, final Group added) {
-
-        GroupBuilder builder = getBuilder(group);
-
-        if (added != null) {
-            assignSafe(added.getColor(), builder::withColor);
-            assignSafe(added.getContact(), builder::withContact);
-            assignSafe(added.getDescription(), builder::withDescription);
-            assignSafe(added.getOwner(), builder::withOwner);
-
-            added.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
-            added.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
+    @Override
+    public Group merge(@NonNull final Group existing, @NonNull final Group added) {
+        GroupBuilder builder = GroupBuilder.aGroup().withParent(existing.getParent());
+        if (added.isAttached()) {
+            builder.withParent(added.getParent());
         }
-
-        if (!StringUtils.hasLength(builder.getColor())) {
-            builder.withColor(Color.getGroupColor(builder.getIdentifier()));
-        }
-
+        mergeValuesIntoBuilder(existing, added, builder);
         return builder.build();
     }
 
-    public static Group createFromDescription(@NonNull final String groupIdentifier,
-                                              @NonNull final String landscapeIdentifier,
-                                              @Nullable final GroupDescription description
+    @NonNull
+    @Override
+    public Group createFromDescription(@NonNull final String groupIdentifier,
+                                       @NonNull final Context parent,
+                                       @Nullable final GroupDescription description
     ) {
-        GroupBuilder builder = getBuilder(new Group(groupIdentifier, landscapeIdentifier));
-
-        if (description != null) {
-            builder.withColor(description.getColor());
-            builder.withContact(description.getContact());
-            builder.withOwner(description.getOwner());
-            builder.withDescription(description.getDescription());
-            description.getLinks().forEach((s, url) -> builder.getLinks().putIfAbsent(s, url));
-            description.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));
-        }
-
-
-        if (!StringUtils.hasLength(builder.getColor())) {
-            builder.withColor(Color.getGroupColor(builder.getIdentifier()));
-        }
-
+        GroupBuilder builder = GroupBuilder.aGroup().withIdentifier(groupIdentifier);
+        builder.withComponentDescription(description);
+        builder.withParent(Objects.requireNonNull(parent, "landscape is null"));
         return builder.build();
-    }
-
-    private static GroupBuilder getBuilder(Group group) {
-        Objects.requireNonNull(group, "Group is null");
-        return GroupBuilder.aGroup()
-                .withIdentifier(group.getIdentifier())
-                .withDescription(group.getDescription())
-                .withOwner(group.getOwner())
-                .withContact(group.getContact())
-                .withColor(group.getColor())
-                .withLandscapeIdentifier(group.getLandscapeIdentifier())
-                .withLinks(group.getLinks())
-                .withLabels(group.getLabels());
     }
 }

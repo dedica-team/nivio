@@ -2,12 +2,14 @@ package de.bonndan.nivio.output.dto;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.bonndan.nivio.model.GraphComponent;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,10 +19,10 @@ public class RelationApiModel {
     public static final String OUTBOUND = "outbound";
 
     @JsonIdentityReference(alwaysAsId = true)
-    public final Item source;
+    public final GraphComponent source;
 
     @JsonIdentityReference(alwaysAsId = true)
-    public final Item target;
+    public final GraphComponent target;
 
     public final String description;
 
@@ -30,7 +32,7 @@ public class RelationApiModel {
 
     public final String name;
 
-    public final String id;
+    public final URI id;
 
     public final String direction;
 
@@ -41,11 +43,11 @@ public class RelationApiModel {
         target = relation.getTarget();
         description = relation.getDescription();
         format = relation.getFormat();
-        type = relation.getType();
-        id = relation.getIdentifier();
+        type = RelationType.from(relation.getType());
+        id = relation.getFullyQualifiedIdentifier();
         labels = relation.getLabels();
 
-        if (relation.getSource().equals(owner)) {
+        if (source.equals(owner)) {
             name = !StringUtils.hasLength(target.getName()) ? target.getIdentifier() : target.getName();
             direction = OUTBOUND;
         } else {

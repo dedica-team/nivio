@@ -1,7 +1,9 @@
 package de.bonndan.nivio.input.nivio;
 
+import de.bonndan.nivio.input.dto.ContextDescription;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.UnitDescription;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +15,10 @@ import java.util.Map;
  */
 public class Source {
 
-    public List<ItemDescription> items = new ArrayList<>();
-
+    public List<UnitDescription> units = new ArrayList<>();
+    public List<ContextDescription> contexts = new ArrayList<>();
     public Map<String, GroupDescription> groups = new HashMap<>();
+    public List<ItemDescription> items = new ArrayList<>();
 
     public Map<String, ItemDescription> templates = new HashMap<>();
 }

@@ -17,12 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class TemplateResolverTest {
 
     private TemplateResolver templateResolver;
-    private ProcessLog log;
     private IntegrationTestSupport testSupport;
 
     @BeforeEach
     public void setup() {
-        log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class), "test");
+        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class), "test");
         templateResolver = new TemplateResolver(log);
         testSupport = new IntegrationTestSupport();
     }
@@ -34,16 +33,16 @@ class TemplateResolverTest {
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
+        ItemDescription redis = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertEquals("foo", redis.getGroup());
 
-        ItemDescription datadog = landscapeDescription.getItemDescriptions().pick("datadog", null);
+        ItemDescription datadog = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
         assertNotNull(datadog);
         assertEquals("foo", datadog.getGroup());
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getItemDescriptions().pick("web", null);
+        ItemDescription web = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(web);
         assertEquals("content", web.getGroup());
     }
@@ -55,15 +54,15 @@ class TemplateResolverTest {
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription one = landscapeDescription.getItemDescriptions().pick("crappy_dockername-78345", null);
+        ItemDescription one = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = landscapeDescription.getItemDescriptions().pick("crappy_dockername-2343a", null);
+        ItemDescription two = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = landscapeDescription.getItemDescriptions().pick("other_crappy_name-2343a", null);
+        ItemDescription three = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(three);
         assertEquals("beta", three.getGroup());
     }
@@ -76,7 +75,7 @@ class TemplateResolverTest {
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getItemDescriptions().pick("web", null);
+        ItemDescription web = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(web);
         assertEquals("content", web.getGroup());
 
@@ -94,7 +93,7 @@ class TemplateResolverTest {
         LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription redis = landscapeDescription.getItemDescriptions().pick("redis", null);
+        ItemDescription redis = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertNull(redis.getLabel(Label.software));
     }

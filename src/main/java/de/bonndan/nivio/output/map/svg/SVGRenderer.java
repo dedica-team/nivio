@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Turns the layouted landscape into a SVG image.
@@ -60,7 +61,7 @@ public class SVGRenderer implements Renderer<String> {
     private String getStyles(Landscape landscape) {
         String css = "";
         try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {
-            css = new String(StreamUtils.copyToByteArray(resourceAsStream));
+            css = new String(StreamUtils.copyToByteArray(resourceAsStream), StandardCharsets.UTF_8);
         } catch (IOException e) {
             LOGGER.error("Failed to load stylesheet /static/css/svg.css");
         }

@@ -113,7 +113,7 @@ class APIWalker {
             throw new ProcessingException(reference, "Could not load projects" + projectService.toString(), e);
         }
         return projects.stream()
-                .filter(project -> StringUtils.isEmpty(projectName) || project.getName().equals(projectName))
+                .filter(project -> !StringUtils.hasLength(projectName) || project.getName().equals(projectName))
                 .findFirst();
     }
 
@@ -150,10 +150,10 @@ class APIWalker {
             //copy all labels
             if (service.getLaunchConfig() != null) {
                 if (service.getLaunchConfig().getLabels() != null) {
-                    service.getLaunchConfig().getLabels().forEach(item::setLabel);
+                    service.getLaunchConfig().getLabels().forEach((s, o) -> item.setLabel(s, String.valueOf(o)));
                 }
                 if (service.getLaunchConfig().getEnvironment() != null) {
-                    service.getLaunchConfig().getEnvironment().forEach(item::setLabel);
+                    service.getLaunchConfig().getEnvironment().forEach((s, o) -> item.setLabel(s, String.valueOf(o)));
                 }
             }
 

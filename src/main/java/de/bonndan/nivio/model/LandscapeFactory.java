@@ -1,56 +1,20 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.assessment.kpi.KPIFactory;
-import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import org.slf4j.LoggerFactory;
+import de.bonndan.nivio.search.NullSearchIndex;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class LandscapeFactory {
 
-    public static final List<String> DEFAULT_GROUP_NAMES = List.of(Layer.infrastructure.name(), Layer.domain.name());
-
     private static final KPIFactory kpiFactory = new KPIFactory();
 
     private LandscapeFactory() {
-    }
-
-    /**
-     * Creates a new landscape impl.
-     *
-     * @param input the description
-     */
-    public static Landscape createFromInput(@NonNull final LandscapeDescription input) {
-
-        var landscape = new Landscape(
-                input.getIdentifier(),
-                getGroups(input.getIdentifier()),
-                input.getName(),
-                input.getContact(),
-                input.getOwner(),
-                input.getDescription(),
-                input.getSource(),
-                input.getConfig(),
-                new ProcessLog(LoggerFactory.getLogger(LandscapeFactory.class), input.getIdentifier()),
-                kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs())
-        );
-        input.getLabels().forEach((s, s2) -> landscape.getLabels().put(s, s2));
-        input.getLinks().forEach((s, link) -> landscape.getLinks().put(s, link));
-
-        landscape.getLog().info("Created new landscape from input " + input.getIdentifier());
-
-        return landscape;
-    }
-
-    private static Map<String, Group> getGroups(final String landscapeIdentifier) {
-        Map<String, Group> groups = new HashMap<>();
-        DEFAULT_GROUP_NAMES.forEach(s -> groups.put(s, new Group(s, landscapeIdentifier)));
-        return groups;
     }
 
     /**
@@ -62,29 +26,19 @@ public class LandscapeFactory {
     public static LandscapeBuilder createForTesting(@NonNull String identifier, @NonNull String name) {
         return LandscapeBuilder.aLandscape()
                 .withIdentifier(identifier)
-                .withName(name)
-                .withGroups(getGroups(identifier));
+                .withName(name);
     }
 
     /**
      * Returns a copy of the existing landscape, modified with data from input.
      *
-     * @param existing the existing landscape, to be replaced
-     * @param input    int input data
+     * @param builder containing the values of the existing landscape  to be replaced
+     * @param input   int input data
      * @return a new copy
      */
-    public static Landscape recreate(Landscape existing, LandscapeDescription input) {
-        LandscapeBuilder builder = LandscapeBuilder.aLandscape()
-                .withIdentifier(existing.getIdentifier())
-                .withName(existing.getName())
-                .withConfig(existing.getConfig())
-                .withDescription(existing.getDescription())
-                .withContact(existing.getContact())
-                .withOwner(existing.getOwner())
-                .withSource(existing.getSource())
-                .withGroups(existing.getGroups())
-                .withItems(existing.getItems().all());
-
+    public static Landscape recreate(@NonNull final LandscapeBuilder builder,
+                                     @NonNull final LandscapeDescription input
+    ) {
         final boolean isPartial = input.isPartial();
 
         //overwrite some data which is not handled by resolvers
@@ -102,27 +56,33 @@ public class LandscapeFactory {
         }
 
         if (isPartial) {
-            builder.withConfig(existing.getConfig().merge(input.getConfig()));
+            builder.withConfig(builder.getConfig().merge(input.getConfig()));
         } else {
             builder.withConfig(input.getConfig());
         }
 
         if (isPartial) {
-            builder.withKpis(kpiFactory.merge(input.getConfig().getKPIs(), existing.getKpis()));
+            Map<String, KPI> map = new HashMap<>(builder.getKpis());
+            map.putAll(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
+            builder.withKpis(map);
         } else {
             builder.withKpis(kpiFactory.getConfiguredKPIs(input.getConfig().getKPIs()));
         }
 
         //merge labels
-        Map<String, String> labels = existing.getLabels();
+        Map<String, String> labels = builder.getLabels();
         labels.putAll(input.getLabels());
         builder.withLabels(labels);
 
         //merge links
-        Map<String, Link> links = existing.getLinks();
+        Map<String, Link> links = builder.getLinks();
         links.putAll(input.getLinks());
         builder.withLinks(links);
 
         return builder.build();
+    }
+
+    public static Landscape createIntermediate(String identifier) {
+        return new Landscape(identifier, identifier, null, null, null, null, null, null, new HashMap<>(), new Index(new NullSearchIndex()));
     }
 }

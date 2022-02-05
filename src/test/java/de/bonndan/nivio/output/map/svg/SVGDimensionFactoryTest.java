@@ -1,12 +1,12 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.GraphTestSupport;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
 import de.bonndan.nivio.output.map.hex.PathTile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,11 +16,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SVGDimensionFactoryTest {
 
+    private Group g;
+    private GraphTestSupport graph;
+
+    @BeforeEach
+    void setup() {
+        graph = new GraphTestSupport();
+        g = graph.groupA;
+    }
+
     @Test
     void boundingBoxes() {
 
         //given
-        Group g = new Group("a", "landscapeIdentifier");
         MapTile one = new MapTile(new Hex(-3, -3));
         MapTile two = new MapTile(new Hex(10, 10));
         Set<MapTile> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
@@ -50,7 +58,7 @@ class SVGDimensionFactoryTest {
     void boundingBoxesWithRelations() {
 
         //given
-        Group g = new Group("a", "landscapeIdentifier");
+        var foo = graph.getTestGroup("foo");
         MapTile one = new MapTile(new Hex(-3, -3));
         MapTile two = new MapTile(new Hex(10, 10));
         Set<MapTile> hexes = Set.of(one, two); //usually would be much more, but here it is sufficient
@@ -59,7 +67,9 @@ class SVGDimensionFactoryTest {
         //when
         PathTile three = new PathTile(new MapTile(new Hex(-10, -10)));
         PathTile four = new PathTile(new MapTile(new Hex(-11, -10)));
-        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three, four)), "aaccee", RelationFactory.createForTesting(ItemFactory.getTestItem("foo", "bar"), ItemFactory.getTestItem("foo", "baz")), null);
+        Relation forTesting = RelationFactory.createForTesting(graph.getTestItem("foo", "bar"),
+                graph.getTestItem("foo", "baz"));
+        SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three, four)), "aaccee", forTesting, null);
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of(svgRelation));
 
         //then

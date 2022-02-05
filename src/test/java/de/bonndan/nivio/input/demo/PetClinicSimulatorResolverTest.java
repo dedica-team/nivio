@@ -21,17 +21,17 @@ class PetClinicSimulatorResolverTest {
         input = new LandscapeDescription(LANDSCAPE_IDENTIFIER_PETCLINIC);
         ItemDescription sensor = new ItemDescription("sensor");
         sensor.setGroup("xray");
-        input.getItemDescriptions().add(sensor);
+        input.getWriteAccess().addOrReplaceChild(sensor);
         ItemDescription customerDB = new ItemDescription("customer-db");
         customerDB.setGroup("xray");
-        input.getItemDescriptions().add(customerDB);
+        input.getWriteAccess().addOrReplaceChild(customerDB);
         resolver = new PetClinicSimulatorResolver(mock(ProcessLog.class));
     }
 
     @Test
     void simulatesChangingRadiation() {
 
-        ItemDescription sensor = input.getItemDescriptions().pick("sensor", "xray");
+        ItemDescription sensor = input.getIndexReadAccess().findOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
         int currentRad = 0;
         sensor.setLabel(RADIATION, String.valueOf(currentRad));
 

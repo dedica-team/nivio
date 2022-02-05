@@ -1,10 +1,11 @@
 package de.bonndan.nivio.input.rancher1;
 
 import de.bonndan.nivio.assessment.kpi.HealthKPI;
-import de.bonndan.nivio.input.ItemDescriptionValues;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.search.ComponentMatcher;
 import org.hawkular.agent.prometheus.PrometheusDataFormat;
 import org.hawkular.agent.prometheus.PrometheusScraper;
 import org.hawkular.agent.prometheus.types.Gauge;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -22,23 +24,20 @@ public class PrometheusExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(PrometheusExporter.class);
 
-    private final String landscape;
     private File file;
     private URL target;
 
-    public PrometheusExporter(String landscape, File file) {
-        this.landscape = landscape;
+    public PrometheusExporter(File file) {
         this.file = file;
     }
 
-    public PrometheusExporter(String landscape, URL target) {
-        this.landscape = landscape;
+    public PrometheusExporter(URL target) {
         this.target = target;
     }
 
     public List<ItemDescription> getDescriptions() {
         PrometheusScraper prometheusScraper = getScraper();
-        final Map<FullyQualifiedIdentifier, ItemDescription> tmp = new HashMap<>();
+        final Map<URI, ItemDescription> tmp = new HashMap<>();
         try {
             List<MetricFamily> scrape = prometheusScraper.scrape();
             scrape.forEach(metricFamily -> {
@@ -54,8 +53,11 @@ public class PrometheusExporter {
                         .map(this::toItem)
                         .filter(Objects::nonNull)
                         .forEach(itemDescription -> {
-                            ItemDescription inMap = tmp.computeIfAbsent(itemDescription.getFullyQualifiedIdentifier(), ItemDescription::new);
-                            ItemDescriptionValues.assignNotNull(inMap, itemDescription);
+                            ItemDescription inMap = tmp.computeIfAbsent(
+                                    itemDescription.getFullyQualifiedIdentifier(),
+                                    uri -> new ItemDescription(ComponentMatcher.getPartPath(1,uri).orElse(""))
+                            );
+                            inMap.assignNotNull(itemDescription);
                         });
             });
 
@@ -72,10 +74,10 @@ public class PrometheusExporter {
         if (metric instanceof Gauge) {
 
             itemDescription = processGauge((Gauge) metric);
-            FullyQualifiedIdentifier fqi = toFQI(metric);
+            URI fqi = toFQI(metric);
             if (fqi != null) {
-                itemDescription.setIdentifier(fqi.getItem());
-                itemDescription.setGroup(fqi.getGroup());
+                itemDescription.setIdentifier(ComponentMatcher.getPartPath(4,fqi).orElseThrow());
+                itemDescription.setGroup(ComponentMatcher.getPartPath(3, fqi).orElse(""));
             }
         }
 
@@ -108,12 +110,16 @@ public class PrometheusExporter {
         return itemDescription;
     }
 
-    private FullyQualifiedIdentifier toFQI(Metric metric) {
+    private URI toFQI(Metric metric) {
         try {
-            return FullyQualifiedIdentifier.build(
-                    landscape,
+            return FullyQualifiedIdentifier.forDescription(
+                    LandscapeDescription.class,
+                    null,
+                    null,
+                    null,
                     metric.getLabels().getOrDefault("stack_name", ""),
-                    metric.getLabels().getOrDefault("name", "")
+                    metric.getLabels().getOrDefault("name", ""),
+                    null
             );
         } catch (IllegalArgumentException e) {
             logger.warn("Failed to generate an fqi for metric " + metric.getName(), e);

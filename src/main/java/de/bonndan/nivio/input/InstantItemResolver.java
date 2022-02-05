@@ -1,9 +1,10 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.ComponentDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.search.ItemIndex;
-import de.bonndan.nivio.search.ItemMatcher;
+import de.bonndan.nivio.model.IndexReadAccess;
+import de.bonndan.nivio.search.ComponentMatcher;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -25,17 +26,19 @@ public class InstantItemResolver extends Resolver {
         }
 
         HashSet<ItemDescription> newItems = new HashSet<>();
-        landscape.getItemDescriptions().all().forEach(itemDescription -> newItems.addAll(resolveTargets(itemDescription, landscape.getItemDescriptions())));
+        landscape.getItemDescriptions().forEach(itemDescription -> newItems.addAll(
+                resolveTargets(itemDescription, landscape.getIndexReadAccess()))
+        );
 
         landscape.mergeItems(newItems);
     }
 
-    private List<ItemDescription> resolveTargets(ItemDescription description, ItemIndex<ItemDescription> allItems) {
+    private List<ItemDescription> resolveTargets(ItemDescription description, IndexReadAccess<ComponentDescription> readAccess) {
 
         List<ItemDescription> newItems = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<ItemDescription> provider = allItems.query(term.toLowerCase()).stream().findFirst();
+            Optional<ItemDescription> provider = readAccess.findMatching(term.toLowerCase(), ItemDescription.class).stream().findFirst();
 
             if (provider.isEmpty()) {
                 processLog.info("Creating a new provider landscape item for term '" + term + "' instantly.");
@@ -52,8 +55,8 @@ public class InstantItemResolver extends Resolver {
             }
             String target = rel.getTarget().equalsIgnoreCase(description.getIdentifier()) ?
                     rel.getSource() : rel.getTarget();
-            if (StringUtils.hasLength(target) && !hasTarget(target.toLowerCase(), allItems)) {
-                processLog.info(description + ": creating a new target item '" + target.toLowerCase() + "' instantly.");
+            if (StringUtils.hasLength(target) && !hasTarget(target.toLowerCase(), readAccess)) {
+                processLog.info(String.format("%s: creating a new target item '%s' instantly.", description, target.toLowerCase()));
                 newItems.add(createItem(rel.getTarget()));
             }
         });
@@ -66,17 +69,17 @@ public class InstantItemResolver extends Resolver {
      */
     private ItemDescription createItem(String term) {
         ItemDescription itemDescription = new ItemDescription();
-        ItemMatcher.forTarget(term).ifPresent(itemMatcher -> {
-            itemDescription.setGroup(itemMatcher.getGroup());
-            itemDescription.setIdentifier(itemMatcher.getItem());
-        });
+
+        ComponentMatcher componentMatcher = ComponentMatcher.forTarget(term);
+        itemDescription.setGroup(componentMatcher.getGroup());
+        itemDescription.setIdentifier(componentMatcher.getItem());
 
         return itemDescription;
     }
 
-    private boolean hasTarget(String term, ItemIndex<ItemDescription> allItems) {
+    private boolean hasTarget(String term, IndexReadAccess<ComponentDescription> allItems) {
 
-        Collection<ItemDescription> result = allItems.query(term);
+        Collection<ItemDescription> result = allItems.findMatching(term, ItemDescription.class);
         if (result.size() > 1) {
             processLog.warn("Found ambiguous sources matching " + term);
             return true;

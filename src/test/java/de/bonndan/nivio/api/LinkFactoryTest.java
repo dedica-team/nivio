@@ -39,7 +39,7 @@ class LinkFactoryTest {
         Link link = new Link();
         Map<String, Link> oauth2links = Map.of(linkKey, link);
 
-        Index index = linkFactory.getIndex(landscapes);
+        ApiRootModel index = linkFactory.getIndex(landscapes);
         index.getOauth2Links().put(linkKey, link);
         assertThat(index.getOauth2Links()).isEqualTo(oauth2links);
     }

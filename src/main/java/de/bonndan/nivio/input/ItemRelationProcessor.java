@@ -2,11 +2,12 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.search.ComponentMatcher;
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.util.*;
@@ -14,9 +15,8 @@ import java.util.*;
 /**
  * Creates {@link Relation}s between {@link Item}s.
  */
+@Deprecated
 public class ItemRelationProcessor extends Processor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ItemRelationProcessor.class);
 
     protected ItemRelationProcessor(ProcessLog processLog) {
         super(processLog);
@@ -29,18 +29,15 @@ public class ItemRelationProcessor extends Processor {
 
         // process configured relations of all input dtos
         List<Relation> processed = new ArrayList<>();
-        input.getItemDescriptions().all().forEach(itemDescription -> {
-            final Item origin = landscape.getItems().pick(itemDescription);
+        input.getItemDescriptions().forEach(itemDescription -> {
+            final Item origin = landscape.getIndexReadAccess()
+                    .findOneMatching(ComponentMatcher.forTarget(itemDescription.getFullyQualifiedIdentifier()), Item.class).orElseThrow();
 
             for (RelationDescription relationDescription : itemDescription.getRelations()) {
 
-                if (!isValid(relationDescription, landscape)) {
-                    continue;
-                }
-
                 Relation current = getCurrentRelation(relationDescription, landscape, origin)
                         .map(relation -> {
-                            Relation update = RelationFactory.update(relation, relationDescription, landscape);
+                            Relation update = RelationFactory.update(relation, relationDescription, origin, (Item) relation.getTarget());
                             List<String> changes = relation.getChanges(update);
                             if (!changes.isEmpty()) {
                                 processLog.info(String.format("%s: Updating relation between %s and %s", origin, update.getSource(), update.getTarget()));
@@ -50,7 +47,8 @@ public class ItemRelationProcessor extends Processor {
                         })
                         .orElseGet(() -> {
                             try {
-                                Relation created = RelationFactory.create(origin, relationDescription, landscape);
+                                Optional<Item> target = landscape.getIndexReadAccess().findOneByIdentifiers(relationDescription.getTarget(), null, Item.class);
+                                Relation created = RelationFactory.create(origin, target.orElseThrow(), relationDescription);
                                 processLog.info(String.format("%s: Adding relation between %s and %s", origin, created.getSource(), created.getTarget()));
                                 changelog.addEntry(created, ProcessingChangelog.ChangeType.CREATED, null);
                                 return created;
@@ -60,7 +58,7 @@ public class ItemRelationProcessor extends Processor {
                             }
                         });
                 if (current != null) {
-                    assignToBothEnds(origin, current);
+                    landscape.getIndexWriteAccess().addOrReplaceRelation(current);
                     processed.add(current);
                 }
             }
@@ -71,16 +69,16 @@ public class ItemRelationProcessor extends Processor {
         }
 
         // delete what has not been configured and is left over in landscape
-        input.getItemDescriptions().all().forEach(itemDescription -> {
-            final Item origin = landscape.getItems().pick(itemDescription);
+        input.getItemDescriptions().forEach(itemDescription -> {
+            final Item origin = landscape.getIndexReadAccess()
+                    .findOneMatching(ComponentMatcher.forTarget(itemDescription.getFullyQualifiedIdentifier()), Item.class).orElseThrow();
             Collection<Relation> toDelete = CollectionUtils.subtract(origin.getRelations(), processed);
             toDelete.stream()
                     .filter(relation -> !processed.contains(relation))
                     .filter(relation -> origin.equals(relation.getSource()))
                     .forEach(relation -> {
                         processLog.info(String.format("%s: Removing relation between %s and %s", origin, relation.getSource(), relation.getTarget()));
-                        removeRelationFromItem(landscape.getItems(), relation, relation.getSource());
-                        removeRelationFromItem(landscape.getItems(), relation, relation.getTarget());
+                        landscape.getIndexWriteAccess().removeRelation(relation);
                         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
                     });
         });
@@ -88,60 +86,14 @@ public class ItemRelationProcessor extends Processor {
         return changelog;
     }
 
-    /**
-     * Gracefully finds the relation end item in the landscape and tries to remove the relation.
-     *
-     * @param itemIndex   all landscape items (containing a sibling of the relation source or target)
-     * @param relation    the relation to remove
-     * @param relationEnd the relation source or target
-     */
-    private void removeRelationFromItem(ItemIndex<Item> itemIndex, Relation relation, Item relationEnd) {
-        var fqi = relationEnd.getFullyQualifiedIdentifier();
-        try {
-            Item sibling = itemIndex.pick(fqi.getItem(), fqi.getGroup());
-            boolean isRelationRemoved = sibling.removeRelation(relation);
-            if (!isRelationRemoved) {
-                processLog.warn(String.format("Could not remove relation %s from item %s", relation, relationEnd));
-            }
-        } catch (NoSuchElementException e) {
-            String msg = String.format("Could not find relation end %s from relation %s: %s", relationEnd, relation, e.getMessage());
-            processLog.error(msg);
-            LOGGER.error(msg, e);
-        }
-    }
-
-    private boolean isValid(RelationDescription relationDescription, Landscape landscape) {
-
-        List<Item> source = landscape.getItems().findBy(relationDescription.getSource());
-        if (source.isEmpty()) {
-            processLog.warn(String.format("Relation source %s not found", relationDescription.getSource()));
-            return false;
-        }
-
-        List<Item> target = landscape.getItems().findBy(relationDescription.getTarget());
-        if (target.isEmpty()) {
-            processLog.warn(String.format("Relation target %s not found", relationDescription.getTarget()));
-            return false;
-        }
-
-        return true;
-    }
-
-    private void assignToBothEnds(Item origin, Relation relation) {
-        origin.addOrReplace(relation);
-        if (relation.getSource() == origin) {
-            relation.getTarget().addOrReplace(relation);
-        } else {
-            relation.getSource().addOrReplace(relation);
-        }
-    }
-
     private Optional<Relation> getCurrentRelation(RelationDescription relationDescription,
                                                   Landscape landscape,
                                                   Item origin
     ) {
-        Item source = landscape.findOneBy(relationDescription.getSource(), origin.getGroup());
-        Item target = landscape.findOneBy(relationDescription.getTarget(), origin.getGroup());
+        ComponentMatcher sourceMatcher = ComponentMatcher.build(null, null, null, relationDescription.getSource(), origin.getParent().getIdentifier());
+        Item source = landscape.getIndexReadAccess().findOneMatching(sourceMatcher, Item.class).orElseThrow();
+        ComponentMatcher targetMatcher = ComponentMatcher.build(null, null, null, relationDescription.getTarget(), origin.getParent().getIdentifier());
+        Item target = landscape.getIndexReadAccess().findOneMatching(targetMatcher, Item.class).orElseThrow();
 
         if (source.equals(target)) {
             return Optional.empty();

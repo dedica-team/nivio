@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LayoutConfig;
@@ -9,10 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.net.URI;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,10 +35,10 @@ public class OrganicLayouter implements Layouter {
     @Override
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
-        Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
+        Map<URI, SubLayout> subGraphs = new LinkedHashMap<>();
         LayoutConfig layoutConfig = landscape.getConfig().getLayoutConfig();
         Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
-            Set<Item> items = landscape.getItems().retrieve(group.getItems());
+            Set<Item> items = group.getChildren();
             if (items.isEmpty()) return;
             SubLayout subLayout = new SubLayout(debug, layoutConfig);
             subLayout.render(group, items);
@@ -47,7 +46,7 @@ public class OrganicLayouter implements Layouter {
         });
 
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug, layoutConfig);
-        LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(landscape, new LinkedHashMap<>(landscape.getGroups()), subGraphs);
+        LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(landscape, new LinkedHashMap<URI, Group>(landscape.getGroups()), subGraphs);
         shiftGroupsAndItems(layoutedComponent);
         return layoutedComponent;
     }

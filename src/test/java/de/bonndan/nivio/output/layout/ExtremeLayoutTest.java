@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.model.LayoutConfig;
 import de.bonndan.nivio.util.RootPath;
@@ -20,9 +21,11 @@ class ExtremeLayoutTest {
     private static final int MAX_DISTANCE_LIMIT = 250;
     private CollisionRegardingForces collisionRegardingForces;
     private OriginalForces originalForces;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setup() {
+        graph = new GraphTestSupport();
         collisionRegardingForces = new CollisionRegardingForces(MIN_DISTANCE_LIMIT, MAX_DISTANCE_LIMIT);
         originalForces = new OriginalForces(2, MAX_DISTANCE_LIMIT, OriginalForces.FORCE_CONSTANT);
     }
@@ -51,9 +54,9 @@ class ExtremeLayoutTest {
 
         List<Item> items = new ArrayList<>();
         int i = 0;
-        Group group = new Group("group0", "test");
+        Group group = graph.groupA;
         while (i < 3) {
-            Item testItem = ItemFactory.getTestItem("test", "c" + i);
+            Item testItem = graph.getTestItem(group.getIdentifier(), "c" + i);
             items.add(testItem);
             i++;
         }
@@ -65,11 +68,10 @@ class ExtremeLayoutTest {
             List<Item> targets = new ArrayList<>();
             int j = 0;
                     Item other = items.get(j);
-                    if (!other.equals(item))
+                    if (!other.equals(item)) {
                         targets.add(other);
-            targets.forEach(target -> {
-                item.addOrReplace(RelationFactory.createForTesting(item, target));
-            });
+                    }
+            targets.forEach(target -> graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(item, target)));
         }
 
         var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
@@ -93,7 +95,7 @@ class ExtremeLayoutTest {
 
         List<Item> items = new ArrayList<>();
         int i = 0;
-        Group group = new Group("group0", "test");
+        Group group = GroupBuilder.aGroup().withIdentifier("group0").withName("test").build();
         while (i < 20) {
             Item testItem = ItemFactory.getTestItem("test", "c" + i);
             items.add(testItem);
@@ -116,7 +118,7 @@ class ExtremeLayoutTest {
                 j++;
             }
             targets.forEach(target -> {
-                item.addOrReplace(RelationFactory.createForTesting(item, target));
+                graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(item, target));
             });
         }
 

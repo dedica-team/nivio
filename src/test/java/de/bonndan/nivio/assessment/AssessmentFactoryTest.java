@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
@@ -9,6 +10,7 @@ import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.*;
 
 import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENT_ERROR_NULL;
@@ -20,39 +22,37 @@ class AssessmentFactoryTest {
 
 
     private AssessmentFactory factory;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setup() {
         factory = new AssessmentFactory();
+        graph = new GraphTestSupport();
     }
 
     @Test
     void getAssessmentFromFactoryLandscapeAndKPI() {
-        var foo = ItemFactory.getTestItem("a", "foo");
-        var bar = ItemFactory.getTestItem("b", "bar");
-        var landscape = LandscapeFactory.createForTesting("test", "test").withItems(Set.of(foo, bar)).build();
+
         var conditionKpi = new ConditionKPI();
         var map = new HashMap<String, KPI>();
         map.put("test", conditionKpi);
-        var assessment = factory.createAssessment(landscape, map);
+        var assessment = factory.createAssessment(graph.landscape, map);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
 
     @Test
     void getAssessmentFromFactoryLandscape() {
-        var foo = ItemFactory.getTestItem("a", "foo");
-        var bar = ItemFactory.getTestItem("b", "bar");
-        var landscape = LandscapeFactory.createForTesting("test", "test").withItems(Set.of(foo, bar)).build();
-        var assessment = factory.createAssessment(landscape);
+
+        var assessment = factory.createAssessment(graph.landscape);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
 
     @Test
     void getAssessmentFromFactoryMap() {
-        var fqi = FullyQualifiedIdentifier.build("test1", "test2", "test3");
+        var fqi = FullyQualifiedIdentifier.build(Landscape.class,"l1", "u1", "c1", "g1", "i1", "p1");
         var statusList = new ArrayList<StatusValue>();
-        var results = new HashMap<String, List<StatusValue>>();
-        results.put(fqi.toString(), statusList);
+        var results = new HashMap<URI, List<StatusValue>>();
+        results.put(fqi, statusList);
         var assessment = factory.createAssessment(results);
         assertThat(assessment.getClass()).isEqualTo(Assessment.class);
     }
@@ -64,7 +64,7 @@ class AssessmentFactoryTest {
         assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
         exception = assertThrows(NullPointerException.class, () -> factory.createAssessment((Landscape) null));
         assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
-        exception = assertThrows(NullPointerException.class, () -> factory.createAssessment((Map<String, List<StatusValue>>) null));
+        exception = assertThrows(NullPointerException.class, () -> factory.createAssessment((Map<URI, List<StatusValue>>) null));
         assertThat(exception.getMessage()).isEqualTo(ASSESSMENT_ERROR_NULL);
     }
 }

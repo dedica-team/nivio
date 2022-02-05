@@ -20,9 +20,9 @@ LandscapeDescription
      - null
    * - color
      - String
-     - 
+     - The HTML (hexcode only!) color used to draw the group and its items. If no color is given, one is computed.
      - optional, defaults to null
-     - null
+     - 05ffaa
    * - config
      - LandscapeConfig<LandscapeConfig>
      - 
@@ -30,12 +30,27 @@ LandscapeDescription
      - null
    * - contact
      - String
-     - Primary contact method, preferably an email address.
+     - A contact method, preferably email.
+     - optional, defaults to null
+     - null
+   * - contains
+     - List
+     - A list of item identifiers or SQL-like queries to easily assign items to this group.
+     - optional, defaults to null
+     - identifier LIKE 'DB1'
+   * - contexts
+     - Map<ContextDescription>
+     - Description of contexts (optional, can also be given in sources).
      - optional, defaults to null
      - null
    * - description
      - String
-     - A brief description of the landscape.
+     - A brief description.
+     - optional, defaults to null
+     - null
+   * - fullyQualifiedIdentifier
+     - URI<URI>
+     - 
      - optional, defaults to null
      - null
    * - groups
@@ -43,16 +58,11 @@ LandscapeDescription
      - Description of item groups (optional, can also be given in sources).
      - optional, defaults to null
      - null
-   * - icon
-     - String
-     - An icon or logo url
-     - optional, defaults to null
-     - null
    * - identifier
      - String
-     - Immutable unique identifier. Maybe use an URN.
+     - A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.
      - **required**, defaults to null
-     - null
+     - shipping
    * - items
      - List<ItemDescription>
      - List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
@@ -70,12 +80,17 @@ LandscapeDescription
      - github: https://github.com/dedica-team/nivio
    * - name
      - String
-     - Human readable name.
+     - A human-readable name
      - **required**, defaults to null
      - null
    * - owner
      - String
-     - The business owner (person or team), preferably an email address.
+     - The business owner of the group.
+     - optional, defaults to null
+     - null
+   * - parentIdentifier
+     - String
+     - 
      - optional, defaults to null
      - null
    * - partial
@@ -83,9 +98,24 @@ LandscapeDescription
      - marks that the landscape is not complete, but an update
      - optional, defaults to null
      - null
+   * - tags
+     - List
+     - 
+     - optional, defaults to null
+     - null
    * - templates
      - Map<ItemDescription>
      - Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items.
+     - optional, defaults to null
+     - null
+   * - type
+     - String
+     - The type of the component. A string describing its nature. If no icon is set, the type determines the displayed icon.
+     - optional, defaults to null
+     - null
+   * - units
+     - Map<UnitDescription>
+     - Description of units (optional, can also be given in sources).
      - optional, defaults to null
      - null
 

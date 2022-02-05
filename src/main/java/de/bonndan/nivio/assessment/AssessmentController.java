@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping(path = AssessmentController.PATH)
 public class AssessmentController {
@@ -24,8 +26,8 @@ public class AssessmentController {
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Assessment> landscape(@PathVariable String identifier) {
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(identifier);
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape()).orElse(null);
+        URI fqi = FullyQualifiedIdentifier.build(Landscape.class, identifier);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }

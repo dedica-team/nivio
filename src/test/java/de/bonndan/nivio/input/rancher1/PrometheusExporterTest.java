@@ -38,7 +38,7 @@ class PrometheusExporterTest {
     }
 
     @Test
-    public void testSuccess() throws MalformedURLException {
+     void testSuccess() throws MalformedURLException {
 
         String path = RootPath.get() + "/src/test/resources/example/rancher_prometheus_exporter.txt";
         String prometheusExport = FileFetcher.readFile(new File(path));
@@ -50,7 +50,7 @@ class PrometheusExporterTest {
         String url = String.format("http://localhost:%d/some/export", wireMockServer.port());
 
 
-        PrometheusExporter exporter = new PrometheusExporter("test", new URL(url));
+        PrometheusExporter exporter = new PrometheusExporter(new URL(url));
         List<ItemDescription> descriptions = exporter.getDescriptions();
         assertNotNull(descriptions);
         assertFalse(descriptions.isEmpty());
@@ -59,7 +59,7 @@ class PrometheusExporterTest {
                 .findFirst();
         assertNotNull(op.get());
         ItemDescription rocketchat = op.get();
-        assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().getGroup());
+        assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().toString());
         assertEquals("unhealthy", rocketchat.getLabel(Label.health));
     }
 }

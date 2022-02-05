@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeRepository;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
@@ -43,33 +44,36 @@ public class Indexer {
      *
      * @param input dto
      */
-    public void index(final LandscapeDescription input) {
+    public void index(@NonNull final LandscapeDescription input) {
 
-        Landscape landscape = landscapeRepo.findDistinctByIdentifier(input.getIdentifier())
-                .map(landscape1 -> LandscapeFactory.recreate(landscape1, input))
+        Landscape existing = landscapeRepo.findDistinctByIdentifier(input.getIdentifier())
                 .orElseGet(() -> {
-                    Landscape created = LandscapeFactory.createFromInput(input);
+                    Landscape created = LandscapeFactory.createIntermediate(input.getIdentifier());
                     landscapeRepo.save(created);
                     return created;
                 });
 
         try {
-            ProcessingChangelog processingChangelog = runResolvers(input, landscape);
-            landscapeRepo.save(landscape);
-            eventPublisher.publishEvent(new ProcessingFinishedEvent(input, landscape, processingChangelog));
-            landscape.getLog().info("Reindexed landscape " + input.getIdentifier());
+            ProcessLog processLog = runInputResolvers(input);
+            Landscape created = applyInput(processLog, input,existing);
+            landscapeRepo.save(created);
+            eventPublisher.publishEvent(new ProcessingFinishedEvent(input, created, created.getLog().getChangelog()));
+            created.getLog().info(String.format("Reindexed landscape %s", input.getIdentifier()));
 
         } catch (ProcessingException e) {
             final String msg = "Error while reindexing landscape " + input.getIdentifier();
-            landscape.getLog().warn(msg, e);
+            existing.getLog().warn(msg, e);
             eventPublisher.publishEvent(new ProcessingErrorEvent(input.getFullyQualifiedIdentifier(), e));
         }
     }
 
-    private ProcessingChangelog runResolvers(LandscapeDescription input, Landscape landscape) {
+    /**
+     * mutates and enhances the given input
+     */
+    private ProcessLog runInputResolvers(LandscapeDescription input) {
 
         //a detailed textual log
-        ProcessLog logger = landscape.getLog();
+        ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(input.getIdentifier()),input.getIdentifier());
 
         // apply template values to items
         new TemplateResolver(logger).resolve(input);
@@ -89,6 +93,9 @@ public class Indexer {
         // try to find "magic" relations by examining item labels for keywords and URIs
         //new LabelRelationResolver(logger, new HintFactory()).resolve(input);
 
+        //filter groups
+        new GroupBlacklist(logger, input.getConfig().getGroupBlacklist()).resolve(input);
+
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)
         new RelationEndpointResolver(logger).resolve(input);
@@ -99,19 +106,15 @@ public class Indexer {
         //for simulating pet clinic events
         new PetClinicSimulatorResolver(logger).resolve(input);
 
-        //a structured log on component level
-        ProcessingChangelog changelog = new ProcessingChangelog();
-
-        // compare landscape against input, add and remove items
-        changelog.merge(new DiffProcessor(logger).process(input, landscape));
-
-        // assign items to groups, add missing groups
-        changelog.merge(new GroupProcessor(logger).process(input, landscape));
-
-        // create relations between items
-        changelog.merge(new ItemRelationProcessor(logger).process(input, landscape));
-
-        return changelog;
+        return logger;
     }
 
+    /**
+     * Creates a new {@link Landscape} and applies all input data.
+     * @return new landscape
+     */
+    private Landscape applyInput(ProcessLog log, LandscapeDescription input, Landscape existing) {
+        var processor = new InputProcessor();
+        return processor.process(input, existing, log);
+    }
 }
