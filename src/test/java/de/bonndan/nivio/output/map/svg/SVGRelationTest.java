@@ -49,8 +49,10 @@ class SVGRelationTest {
     @DisplayName("items without groups use proper fqi")
     void relationContainsBothEnds() {
 
-        Relation itemRelationItem = RelationFactory.createForTesting(foo, bar);
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
+        Relation relation = RelationFactory.createForTesting(foo, bar);
+        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
         assertTrue(render1.contains("l1/domain/foo"));

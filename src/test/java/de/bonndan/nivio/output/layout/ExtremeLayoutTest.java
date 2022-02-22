@@ -95,9 +95,9 @@ class ExtremeLayoutTest {
 
         List<Item> items = new ArrayList<>();
         int i = 0;
-        Group group = GroupBuilder.aGroup().withIdentifier("group0").withName("test").build();
+        Group group = graph.getTestGroup("test");
         while (i < 20) {
-            Item testItem = ItemFactory.getTestItem("test", "c" + i);
+            Item testItem = graph.getTestItem(group.getIdentifier(), "c" + i);
             items.add(testItem);
             i++;
         }

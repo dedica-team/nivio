@@ -27,34 +27,13 @@ public class SearchDocumentFactory {
     private SearchDocumentFactory() {
     }
 
-    public static final String LUCENE_FIELD_IDENTIFIER = "identifier";
-    public static final String LUCENE_FIELD_PARENT_IDENTIFIER = "parentIdentifier";
-    public static final String LUCENE_FIELD_NAME = "name";
-    public static final String LUCENE_FIELD_DESCRIPTION = "description";
-
-    /**
-     * This is used to collect strings which should be directly searchable
-     */
-    public static final String LUCENE_FIELD_GENERIC = "generic";
-    public static final String LUCENE_FIELD_FQI = "fqi";
-    public static final String LUCENE_FIELD_COMPONENT = "component";
-    public static final String LUCENE_FIELD_GROUP = "group";
-    public static final String LUCENE_FIELD_TYPE = "type";
-    public static final String LUCENE_FIELD_OWNER = "owner";
-    public static final String LUCENE_FIELD_TAG = "tag";
-    public static final String LUCENE_FIELD_NETWORK = Label.network.name();
-    public static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
-    public static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
-    public static final String LUCENE_FIELD_LAYER = "layer";
-    public static final String LUCENE_FIELD_ADDRESS = "address";
-    public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
     public static final String KPI_FACET_PREFIX = "kpi_";
 
     public static FacetsConfig getConfig() {
         FacetsConfig config = new FacetsConfig();
-        config.setMultiValued(LUCENE_FIELD_TAG, true);
-        config.setMultiValued(LUCENE_FIELD_NETWORK, true);
-        config.setMultiValued(LUCENE_FIELD_FRAMEWORK, true);
+        config.setMultiValued(SearchField.LUCENE_FIELD_TAG.getValue(), true);
+        config.setMultiValued(SearchField.LUCENE_FIELD_NETWORK.getValue(), true);
+        config.setMultiValued(SearchField.LUCENE_FIELD_FRAMEWORK.getValue(), true);
         return config;
     }
 
@@ -81,18 +60,18 @@ public class SearchDocumentFactory {
                         () -> document.add(new TextField(field, "", Field.Store.YES))
                 );
 
-        addTextField.accept(LUCENE_FIELD_COMPONENT, valueObject.getComponent());
-        addTextField.accept(LUCENE_FIELD_FQI, valueObject.getFullyQualifiedIdentifier().toString());
-        addTextField.accept(LUCENE_FIELD_IDENTIFIER, valueObject.getIdentifier());
-        addTextField.accept(LUCENE_FIELD_PARENT_IDENTIFIER, valueObject.getParentIdentifier());
-        addTextField.accept(LUCENE_FIELD_NAME, valueObject.getName());
-        addTextField.accept(LUCENE_FIELD_DESCRIPTION, valueObject.getDescription());
-        addTextField.accept(LUCENE_FIELD_TYPE, valueObject.getType());
-        addTextField.accept(LUCENE_FIELD_OWNER, valueObject.getOwner());
+        addTextField.accept(SearchField.LUCENE_FIELD_COMPONENT.getValue(), valueObject.getComponent());
+        addTextField.accept(SearchField.LUCENE_FIELD_FQI.getValue(), valueObject.getFullyQualifiedIdentifier().toString());
+        addTextField.accept(SearchField.IDENTIFIER.getValue(), valueObject.getIdentifier());
+        addTextField.accept(SearchField.LUCENE_FIELD_PARENT_IDENTIFIER.getValue(), valueObject.getParentIdentifier());
+        addTextField.accept(SearchField.LUCENE_FIELD_NAME.getValue(), valueObject.getName());
+        addTextField.accept(SearchField.LUCENE_FIELD_DESCRIPTION.getValue(), valueObject.getDescription());
+        addTextField.accept(SearchField.LUCENE_FIELD_TYPE.getValue(), valueObject.getType());
+        addTextField.accept(SearchField.LUCENE_FIELD_OWNER.getValue(), valueObject.getOwner());
 
-        valueObject.getLayer().ifPresent(s -> addTextField.accept(LUCENE_FIELD_LAYER, s));
-        valueObject.getGroup().ifPresent(s -> addTextField.accept(LUCENE_FIELD_GROUP, s));
-        valueObject.getAddress().ifPresent(s -> addTextField.accept(LUCENE_FIELD_ADDRESS, s));
+        valueObject.getLayer().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_LAYER.getValue(), s));
+        valueObject.getGroup().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_GROUP.getValue(), s));
+        valueObject.getAddress().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_ADDRESS.getValue(), s));
 
         List<String> genericStrings = new ArrayList<>();
         //add all labels by their key
@@ -119,10 +98,10 @@ public class SearchDocumentFactory {
         //tags (searchable)
         Arrays.stream(valueObject.getTags())
                 .map(tag -> tag.toLowerCase(Locale.ROOT))
-                .forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag));
+                .forEach(tag -> addTextField.accept(SearchField.LUCENE_FIELD_TAG.getValue(), tag));
 
         //networks
-        valueObject.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
+        valueObject.getLabels(Label.network).forEach((key, value) -> addTextField.accept(SearchField.LUCENE_FIELD_NETWORK.getValue(), value.toLowerCase(Locale.ROOT)));
 
         //frameworks
         List<String> frameworks = new ArrayList<>();
@@ -133,7 +112,7 @@ public class SearchDocumentFactory {
             addTextField.accept(unprefixed, val);
             genericStrings.add(unprefixed);
         });
-        frameworks.forEach(s -> addTextField.accept(LUCENE_FIELD_FRAMEWORK, s));
+        frameworks.forEach(s -> addTextField.accept(SearchField.LUCENE_FIELD_FRAMEWORK.getValue(), s));
 
         //kpis, fields are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {
@@ -141,7 +120,7 @@ public class SearchDocumentFactory {
         });
 
         //frameworks name (label keys)
-        addTextField.accept(LUCENE_FIELD_GENERIC, StringUtils.collectionToDelimitedString(genericStrings, " "));
+        addTextField.accept(SearchField.LUCENE_FIELD_GENERIC.getValue(), StringUtils.collectionToDelimitedString(genericStrings, " "));
 
         addFacets(document, valueObject, statusValues);
         return document;
@@ -169,23 +148,23 @@ public class SearchDocumentFactory {
 
         //tag facets
         Arrays.stream(valueProvider.getTags())
-                .forEach(tag -> addFacetField.accept(LUCENE_FIELD_TAG, tag.toLowerCase(Locale.ROOT)));
+                .forEach(tag -> addFacetField.accept(SearchField.LUCENE_FIELD_TAG.getValue(), tag.toLowerCase(Locale.ROOT)));
 
         //network facets
         valueProvider.getLabels(Label.network)
-                .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
+                .forEach((key, value) -> addFacetField.accept(SearchField.LUCENE_FIELD_NETWORK.getValue(), value.toLowerCase(Locale.ROOT)));
 
         //framework facets (only key, not version)
         valueProvider.getLabels(Label.framework)
-                .forEach((key, value) -> addFacetField.accept(LUCENE_FIELD_FRAMEWORK, Label.framework.unprefixed(key)));
+                .forEach((key, value) -> addFacetField.accept(SearchField.LUCENE_FIELD_FRAMEWORK.getValue(), Label.framework.unprefixed(key)));
 
-        addFacetField.accept(LUCENE_FIELD_LIFECYCLE, valueProvider.getLabels().get(Label.lifecycle.name()));
-        addFacetField.accept(LUCENE_FIELD_CAPABILITY, valueProvider.getLabels().get(Label.capability.name()));
-        addFacetField.accept(LUCENE_FIELD_OWNER, valueProvider.getOwner());
-        addFacetField.accept(LUCENE_FIELD_TYPE, valueProvider.getType());
+        addFacetField.accept(SearchField.LUCENE_FIELD_LIFECYCLE.getValue(), valueProvider.getLabels().get(Label.lifecycle.name()));
+        addFacetField.accept(SearchField.LUCENE_FIELD_CAPABILITY.getValue(), valueProvider.getLabels().get(Label.capability.name()));
+        addFacetField.accept(SearchField.LUCENE_FIELD_OWNER.getValue(), valueProvider.getOwner());
+        addFacetField.accept(SearchField.LUCENE_FIELD_TYPE.getValue(), valueProvider.getType());
 
-        valueProvider.getGroup().ifPresent(s -> addFacetField.accept(LUCENE_FIELD_GROUP, s));
-        valueProvider.getLayer().ifPresent(s -> addFacetField.accept(LUCENE_FIELD_LAYER, s));
+        valueProvider.getGroup().ifPresent(s -> addFacetField.accept(SearchField.LUCENE_FIELD_GROUP.getValue(), s));
+        valueProvider.getLayer().ifPresent(s -> addFacetField.accept(SearchField.LUCENE_FIELD_LAYER.getValue(), s));
 
         //kpis, facets are prefixed to prevent name collisions (kpis can have any names)
         statusValues.forEach(statusValue -> {

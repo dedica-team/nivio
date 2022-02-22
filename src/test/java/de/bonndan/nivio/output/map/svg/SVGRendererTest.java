@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.icons.IconService;
@@ -18,16 +19,17 @@ class SVGRendererTest {
     void testRendering() {
 
         //given
-        Landscape foo = LandscapeFactory.createForTesting("foo", "fooLandscape").build();
+        var graph = new GraphTestSupport();
+
         IconService iconService = mock(IconService.class);
         when(iconService.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
         MapStyleSheetFactory mapStyleSheetFactory = mock(MapStyleSheetFactory.class);
         SVGRenderer svgRenderer = new SVGRenderer(mapStyleSheetFactory);
 
-        LayoutedComponent lc = getLayoutedLandscape(foo);
+        LayoutedComponent lc = getLayoutedLandscape(graph.landscape);
 
         //when
-        String rendered = svgRenderer.render(lc, new Assessment(foo.applyKPIs(foo.getKpis())),true);
+        String rendered = svgRenderer.render(lc, Assessment.empty(),true);
 
         //check svg xml is returned
         assertTrue(rendered.contains("svg version=\"1.1\""));

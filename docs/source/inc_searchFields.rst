@@ -1,0 +1,15 @@
+* ``identifier`` The local identifier of the component without parent identifier
+* ``address`` address/url of an item
+* ``capability`` capability
+* ``component`` class of the component (item, group, relation...)
+* ``description`` description of the component
+* ``framework`` frameworks of an item
+* ``group`` parent group of an item
+* ``layer`` domain layer or technical layer
+* ``lifecycle`` network(s) of the component
+* ``name`` name of the component
+* ``network`` network(s) of the component
+* ``owner`` owner of the component
+* ``parent`` identifier of the parent component
+* ``tag`` assigned tag(s)
+* ``type`` type of the component

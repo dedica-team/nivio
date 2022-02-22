@@ -49,10 +49,10 @@ public class LuceneSearchIndex implements SearchIndex {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchIndex.class);
     private static final String[] MULTI_FIELD_QUERY_FIELDS = {
-            LUCENE_FIELD_IDENTIFIER,
-            LUCENE_FIELD_NAME,
-            LUCENE_FIELD_DESCRIPTION,
-            LUCENE_FIELD_GENERIC,
+            SearchField.IDENTIFIER.getValue(),
+            SearchField.LUCENE_FIELD_NAME.getValue(),
+            SearchField.LUCENE_FIELD_DESCRIPTION.getValue(),
+            SearchField.LUCENE_FIELD_GENERIC.getValue(),
     };
 
     private final Directory searchIndexDir;
@@ -164,7 +164,7 @@ public class LuceneSearchIndex implements SearchIndex {
             return documents.stream()
                     .map(doc -> {
                         try {
-                            return new URI(doc.get(LUCENE_FIELD_FQI));
+                            return new URI(doc.get(SearchField.LUCENE_FIELD_FQI.getValue()));
                         } catch (URISyntaxException e) {
                             LOGGER.error("Failed to generate URI from {}", doc, e);
                             return null;

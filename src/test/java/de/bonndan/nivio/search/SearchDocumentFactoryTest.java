@@ -59,16 +59,16 @@ class SearchDocumentFactoryTest {
 
         //then
         assertNotNull(document);
-        assertEquals(item.getIdentifier(), document.get(LUCENE_FIELD_IDENTIFIER));
-        assertEquals(item.getName(), document.get(LUCENE_FIELD_NAME));
-        assertEquals(item.getDescription(), document.get(LUCENE_FIELD_DESCRIPTION));
-        assertEquals(item.getOwner(), document.get(LUCENE_FIELD_OWNER));
+        assertEquals(item.getIdentifier(), document.get(SearchField.IDENTIFIER.getValue()));
+        assertEquals(item.getName(), document.get(SearchField.LUCENE_FIELD_NAME.getValue()));
+        assertEquals(item.getDescription(), document.get(SearchField.LUCENE_FIELD_DESCRIPTION.getValue()));
+        assertEquals(item.getOwner(), document.get(SearchField.LUCENE_FIELD_OWNER.getValue()));
 
         assertEquals(item.getLabel("foo"), document.get("foo"));
         assertEquals(item.getLabel("foo2"), document.get("foo2"));
-        assertEquals(item.getType(), document.get(LUCENE_FIELD_TYPE));
-        assertThat(document.get(LUCENE_FIELD_LAYER)).isEqualTo(item.getLayer());
-        assertThat(document.get(LUCENE_FIELD_ADDRESS)).isEqualTo(item.getAddress());
+        assertEquals(item.getType(), document.get(SearchField.LUCENE_FIELD_TYPE.getValue()));
+        assertThat(document.get(SearchField.LUCENE_FIELD_LAYER.getValue())).isEqualTo(item.getLayer());
+        assertThat(document.get(SearchField.LUCENE_FIELD_ADDRESS.getValue())).isEqualTo(item.getAddress());
 
         String wikiLink = item.getLinks().get("wiki").getHref().toString();
         assertEquals(wikiLink, document.get("wiki"));
@@ -77,12 +77,12 @@ class SearchDocumentFactoryTest {
         assertTrue(tags.contains("one"));
         assertTrue(tags.contains("two"));
 
-        String[] network = document.getValues(LUCENE_FIELD_NETWORK);
+        String[] network = document.getValues(SearchField.LUCENE_FIELD_NETWORK.getValue());
         List<String> networks = List.of(network);
         assertTrue(networks.contains("foonet"));
         assertTrue(networks.contains("barnet"));
 
-        List<String> frameworksValue = Arrays.asList(document.getValues(LUCENE_FIELD_FRAMEWORK));
+        List<String> frameworksValue = Arrays.asList(document.getValues(SearchField.LUCENE_FIELD_FRAMEWORK.getValue()));
         assertThat(frameworksValue).contains("java").contains("spring boot");
         //per-framework field
         List<String> frameworks = document.getFields().stream().map(indexableField -> indexableField.name()).collect(Collectors.toList());
@@ -90,7 +90,7 @@ class SearchDocumentFactoryTest {
         String javaVersion = Arrays.stream(document.getValues("java")).findFirst().orElseThrow();
         assertThat(javaVersion).isEqualTo("8");
 
-        String genericField = document.get(LUCENE_FIELD_GENERIC);
+        String genericField = document.get(SearchField.LUCENE_FIELD_GENERIC.getValue());
         assertThat(genericField).contains("java").contains("spring").contains("boot");
         assertThat(genericField).contains("bar2"); //label
         assertThat(genericField).doesNotContain("2.0.1"); //not framework version/value

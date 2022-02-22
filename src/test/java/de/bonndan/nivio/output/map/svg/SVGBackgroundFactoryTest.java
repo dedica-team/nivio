@@ -25,7 +25,7 @@ class SVGBackgroundFactoryTest {
     @Test
     void getBackgroundTiles() {
 
-        Group g = GroupBuilder.aGroup().withIdentifier("group").withName("landscapeIdentifier").build();
+        Group g = GroupBuilder.aTestGroup("group").build();
         Set<MapTile> hexes = Set.of(new MapTile(new Hex(-3, -3)), new MapTile(new Hex(10, 10)));
         SVGGroupArea svgGroupArea = new SVGGroupArea(g, hexes, List.of());
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of());

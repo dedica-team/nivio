@@ -135,6 +135,7 @@ class PathFinderTest {
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
+        graph.getTestGroup("foo");
         Item block = graph.getTestItem("foo", "block");
         MapTile toHex = new MapTile(new Hex(3, 3));
         toHex.setGroup(block.getParent().getIdentifier());
