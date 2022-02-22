@@ -48,7 +48,7 @@ class LuceneSearchIndexTest {
         graph.landscape.getIndexWriteAccess().addOrReplaceChild(foos);
 
         valueObjects = components.stream()
-                .map((GraphComponent component) -> SearchDocumentValueObjectFactory.createForItem((Item) component))
+                .map((GraphComponent component) -> SearchDocumentValueObjectFactory.createFor(component))
                 .collect(Collectors.toSet());
 
         searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));

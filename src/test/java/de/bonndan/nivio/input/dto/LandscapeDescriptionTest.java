@@ -43,7 +43,7 @@ class LandscapeDescriptionTest {
 
         //then
         assertEquals(1, landscapeDescription.getIndexReadAccess().all(GroupDescription.class).size());
-        Optional<GroupDescription> foo = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("foo", null, GroupDescription.class);
+        Optional<GroupDescription> foo = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("foo", null, GroupDescription.class);
         assertThat(foo).isPresent();
         assertThat(foo.get().getColor()).isEqualTo("00aabb");
     }
@@ -69,7 +69,7 @@ class LandscapeDescriptionTest {
         //then
         Set<GroupDescription> all = landscapeDescription.getIndexReadAccess().all(GroupDescription.class);
         assertEquals(1, all.size());
-        Optional<GroupDescription> foo = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("foo", null, GroupDescription.class);
+        Optional<GroupDescription> foo = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("foo", null, GroupDescription.class);
         assertThat(foo).isPresent();
 
         //would not be overwritten

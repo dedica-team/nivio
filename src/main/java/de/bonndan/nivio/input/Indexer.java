@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.demo.PetClinicSimulatorResolver;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
@@ -75,6 +76,9 @@ public class Indexer {
         //a detailed textual log
         ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(input.getIdentifier()),input.getIdentifier());
 
+        // index all current components
+        input.getIndexReadAccess().indexForSearch(Assessment.empty());
+
         // apply template values to items
         new TemplateResolver(logger).resolve(input);
 
@@ -87,14 +91,17 @@ public class Indexer {
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
 
+        //filter groups
+        new GroupBlacklist(logger, input.getConfig().getGroupBlacklist()).resolve(input);
+
+        // index all current components
+        input.getIndexReadAccess().indexForSearch(Assessment.empty());
+
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).resolve(input);
 
         // try to find "magic" relations by examining item labels for keywords and URIs
         //new LabelRelationResolver(logger, new HintFactory()).resolve(input);
-
-        //filter groups
-        new GroupBlacklist(logger, input.getConfig().getGroupBlacklist()).resolve(input);
 
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)

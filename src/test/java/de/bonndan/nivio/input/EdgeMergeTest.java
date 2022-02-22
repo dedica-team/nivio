@@ -105,7 +105,7 @@ class EdgeMergeTest {
 
         //then
         assertThat(changelog.getChanges()).hasSize(4); //one create, 3 updates for nodes and relation
-        URI rel = URI.create("relation://test/a/a?to=item://test/a/b");
+        URI rel = URI.create("relation://test/default/default/a/a?to=item://test/default/default/a/b");
         assertThat(changelog.getChanges()).containsKey(rel);
         ProcessingChangelog.Entry entry = changelog.getChanges().get(rel);
         assertThat(entry).isNotNull();

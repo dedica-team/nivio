@@ -16,7 +16,6 @@ import java.net.URI;
 import java.util.*;
 import java.util.function.Function;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 

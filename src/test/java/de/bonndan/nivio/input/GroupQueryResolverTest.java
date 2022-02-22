@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -46,6 +47,9 @@ class GroupQueryResolverTest {
 
         groupDescription.setContains(List.of("itemIdentifier"));
 
+        input.getIndexReadAccess().indexForSearch(Assessment.empty());
+
+        //when
         groupResolver.resolve(input);
 
         Set<ItemDescription> matched = input.getItemDescriptions().stream()
@@ -62,6 +66,8 @@ class GroupQueryResolverTest {
         input.mergeItems(Set.of(item));
 
         groupDescription.setContains(List.of("itemidentifier"));
+
+        input.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         groupResolver.resolve(input);

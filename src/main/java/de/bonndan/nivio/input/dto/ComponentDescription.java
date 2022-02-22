@@ -103,12 +103,13 @@ public abstract class ComponentDescription implements Component, Labeled, Linked
      *
      * @param increment source
      */
-    public void assignSafeNotNull( ComponentDescription increment) {
+    public void assignSafeNotNull(ComponentDescription increment) {
 
         assignSafeIfAbsent(increment.getName(), getName(), this::setName);
         assignSafeIfAbsent(increment.getDescription(), getDescription(), this::setDescription);
         assignSafeIfAbsent(increment.getOwner(), getOwner(), this::setOwner);
         assignSafeIfAbsent(increment.getContact(), getContact(), this::setContact);
+        assignSafeIfAbsent(increment.getType(), getType(), this::setType);
 
         Labeled.add(increment, this);
 

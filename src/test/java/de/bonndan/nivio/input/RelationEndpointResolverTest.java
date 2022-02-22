@@ -39,20 +39,20 @@ class RelationEndpointResolverTest {
         relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription one = landscapeDescription.getIndexReadAccess()
-                .findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
+                .matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
         ItemDescription two = landscapeDescription.getIndexReadAccess()
-                .findOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
+                .matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
                 .orElseThrow();
 
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
         ItemDescription three = landscapeDescription.getIndexReadAccess()
-                .findOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
+                .matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
                 .orElseThrow();
 
         assertNotNull(three);
@@ -68,7 +68,7 @@ class RelationEndpointResolverTest {
 
         //the provider has been resolved using a query instead of naming a service
         ItemDescription providedbyBar = landscapeDescription.getIndexReadAccess()
-                .findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
+                .matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(providedbyBar);
 
@@ -85,10 +85,12 @@ class RelationEndpointResolverTest {
     void resolvesTemplatePlaceholdersInDataflow() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
+
+        //when
         relationEndpointResolver.resolve(landscapeDescription);
 
         ItemDescription hasdataFlow = landscapeDescription.getIndexReadAccess()
-                .findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
+                .matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(hasdataFlow);
         assertNotNull(hasdataFlow.getRelations());

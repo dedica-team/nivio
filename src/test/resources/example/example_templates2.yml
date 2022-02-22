@@ -5,9 +5,9 @@ sources:
     format: nivio
     assignTemplates:
       putIntoGroupAlpha: ["identifier:crappy_dockername*"]
-      putIntoGroupBeta: ["name = 'baz'"]
+      putIntoGroupBeta: ["name:baz"]
       providedByBar: ["identifier:crappy_dockername-78*"]
-      addDataFlow: ["name:'foo'"]
+      addDataFlow: ["name:foo"]
 
 templates:
   putIntoGroupAlpha:

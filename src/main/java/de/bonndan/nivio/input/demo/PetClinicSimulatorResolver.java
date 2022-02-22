@@ -54,7 +54,7 @@ public class PetClinicSimulatorResolver extends Resolver {
         int mrem = r.nextInt(high - low) + low;
         ItemDescription sensor;
         try {
-            sensor = input.getIndexReadAccess().findOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
+            sensor = input.getIndexReadAccess().matchOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
         } catch (Exception e) {
             processLog.warn("Failed to run simulation: " + e.getMessage());
             return;
@@ -69,7 +69,7 @@ public class PetClinicSimulatorResolver extends Resolver {
 
         try {
 
-        ItemDescription customerDb = input.getIndexReadAccess().findOneByIdentifiers("customer-db", "xray", ItemDescription.class).orElseThrow();
+        ItemDescription customerDb = input.getIndexReadAccess().matchOneByIdentifiers("customer-db", "xray", ItemDescription.class).orElseThrow();
         int scale = mrem > 300 ? 0 : 1;
         customerDb.setLabel(Label.scale, String.valueOf(scale));
         processLog.info(String.format("Customer DB is scaled to %s", scale));

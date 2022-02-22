@@ -52,7 +52,7 @@ class InputFormatHandlerCustomJSONTest {
 
         LandscapeDescription other = landscapeDescriptions.get(1);
         assertThat(other.getItemDescriptions()).isNotEmpty();
-        ItemDescription asd = other.getIndexReadAccess().findOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = other.getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
         assertThat(asd.getName()).isEqualTo("John Doe");
@@ -72,7 +72,7 @@ class InputFormatHandlerCustomJSONTest {
         //then
         Set<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
         assertThat(itemDescriptions).isNotEmpty();
-        ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().findOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getContact()).isEqualTo("John Doe");
     }
@@ -88,7 +88,7 @@ class InputFormatHandlerCustomJSONTest {
 
         //then
         Set<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
-        ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().findOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getLabel("nivio.relations.upstream")).isEqualTo("foo,bar");
     }
@@ -106,7 +106,7 @@ class InputFormatHandlerCustomJSONTest {
         //then
         Set<ItemDescription> items = defaultLandscapeDTO.getItemDescriptions();
         assertThat(items).isNotEmpty();
-        ItemDescription asd = defaultLandscapeDTO.getIndexReadAccess().findOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = defaultLandscapeDTO.getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
     }
 

@@ -51,34 +51,13 @@ public class IndexReadAccess<T extends Component> {
     }
 
     /**
-     *
-     * @param term identifier
-     * @param cls
-     * @param <C>
-     * @return
-     * @todo remove fallback to search query?
+     * @param componentMatcher
      */
     @NonNull
-    public <C extends Component> List<C> findMatching(@NonNull final String term, @NonNull final Class<C> cls) {
-        Objects.requireNonNull(term, "Search term is null");
-        try {
-            ComponentMatcher componentMatcher = ComponentMatcher.forTarget(term, cls);
-            return all(cls).stream()
-                    .filter(item -> componentMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
-                    .collect(Collectors.toList());
-        } catch (IllegalArgumentException e) {
-            return new ArrayList<>(queryRegardingAddress(term, cls));
-        }
-    }
-
-    /**
-     * Returns a select query.
-     *
-     * @param term equals identifier or name
-     * @return query string
-     */
-    private String selectByIdentifierOrName(String term) {
-        return String.format("identifier:%s OR name:%s)", term, term);
+    public <C extends Component> List<C> match(@NonNull final ComponentMatcher componentMatcher, @NonNull final Class<C> cls) {
+        return all(cls).stream()
+                .filter(item -> componentMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -94,54 +73,58 @@ public class IndexReadAccess<T extends Component> {
     /**
      * Returns all items matching the given term.
      *
+     * Uses a {@link ComponentMatcher} for path-like terms, otherwise executes a search.
+     *
      * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string paths | identifier | url
      * @return all matching items.
      */
-    <C extends Component> Collection<C> queryRegardingAddress(String term, Class<C> cls) {
+    public <C extends Component> Collection<C> matchOrSearchByIdentifierOrName(String term, Class<C> cls) {
         if ("*".equals(term)) {
             return all(cls);
         }
 
-        if (term.contains("/")) {
-
-            if (URLFactory.getURL(term).isPresent()) {
-                term = "address:\"" + term + "\"";
-            } else if (!term.contains(" ")) {
-                try {
-                    String finalTerm = term;
-                    return all(cls).stream()
-                            .filter(item -> ComponentMatcher.forTarget(finalTerm, ItemDescription.class).isSimilarTo(item.getFullyQualifiedIdentifier()))
-                            .collect(Collectors.toList());
-                } catch (IllegalArgumentException e) {
-                    //something else that is not an url nor identifier nor where-condition
-                    term = selectByIdentifierOrName(term);
-                }
-
-            }
+        if (term.contains("/") && (!term.contains(" "))) {
+            return all(cls).stream()
+                    .filter(item -> ComponentMatcher.forTarget(term, ItemDescription.class).isSimilarTo(item.getFullyQualifiedIdentifier()))
+                    .collect(Collectors.toList());
         }
 
         //single word compared against identifier
-        String query = term.matches(PATTERN) ? selectByIdentifierOrName(term) : term;
+        String query = term.matches(PATTERN) ? String.format("identifier:%s OR name:%s", term, term) : term;
         return search(query, cls);
     }
 
     /**
-     * Returns one distinct item for a query term.
+     * Explicitly search for an address.
      *
-     * @param term             search term
+     * @param term URL
+     */
+    public <C extends Component> Collection<C> searchAddress(String term, Class<C> cls) {
+        if (URLFactory.getURL(term).isPresent()) {
+            term = "address:\"" + term + "\"";
+            return search(term, cls);
+        }
+
+        throw new IllegalArgumentException("Is not an address/url: " + term);
+    }
+
+    /**
+     * Returns one distinct item for an identifier that is used with a {@link ComponentMatcher}
+     *
+     * @param identifier       search term
      * @param parentIdentifier optional parent identifier to narrow
      * @param cls              class for filter results
      * @return the matched item
      * @throws NoSuchElementException if not exactly one item could be determined
      */
-    public <C extends Component> Optional<C> findOneByIdentifiers(@NonNull final String term,
-                                                                  @Nullable final String parentIdentifier,
-                                                                  @NonNull final Class<C> cls
+    public <C extends Component> Optional<C> matchOneByIdentifiers(@NonNull final String identifier,
+                                                                   @Nullable final String parentIdentifier,
+                                                                   @NonNull final Class<C> cls
     ) {
         if (Landscape.class.equals(cls) || LandscapeDescription.class.equals(cls)) {
             return Optional.of((C) getRoot());
         }
-        List<C> components = findMatching(term, cls);
+        List<C> components = match(ComponentMatcher.forTarget(identifier, cls), cls);
         if (components.isEmpty()) {
             return Optional.empty();
         }
@@ -151,7 +134,7 @@ public class IndexReadAccess<T extends Component> {
         }
 
         if (parentIdentifier == null) {
-            var msg = String.format("Could not extract distinct %s matching '%s' from ambiguous result without group: %s", cls.getSimpleName(), term, components);
+            var msg = String.format("Could not extract distinct %s matching '%s' from ambiguous result without group: %s", cls.getSimpleName(), identifier, components);
             throw new NoSuchElementException(msg);
         }
 
@@ -185,7 +168,7 @@ public class IndexReadAccess<T extends Component> {
      * @return one if present
      * @throws NoSuchElementException if no result or ambiguous
      */
-    public <C extends Component> Optional<C> findOneMatching(@NonNull final ComponentMatcher matcher, @NonNull final Class<C> cls) {
+    public <C extends Component> Optional<C> matchOne(@NonNull final ComponentMatcher matcher, @NonNull final Class<C> cls) {
         List<C> components = all(cls).stream()
                 .filter(item -> matcher.isSimilarTo(item.getFullyQualifiedIdentifier()))
                 .collect(Collectors.toList());

@@ -59,7 +59,6 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
 
         super.assignSafeNotNull(source);
 
-        assignSafeIfAbsent(source.getType(), getType(), this::setType);
         assignSafeIfAbsent(source.getGroup(), getGroup(), this::setGroup);
         assignSafeIfAbsent(source.getIcon(), getIcon(), this::setIcon);
         assignSafeIfAbsent(source.getAddress(), getAddress(), this::setAddress);

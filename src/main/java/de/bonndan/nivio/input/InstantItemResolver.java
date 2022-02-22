@@ -26,7 +26,7 @@ public class InstantItemResolver extends Resolver {
         }
 
         HashSet<ItemDescription> newItems = new HashSet<>();
-        landscape.getItemDescriptions().forEach(itemDescription -> newItems.addAll(
+        landscape.getIndexReadAccess().all(ItemDescription.class).forEach(itemDescription -> newItems.addAll(
                 resolveTargets(itemDescription, landscape.getIndexReadAccess()))
         );
 
@@ -38,7 +38,7 @@ public class InstantItemResolver extends Resolver {
         List<ItemDescription> newItems = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<ItemDescription> provider = readAccess.findMatching(term.toLowerCase(), ItemDescription.class).stream().findFirst();
+            Optional<ItemDescription> provider = readAccess.matchOrSearchByIdentifierOrName(term.toLowerCase(), ItemDescription.class).stream().findFirst();
 
             if (provider.isEmpty()) {
                 processLog.info("Creating a new provider landscape item for term '" + term + "' instantly.");
@@ -79,12 +79,12 @@ public class InstantItemResolver extends Resolver {
 
     private boolean hasTarget(String term, IndexReadAccess<ComponentDescription> allItems) {
 
-        Collection<ItemDescription> result = allItems.findMatching(term, ItemDescription.class);
+        Collection<ItemDescription> result = allItems.match(ComponentMatcher.forTarget(term), ItemDescription.class);
         if (result.size() > 1) {
             processLog.warn("Found ambiguous sources matching " + term);
             return true;
         }
 
-        return result.size() != 0;
+        return !result.isEmpty();
     }
 }

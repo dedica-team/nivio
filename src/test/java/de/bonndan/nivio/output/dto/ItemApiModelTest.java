@@ -109,7 +109,7 @@ class ItemApiModelTest {
     void getGroup() {
         Item s1 = item;
         ItemApiModel itemApiModel = new ItemApiModel(s1);
-        assertThat(itemApiModel.getGroup()).isEqualTo("g1");
+        assertThat(itemApiModel.getGroup()).isEqualTo(item.getParentIdentifier());
     }
 
     @Test
@@ -169,7 +169,7 @@ class ItemApiModelTest {
     void testToString() {
         Item s1 = item;
         ItemApiModel itemApiModel = new ItemApiModel(s1);
-        assertThat(itemApiModel.toString()).hasToString("l1/g1/a");
+        assertThat(itemApiModel.toString()).hasToString(item.toString());
     }
 
     @Test

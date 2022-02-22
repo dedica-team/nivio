@@ -1,20 +1,14 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
+import de.bonndan.nivio.input.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.codec.digest.DigestUtils.md5;
 
 
 /**
@@ -93,8 +87,10 @@ public class SourceReferencesResolver {
                 throw new IllegalArgumentException(String.format("Other landscape description has different fqi %s", otherFQI));
             }
 
+            landscapeDescription1.mergeUnits(landscapeDescription.getIndexReadAccess().all(UnitDescription.class));
+            landscapeDescription1.mergeContexts(landscapeDescription.getIndexReadAccess().all(ContextDescription.class));
             landscapeDescription1.mergeGroups(landscapeDescription.getIndexReadAccess().all(GroupDescription.class));
-            landscapeDescription1.mergeItems(landscapeDescription.getItemDescriptions());
+            landscapeDescription1.mergeItems(landscapeDescription.getIndexReadAccess().all(ItemDescription.class));
         } else {
             map.put(landscapeDescription.getIdentifier(), landscapeDescription);
         }
@@ -109,7 +105,5 @@ public class SourceReferencesResolver {
 
         return s.trim();
     }
-
-
 
 }

@@ -37,7 +37,7 @@ class InputFormatHandlerCompose2Test {
 
         //then
         assertEquals(3, landscapeDescription.getIndexReadAccess().all(ItemDescription.class).size());
-        ItemDescription service = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription service = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(service);
 
         assertEquals("web", service.getIdentifier());

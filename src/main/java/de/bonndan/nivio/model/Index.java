@@ -120,6 +120,13 @@ public class Index<T extends Component> {
         return remove.isPresent();
     }
 
+    /**
+     * Removes a relation between two components.
+     *
+     * @param relation to remove
+     * @return the removed relation
+     * @throws IllegalArgumentException if a parent-child relation was given
+     */
     public Optional<Relation> removeRelation(Relation relation) {
         if (RelationType.CHILD.name().equalsIgnoreCase(relation.getType())) {
             throw new IllegalArgumentException("Child relations cannot be deleted.");
@@ -147,11 +154,13 @@ public class Index<T extends Component> {
     /**
      * Reindex all nodes with assessment info.
      *
-     * @param assessment
+     * @param assessment optional assessment to index
      */
     public void indexWith(@Nullable final Assessment assessment) {
-        Set<SearchDocumentValueObject> components = new HashSet<>();
-        all().forEach(relation -> components.add(SearchDocumentValueObjectFactory.createFor(relation)));
+        Set<SearchDocumentValueObject> components = all()
+                .map(SearchDocumentValueObjectFactory::createFor)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
         searchIndex.indexForSearch(components, assessment == null ? Assessment.empty() : assessment);
     }
 

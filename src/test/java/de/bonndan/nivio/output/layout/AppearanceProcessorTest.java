@@ -44,7 +44,7 @@ class AppearanceProcessorTest {
 
     @Test
     void item_icon_setIconAndFillAppearance() {
-        Item s1 = landscape.getIndexReadAccess().findOneByIdentifiers("s1", "g1", Item.class).orElseThrow();
+        Item s1 = landscape.getIndexReadAccess().matchOneByIdentifiers("s1", "g1", Item.class).orElseThrow();
         s1.setLabel(Label.icon, "https://dedica.team/images/logo_orange_weiss.png");
         when(iconService.getIconUrl(s1)).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
 
@@ -57,7 +57,7 @@ class AppearanceProcessorTest {
 
     @Test
     void item_fill_setIconAndFillAppearance() throws MalformedURLException {
-        Item s1 = landscape.getIndexReadAccess().findOneByIdentifiers("s1", "g1", Item.class).orElseThrow();
+        Item s1 = landscape.getIndexReadAccess().matchOneByIdentifiers("s1", "g1", Item.class).orElseThrow();
         s1.setLabel(Label.fill, "http://dedica.team/images/portrait.jpeg");
         when(iconService.getExternalUrl(new URL(s1.getLabel(Label.fill)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 

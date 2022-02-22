@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.IntegrationTestSupport;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Label;
@@ -30,19 +31,22 @@ class TemplateResolverTest {
     @Test
     void assignTemplateToAll() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+
+        //when
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription redis = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
+        //then
+        ItemDescription redis = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertEquals("foo", redis.getGroup());
 
-        ItemDescription datadog = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
+        ItemDescription datadog = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
         assertNotNull(datadog);
         assertEquals("foo", datadog.getGroup());
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(web);
         assertEquals("content", web.getGroup());
     }
@@ -51,18 +55,20 @@ class TemplateResolverTest {
     @Test
     void assignTemplateWithRegex() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates2.yml");
+        LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates2.yml");
+
+        //when
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription one = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
+        ItemDescription one = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
+        ItemDescription two = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
+        ItemDescription three = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(three);
         assertEquals("beta", three.getGroup());
     }
@@ -70,12 +76,12 @@ class TemplateResolverTest {
     @Test
     void assignsAllValues() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
         templateResolver.resolve(landscapeDescription);
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(web);
         assertEquals("content", web.getGroup());
 
@@ -90,17 +96,23 @@ class TemplateResolverTest {
     @Test
     void assignsOnlyToGivenTargets() {
 
-        LandscapeDescription landscapeDescription = getLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+
+        //when
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription redis = landscapeDescription.getIndexReadAccess().findOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
+        ItemDescription redis = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertNull(redis.getLabel(Label.software));
     }
 
-    private LandscapeDescription getLandscapeDescription(String s) {
+    private LandscapeDescription getIndexedLandscapeDescription(String s) {
         File file = new File(RootPath.get() + s);
-        return testSupport.getFirstLandscapeDescription(file);
+        LandscapeDescription firstLandscapeDescription = testSupport.getFirstLandscapeDescription(file);
+
+        firstLandscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+
+        return firstLandscapeDescription;
     }
 
 }

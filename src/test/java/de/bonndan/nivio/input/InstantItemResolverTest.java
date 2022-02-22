@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,8 @@ class InstantItemResolverTest {
         landscapeDescription.getWriteAccess().addOrReplaceChild(b);
         landscapeDescription.getConfig().setGreedy(true);
 
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+
         //when
         instantItemResolver.resolve(landscapeDescription);
 
@@ -69,8 +72,9 @@ class InstantItemResolverTest {
         landscapeDescription.getWriteAccess().addOrReplaceChild(c);
 
         landscapeDescription.getConfig().setGreedy(true);
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
-
+        //when
         instantItemResolver.resolve(landscapeDescription);
 
         //3 given plus 2 resolved (like above)

@@ -31,7 +31,7 @@ public enum RelationType {
      */
     public Set<Relation> filter(Set<Relation> relations) {
         return relations.stream()
-                .filter(relationItem -> this.name().toLowerCase(Locale.ROOT).equals(relationItem.getType()))
+                .filter(relationItem -> this.name().equalsIgnoreCase(relationItem.getType()))
                 .collect(Collectors.toSet());
     }
 }

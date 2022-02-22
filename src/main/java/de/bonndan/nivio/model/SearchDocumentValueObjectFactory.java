@@ -1,28 +1,39 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.search.SearchDocumentValueObject;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
-import java.util.Locale;
+import java.util.Objects;
 
+/**
+ * Creates {@link SearchDocumentValueObject}s for various {@link Component}s.
+ */
 public class SearchDocumentValueObjectFactory {
 
-    private SearchDocumentValueObjectFactory() {}
-
-    public static SearchDocumentValueObject createFor(Component component) {
-        return createFor(component, null);
+    private SearchDocumentValueObjectFactory() {
     }
 
-    public static SearchDocumentValueObject createForRelation(Relation relation) {
-        return createFor(relation, null);
-    }
+    /**
+     * Factory method to create a value object
+     *
+     * @param component any component
+     * @return value object or null
+     */
+    @Nullable
+    public static SearchDocumentValueObject createFor(@NonNull final Component component) {
+        Objects.requireNonNull(component, "Component to be indexed is null");
 
-    public static SearchDocumentValueObject createForItem(Item component) {
+        if (component instanceof Relation && RelationType.CHILD.name().equals(component.getType())) {
+            return null;
+        }
 
         return new SearchDocumentValueObject(
                 component.getFullyQualifiedIdentifier(),
                 component.getIdentifier(),
-                component.getParent().getIdentifier(),
-                component.getClass().getSimpleName().toLowerCase(Locale.ROOT),
+                component.getParentIdentifier(),
+                ComponentClass.getFor(component),
                 component.getName(),
                 component.getDescription(),
                 component.getOwner(),
@@ -30,25 +41,36 @@ public class SearchDocumentValueObjectFactory {
                 component.getType(),
                 component.getLinks(),
                 component.getLabels(),
-                component.getLayer(),
-                component.getParent().getIdentifier(),
-                component.getAddress()
+                getLayer(component),
+                getGroup(component),
+                getAddress(component)
         );
     }
 
-    static <T extends Component> SearchDocumentValueObject createFor(T component, String parentIdentifier) {
-        return new SearchDocumentValueObject(
-                component.getFullyQualifiedIdentifier(),
-                component.getIdentifier(),
-                parentIdentifier,
-                component.getClass().getSimpleName().toLowerCase(Locale.ROOT),
-                component.getName(),
-                component.getDescription(),
-                component.getOwner(),
-                component.getTags(),
-                component.getType(),
-                component.getLinks(),
-                component.getLabels()
-        );
+    private static String getGroup(Component component) {
+        if (component instanceof Item)
+            return ((Item) component).getParentIdentifier();
+        if (component instanceof ItemDescription)
+            return ((ItemDescription) component).getGroup();
+
+        return null;
+    }
+
+    private static String getLayer(Component component) {
+        if (component instanceof Item)
+            return ((Item) component).getLayer();
+        if (component instanceof ItemDescription)
+            return ((ItemDescription) component).getLayer();
+
+        return null;
+    }
+
+    private static String getAddress(Component component) {
+        if (component instanceof Item)
+            return ((Item) component).getAddress();
+        if (component instanceof ItemDescription)
+            return ((ItemDescription) component).getAddress();
+
+        return null;
     }
 }

@@ -34,7 +34,7 @@ class IndexReadAccessTest {
     void findOneWithoutGroup() {
 
         //when
-        Item foo1 = access.findOneByIdentifiers(graph.itemAA.getIdentifier(), null, Item.class).orElseThrow();
+        Item foo1 = access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), null, Item.class).orElseThrow();
 
         //then
         assertThat(foo1).isNotNull();
@@ -45,7 +45,7 @@ class IndexReadAccessTest {
     void findOneWithGroup() {
 
         //when
-        Optional<Item> foo1 = access.findOneByIdentifiers(graph.itemAA.getIdentifier(), graph.itemAA.getParentIdentifier(), Item.class);
+        Optional<Item> foo1 = access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), graph.itemAA.getParentIdentifier(), Item.class);
 
         //then
         assertThat(foo1).isPresent();
@@ -59,7 +59,7 @@ class IndexReadAccessTest {
         graph.getTestItem(foo.getIdentifier(), graph.itemAA.getIdentifier());
 
         //when
-        Optional<Item> foo1 = access.findOneByIdentifiers(graph.itemAA.getIdentifier(), graph.groupA.getIdentifier(), Item.class);
+        Optional<Item> foo1 = access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), graph.groupA.getIdentifier(), Item.class);
 
         //then
         assertThat(foo1).isPresent();
@@ -77,8 +77,8 @@ class IndexReadAccessTest {
         graph.landscape.getIndexWriteAccess().addOrReplaceChild(inOtherGroup);
 
         //when
-        Item resultA = access.findOneByIdentifiers(graph.itemAA.getIdentifier(), "a", Item.class).orElseThrow();
-        Item resultB = access.findOneByIdentifiers(graph.itemAA.getIdentifier(), "b", Item.class).orElseThrow();
+        Item resultA = access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), "a", Item.class).orElseThrow();
+        Item resultB = access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), "b", Item.class).orElseThrow();
 
         //then
         assertThat(resultA).isNotNull();
@@ -92,7 +92,7 @@ class IndexReadAccessTest {
     void findOneIsEmpty() {
 
         //when
-        assertThat(access.findOneByIdentifiers("bar", "b", Item.class)).isEmpty();
+        assertThat(access.matchOneByIdentifiers("bar", "b", Item.class)).isEmpty();
     }
 
     @Test
@@ -106,7 +106,7 @@ class IndexReadAccessTest {
         graph.landscape.getIndexWriteAccess().addOrReplaceChild(inOtherGroup);
 
         //when
-        assertThrows(NoSuchElementException.class, () -> access.findOneByIdentifiers(graph.itemAA.getIdentifier(), null, Item.class));
+        assertThrows(NoSuchElementException.class, () -> access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), null, Item.class));
     }
 
     @Test
@@ -121,7 +121,7 @@ class IndexReadAccessTest {
         graph.indexForSearch(Assessment.empty());
 
         //when
-        List<Item> search = access.search("*oo",  Item.class);
+        List<Item> search = access.search("*oo", Item.class);
 
         //then
         assertEquals(1, search.size());
@@ -131,7 +131,7 @@ class IndexReadAccessTest {
     void queryUrl() {
         //given
         graph.landscape.getIndexWriteAccess().addOrReplaceChild(
-                ItemFactory.getTestItemBuilder(graph.groupA.getIdentifier(), "hasaddress")
+                graph.getTestItemBuilder(graph.groupA.getIdentifier(), "hasaddress")
                         .withParent(graph.groupA)
                         .withAddress(URI.create("https://foo.bar/"))
                         .build()
@@ -139,7 +139,7 @@ class IndexReadAccessTest {
         graph.indexForSearch(Assessment.empty());
 
         //when
-        Collection<Item> search = access.queryRegardingAddress("https://foo.bar/", Item.class);
+        Collection<Item> search = access.searchAddress("https://foo.bar/", Item.class);
 
         //then
         assertThat(search).isNotEmpty();
@@ -147,4 +147,43 @@ class IndexReadAccessTest {
         assertThat(next.getIdentifier()).isEqualTo("hasaddress");
     }
 
+    @Test
+    void matchOrSearchUsesSearch() {
+
+        //given
+        graph.indexForSearch(Assessment.empty());
+        //when
+        Collection<Item> items = access.matchOrSearchByIdentifierOrName(graph.itemAA.getIdentifier(), Item.class);
+
+        //then
+        assertThat(items).isNotNull().hasSize(1).contains(graph.itemAA);
+    }
+
+    @Test
+    void searchOnFields() {
+
+        //given
+        Item newItem = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "hasaddress")
+                .withParent(graph.groupA)
+                .withDescription("foobar")
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(newItem);
+        graph.indexForSearch(Assessment.empty());
+
+        //when
+        Collection<Item> items = access.search("foobar", Item.class);
+
+        //then
+        assertThat(items).isNotNull().hasSize(1).contains(newItem);
+    }
+
+    @Test
+    void matchOrSearchByPath() {
+
+        //when
+        Collection<Item> items = access.matchOrSearchByIdentifierOrName(graph.itemAA.getParentIdentifier() + "/" + graph.itemAA.getIdentifier(), Item.class);
+
+        //then
+        assertThat(items).isNotNull().hasSize(1).contains(graph.itemAA);
+    }
 }

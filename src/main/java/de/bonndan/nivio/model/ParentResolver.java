@@ -28,7 +28,7 @@ public class ParentResolver {
      */
     public <P extends GraphComponent, D extends ComponentDescription> P getParent(@NonNull final D dto, Class<P> pClass) {
         final String parentIdentifier = getParentIdentifier(dto);
-        return readAccess.findOneByIdentifiers(parentIdentifier, null, pClass)
+        return readAccess.matchOneByIdentifiers(parentIdentifier, null, pClass)
                 .orElseGet(() -> createParentInstantly(parentIdentifier, pClass));
     }
 
@@ -61,7 +61,7 @@ public class ParentResolver {
 
         Group group;
         try {
-            group = readAccess.findOneByIdentifiers(groupIdentifier, null, Group.class).orElseThrow();
+            group = readAccess.matchOneByIdentifiers(groupIdentifier, null, Group.class).orElseThrow();
         } catch (NoSuchElementException e) {
             group = GroupFactory.INSTANCE.createFromDescription(groupIdentifier, getDefaultContext(readAccess.all(Context.class)), null);
             writeAccess.addOrReplaceChild(group);
@@ -73,7 +73,7 @@ public class ParentResolver {
 
         Context context;
         try {
-            context = readAccess.findOneByIdentifiers(identifier, null, Context.class).orElseThrow();
+            context = readAccess.matchOneByIdentifiers(identifier, null, Context.class).orElseThrow();
         } catch (NoSuchElementException e) {
             context = ContextFactory.INSTANCE.createFromDescription(identifier, getDefaultUnit(readAccess.all(Unit.class)), null);
             writeAccess.addOrReplaceChild(context);
@@ -117,7 +117,7 @@ public class ParentResolver {
 
         Unit unit;
         try {
-            unit = readAccess.findOneByIdentifiers(parentIdentifier, null, Unit.class).orElseThrow();
+            unit = readAccess.matchOneByIdentifiers(parentIdentifier, null, Unit.class).orElseThrow();
         } catch (NoSuchElementException e) {
             unit = UnitFactory.INSTANCE.createFromDescription(parentIdentifier, (Landscape) readAccess.getRoot(), null);
             writeAccess.addOrReplaceChild(unit);

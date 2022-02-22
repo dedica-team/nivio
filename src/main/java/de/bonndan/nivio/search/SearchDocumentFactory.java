@@ -37,14 +37,14 @@ public class SearchDocumentFactory {
      */
     public static final String LUCENE_FIELD_GENERIC = "generic";
     public static final String LUCENE_FIELD_FQI = "fqi";
-    public static final String LUCENE_FIELD_COMPONENT_CLASS = "component";
+    public static final String LUCENE_FIELD_COMPONENT = "component";
     public static final String LUCENE_FIELD_GROUP = "group";
     public static final String LUCENE_FIELD_TYPE = "type";
     public static final String LUCENE_FIELD_OWNER = "owner";
     public static final String LUCENE_FIELD_TAG = "tag";
     public static final String LUCENE_FIELD_NETWORK = Label.network.name();
-    private static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
-    private static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
+    public static final String LUCENE_FIELD_LIFECYCLE = Label.lifecycle.name();
+    public static final String LUCENE_FIELD_CAPABILITY = Label.capability.name();
     public static final String LUCENE_FIELD_LAYER = "layer";
     public static final String LUCENE_FIELD_ADDRESS = "address";
     public static final String LUCENE_FIELD_FRAMEWORK = Label.framework.name();
@@ -61,15 +61,15 @@ public class SearchDocumentFactory {
     /**
      * Creates a new lucene document containing item fields and labels.
      *
-     * @param component    the item to index
+     * @param valueObject    the item to index
      * @param statusValues kpi values for the item
      * @return searchable document
      */
     @NonNull
-    public static Document from(@NonNull final SearchDocumentValueObject component,
+    public static Document from(@NonNull final SearchDocumentValueObject valueObject,
                                 @Nullable List<StatusValue> statusValues
     ) {
-        Objects.requireNonNull(component, "component to build search document from is null");
+        Objects.requireNonNull(valueObject, "component to build search document from is null");
         if (statusValues == null) {
             statusValues = new ArrayList<>();
         }
@@ -81,22 +81,22 @@ public class SearchDocumentFactory {
                         () -> document.add(new TextField(field, "", Field.Store.YES))
                 );
 
-        addTextField.accept(LUCENE_FIELD_COMPONENT_CLASS, component.getComponentClass());
-        addTextField.accept(LUCENE_FIELD_FQI, component.getFullyQualifiedIdentifier().toString());
-        addTextField.accept(LUCENE_FIELD_IDENTIFIER, component.getIdentifier());
-        addTextField.accept(LUCENE_FIELD_PARENT_IDENTIFIER, component.getParentIdentifier());
-        addTextField.accept(LUCENE_FIELD_NAME, component.getName());
-        addTextField.accept(LUCENE_FIELD_DESCRIPTION, component.getDescription());
-        addTextField.accept(LUCENE_FIELD_TYPE, component.getType());
-        addTextField.accept(LUCENE_FIELD_OWNER, component.getOwner());
+        addTextField.accept(LUCENE_FIELD_COMPONENT, valueObject.getComponent());
+        addTextField.accept(LUCENE_FIELD_FQI, valueObject.getFullyQualifiedIdentifier().toString());
+        addTextField.accept(LUCENE_FIELD_IDENTIFIER, valueObject.getIdentifier());
+        addTextField.accept(LUCENE_FIELD_PARENT_IDENTIFIER, valueObject.getParentIdentifier());
+        addTextField.accept(LUCENE_FIELD_NAME, valueObject.getName());
+        addTextField.accept(LUCENE_FIELD_DESCRIPTION, valueObject.getDescription());
+        addTextField.accept(LUCENE_FIELD_TYPE, valueObject.getType());
+        addTextField.accept(LUCENE_FIELD_OWNER, valueObject.getOwner());
 
-        component.getLayer().ifPresent(s -> addTextField.accept(LUCENE_FIELD_LAYER, s));
-        component.getGroup().ifPresent(s -> addTextField.accept(LUCENE_FIELD_GROUP, s));
-        component.getAddress().ifPresent(s -> addTextField.accept(LUCENE_FIELD_ADDRESS, s));
+        valueObject.getLayer().ifPresent(s -> addTextField.accept(LUCENE_FIELD_LAYER, s));
+        valueObject.getGroup().ifPresent(s -> addTextField.accept(LUCENE_FIELD_GROUP, s));
+        valueObject.getAddress().ifPresent(s -> addTextField.accept(LUCENE_FIELD_ADDRESS, s));
 
         List<String> genericStrings = new ArrayList<>();
         //add all labels by their key
-        component.getLabels().forEach((labelKey, val) -> {
+        valueObject.getLabels().forEach((labelKey, val) -> {
             if (!StringUtils.hasLength(val))
                 return;
             addTextField.accept(labelKey, val);
@@ -108,7 +108,7 @@ public class SearchDocumentFactory {
         });
 
         //add links, title as key (duplicates are ok)
-        component.getLinks().forEach((s, link) -> {
+        valueObject.getLinks().forEach((s, link) -> {
             if (link == null)
                 return;
             String val = !StringUtils.hasLength(link.getName()) ? "" : link.getName() + " ";
@@ -117,16 +117,16 @@ public class SearchDocumentFactory {
         });
 
         //tags (searchable)
-        Arrays.stream(component.getTags())
+        Arrays.stream(valueObject.getTags())
                 .map(tag -> tag.toLowerCase(Locale.ROOT))
                 .forEach(tag -> addTextField.accept(LUCENE_FIELD_TAG, tag));
 
         //networks
-        component.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
+        valueObject.getLabels(Label.network).forEach((key, value) -> addTextField.accept(LUCENE_FIELD_NETWORK, value.toLowerCase(Locale.ROOT)));
 
         //frameworks
         List<String> frameworks = new ArrayList<>();
-        component.getLabels(Label.framework).forEach((key, value) -> {
+        valueObject.getLabels(Label.framework).forEach((key, value) -> {
             String val = value.toLowerCase(Locale.ROOT);
             String unprefixed = Label.framework.unprefixed(key);
             frameworks.add(unprefixed);
@@ -143,7 +143,7 @@ public class SearchDocumentFactory {
         //frameworks name (label keys)
         addTextField.accept(LUCENE_FIELD_GENERIC, StringUtils.collectionToDelimitedString(genericStrings, " "));
 
-        addFacets(document, component, statusValues);
+        addFacets(document, valueObject, statusValues);
         return document;
     }
 

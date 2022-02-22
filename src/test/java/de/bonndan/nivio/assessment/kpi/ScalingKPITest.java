@@ -9,17 +9,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ScalingKPITest {
 
     private ScalingKPI scalingKPI;
-    private Item item;
+    private Item testA;
     private Landscape landscape;
-    private Item bar;
-    private Group group;
+    private Item fooBar;
     private GraphTestSupport graph;
 
     @BeforeEach
@@ -29,16 +27,16 @@ class ScalingKPITest {
 
         graph = new GraphTestSupport();
         landscape = graph.landscape;
-        group = graph.getTestGroup("test");
-        item = graph.getTestItem("test", "a");
+        graph.getTestGroup("test");
+        testA = graph.getTestItem("test", "a");
 
-        var foo = graph.getTestGroup("foo");
-        bar = graph.getTestItem("foo", "bar");
+        graph.getTestGroup("foo");
+        fooBar = graph.getTestItem("foo", "bar");
     }
 
     @Test
     void unknownIfNoLabel() {
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
         assertNotNull(statusValues);
         assertEquals(0, statusValues.size());
     }
@@ -46,19 +44,19 @@ class ScalingKPITest {
     @Test
     void unknownIfNotNumber() {
 
-        item.setLabel(Label.scale, "foo");
+        testA.setLabel(Label.scale, "foo");
 
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
         assertNotNull(statusValues);
         assertEquals(0, statusValues.size());
     }
 
     @Test
     void yellowIfZeroWithoutRelations() {
-        item.setLabel(Label.scale, "0");
+        testA.setLabel(Label.scale, "0");
 
         //when
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
 
         //then
         assertNotNull(statusValues);
@@ -71,12 +69,12 @@ class ScalingKPITest {
 
     @Test
     void redIfZeroAsProvider() {
-        item.setLabel(Label.scale, "0");
-        Relation r1 = new Relation(item, bar, null, null, RelationType.PROVIDER);
+        testA.setLabel(Label.scale, "0");
+        Relation r1 = new Relation(testA, fooBar, null, null, RelationType.PROVIDER);
         landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
 
         //when
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
 
         //then
         assertNotNull(statusValues);
@@ -89,12 +87,12 @@ class ScalingKPITest {
     @Test
     void orangeIfZeroAsDataTarget() {
 
-        item.setLabel(Label.scale, "0");
-        Relation r1 = new Relation(item, bar, null, null, RelationType.PROVIDER);
+        testA.setLabel(Label.scale, "0");
+        Relation r1 = new Relation(testA, fooBar, null, null, RelationType.PROVIDER);
         landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
 
         //when
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
 
         //then
         assertNotNull(statusValues);
@@ -106,18 +104,17 @@ class ScalingKPITest {
 
     @Test
     void yellowIfBottleneck() {
-        Relation r1 = new Relation(item, bar, null, null, RelationType.PROVIDER);
+        Relation r1 = new Relation(testA, fooBar, null, null, RelationType.PROVIDER);
 
         Item testItem = graph.getTestItem("foo", "baz");
-        landscape.getIndexWriteAccess().addOrReplaceChild(testItem);
-        Relation r2 = new Relation(item, testItem, null, null, RelationType.PROVIDER);
+        Relation r2 = new Relation(testA, testItem, null, null, RelationType.PROVIDER);
 
-        item.setLabel(Label.scale, "1");
+        testA.setLabel(Label.scale, "1");
         landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
         landscape.getIndexWriteAccess().addOrReplaceRelation(r2);
 
         //when
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
 
         //then
         assertNotNull(statusValues);
@@ -130,9 +127,9 @@ class ScalingKPITest {
     @Test
     void greenIfNoRelations() {
 
-        item.setLabel(Label.scale, "1");
+        testA.setLabel(Label.scale, "1");
 
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
         assertNotNull(statusValues);
         assertEquals(1, statusValues.size());
         StatusValue value = statusValues.get(0);
@@ -142,9 +139,9 @@ class ScalingKPITest {
     @Test
     void greenWithRelations() {
 
-        item.setLabel(Label.scale, "2");
+        testA.setLabel(Label.scale, "2");
 
-        List<StatusValue> statusValues = scalingKPI.getStatusValues(item);
+        List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
         assertNotNull(statusValues);
         assertEquals(1, statusValues.size());
         StatusValue value = statusValues.get(0);

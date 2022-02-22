@@ -13,7 +13,9 @@ import org.springframework.lang.Nullable;
 import java.util.NoSuchElementException;
 
 /**
- * A simple pre-built graph for testing purposes.
+ * A simple pre-built graph for testing purposes. Ensure that all created components are attached to the graph.
+ *
+ * The default instance has no usable search index.
  */
 public class GraphTestSupport {
 

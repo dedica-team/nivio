@@ -116,4 +116,44 @@ class ParentResolverTest {
         assertThat(instantParent.getParent()).isNotNull();
         assertThat(instantParent.getParent().getParent()).isNotNull();
     }
+
+    @Test
+    void getParentWithAmbiguousIdentifier() {
+
+        var index = new Index<GraphComponent>(new NullSearchIndex());
+        var landscape = LandscapeFactory.createForTesting("test", "test").withIndex(index).build();
+        landscape.setLog(new ProcessLog(LoggerFactory.getLogger(GraphTestSupport.class), "test"));
+
+        var domain = graph.getTestGroup(Layer.domain.name());
+        graph.getTestItem(Layer.domain.name(), graph.itemAA.identifier);
+
+        ItemDescription description = new ItemDescription(graph.itemAA.identifier);
+        description.setGroup(Layer.domain.name());
+
+        //when
+        Group instantParent = parentResolver.getParent(description, Group.class);
+
+        //then
+        assertThat(instantParent).isNotNull().isEqualTo(domain);
+    }
+
+    @Test
+    void getParentWithAmbiguousIdentifierWithParentIdentifier() {
+
+        var index = new Index<GraphComponent>(new NullSearchIndex());
+        var landscape = LandscapeFactory.createForTesting("test", "test").withIndex(index).build();
+        landscape.setLog(new ProcessLog(LoggerFactory.getLogger(GraphTestSupport.class), "test"));
+
+        var domain = graph.getTestGroup(Layer.domain.name());
+        graph.getTestItem(Layer.domain.name(), graph.itemAA.identifier);
+
+        ItemDescription description = new ItemDescription(graph.itemAA.identifier);
+        description.setGroup("");
+
+        //when
+        Group instantParent = parentResolver.getParent(description, Group.class);
+
+        //then
+        assertThat(instantParent).isNotNull().isEqualTo(domain);
+    }
 }

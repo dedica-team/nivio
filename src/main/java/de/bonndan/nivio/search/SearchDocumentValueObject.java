@@ -13,7 +13,7 @@ public class SearchDocumentValueObject {
     private final URI fullyQualifiedIdentifier;
     private final String identifier;
     private final String parentIdentifier;
-    private final String componentClass;
+    private final String component;
     private final String name;
     private final String description;
     private final String owner;
@@ -28,36 +28,7 @@ public class SearchDocumentValueObject {
     public SearchDocumentValueObject(URI fullyQualifiedIdentifier,
                                      String identifier,
                                      String parentIdentifier,
-                                     String componentClass,
-                                     String name,
-                                     String description,
-                                     String owner,
-                                     String[] tags,
-                                     String type,
-                                     Map<String, Link> links,
-                                     Map<String, String> labels
-
-    ) {
-        this.fullyQualifiedIdentifier = fullyQualifiedIdentifier;
-        this.identifier = identifier;
-        this.parentIdentifier = parentIdentifier;
-        this.componentClass = componentClass;
-        this.name = name;
-        this.description = description;
-        this.owner = owner;
-        this.tags = tags;
-        this.type = type;
-        this.links = links;
-        this.labels = labels;
-        this.layer = null;
-        this.group = null;
-        this.address = null;
-    }
-
-    public SearchDocumentValueObject(URI fullyQualifiedIdentifier,
-                                     String identifier,
-                                     String parentIdentifier,
-                                     String componentClass,
+                                     String component,
                                      String name,
                                      String description,
                                      String owner,
@@ -72,7 +43,7 @@ public class SearchDocumentValueObject {
         this.fullyQualifiedIdentifier = fullyQualifiedIdentifier;
         this.identifier = identifier;
         this.parentIdentifier = parentIdentifier;
-        this.componentClass = componentClass;
+        this.component = component;
         this.name = name;
         this.description = description;
         this.owner = owner;
@@ -98,8 +69,8 @@ public class SearchDocumentValueObject {
         return parentIdentifier;
     }
 
-    public String getComponentClass() {
-        return componentClass;
+    public String getComponent() {
+        return component;
     }
 
     public String getName() {
@@ -144,5 +115,10 @@ public class SearchDocumentValueObject {
 
     public Optional<String> getAddress() {
         return Optional.ofNullable(address);
+    }
+
+    @Override
+    public String toString() {
+        return "SearchDocumentValueObject{" + fullyQualifiedIdentifier + '}';
     }
 }

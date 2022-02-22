@@ -69,7 +69,7 @@ class IndexerIntegrationTest {
         assertTrue(landscape.getDescription().contains("demonstrate"));
         Assertions.assertNotNull(landscape.getIndexReadAccess());
         assertEquals(18, landscape.getIndexReadAccess().all(Item.class).size());
-        Item blog = landscape.getIndexReadAccess().findOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
+        Item blog = landscape.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
@@ -115,7 +115,7 @@ class IndexerIntegrationTest {
         assertEquals("mail@acme.org", landscape.getContact());
         Assertions.assertNotNull(landscape.getIndexReadAccess());
         assertEquals(18, landscape.getIndexReadAccess().all(Item.class).size());
-        Item blog = landscape.getIndexReadAccess().findOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
+        Item blog = landscape.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
@@ -124,7 +124,7 @@ class IndexerIntegrationTest {
 
 
 
-        Item webserver = landscape.getIndexReadAccess().findOneByIdentifiers("wordpress-web", null, Item.class).orElseThrow();
+        Item webserver = landscape.getIndexReadAccess().matchOneByIdentifiers("wordpress-web", null, Item.class).orElseThrow();
         Assertions.assertNotNull(webserver);
         assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
@@ -155,7 +155,7 @@ class IndexerIntegrationTest {
     @Test
     void testIncrementalUpdate() {
         Landscape landscape = index();
-        Item blog = landscape.getIndexReadAccess().findOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
+        Item blog = landscape.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         int before = landscape.getIndexReadAccess().all(Item.class).size();
 
         LandscapeDescription landscapeDescription = new LandscapeDescription(
@@ -166,23 +166,23 @@ class IndexerIntegrationTest {
         ItemDescription newItem = new ItemDescription();
         newItem.setIdentifier(blog.getIdentifier());
         newItem.setGroup("completelyNewGroup");
-        landscapeDescription.getItemDescriptions().add(newItem);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(newItem);
 
         ItemDescription exsistingWordPress = new ItemDescription();
         exsistingWordPress.setIdentifier("wordpress-web");
         exsistingWordPress.setName("Other name");
-        landscapeDescription.getItemDescriptions().add(exsistingWordPress);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(exsistingWordPress);
 
 
         //created
         integrationTestSupport.getIndexer().index(landscapeDescription);
         landscape = integrationTestSupport.getLandscapeRepository().findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
-        blog = landscape.getIndexReadAccess().findOneByIdentifiers("blog-server", "completelyNewGroup", Item.class).orElseThrow();
+        blog = landscape.getIndexReadAccess().matchOneByIdentifiers("blog-server", "completelyNewGroup", Item.class).orElseThrow();
         assertEquals("completelyNewGroup", blog.getParent().getIdentifier());
         assertEquals(before + 1, landscape.getIndexReadAccess().all(Item.class).size());
 
         //updated
-        Item wordpress = landscape.getIndexReadAccess().findOneByIdentifiers("wordpress-web", "content", Item.class).orElseThrow();
+        Item wordpress = landscape.getIndexReadAccess().matchOneByIdentifiers("wordpress-web", "content", Item.class).orElseThrow();
         assertEquals("Other name", wordpress.getName());
         assertEquals("content", wordpress.getParent().getIdentifier());
 
@@ -208,7 +208,7 @@ class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape1);
         assertEquals("mail@acme.org", landscape1.getContact());
         Assertions.assertNotNull(landscape1.getIndexReadAccess());
-        Item blog1 = landscape1.getIndexReadAccess().findOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
+        Item blog1 = landscape1.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog1);
         assertEquals("blog", blog1.getLabel(Label.shortname));
 
@@ -216,7 +216,7 @@ class IndexerIntegrationTest {
         assertEquals("nivio:other", landscape2.getIdentifier());
         assertEquals("mail@other.org", landscape2.getContact());
         Assertions.assertNotNull(landscape2.getIndexReadAccess());
-        Item blog2 = landscape2.getIndexReadAccess().findOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
+        Item blog2 = landscape2.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog2);
         assertEquals("blog1", blog2.getLabel(Label.shortname));
     }
@@ -230,13 +230,13 @@ class IndexerIntegrationTest {
 
         Assertions.assertNotNull(landscape1);
         Assertions.assertNotNull(landscape1.getIndexReadAccess());
-        Item blog1 = landscape1.getIndexReadAccess().findOneByIdentifiers("blog-server", "content1", Item.class).orElseThrow();
+        Item blog1 = landscape1.getIndexReadAccess().matchOneByIdentifiers("blog-server", "content1", Item.class).orElseThrow();
         Assertions.assertNotNull(blog1);
-        Item blog2 = landscape1.getIndexReadAccess().findOneByIdentifiers("blog-server", "content2", Item.class).orElseThrow();
+        Item blog2 = landscape1.getIndexReadAccess().matchOneByIdentifiers("blog-server", "content2", Item.class).orElseThrow();
         Assertions.assertNotNull(blog2);
         assertEquals("Demo Blog", blog1.getName());
         assertEquals(
-                FullyQualifiedIdentifier.build(Item.class,"nivio:dataflowtest", "content1", "blog-server").toString(),
+                FullyQualifiedIdentifier.build(Item.class,"nivio:dataflowtest", "default", "default", "content1", "blog-server").toString(),
                 blog1.toString()
         );
 
@@ -248,7 +248,7 @@ class IndexerIntegrationTest {
     void environmentTemplatesApplied() {
         Landscape landscape = index("/src/test/resources/example/example_templates.yml");
 
-        Item web = landscape.getIndexReadAccess().findOneByIdentifiers("web", null, Item.class).orElseThrow();
+        Item web = landscape.getIndexReadAccess().matchOneByIdentifiers("web", null, Item.class).orElseThrow();
         assertNotNull(web);
         assertEquals("web", web.getIdentifier());
         assertEquals("webservice", web.getType());
@@ -275,14 +275,14 @@ class IndexerIntegrationTest {
         Optional<Group> a = landscape1.getGroups().values().stream().filter(group -> group.getIdentifier().equals("groupA")).findFirst();
         assertThat(a).isPresent();
 
-        assertNotNull(landscape1.getIndexReadAccess().findOneByIdentifiers("blog-server", null, Item.class));
-        assertNotNull(landscape1.getIndexReadAccess().findOneByIdentifiers("crappy_dockername-234234", null, Item.class));
+        assertNotNull(landscape1.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, Item.class));
+        assertNotNull(landscape1.getIndexReadAccess().matchOneByIdentifiers("crappy_dockername-234234", null, Item.class));
     }
 
     @Test
     void masksSecrets() {
         Landscape landscape1 = index("/src/test/resources/example/example_secret.yml");
-        Item item = landscape1.getIndexReadAccess().findOneByIdentifiers("abc", null, Item.class).orElseThrow();
+        Item item = landscape1.getIndexReadAccess().matchOneByIdentifiers("abc", null, Item.class).orElseThrow();
         assertThat(item).isNotNull();
         assertThat(item.getLabel("key")).isEqualTo(SecureLabelsResolver.MASK);
         assertThat(item.getLabel("password")).isEqualTo(SecureLabelsResolver.MASK);

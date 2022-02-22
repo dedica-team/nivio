@@ -15,8 +15,8 @@ import java.util.Map;
  */
 public class Source {
 
-    public List<UnitDescription> units = new ArrayList<>();
-    public List<ContextDescription> contexts = new ArrayList<>();
+    public Map<String, UnitDescription> units = new HashMap<>();
+    public Map<String, ContextDescription> contexts = new HashMap<>();
     public Map<String, GroupDescription> groups = new HashMap<>();
     public List<ItemDescription> items = new ArrayList<>();
 

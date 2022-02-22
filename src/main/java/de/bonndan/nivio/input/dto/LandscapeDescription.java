@@ -9,9 +9,11 @@ import de.bonndan.nivio.search.LuceneSearchIndex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Input DTO for a {@link Landscape}.
@@ -71,7 +73,9 @@ public class LandscapeDescription extends ComponentDescription {
         units.forEach(index::addOrReplace);
         contexts.forEach(index::addOrReplace);
         groups.forEach((s, groupDescription) -> {
-            groupDescription.setIdentifier(s);
+            if (!StringUtils.hasLength(groupDescription.getIdentifier())) {
+                groupDescription.setIdentifier(s);
+            }
             index.addOrReplace(groupDescription);
         });
         items.forEach(index::addOrReplace);
@@ -121,7 +125,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(desc -> {
-            Optional<ItemDescription> existing = getIndexReadAccess().findOneMatching(
+            Optional<ItemDescription> existing = getIndexReadAccess().matchOne(
                     ComponentMatcher.buildForItemAndGroup(desc.getIdentifier(), desc.getGroup()),
                     ItemDescription.class
             );
@@ -139,7 +143,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(desc -> {
-            Optional<UnitDescription> existing = getIndexReadAccess().findOneMatching(
+            Optional<UnitDescription> existing = getIndexReadAccess().matchOne(
                     ComponentMatcher.build(null, desc.getIdentifier(), null, null, null),
                     UnitDescription.class
             );
@@ -157,7 +161,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(desc -> {
-            Optional<ContextDescription> existing = getIndexReadAccess().findOneMatching(
+            Optional<ContextDescription> existing = getIndexReadAccess().matchOne(
                     ComponentMatcher.build(null, desc.getUnit(), desc.getIdentifier(), null, null),
                     ContextDescription.class
             );
@@ -182,13 +186,32 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(groupDescription -> {
-            Optional<GroupDescription> existing = getIndexReadAccess().findOneByIdentifiers(groupDescription.getIdentifier(), groupDescription.getParentIdentifier(), GroupDescription.class);
+            Optional<GroupDescription> existing = getIndexReadAccess().matchOneByIdentifiers(groupDescription.getIdentifier(), groupDescription.getParentIdentifier(), GroupDescription.class);
             if (existing.isPresent()) {
                 existing.get().assignNotNull(groupDescription);
             } else {
                 this.index.addOrReplace(groupDescription);
             }
         });
+    }
+
+    /**
+     * Transform incoming data into a set with entries where each has an identifier.
+     */
+     public static <D extends ComponentDescription> Collection<D> asSetWithAlignedKeys(Map<String, D> map) {
+        if (map == null) {
+            return Set.of();
+        }
+
+        return map.entrySet().stream()
+                .map(entry -> {
+                    D value = entry.getValue();
+                    if (!StringUtils.hasLength(value.getIdentifier())) {
+                        value.setIdentifier(entry.getKey());
+                    }
+                    return value;
+                })
+                .collect(Collectors.toSet());
     }
 
     public LandscapeConfig getConfig() {

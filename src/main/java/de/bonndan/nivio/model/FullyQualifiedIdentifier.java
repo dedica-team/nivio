@@ -22,15 +22,6 @@ public class FullyQualifiedIdentifier {
 
     public static final String SEPARATOR = "/";
 
-    private static final Map<Class<? extends ComponentDescription>, Class<? extends GraphComponent>> mapping = Map.of(
-            LandscapeDescription.class, Landscape.class,
-            UnitDescription.class, Unit.class,
-            ContextDescription.class, Context.class,
-            GroupDescription.class, Group.class,
-            ItemDescription.class, Item.class,
-            PartDescription.class, Part.class
-    );
-
     private FullyQualifiedIdentifier() {
     }
 
@@ -40,8 +31,8 @@ public class FullyQualifiedIdentifier {
      * @param dtoClass  dto class
      * @param landscape identifier
      * @param unit      unit
-     * @param context         item / context
-     * @param group         part / null
+     * @param context   item / context
+     * @param group     part / null
      * @return uri with placeholders if needed
      */
     public static URI forDescription(@NonNull final Class<? extends ComponentDescription> dtoClass,
@@ -52,7 +43,7 @@ public class FullyQualifiedIdentifier {
                                      @Nullable final String item,
                                      @Nullable final String part
     ) {
-        return build(getNodeClass(dtoClass),
+        return build(ComponentClass.getComponentClass(dtoClass),
                 validOrSubstitute(landscape),
                 validOrSubstitute(unit),
                 validOrSubstitute(context),
@@ -60,13 +51,6 @@ public class FullyQualifiedIdentifier {
                 validOrSubstitute(item),
                 validOrSubstitute(part)
         );
-    }
-
-    /**
-     * Returns the {@link GraphComponent} implementation for a {@link ComponentDescription} dto.
-     */
-    public static Class<? extends GraphComponent> getNodeClass(Class<? extends ComponentDescription> o) {
-        return Optional.ofNullable(mapping.get(o)).orElseThrow(() -> new NoSuchElementException(String.format("Unknown dto type %s", o)));
     }
 
     private static String validOrSubstitute(String identifier) {

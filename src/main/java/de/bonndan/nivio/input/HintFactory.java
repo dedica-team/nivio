@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.IndexReadAccess;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.search.ComponentMatcher;
 import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,12 +118,11 @@ public class HintFactory {
 
         List<ItemDescription> results = new ArrayList<>();
         if (optionalURI.isPresent()) {
-            String query = String.format("address = '%s'", optionalURI.get());
-            readAccess.findMatching(query, ItemDescription.class).stream().findFirst().ifPresent(results::add);
+            readAccess.searchAddress(optionalURI.get().toString(), ItemDescription.class).stream().findFirst().ifPresent(results::add);
             return results;
         }
 
-        Collection<ItemDescription> query = readAccess.findMatching(value, ItemDescription.class);
+        Collection<ItemDescription> query = readAccess.match(ComponentMatcher.forTarget(value), ItemDescription.class);
         if (query.size() != 1) {
             LOGGER.debug("Found ambiguous results {}  for query for target '{}'", query, value);
         }

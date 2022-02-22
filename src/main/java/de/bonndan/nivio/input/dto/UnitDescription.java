@@ -20,7 +20,7 @@ public class UnitDescription extends ComponentDescription {
     @NonNull
     @Override
     public String getParentIdentifier() {
-        return landscape;
+        return getLandscape();
     }
 
     @NonNull

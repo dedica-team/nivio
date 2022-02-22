@@ -1,5 +1,6 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -36,6 +37,7 @@ class HintFactoryTest {
 
         //given
         one.setLabel("foo", "mysql://somehost/abc");
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "foo");
@@ -59,6 +61,7 @@ class HintFactoryTest {
 
         //given
         one.setLabel("foo", "http://foo.bar.baz");
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "foo");
@@ -77,13 +80,15 @@ class HintFactoryTest {
 
     @Test
     @DisplayName("does not link same service to itself")
-    public void linksByIdentifier() {
+    void linksByIdentifier() {
         //given
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("something");
         landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("BASE_URL", hihi.getIdentifier());
+
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "BASE_URL");
@@ -99,7 +104,7 @@ class HintFactoryTest {
 
     @Test
     @DisplayName("label points to a name")
-    public void linksByName() {
+    void linksByName() {
         //given
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("foo");
@@ -107,6 +112,8 @@ class HintFactoryTest {
         landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO_HOST", hihi.getName());
+
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_HOST");
@@ -122,7 +129,7 @@ class HintFactoryTest {
 
     @Test
     @DisplayName("label points to a name but key contains no special word")
-    public void linksNotByName() {
+    void linksNotByName() {
         //given
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("foo");
@@ -130,6 +137,8 @@ class HintFactoryTest {
         landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO", hihi.getName());
+
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO");
@@ -140,7 +149,7 @@ class HintFactoryTest {
 
     @Test
     @DisplayName("does not link same service to itself")
-    public void linksByAddress() {
+    void linksByAddress() {
         //given
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("something");
@@ -148,6 +157,8 @@ class HintFactoryTest {
         landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO_URL", hihi.getAddress());
+
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_URL");
@@ -163,7 +174,7 @@ class HintFactoryTest {
 
     @Test
     @DisplayName("address is compared without case")
-    public void linksByAddressCaseInsensitive() {
+    void linksByAddressCaseInsensitive() {
         //given
         ItemDescription hihi = new ItemDescription();
         hihi.setIdentifier("something");
@@ -171,6 +182,8 @@ class HintFactoryTest {
         landscapeDescription.mergeItems(List.of(hihi));
 
         one.getLabels().put("FOO_URL", "http://foo.bar.com");
+
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_URL");
@@ -211,6 +224,8 @@ class HintFactoryTest {
         landscapeDescription.mergeItems(List.of(hihi, huhu));
 
         one.getLabels().put("FOO_HOST", "bar");
+
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_HOST");

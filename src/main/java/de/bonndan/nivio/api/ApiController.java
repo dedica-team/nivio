@@ -102,7 +102,7 @@ public class ApiController {
         }
 
         try {
-            Item item = landscape.getIndexReadAccess().findOneByIdentifiers(itemIdentifier, groupIdentifier, Item.class).orElseThrow();
+            Item item = landscape.getIndexReadAccess().matchOneByIdentifiers(itemIdentifier, groupIdentifier, Item.class).orElseThrow();
             ItemApiModel apiModel = new ItemApiModel(item);
             linkFactory.setItemSelfLink(apiModel);
             return new ResponseEntity<>(apiModel, HttpStatus.OK);

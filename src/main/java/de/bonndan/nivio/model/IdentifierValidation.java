@@ -41,8 +41,8 @@ public class IdentifierValidation {
      */
     @NonNull
     public static String getValidIdentifier(@Nullable final String identifier) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("Invalid empty identifier given.");
+        if (FullyQualifiedIdentifier.isUndefined(identifier)) {
+            throw new IllegalArgumentException(String.format("Invalid identifier '%s'given.", identifier));
         }
         //noinspection ConstantConditions
         String trimmed = StringUtils.trimWhitespace(identifier);

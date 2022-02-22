@@ -34,7 +34,7 @@ public class RelationEndpointResolver extends Resolver {
 
         //providers
         description.getProvidedBy().forEach(term -> {
-            readAccess.findMatching(term, ItemDescription.class).stream().findFirst().ifPresentOrElse(o -> {
+            readAccess.matchOrSearchByIdentifierOrName(term, ItemDescription.class).stream().findFirst().ifPresentOrElse(o -> {
                         RelationDescription rel = RelationFactory.createProviderDescription(o, description.getIdentifier());
                         description.addOrReplaceRelation(rel);
                     },
@@ -45,13 +45,15 @@ public class RelationEndpointResolver extends Resolver {
         description.getRelations().forEach(rel -> {
 
             var source = rel.getSource();
+            var parentIdentifier = "";
             if (!StringUtils.hasLength(source)) {
                 source = description.getIdentifier();
+                parentIdentifier = description.getParentIdentifier();
             }
-            readAccess.findOneByIdentifiers(source, null, ItemDescription.class)
+            readAccess.matchOneByIdentifiers(source, parentIdentifier, ItemDescription.class)
                     .ifPresent(resolvedSource -> rel.setSource(resolvedSource.getFullyQualifiedIdentifier().toString()));
 
-            readAccess.findOneByIdentifiers(rel.getTarget(), null, ItemDescription.class)
+            readAccess.matchOneByIdentifiers(rel.getTarget(), null, ItemDescription.class)
                     .ifPresent(resolvedTarget -> rel.setTarget(resolvedTarget.getFullyQualifiedIdentifier().toString()));
         });
 
