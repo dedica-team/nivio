@@ -66,7 +66,7 @@ public class GraphTestSupport {
     public Item getTestItem(String groupId, String id) {
         Group group = landscape.getGroup(groupId).orElseThrow();
         Item item = ItemBuilder.anItem().withIdentifier(id).withParent(group).build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(item);
+        var old = landscape.getIndexWriteAccess().addOrReplaceChild(item);
         assert item.isAttached();
         return item;
     }

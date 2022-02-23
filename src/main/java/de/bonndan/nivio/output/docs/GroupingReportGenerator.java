@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.GroupedBy;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
@@ -27,16 +28,23 @@ public class GroupingReportGenerator extends HtmlGenerator {
     }
 
     @Override
-    public String toDocument(@NonNull final Landscape landscape, @NonNull final Assessment assessment, @Nullable final SearchConfig searchConfig, @NonNull final FrontendMapping frontendMapping) {
+    public String toDocument(@NonNull final Landscape landscape,
+                             @NonNull final Assessment assessment,
+                             @Nullable SearchConfig searchConfig,
+                             @NonNull final FrontendMapping frontendMapping
+    ) {
 
         Map<String, String> frontendMap = frontendMapping.getKeys();
         String title = "Report";
-        if (searchConfig != null && StringUtils.hasLength(searchConfig.getTitle())) {
+        if (searchConfig == null) {
+            searchConfig = new SearchConfig(Map.of());
+        }
+        if (StringUtils.hasLength(searchConfig.getTitle())) {
             title = searchConfig.getTitle();
         }
 
-        final Optional<String> searchTerm = searchConfig != null && StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
-        final Optional<String> reportType = searchConfig != null && StringUtils.hasLength(searchConfig.getReportType()) ? Optional.ofNullable(searchConfig.getReportType()) : Optional.empty();
+        final Optional<String> searchTerm = StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
+        final Optional<String> reportType = StringUtils.hasLength(searchConfig.getReportType()) ? Optional.ofNullable(searchConfig.getReportType()) : Optional.empty();
         List<Item> items = new ArrayList<>(searchTerm.map(s -> landscape.getIndexReadAccess().search(s, Item.class))
                 .orElse(new ArrayList<>(landscape.getIndexReadAccess().all(Item.class))));
         return html(
@@ -59,11 +67,11 @@ public class GroupingReportGenerator extends HtmlGenerator {
             case "groups":
                 return writeGroups(GroupedBy.by(item -> item.getParent().getIdentifier(), items), assessment, frontendMap.getOrDefault("Groups", "Groups"));
             case "lifecycle":
-                return writeGroups(GroupedBy.by(item -> item.getLabel("lifecycle"), items), assessment, frontendMap.getOrDefault("Lifecycle", "Lifecycle"));
+                return writeGroups(GroupedBy.by(item -> item.getLabel(Label.lifecycle.name()), items), assessment, frontendMap.getOrDefault("Lifecycle", "Lifecycle"));
             case "kpis":
                 return writeGroups(GroupedBy.by(item -> StatusValue.summary(
-                        item.getFullyQualifiedIdentifier(),
-                        assessment.getResults().get(item.getFullyQualifiedIdentifier())).getStatus().toString(), items),
+                                item.getFullyQualifiedIdentifier(),
+                                assessment.getResults().getOrDefault(item.getFullyQualifiedIdentifier(), new ArrayList<>())).getStatus().toString(), items),
                         assessment,
                         frontendMap.getOrDefault("KPIs", "KPIs")
                 );

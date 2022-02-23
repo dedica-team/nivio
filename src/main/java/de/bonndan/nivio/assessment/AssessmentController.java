@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.model.ComponentClass;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
@@ -26,7 +27,7 @@ public class AssessmentController {
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Assessment> landscape(@PathVariable String identifier) {
-        URI fqi = FullyQualifiedIdentifier.build(Landscape.class, identifier);
+        URI fqi = FullyQualifiedIdentifier.build(ComponentClass.landscape, identifier);
         Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();

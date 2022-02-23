@@ -28,12 +28,12 @@ class MapStyleSheetFactoryTest {
         factory = new MapStyleSheetFactory(fileFetcher);
         processLog = mock(ProcessLog.class);
         landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
-        landscape.setLog(new ProcessLog(mock(Logger.class), "test"));
+        landscape.setLog(processLog);
         landscape.getConfig().getBranding().setMapStylesheet("http://acme.com/test.css");
     }
 
     @Test
-     void returnsFile() {
+    void returnsFile() {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo {}");
 
         String s = factory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
@@ -41,7 +41,7 @@ class MapStyleSheetFactoryTest {
     }
 
     @Test
-     void returnsEmptyString() {
+    void returnsEmptyString() {
         when(fileFetcher.get(any(URL.class))).thenThrow(new ReadingException("whatever", new RuntimeException("foo")));
 
         String s = factory.getMapStylesheet(landscape.getConfig(), landscape.getLog());

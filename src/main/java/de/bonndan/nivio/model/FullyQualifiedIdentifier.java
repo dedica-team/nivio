@@ -43,7 +43,7 @@ public class FullyQualifiedIdentifier {
                                      @Nullable final String item,
                                      @Nullable final String part
     ) {
-        return build(ComponentClass.getComponentClass(dtoClass),
+        return build(ComponentClass.valueOf(dtoClass),
                 validOrSubstitute(landscape),
                 validOrSubstitute(unit),
                 validOrSubstitute(context),
@@ -65,16 +65,30 @@ public class FullyQualifiedIdentifier {
      * @param other     rest
      * @return a fqi based on the parts
      */
-    public static URI build(@NonNull final Class<? extends GraphComponent> cls,
+    public static URI build(@NonNull final ComponentClass cls,
                             @NonNull final String landscape,
                             String... other
     ) {
+        validate(cls, other);
         String rest = other == null ? "" : SEPARATOR + join(new ArrayList<>(Arrays.asList(other)));
         try {
-            return new URI(cls.getSimpleName().toLowerCase(Locale.ROOT), Objects.requireNonNull(landscape), rest, null, null);
+            return new URI(cls.name(), Objects.requireNonNull(landscape), rest, null, null);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(String.format("Cannot create uri from %s %s %s", cls, landscape, Arrays.toString(other)));
         }
+    }
+
+    private static void validate(ComponentClass cls, String[] other) {
+        if (cls.equals(ComponentClass.unit) && other.length < 1)
+            throw new IllegalArgumentException("Unit requires an identifier: " + Strings.join(other, "/"));
+        if (cls.equals(ComponentClass.context) && other.length < 2)
+            throw new IllegalArgumentException("Context requires an identifier: " + Strings.join(other, "/"));
+        if (cls.equals(ComponentClass.group) && other.length < 3)
+            throw new IllegalArgumentException("Group requires an identifier: " + Strings.join(other, "/"));
+        if (cls.equals(ComponentClass.item) && other.length < 4)
+            throw new IllegalArgumentException("Item requires an identifier: " + Strings.join(other, "/"));
+        if (cls.equals(ComponentClass.part) && other.length < 5)
+            throw new IllegalArgumentException("Part requires an identifier: " + Strings.join(other, "/"));
     }
 
     private static String join(List<String> other) {
@@ -96,16 +110,17 @@ public class FullyQualifiedIdentifier {
             throw new IllegalArgumentException("Identifier must not be empty.");
         }
 
-        Class<GraphComponent> aClass = (Class<GraphComponent>) child.getClass();
         if (parent == null) {
-            return build(aClass, child.getIdentifier());
+            return build(ComponentClass.valueOf(child.getClass()), child.getIdentifier());
         }
 
-        return build(aClass, parent.getAuthority(), getPath(parent), child.getIdentifier());
+        List<String> strings = new ArrayList<>(Arrays.asList(getPath(parent)));
+        strings.add(child.getIdentifier());
+        return build(ComponentClass.valueOf(child.getClass()), parent.getAuthority(), strings.toArray(String[]::new));
     }
 
-    public static String getPath(URI parent) {
-        return StringUtils.trimLeadingCharacter(parent.getPath().toLowerCase(Locale.ROOT), SEPARATOR.charAt(0));
+    public static String[] getPath(URI parent) {
+        return StringUtils.trimLeadingCharacter(parent.getPath().toLowerCase(Locale.ROOT), SEPARATOR.charAt(0)).split(SEPARATOR);
     }
 
     public static boolean isUndefined(String s) {

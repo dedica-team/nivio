@@ -13,14 +13,12 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
 import de.bonndan.nivio.output.icons.ExternalIcons;
 import de.bonndan.nivio.output.icons.ExternalIconsProvider;
-import de.bonndan.nivio.util.RootPath;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 
@@ -143,7 +141,8 @@ public class IntegrationTestSupport {
 
         LandscapeDescription input = resolve.get(0);
         indexer.index(input);
-        return landscapeRepository.findDistinctByIdentifier(input.getIdentifier()).orElseThrow();
+        return landscapeRepository.findDistinctByIdentifier(input.getIdentifier())
+                .orElseThrow(() -> new NoSuchElementException("No such landscape: " + input.getIdentifier()));
     }
 
 

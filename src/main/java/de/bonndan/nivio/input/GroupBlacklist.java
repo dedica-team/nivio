@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.GroupDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.springframework.lang.NonNull;
 
@@ -47,7 +48,7 @@ class GroupBlacklist extends Resolver {
      *
      */
     private void filterItems(@NonNull final LandscapeDescription input) {
-        input.getItemDescriptions().stream()
+        input.getIndexReadAccess().all(ItemDescription.class).stream()
                 .filter(dto -> isBlacklisted(dto.getGroup()))
                 .forEach(dto -> input.getWriteAccess().removeChild(dto));
     }

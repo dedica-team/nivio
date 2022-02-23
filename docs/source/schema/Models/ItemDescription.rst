@@ -1,7 +1,7 @@
 ItemDescription
 ---------------
 
-List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
+
 
 
 .. list-table::

@@ -31,7 +31,7 @@ public class SeedConfiguration  {
     @NonNull
     @Schema(required = true,
             description = "Immutable unique identifier. Maybe use an URN.",
-            pattern = IdentifierValidation.PATTERN)
+            pattern = IdentifierValidation.IDENTIFIER_PATTERN)
     private final String identifier;
 
     @Schema(required = true,
@@ -69,10 +69,13 @@ public class SeedConfiguration  {
     @Schema(description = "Additional labels for the landscape.")
     private final Map<String, String> labels = new HashMap<>();
 
+    @Schema(description = "Description of units (optional, can also be given in sources).")
     private List<UnitDescription> units = new ArrayList<>();
 
+    @Schema(description = "Description of contexts within units (optional, can also be given in sources).")
     private List<ContextDescription> contexts = new ArrayList<>();
 
+    @Schema(description = "Description of items (optional, can also be given in sources).")
     private List<ItemDescription> items = new ArrayList<>();
 
     private URL baseUrl;

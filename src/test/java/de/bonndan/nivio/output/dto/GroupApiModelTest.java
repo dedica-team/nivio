@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,7 +74,7 @@ class GroupApiModelTest {
 
     @Test
     void getLabels() {
-        assertThat(groupApiModel.getLabels()).isEqualTo(Map.of());
+        assertThat(groupApiModel.getLabels()).hasSize(1).containsKey(Label.color.name());
     }
 
     @Test

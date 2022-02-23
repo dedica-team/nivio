@@ -39,10 +39,6 @@ public final class GroupBuilder extends GraphNodeBuilder<GroupBuilder, Group, Co
     @Override
     public Group build() {
 
-        if (name == null) {
-            name = identifier;
-        }
-
         Group group = new Group(identifier, name, owner, contact, description, type, Objects.requireNonNull(parent, "Group has no parent context"));
         group.setLinks(links);
         group.setLabels(labels);

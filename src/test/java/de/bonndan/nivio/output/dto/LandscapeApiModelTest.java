@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.dto;
 
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.input.ProcessLog;
+import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.Source;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +27,18 @@ class LandscapeApiModelTest {
         landscapeConfig = Mockito.mock(LandscapeConfig.class);
         processLog = Mockito.mock(ProcessLog.class);
 
+        //recreate a new landscape with testable values
         var graph = new GraphTestSupport();
-        landscape = graph.landscape;
+        LandscapeDescription dto = new LandscapeDescription(graph.landscape.getIdentifier());
+        dto.setName("test");
+        dto.setOwner("testOwner");
+        dto.setDescription("testDescription");
+        dto.setContact("testContact");
+        landscape = LandscapeFactory.recreate(graph.landscape.getConfiguredBuilder(), dto);
         landscape.setLabel(Label.icon, "icon");
         landscape.setLabel(Label._icondata, "icon,base64");
+
+
         landscapeApiModel = new LandscapeApiModel(landscape);
     }
 
@@ -80,7 +89,7 @@ class LandscapeApiModelTest {
 
     @Test
     void getGroups() {
-        assertThat(landscapeApiModel.getGroups()).isEqualTo(Set.of());
+        assertThat(landscapeApiModel.getGroups()).isNotEmpty();
     }
 
     @Test

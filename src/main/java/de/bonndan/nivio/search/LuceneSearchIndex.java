@@ -40,7 +40,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.search.SearchDocumentFactory.*;
+import static de.bonndan.nivio.search.SearchDocumentFactory.from;
+import static de.bonndan.nivio.search.SearchDocumentFactory.getConfig;
 
 /**
  * A lucene based search index on all landscape items.
@@ -55,8 +56,8 @@ public class LuceneSearchIndex implements SearchIndex {
             SearchField.LUCENE_FIELD_GENERIC.getValue(),
     };
 
-    private final Directory searchIndexDir;
-    private final Directory taxoIndexDir;
+    private Directory searchIndexDir;
+    private Directory taxoIndexDir;
     private final MultiFieldQueryParser parser;
 
     /**
@@ -103,18 +104,26 @@ public class LuceneSearchIndex implements SearchIndex {
         LOGGER.debug("Indexing {} components for search.", Objects.requireNonNull(components).size());
         Objects.requireNonNull(assessment);
 
+        /*
+        if (this.searchIndexDir instanceof RAMDirectory)
+            this.searchIndexDir = new RAMDirectory();
+
+        if (this.taxoIndexDir instanceof RAMDirectory)
+            this.taxoIndexDir = new RAMDirectory();
+
+         */
+
         try {
             FacetsConfig config = SearchDocumentFactory.getConfig();
             TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxoIndexDir, IndexWriterConfig.OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(searchIndexDir, new IndexWriterConfig(new StandardAnalyzer()));
             writer.deleteAll();
+            writer.commit();
+
             for (SearchDocumentValueObject searchDocumentValueObject : components) {
                 URI fullyQualifiedIdentifier = searchDocumentValueObject.getFullyQualifiedIdentifier();
-                writer.addDocument(
-                        config.build(
-                                taxoWriter,
-                                from(searchDocumentValueObject, assessment.getResults().get(fullyQualifiedIdentifier))
-                        ));
+                Document doc = from(searchDocumentValueObject, assessment.getResults().get(fullyQualifiedIdentifier));
+                writer.addDocument(config.build(taxoWriter, doc));
             }
 
             IOUtils.close(writer, taxoWriter);

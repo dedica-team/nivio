@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.docs;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.map.MapController;
@@ -12,11 +9,8 @@ import de.bonndan.nivio.util.FrontendMapping;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.net.URI;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static de.bonndan.nivio.output.map.MapController.MAP_SVG_ENDPOINT;
@@ -59,17 +53,18 @@ public class ReportGenerator extends HtmlGenerator {
 
     private String writeGroups(Landscape landscape, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
-        final Map<URI, Group> groups = landscape.getGroups();
-        final Set<Item> all = landscape.getIndexReadAccess().all(Item.class);
-        groups.forEach((s, groupItem) -> {
-            String color = "#" + groupItem.getColor();
+        var indexReadAccess = landscape.getIndexReadAccess();
+        final Set<Group> groups = indexReadAccess.all(Group.class);
+        final Set<Item> all = indexReadAccess.all(Item.class);
+        groups.forEach(group -> {
+            String color = "#" + group.getColor();
             builder.append(
-                    h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">" + GROUP_CIRCLE + "</span> " + s))
+                    h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">" + GROUP_CIRCLE + "</span> " + group.getIdentifier()))
                             .attr("class", "rounded").render()
             );
             builder.append(
                     div().attr("class", "group")
-                            .with(groupItem.getChildren().stream().map(item -> this.writeItem(item, assessment, all)))
+                            .with(group.getChildren().stream().map(item -> this.writeItem(item, assessment, all)))
                             .render()
             );
         });

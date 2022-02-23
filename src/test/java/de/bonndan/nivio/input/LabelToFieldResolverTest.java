@@ -92,7 +92,7 @@ class LabelToFieldResolverTest {
     @Test
     @DisplayName("Ensure relations can be set via labels")
     void relations() {
-        ItemDescription item1 = new ItemDescription();
+        ItemDescription item1 = new ItemDescription("test");
         item1.getLabels().put("nivio.relations", "bar, baz");
 
         LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
@@ -113,46 +113,50 @@ class LabelToFieldResolverTest {
     @Test
     @DisplayName("Ensure provider relations can be set via labels")
     void extendedRelationsProvider() {
-        ItemDescription item1 = new ItemDescription();
-        item1.setIdentifier("foo");
-        item1.getLabels().put("nivio.relations.provider", "foo, bar");
+        ItemDescription foo = new ItemDescription();
+        foo.setIdentifier("foo");
+        foo.getLabels().put("nivio.relations.provider", "bar");
+
+        ItemDescription bar = new ItemDescription();
+        bar.setIdentifier("bar");
 
         LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getWriteAccess().addOrReplaceChild(item1);
+        input.getWriteAccess().addOrReplaceChild(foo);
+        input.getWriteAccess().addOrReplaceChild(bar);
 
         //when
         processor.resolve(input);
 
         //then
-        assertEquals(2, item1.getRelations().size());
-        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
+        assertEquals(1, foo.getRelations().size());
+        RelationDescription[] actual = foo.getRelations().toArray(RelationDescription[]::new);
 
-        Optional<RelationDescription> foo = Arrays.stream(actual).filter(relationDescription -> relationDescription.getSource().equals("foo")).findFirst();
-        assertThat(foo).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
-
-        Optional<RelationDescription> bar = Arrays.stream(actual).filter(relationDescription -> relationDescription.getSource().equals("bar")).findFirst();
-        assertThat(bar).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
+        Optional<RelationDescription> rel = Arrays.stream(actual).filter(description -> description.getSource().equals("bar")).findFirst();
+        assertThat(rel).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
     }
 
     @Test
     @DisplayName("Ensure inbound relations can be set via labels")
     void extendedRelationsInbound() {
-        ItemDescription item1 = new ItemDescription("foo");
-        item1.getLabels().put("nivio.relations.inbound", "foo, bar");
+        ItemDescription foo = new ItemDescription();
+        foo.setIdentifier("foo");
+        foo.getLabels().put("nivio.relations.inbound", "bar");
+
+        ItemDescription bar = new ItemDescription();
+        bar.setIdentifier("bar");
 
         LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getWriteAccess().addOrReplaceChild(item1);
+        input.getWriteAccess().addOrReplaceChild(foo);
+        input.getWriteAccess().addOrReplaceChild(bar);
 
         //when
         processor.resolve(input);
 
         //then
-        assertEquals(2, item1.getRelations().size());
-        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
-        boolean matchesBar = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getSource().equals("foo"));
-        assertThat(matchesBar).isTrue();
-        boolean matchesBaz = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getSource().equals("bar"));
-        assertThat(matchesBaz).isTrue();
+        assertEquals(1, foo.getRelations().size());
+        Optional<RelationDescription> rel = foo.getRelations().stream().findFirst();
+        assertThat(rel).isPresent();
+        assertThat(rel.get().getSource()).isEqualTo("bar");
     }
 
     @Test

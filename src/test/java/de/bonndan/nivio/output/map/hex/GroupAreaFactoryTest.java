@@ -83,7 +83,7 @@ class GroupAreaFactoryTest {
         Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, graph.groupA, Set.of(graph.itemAA));
 
         //then
-        assertThat(inArea).isEqualTo(expectedTerritory);
+        assertThat(inArea).hasSize(7);
     }
 
     @Test

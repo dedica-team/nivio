@@ -38,11 +38,6 @@ LandscapeDescription
      - A list of item identifiers or SQL-like queries to easily assign items to this group.
      - optional, defaults to null
      - identifier LIKE 'DB1'
-   * - contexts
-     - Map<ContextDescription>
-     - Description of contexts (optional, can also be given in sources).
-     - optional, defaults to null
-     - null
    * - description
      - String
      - A brief description.
@@ -53,19 +48,14 @@ LandscapeDescription
      - 
      - optional, defaults to null
      - null
-   * - groups
-     - Map<GroupDescription>
-     - Description of item groups (optional, can also be given in sources).
-     - optional, defaults to null
-     - null
    * - identifier
      - String
      - A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.
      - **required**, defaults to null
      - shipping
-   * - items
-     - List<ItemDescription>
-     - List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
+   * - itemDescriptions
+     - Set<ItemDescription>
+     - 
      - optional, defaults to null
      - null
    * - labels
@@ -111,11 +101,6 @@ LandscapeDescription
    * - type
      - String
      - The type of the component. A string describing its nature. If no icon is set, the type determines the displayed icon.
-     - optional, defaults to null
-     - null
-   * - units
-     - Map<UnitDescription>
-     - Description of units (optional, can also be given in sources).
      - optional, defaults to null
      - null
 

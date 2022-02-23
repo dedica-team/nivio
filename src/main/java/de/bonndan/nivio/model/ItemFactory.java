@@ -37,8 +37,11 @@ public class ItemFactory implements GraphNodeFactory<Item, ItemDescription, Grou
         return builder.build();
     }
 
+    @NonNull
+    @Override
     public Item createFromDescription(@NonNull final String identifier,
-                                      @NonNull final Group parent, @Nullable final ItemDescription description
+                                      @NonNull final Group parent,
+                                      @Nullable final ItemDescription description
     ) {
         Objects.requireNonNull(identifier, "identifier is null");
 
@@ -111,15 +114,14 @@ public class ItemFactory implements GraphNodeFactory<Item, ItemDescription, Grou
         return builder.build();
     }
 
-    //todo move to GraphTestSupport
-    @Deprecated
+
+    @Deprecated //todo use GraphTestSupport
     public static Item getTestItem(String group, String identifier) {
         return new Item(identifier, null, null, null,
                 null, null, null, null, null, null, GroupBuilder.aTestGroup(group).build());
     }
 
-    //todo move to GraphTestSupport
-    @Deprecated
+    @Deprecated //todo use GraphTestSupport
     public static ItemBuilder getTestItemBuilder(String group, String identifier) {
         var parent = GroupBuilder.aTestGroup(group).build();
         return ItemBuilder.anItem().withParent(parent).withIdentifier(identifier);

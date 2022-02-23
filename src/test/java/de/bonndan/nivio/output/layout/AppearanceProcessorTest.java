@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 class AppearanceProcessorTest {
 
-    private AppearanceProcessor resolver;
+    private AppearanceProcessor appearanceProcessor;
     private Landscape landscape;
     private IconService iconService;
     private LocalIcons localIcons;
@@ -28,7 +28,7 @@ class AppearanceProcessorTest {
 
         iconService = mock(IconService.class);
         localIcons = mock(LocalIcons.class);
-        resolver = new AppearanceProcessor(iconService);
+        appearanceProcessor = new AppearanceProcessor(iconService, localIcons);
 
         var graph = new GraphTestSupport();
         landscape = graph.landscape;
@@ -49,7 +49,7 @@ class AppearanceProcessorTest {
         when(iconService.getIconUrl(s1)).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
         assertThat(s1.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -62,7 +62,7 @@ class AppearanceProcessorTest {
         when(iconService.getExternalUrl(new URL(s1.getLabel(Label.fill)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
         assertThat(s1.getLabel(Label._filldata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -76,7 +76,7 @@ class AppearanceProcessorTest {
         when(iconService.getExternalUrl(new URL(landscape.getLabel(Label.icon)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
         assertThat(landscape.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -90,7 +90,7 @@ class AppearanceProcessorTest {
         when(iconService.getExternalUrl(new URL(landscape.getLabel(Label.fill)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
         assertThat(landscape.getLabel(Label._filldata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -104,7 +104,7 @@ class AppearanceProcessorTest {
         when(iconService.getExternalUrl(new URL(g1.getLabel(Label.icon)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
         assertThat(g1.getLabel(Label._icondata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -118,7 +118,7 @@ class AppearanceProcessorTest {
         when(iconService.getExternalUrl(new URL(g1.getLabel(Label.fill)))).thenReturn(java.util.Optional.of(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo"));
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
         assertThat(g1.getLabel(Label._filldata)).isEqualTo(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "foo");
@@ -129,13 +129,14 @@ class AppearanceProcessorTest {
 
         // given
         // default group icon
-        when(localIcons.getDefaultGroupIcon()).thenReturn(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "PD94bWwg");
+        String t = DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "PD94bWwg";
+        when(localIcons.getDefaultGroupIcon()).thenReturn(t);
 
         // when
-        resolver.process(landscape);
+        appearanceProcessor.process(landscape);
 
         // then
-        assertThat(g1.getIcon()).startsWith(DataUrlHelper.DATA_IMAGE_SVG_XML_BASE_64 + "PD94bWwg");
+        assertThat(g1.getLabel(Label._icondata.name())).startsWith(t);
     }
 
 }

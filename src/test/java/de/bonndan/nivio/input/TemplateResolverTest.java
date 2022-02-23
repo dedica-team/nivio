@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TemplateResolverTest {
@@ -92,6 +93,25 @@ class TemplateResolverTest {
         assertEquals("alphateam", web.getLabel(Label.team));
         assertEquals("alphateam@acme.io", web.getContact());
         assertEquals(1, web.getLabels(Tagged.LABEL_PREFIX_TAG).size());
+    }
+
+    @Test
+    void assignsRelations() {
+
+        LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+
+        //when
+        templateResolver.resolve(landscapeDescription);
+
+
+        //web has previously been assigned to group "content" and will not be overwritten by further templates
+        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        assertEquals("content", web.getGroup());
+
+        //other values from template
+        assertNull(web.getName());
+        assertThat(web.getProvidedBy()).isNotEmpty().hasSize(3);
+        assertThat(web.getRelations()).isNotEmpty();
     }
 
     @Test

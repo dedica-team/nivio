@@ -4,7 +4,6 @@ import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.search.ComponentMatcher;
-import de.bonndan.nivio.util.URLFactory;
 import org.apache.lucene.facet.FacetResult;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -14,7 +13,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.IdentifierValidation.PATTERN;
+import static de.bonndan.nivio.model.IdentifierValidation.IDENTIFIER_PATTERN;
 
 /**
  * A read proxy to the index.
@@ -51,7 +50,11 @@ public class IndexReadAccess<T extends Component> {
     }
 
     /**
-     * @param componentMatcher
+     * Returns all the components matching the given {@link ComponentMatcher}
+     *
+     * Operates on the nodes, does not search.
+     *
+     * @param componentMatcher matcher by identifiers
      */
     @NonNull
     public <C extends Component> List<C> match(@NonNull final ComponentMatcher componentMatcher, @NonNull final Class<C> cls) {
@@ -63,11 +66,16 @@ public class IndexReadAccess<T extends Component> {
     /**
      * All components of the given type.
      *
+     * Operates on the nodes, independent form search index.
+     *
      * @param cls type
      * @return filtered nodes (not from query execution)
      */
-    public <C> Set<C> all(Class<C> cls) {
-        return index.all().filter(cls::isInstance).map(cls::cast).collect(Collectors.toUnmodifiableSet());
+    public <C> Set<C> all(@NonNull final Class<C> cls) {
+        return index.all()
+                .filter(cls::isInstance)
+                .map(cls::cast)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -83,14 +91,17 @@ public class IndexReadAccess<T extends Component> {
             return all(cls);
         }
 
-        if (term.contains("/") && (!term.contains(" "))) {
+        //term is like "groupA/itemB"
+        boolean isPath = term.contains("/") && (!term.contains(" "));
+        if (isPath) {
             return all(cls).stream()
                     .filter(item -> ComponentMatcher.forTarget(term, ItemDescription.class).isSimilarTo(item.getFullyQualifiedIdentifier()))
                     .collect(Collectors.toList());
         }
 
         //single word compared against identifier
-        String query = term.matches(PATTERN) ? String.format("identifier:%s OR name:%s", term, term) : term;
+        boolean isIdentifier = term.matches(IDENTIFIER_PATTERN);
+        String query = isIdentifier ? String.format("identifier:%s OR name:%s", term, term) : term;
         return search(query, cls);
     }
 

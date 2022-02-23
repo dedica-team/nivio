@@ -52,32 +52,32 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
     }
 
     /**
-     * Writes the values of the template (second object) to the first where first is null.
+     * Copies the values of the template where own value is null.
      *
-     * @param source source
+     * @param template source
      */
-    public void assignSafeNotNull(@NonNull final ItemDescription source) {
+    public void assignFromTemplate(@NonNull final ItemDescription template) {
 
-        if (Objects.requireNonNull(source) == this) {
+        if (Objects.requireNonNull(template) == this) {
             return;
         }
 
-        super.assignSafeNotNull(source);
+        super.assignSafeNotNull(template);
 
-        assignSafeIfAbsent(source.getGroup(), getGroup(), this::setGroup);
-        assignSafeIfAbsent(source.getIcon(), getIcon(), this::setIcon);
-        assignSafeIfAbsent(source.getAddress(), getAddress(), this::setAddress);
-        assignSafeIfAbsent(source.getLayer(), getLayer(), this::setLayer);
+        assignSafeIfAbsent(template.getGroup(), getGroup(), this::setGroup);
+        assignSafeIfAbsent(template.getIcon(), getIcon(), this::setIcon);
+        assignSafeIfAbsent(template.getAddress(), getAddress(), this::setAddress);
+        assignSafeIfAbsent(template.getLayer(), getLayer(), this::setLayer);
 
-        if (source.getProvidedBy() != null) {
-            source.getProvidedBy().stream()
+        if (template.getProvidedBy() != null) {
+            template.getProvidedBy().stream()
                     .filter(s -> StringUtils.hasLength(s) && !this.getProvidedBy().contains(s))
                     .forEach(s -> this.getProvidedBy().add(s));
         }
 
-        source.getRelations().forEach(this::addOrReplaceRelation);
+        template.getRelations().forEach(this::addOrReplaceRelation);
 
-        getInterfaces().addAll(source.getInterfaces());
+        getInterfaces().addAll(template.getInterfaces());
     }
 
     public String getGroup() {
@@ -195,6 +195,12 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
         }
         if (increment.getLayer() != null) {
             setLayer(increment.getLayer());
+        }
+
+        if (increment.getProvidedBy() != null) {
+            increment.getProvidedBy().stream()
+                    .filter(s -> StringUtils.hasLength(s) && !this.getProvidedBy().contains(s))
+                    .forEach(s -> this.getProvidedBy().add(s));
         }
 
         increment.getRelations().forEach(this::addOrReplaceRelation);

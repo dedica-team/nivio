@@ -99,7 +99,7 @@ public class StatusValue {
     public static StatusValue summary(@NonNull final URI identifier, @NonNull final List<StatusValue> values) {
         //order from worst to best
         List<StatusValue> sortedValues;
-        values.sort(new StatusValue.Comparator());
+        Objects.requireNonNull(values).sort(new StatusValue.Comparator());
         if (!values.isEmpty()) {
             Status worstStatus = values.get(values.size() - 1).getStatus();
             sortedValues = values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());

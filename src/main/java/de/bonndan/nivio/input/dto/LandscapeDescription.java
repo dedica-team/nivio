@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.bonndan.nivio.model.*;
@@ -41,7 +42,7 @@ public class LandscapeDescription extends ComponentDescription {
     @Schema(hidden = true)
     private final Index<ComponentDescription> index = new Index<>(LuceneSearchIndex.createVolatile());
 
-    private final Map<String, List<String>> assignTemplates = new HashMap<>();
+    private final Map<String, List<String>> assignTemplates = new LinkedHashMap<>();
 
     @JsonCreator
     public LandscapeDescription(@NonNull final String identifier) {
@@ -98,16 +99,19 @@ public class LandscapeDescription extends ComponentDescription {
         this.source = source;
     }
 
-    public IndexReadAccess<ComponentDescription> getIndexReadAccess() {
-        return new IndexReadAccess<>(index);
-    }
-
     @Deprecated
     public Set<ItemDescription> getItemDescriptions() {
         return new IndexReadAccess<>(index).all(ItemDescription.class);
     }
 
+    @Schema(hidden = true)
+    @JsonIgnore
+    public IndexReadAccess<ComponentDescription> getIndexReadAccess() {
+        return new IndexReadAccess<>(index);
+    }
 
+    @Schema(hidden = true)
+    @JsonIgnore
     public IndexWriteAccess<ComponentDescription> getWriteAccess() {
         return new IndexWriteAccess<>(index);
     }

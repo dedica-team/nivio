@@ -3,37 +3,38 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.*;
 import org.springframework.lang.NonNull;
 
-import java.util.*;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
-public class ComponentClass {
+public enum ComponentClass {
 
-    private ComponentClass() {
-    }
+    landscape, unit, context, group, item, part, relation; //NOSONAR
 
-    public static final Map<Class<? extends ComponentDescription>, Class<? extends GraphComponent>> mapping = Map.of(
-            LandscapeDescription.class, Landscape.class,
-            UnitDescription.class, Unit.class,
-            ContextDescription.class, Context.class,
-            GroupDescription.class, Group.class,
-            ItemDescription.class, Item.class,
-            PartDescription.class, Part.class
+    private static final Map<Class<? extends Component>, ComponentClass> mapping = Map.ofEntries(
+            Map.entry(LandscapeDescription.class, landscape),
+            Map.entry(Landscape.class, landscape),
+            Map.entry(UnitDescription.class, unit),
+            Map.entry(Unit.class, unit),
+            Map.entry(ContextDescription.class, context),
+            Map.entry(Context.class, context),
+            Map.entry(GroupDescription.class, group),
+            Map.entry(Group.class, group),
+            Map.entry(ItemDescription.class, item),
+            Map.entry(Item.class, item),
+            Map.entry(PartDescription.class, part),
+            Map.entry(Part.class, part),
+            //Map.entry(RelationDescription.class, relation),
+            Map.entry(Relation.class, relation)
     );
 
     /**
-     * Returns the {@link GraphComponent} implementation for a {@link ComponentDescription} dto.
+     * Returns the class for a {@link Component}.
+     *
      */
-    public static Class<? extends GraphComponent> getComponentClass(Class<? extends ComponentDescription> o) {
+    @NonNull
+    public static ComponentClass valueOf(Class<? extends Component> o) {
         return Optional.ofNullable(mapping.get(o))
-                .orElseThrow(() -> new NoSuchElementException(String.format("Unknown dto type %s", o)));
-    }
-
-    public static String getFor(@NonNull final Component component) {
-        if (Objects.requireNonNull(component) instanceof ComponentDescription) {
-            return Optional.ofNullable(mapping.get(component.getClass()))
-                    .map(aClass -> aClass.getSimpleName().toLowerCase(Locale.ROOT))
-                    .orElseThrow(() -> new NoSuchElementException(String.format("Unknown dto type %s", component.getClass())));
-        }
-
-        return component.getClass().getSimpleName().toLowerCase(Locale.ROOT);
+                .orElseThrow(() -> new NoSuchElementException(String.format("Unknown component class for type %s", o)));
     }
 }

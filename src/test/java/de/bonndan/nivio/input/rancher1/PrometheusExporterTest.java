@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PrometheusExporterTest {
@@ -59,7 +60,7 @@ class PrometheusExporterTest {
                 .findFirst();
         assertNotNull(op.get());
         ItemDescription rocketchat = op.get();
-        assertEquals("rocket-chat", rocketchat.getFullyQualifiedIdentifier().toString());
+        assertThat(rocketchat.getFullyQualifiedIdentifier().toString()).contains("rocket-chat/rocketchat");
         assertEquals("unhealthy", rocketchat.getLabel(Label.health));
     }
 }

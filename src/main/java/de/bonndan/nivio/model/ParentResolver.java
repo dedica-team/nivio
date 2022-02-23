@@ -129,10 +129,10 @@ public class ParentResolver {
         if (dto instanceof ItemDescription) {
 
             String groupIdentifier = ((ItemDescription) dto).getGroup();
-            if (!StringUtils.hasLength(groupIdentifier)) {
+            if (FullyQualifiedIdentifier.isUndefined(groupIdentifier)) {
                 groupIdentifier = ((ItemDescription) dto).getLayer();
             }
-            if (!StringUtils.hasLength(groupIdentifier)) {
+            if (FullyQualifiedIdentifier.isUndefined(groupIdentifier)) {
                 groupIdentifier = Layer.domain.name();
             }
             return groupIdentifier;

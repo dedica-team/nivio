@@ -17,6 +17,7 @@ public class GroupFactory implements GraphNodeFactory<Group, GroupDescription, C
             builder.withParent(added.getParent());
         }
         mergeValuesIntoBuilder(existing, added, builder);
+
         return builder.build();
     }
 

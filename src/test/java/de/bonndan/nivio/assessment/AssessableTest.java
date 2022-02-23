@@ -3,10 +3,7 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.kpi.AbstractKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.dto.RangeApiModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -218,7 +215,7 @@ class AssessableTest {
 
         @Override
         public URI getFullyQualifiedIdentifier() {
-            return FullyQualifiedIdentifier.build(Item.class, "test", "default", "default", "group", "foo");
+            return FullyQualifiedIdentifier.build(ComponentClass.item, "test", "default", "default", "group", "foo");
         }
 
         @NonNull

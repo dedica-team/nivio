@@ -4,7 +4,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.springframework.lang.NonNull;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class TemplateResolver extends Resolver {
     @Override
     public void resolve(@NonNull final LandscapeDescription landscape) {
 
-        Map<ItemDescription, List<String>> templatesAndTargets = new HashMap<>();
+        Map<ItemDescription, List<String>> templatesAndTargets = new LinkedHashMap<>();
         landscape.getAssignTemplates().forEach((key, identifiers) -> {
             ItemDescription template = landscape.getTemplates().get(key);
             template.setName(null);
@@ -45,9 +45,9 @@ public class TemplateResolver extends Resolver {
             List<String> templateTargets,
             LandscapeDescription landscape
     ) {
-        templateTargets.forEach(term ->
-                landscape.getIndexReadAccess().search(term, ItemDescription.class)
-                        .forEach(item -> item.assignSafeNotNull(template))
-        );
+        templateTargets.forEach(term -> {
+            List<ItemDescription> hits = landscape.getIndexReadAccess().search(term, ItemDescription.class);
+            hits.forEach(item -> item.assignFromTemplate(template));
+        });
     }
 }

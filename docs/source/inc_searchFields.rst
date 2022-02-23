@@ -10,6 +10,6 @@
 * ``name`` name of the component
 * ``network`` network(s) of the component
 * ``owner`` owner of the component
-* ``parent`` identifier of the parent component
 * ``tag`` assigned tag(s)
 * ``type`` type of the component
+* ``parent`` identifier of the parent component

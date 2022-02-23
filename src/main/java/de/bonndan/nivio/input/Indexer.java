@@ -56,7 +56,7 @@ public class Indexer {
 
         try {
             ProcessLog processLog = runInputResolvers(input);
-            Landscape created = applyInput(processLog, input,existing);
+            Landscape created = applyInput(processLog, input, existing);
             landscapeRepo.save(created);
             eventPublisher.publishEvent(new ProcessingFinishedEvent(input, created, created.getLog().getChangelog()));
             created.getLog().info(String.format("Reindexed landscape %s", input.getIdentifier()));
@@ -74,7 +74,7 @@ public class Indexer {
     private ProcessLog runInputResolvers(LandscapeDescription input) {
 
         //a detailed textual log
-        ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(input.getIdentifier()),input.getIdentifier());
+        ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(input.getIdentifier()), input.getIdentifier());
 
         // index all current components
         input.getIndexReadAccess().indexForSearch(Assessment.empty());
@@ -115,6 +115,7 @@ public class Indexer {
 
     /**
      * Creates a new {@link Landscape} and applies all input data.
+     *
      * @return new landscape
      */
     private Landscape applyInput(ProcessLog log, LandscapeDescription input, Landscape existing) {

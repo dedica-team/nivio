@@ -12,7 +12,7 @@ import java.util.Objects;
 public class RelationFactory {
 
     public static RelationDescription createProviderDescription(ItemDescription source, String target) {
-        return createProviderDescription(source.getIdentifier(), target);
+        return createProviderDescription(source.getFullyQualifiedIdentifier().toString(), target);
     }
 
     private RelationFactory() {

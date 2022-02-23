@@ -1,43 +1,41 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.search.NullSearchIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.lang.NonNull;
 
-import java.net.URI;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class GraphComponentTest {
 
     private Index<GraphComponent> index;
-    private TestGraphComponent component;
-    private URI parent;
+    private Context component;
+    private Unit parent;
 
     @BeforeEach
     void setup() {
         index = new Index<>(new NullSearchIndex());
-        parent = URI.create("item://foo/bar/baz");
-        component = new TestGraphComponent("test", "aName", "aOwner", "aContent", "aDescription", "aType", parent);
+        var graph = new GraphTestSupport();
+        parent = graph.unit;
+        component = new Context("test", "aName", "aOwner", "aContent", "aDescription", "aType", graph.unit);
     }
 
     @Test
     void doesNotAllowEmptyIdentifier() {
-        assertThrows(IllegalArgumentException.class, () -> new TestGraphComponent(null, null, null, null, null, null, parent));
+        assertThrows(IllegalArgumentException.class, () -> new Context(null, null, null, null, null, null, parent));
     }
 
     @Test
     void doesNotAllowMissingParentURI() {
-        assertThrows(NullPointerException.class, () -> new TestGraphComponent("foo", null, null, null, null, null, null));
+        assertThrows(NullPointerException.class, () -> new Context("foo", null, null, null, null, null, null));
     }
 
     @Test
@@ -57,7 +55,7 @@ class GraphComponentTest {
 
         //when
         assertThrows(NoSuchElementException.class, () -> component.getParent());
-        verify(index).get(parent);
+        verify(index).get(parent.getFullyQualifiedIdentifier());
     }
 
     @Test
@@ -73,7 +71,7 @@ class GraphComponentTest {
 
     @Test
     void hasChanges() {
-        var newer = new TestGraphComponent("test", "foo", "bar", "aContent", "aDescription", "aType", parent);
+        var newer = new Context("test", "foo", "bar", "aContent", "aDescription", "aType", parent);
 
         //when
         List<String> changes = component.getChanges(newer);
@@ -88,23 +86,5 @@ class GraphComponentTest {
 
         //then
         assertThat(component.getChildren()).isInstanceOf(LinkedHashSet.class);
-    }
-
-    static class TestGraphComponent extends GraphComponent {
-
-        protected TestGraphComponent(String identifier, String name, String owner, String contact, String description, String type, URI parent) {
-            super(identifier, name, owner, contact, description, type, parent);
-        }
-
-        @Override
-        public GraphComponent getParent() {
-            return _getParent(GraphComponent.class);
-        }
-
-        @NonNull
-        @Override
-        public Set<? extends GraphComponent> getChildren() {
-            return super.getChildren(component -> true, GraphComponent.class);
-        }
     }
 }

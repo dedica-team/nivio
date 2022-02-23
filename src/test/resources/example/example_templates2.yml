@@ -1,4 +1,4 @@
-identifier: nivio:templates2
+identifier: nivio_templates2
 name: Templates2 example
 sources:
   - url: "./services/docker-like.yml"

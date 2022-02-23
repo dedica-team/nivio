@@ -48,7 +48,7 @@ class LuceneSearchIndexTest {
         graph.landscape.getIndexWriteAccess().addOrReplaceChild(foos);
 
         valueObjects = components.stream()
-                .map((GraphComponent component) -> SearchDocumentValueObjectFactory.createFor(component))
+                .map(SearchDocumentValueObjectFactory::createFor)
                 .collect(Collectors.toSet());
 
         searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));
@@ -127,5 +127,25 @@ class LuceneSearchIndexTest {
         assertThat(actual).contains("tag")
                 .contains("group")
                 .contains("layer");
+    }
+
+    @Test
+    void stableAfterReindexing() {
+        assertThat(searchIndex.search("*")).hasSize(2);
+        assertThat(searchIndex.facets()).hasSize(3);
+
+        //when
+        searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));
+
+        //then
+        assertThat(searchIndex.search("*")).hasSize(2);
+        assertThat(searchIndex.facets()).hasSize(3);
+
+        //when
+        searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));
+
+        //then
+        assertThat(searchIndex.search("*")).hasSize(2);
+        assertThat(searchIndex.facets()).hasSize(3);
     }
 }

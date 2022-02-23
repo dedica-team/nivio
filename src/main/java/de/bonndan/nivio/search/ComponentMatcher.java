@@ -137,6 +137,10 @@ public class ComponentMatcher {
     }
 
     private static Optional<URI> withAuthority(String string) {
+        if (!StringUtils.hasLength(string)) {
+            return Optional.empty();
+        }
+
         try {
             var uri = (URI.create(string));
             if (StringUtils.hasLength(uri.getAuthority())) {
@@ -150,7 +154,7 @@ public class ComponentMatcher {
     }
 
     public static Optional<String> getPartPath(int part, @NonNull final URI fqi) {
-        var path = FullyQualifiedIdentifier.getPath(fqi).split(SEPARATOR);
+        var path = FullyQualifiedIdentifier.getPath(fqi);
         if (path.length < part || (path.length == part && !StringUtils.hasLength(path[part - 1]))) {
             return Optional.empty();
         }
@@ -205,7 +209,8 @@ public class ComponentMatcher {
         if (!equalsRegardingUndefined(path[0], unit)) return false;
 
         //check context
-        if (!equalsRegardingUndefined(path[1], context)) return false;
+        var otherContext = path.length > 1 ? path[1] : null;
+        if (!equalsRegardingUndefined(otherContext, context)) return false;
 
         //check group
         var otherGroup = path.length > 2 ? path[2] : null;

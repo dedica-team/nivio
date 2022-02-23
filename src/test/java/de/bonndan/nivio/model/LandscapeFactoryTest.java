@@ -45,15 +45,6 @@ class LandscapeFactoryTest {
     }
 
     @Test
-    void createAddsDefaultGroups() {
-        Landscape landscape = LandscapeBuilder.aLandscape().withComponentDescription(description).build();
-        assertNotNull(landscape);
-        assertEquals(2, landscape.getGroups().size());
-        assertNotNull(landscape.getGroup(Layer.domain.name()));
-        assertNotNull(landscape.getGroup(Layer.infrastructure.name()));
-    }
-
-    @Test
     void createFromInput() {
         Landscape landscape = LandscapeBuilder.aLandscape().withComponentDescription(description).build();
 

@@ -1,8 +1,10 @@
 package de.bonndan.nivio.search;
 
+import de.bonndan.nivio.model.ComponentClass;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.model.Link;
+import org.springframework.lang.NonNull;
 
 import java.net.URI;
 import java.util.Map;
@@ -13,7 +15,7 @@ public class SearchDocumentValueObject {
     private final URI fullyQualifiedIdentifier;
     private final String identifier;
     private final String parentIdentifier;
-    private final String component;
+    private final ComponentClass component;
     private final String name;
     private final String description;
     private final String owner;
@@ -28,7 +30,7 @@ public class SearchDocumentValueObject {
     public SearchDocumentValueObject(URI fullyQualifiedIdentifier,
                                      String identifier,
                                      String parentIdentifier,
-                                     String component,
+                                     ComponentClass component,
                                      String name,
                                      String description,
                                      String owner,
@@ -69,7 +71,8 @@ public class SearchDocumentValueObject {
         return parentIdentifier;
     }
 
-    public String getComponent() {
+    @NonNull
+    public ComponentClass getComponentClass() {
         return component;
     }
 

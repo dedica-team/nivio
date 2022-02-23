@@ -14,7 +14,7 @@ public enum SearchField {
 
     LUCENE_FIELD_GENERIC  ("generic", "This is used to collect strings which should be directly searchable", false),
     
-    LUCENE_FIELD_PARENT_IDENTIFIER ("parent", "identifier of the parent component", true),
+    PARENT_IDENTIFIER("parent", "identifier of the parent component", true),
     LUCENE_FIELD_NAME ("name", "name of the component", true),
     LUCENE_FIELD_DESCRIPTION ( "description", "description of the component", true),
     

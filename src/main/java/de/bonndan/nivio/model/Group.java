@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.util.Set;
 

@@ -1,10 +1,7 @@
 package de.bonndan.nivio.output.layout;
 
 import de.bonndan.nivio.GraphTestSupport;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.LayoutConfig;
-import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +48,8 @@ class AllGroupsLayoutTest {
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true, graph.landscape.getConfig().getLayoutConfig());
 
         //then
-        LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(graph.landscape, graph.landscape.getGroups(), map);
+        Map<URI, Group> sorted = SortedGroups.sort(graph.landscape.getIndexReadAccess().all(Group.class));
+        LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(graph.landscape, sorted, map);
         assertNotNull(layoutedLandscape);
         assertEquals(graph.landscape, layoutedLandscape.getComponent());
         assertEquals(3, layoutedLandscape.getChildren().size());

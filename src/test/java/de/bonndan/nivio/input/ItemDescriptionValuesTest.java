@@ -38,7 +38,7 @@ class ItemDescriptionValuesTest {
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         increment.setIcon("foo");
-        sd1.assignSafeNotNull(increment);
+        sd1.assignFromTemplate(increment);
 
         assertEquals("foo", sd1.getIcon());
     }
@@ -83,7 +83,7 @@ class ItemDescriptionValuesTest {
         increment.setAddress("foo");
 
 
-        sd1.assignSafeNotNull(increment);
+        sd1.assignFromTemplate(increment);
 
         assertEquals("sd1A", sd1.getAddress());
     }

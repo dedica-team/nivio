@@ -35,15 +35,15 @@ class ItemApiModelTest {
     }
 
     @Test
-    void setsGroupColor() {
+    void setsColor() {
 
         Item s1 = item;
-        group.setLabel(Label.color, "#aabbcc");
+        item.setLabel(Label.color, "#aabbcc");
 
         ItemApiModel itemApiModel = new ItemApiModel(s1);
 
         //then
-        assertThat(itemApiModel.getColor()).isEqualTo(group.getColor());
+        assertThat(itemApiModel.getColor()).isEqualTo(item.getColor());
     }
 
     @Test

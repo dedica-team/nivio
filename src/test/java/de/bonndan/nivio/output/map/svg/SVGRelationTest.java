@@ -46,7 +46,6 @@ class SVGRelationTest {
     }
 
     @Test
-    @DisplayName("items without groups use proper fqi")
     void relationContainsBothEnds() {
 
         Relation relation = RelationFactory.createForTesting(foo, bar);
@@ -55,10 +54,10 @@ class SVGRelationTest {
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
-        assertTrue(render1.contains("l1/domain/foo"));
-        assertFalse(render1.contains("l1//foo"));
-        assertTrue(render1.contains("l1/domain/bar"));
-        assertFalse(render1.contains("l1//bar"));
+        assertThat(render1)
+                .contains(foo.getFullyQualifiedIdentifier().getPath())
+                .contains(bar.getFullyQualifiedIdentifier().getPath())
+                .contains(relation.getFullyQualifiedIdentifier().toString());
     }
 
     @Test

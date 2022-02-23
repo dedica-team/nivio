@@ -3,11 +3,10 @@ package de.bonndan.nivio.search;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.facet.FacetField;
 import org.apache.lucene.facet.FacetsConfig;
+import org.apache.lucene.index.IndexOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -54,16 +53,40 @@ public class SearchDocumentFactory {
         }
 
         Document document = new Document();
+
+        //tokenized text
         BiConsumer<String, String> addTextField = (field, value) -> Optional.ofNullable(value)
                 .ifPresentOrElse(
-                        val -> document.add(new TextField(field, val, Field.Store.YES)),
-                        () -> document.add(new TextField(field, "", Field.Store.YES))
+                        val -> document.add(new TextField(field, val, Field.Store.NO)),
+                        () -> document.add(new TextField(field, "", Field.Store.NO))
                 );
 
-        addTextField.accept(SearchField.LUCENE_FIELD_COMPONENT.getValue(), valueObject.getComponent());
-        addTextField.accept(SearchField.LUCENE_FIELD_FQI.getValue(), valueObject.getFullyQualifiedIdentifier().toString());
-        addTextField.accept(SearchField.IDENTIFIER.getValue(), valueObject.getIdentifier());
-        addTextField.accept(SearchField.LUCENE_FIELD_PARENT_IDENTIFIER.getValue(), valueObject.getParentIdentifier());
+        BiConsumer<String, String> storedString = (field, value) -> Optional.ofNullable(value)
+                .ifPresentOrElse(
+                        val -> document.add(new StringField(field, val, Field.Store.YES)),
+                        () -> document.add(new StringField(field, "", Field.Store.YES))
+                );
+
+        //single words, keeps numbers
+        BiConsumer<String, String> addStringField = (field, value) -> Optional.ofNullable(value)
+                .ifPresentOrElse(
+                        val -> {
+                            document.add(new StringField(field, val, Field.Store.NO)); //for exact matching
+
+                            var type = new FieldType(); //like textfield, for searching
+                            type.setTokenized(true);
+                            type.setIndexOptions(IndexOptions.DOCS);
+                            document.add(new Field(field, val, type));
+                        },
+                        () -> document.add(new StringField(field, "", Field.Store.NO))
+                );
+
+        storedString.accept(SearchField.LUCENE_FIELD_FQI.getValue(), valueObject.getFullyQualifiedIdentifier().toString());
+
+        addStringField.accept(SearchField.LUCENE_FIELD_COMPONENT.getValue(), valueObject.getComponentClass().name());
+        addStringField.accept(SearchField.IDENTIFIER.getValue(), valueObject.getIdentifier());
+        addStringField.accept(SearchField.PARENT_IDENTIFIER.getValue(), valueObject.getParentIdentifier());
+
         addTextField.accept(SearchField.LUCENE_FIELD_NAME.getValue(), valueObject.getName());
         addTextField.accept(SearchField.LUCENE_FIELD_DESCRIPTION.getValue(), valueObject.getDescription());
         addTextField.accept(SearchField.LUCENE_FIELD_TYPE.getValue(), valueObject.getType());
@@ -98,10 +121,10 @@ public class SearchDocumentFactory {
         //tags (searchable)
         Arrays.stream(valueObject.getTags())
                 .map(tag -> tag.toLowerCase(Locale.ROOT))
-                .forEach(tag -> addTextField.accept(SearchField.LUCENE_FIELD_TAG.getValue(), tag));
+                .forEach(tag -> addStringField.accept(SearchField.LUCENE_FIELD_TAG.getValue(), tag));
 
         //networks
-        valueObject.getLabels(Label.network).forEach((key, value) -> addTextField.accept(SearchField.LUCENE_FIELD_NETWORK.getValue(), value.toLowerCase(Locale.ROOT)));
+        valueObject.getLabels(Label.network).forEach((key, value) -> addStringField.accept(SearchField.LUCENE_FIELD_NETWORK.getValue(), value.toLowerCase(Locale.ROOT)));
 
         //frameworks
         List<String> frameworks = new ArrayList<>();

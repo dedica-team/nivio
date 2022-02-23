@@ -7,6 +7,7 @@ import de.bonndan.nivio.input.SeedConfigurationFactory;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,11 +48,11 @@ class InputFormatHandlerCustomJSONTest {
         List<LandscapeDescription> landscapeDescriptions = handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        assertThat(defaultLandscapeDTO.getItemDescriptions()).isEmpty();
         assertThat(landscapeDescriptions).hasSize(2);
+        assertThat(defaultLandscapeDTO.getIndexReadAccess().all(ItemDescription.class)).isEmpty();
 
         LandscapeDescription other = landscapeDescriptions.get(1);
-        assertThat(other.getItemDescriptions()).isNotEmpty();
+        assertThat(other.getIndexReadAccess().all(ItemDescription.class)).isNotEmpty();
         ItemDescription asd = other.getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
@@ -70,6 +71,7 @@ class InputFormatHandlerCustomJSONTest {
         List<LandscapeDescription> landscapeDescriptions = handler.applyData(json, defaultLandscapeDTO);
 
         //then
+        assertThat(landscapeDescriptions).hasSize(2);
         Set<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
         assertThat(itemDescriptions).isNotEmpty();
         ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
@@ -104,7 +106,7 @@ class InputFormatHandlerCustomJSONTest {
         handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        Set<ItemDescription> items = defaultLandscapeDTO.getItemDescriptions();
+        Set<ItemDescription> items = defaultLandscapeDTO.getIndexReadAccess().all(ItemDescription.class);
         assertThat(items).isNotEmpty();
         ItemDescription asd = defaultLandscapeDTO.getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();

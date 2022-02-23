@@ -146,7 +146,7 @@ class OrganicLayouterTest extends RenderingTest {
                 ItemDescription itemDescription = new ItemDescription();
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
-                input.getItemDescriptions().add(itemDescription);
+                input.getWriteAccess().addOrReplaceChild(itemDescription);
                 descriptionList.add(itemDescription);
                 i++;
             }
@@ -175,13 +175,13 @@ class OrganicLayouterTest extends RenderingTest {
 
         Map<String, Object> map = mapper.convertValue(model, Map.class);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription("landscapeItem:model", "Landscape Item Model", null);
+        LandscapeDescription landscapeDescription = new LandscapeDescription("landscape_model", "Landscape Item Model", null);
         landscapeDescription.getWriteAccess().addOrReplaceChild(model);
 
         map.forEach((field, o) -> {
             ItemDescription d = new ItemDescription();
             d.setIdentifier(field);
-            landscapeDescription.getItemDescriptions().add(d);
+            landscapeDescription.getWriteAccess().addOrReplaceChild(d);
             model.getLabels().put(field + "_PROVIDER_URL", field.toLowerCase());
         });
 
@@ -212,7 +212,7 @@ class OrganicLayouterTest extends RenderingTest {
         assertNotNull(itemComponent);
 
         //check items are shifted
-        assertEquals(3959, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(2420, itemComponent.getY()); //margin + group offset + own offset
+        assertEquals(2251, itemComponent.getX()); //margin + group offset + own offset
+        assertEquals(1375, itemComponent.getY()); //margin + group offset + own offset
     }
 }

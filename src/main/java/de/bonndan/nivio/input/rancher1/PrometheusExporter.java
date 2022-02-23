@@ -55,7 +55,7 @@ public class PrometheusExporter {
                         .forEach(itemDescription -> {
                             ItemDescription inMap = tmp.computeIfAbsent(
                                     itemDescription.getFullyQualifiedIdentifier(),
-                                    uri -> new ItemDescription(ComponentMatcher.getPartPath(1,uri).orElse(""))
+                                    uri -> new ItemDescription(ComponentMatcher.getPartPath(4,uri).orElse(""))
                             );
                             inMap.assignNotNull(itemDescription);
                         });

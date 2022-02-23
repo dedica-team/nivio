@@ -30,7 +30,7 @@ class SVGItemTest {
     void regression184() {
 
         SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 1));
-        assertThat(svgItem.render().render()).contains("test/domain/foo");
+        assertThat(svgItem.render().render()).contains(foo.getFullyQualifiedIdentifier().toString());
     }
 
     @Test

@@ -109,14 +109,14 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
         if (!StringUtils.hasLength(landscapeIdentifier)) {
             landscapeIdentifier = itemDescription.getFullyQualifiedIdentifier().getAuthority();
         } else {
-            return Optional.ofNullable(map.get(landscapeIdentifier));
+            return Optional.of(map.computeIfAbsent(landscapeIdentifier, LandscapeDescription::new));
         }
 
         if (FullyQualifiedIdentifier.isUndefined(landscapeIdentifier)) {
             return Optional.empty();
         }
 
-        return Optional.of(map.computeIfAbsent(itemDescription.getLandscape(), LandscapeDescription::new));
+        return Optional.of(map.computeIfAbsent(landscapeIdentifier, LandscapeDescription::new));
     }
 
     @Nullable

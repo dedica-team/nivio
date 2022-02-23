@@ -3,15 +3,17 @@ package de.bonndan.nivio.assessment;
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
+import de.bonndan.nivio.model.ComponentClass;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.ItemFactory;
 import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static de.bonndan.nivio.assessment.AssessmentFactory.ASSESSMENT_ERROR_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +51,7 @@ class AssessmentFactoryTest {
 
     @Test
     void getAssessmentFromFactoryMap() {
-        var fqi = FullyQualifiedIdentifier.build(Landscape.class,"l1", "u1", "c1", "g1", "i1", "p1");
+        var fqi = FullyQualifiedIdentifier.build(ComponentClass.part,"l1", "u1", "c1", "g1", "i1", "p1");
         var statusList = new ArrayList<StatusValue>();
         var results = new HashMap<URI, List<StatusValue>>();
         results.put(fqi, statusList);

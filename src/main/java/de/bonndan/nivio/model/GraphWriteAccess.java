@@ -20,8 +20,9 @@ public class GraphWriteAccess<T extends GraphComponent> {
      * Prevents that a sibling with a different parent is replaced.
      *
      * @param added to add or replace
+     * @return the old element
      */
-    public void addOrReplaceChild(T added) {
+    public T addOrReplaceChild(T added) {
         Objects.requireNonNull(added, "child is null");
         index.get(added.getFullyQualifiedIdentifier()).ifPresent(t -> {
             if (t == added) {
@@ -36,8 +37,12 @@ public class GraphWriteAccess<T extends GraphComponent> {
             added.detach();
             throw new IllegalArgumentException(String.format("Wrong parent %s", parentFQI));
         }
-        index.addOrReplace(added).ifPresent(GraphComponent::detach);
+        var existing = index.addOrReplace(added).map(old -> {
+            old.detach();
+            return old;
+        }).orElse(null);
         addOrReplaceRelation(RelationFactory.createChild(parentComponent, added));
+        return existing;
     }
 
     /**

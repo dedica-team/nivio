@@ -14,7 +14,7 @@ class FullyQualifiedIdentifierTest {
     void buildWithSimpleId() {
 
         //when
-        URI test = FullyQualifiedIdentifier.build(Landscape.class, "test");
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.landscape, "test");
 
         //then
         assertThat(test).isNotNull().isEqualTo(URI.create("landscape://test/"));
@@ -24,7 +24,7 @@ class FullyQualifiedIdentifierTest {
     void buildWithComplexLandscapeId() {
 
         //when
-        URI test = FullyQualifiedIdentifier.build(Landscape.class, "nivio:demo-1_foo");
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.landscape, "nivio:demo-1_foo");
 
         //then
         assertThat(test).isNotNull().isEqualTo(URI.create("landscape://nivio:demo-1_foo/"));
@@ -34,17 +34,17 @@ class FullyQualifiedIdentifierTest {
     void buildWithItem() {
 
         //when
-        URI test = FullyQualifiedIdentifier.build(Item.class, "nivio:demo-1_foo", "aGroup", "foo");
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.item, "nivio:demo-1_foo", "default", "default","aGroup", "foo");
 
         //then
-        assertThat(test).isNotNull().isEqualTo(URI.create("item://nivio:demo-1_foo/aGroup/foo"));
+        assertThat(test).isNotNull().isEqualTo(URI.create("item://nivio:demo-1_foo/default/default/aGroup/foo"));
     }
 
     @Test
     void buildWithContext() {
 
         //when
-        URI test = FullyQualifiedIdentifier.build(Context.class, "nivio:demo-1_foo", "aUnit", "aContext");
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.context, "nivio:demo-1_foo", "aUnit", "aContext");
 
         //then
         assertThat(test).isNotNull().isEqualTo(URI.create("context://nivio:demo-1_foo/aUnit/aContext"));
@@ -68,19 +68,6 @@ class FullyQualifiedIdentifierTest {
 
         //then
         assertThat(uri).isNotNull().isEqualTo(URI.create("item://_/_/bar"));
-    }
-
-    @Test
-    void fromParentWithGroup() {
-
-        Landscape landscape = LandscapeFactory.createForTesting("test", "test").build();
-        Group group = GroupBuilder.aTestGroup("foo").withParent(ContextBuilder.aTestContext("test").build()).build();
-
-        //when
-        URI uri = FullyQualifiedIdentifier.from(landscape.getFullyQualifiedIdentifier(), group);
-
-        //then
-        assertThat(uri).isNotNull().isEqualTo(URI.create("group://test/foo"));
     }
 
     @Test

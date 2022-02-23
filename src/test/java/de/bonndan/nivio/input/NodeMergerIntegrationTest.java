@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.input.dto.GroupDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -46,7 +48,7 @@ class NodeMergerIntegrationTest {
         GraphComponent newGroupA = graph.index.get(graph.groupA.getFullyQualifiedIdentifier()).orElseThrow();
         assertThat(newGroupA.getName()).isEqualTo(gaUpdate.getName());
 
-        URI foo = FullyQualifiedIdentifier.build(Group.class, graph.landscape.getIdentifier(), "default", "default", "foo", null);
+        URI foo = FullyQualifiedIdentifier.build(ComponentClass.group, graph.landscape.getIdentifier(), "default", "default", "foo", null);
         assertThat(processingChangelog.getChanges()).containsKey(foo);
         var newGroupChange = processingChangelog.getChanges().get(foo);
         assertThat(newGroupChange).isNotNull();
@@ -72,7 +74,7 @@ class NodeMergerIntegrationTest {
         assertThat(processingChangelog).isNotNull();
         assertThat(processingChangelog.getChanges()).isNotNull().hasSize(5);
 
-        URI fooParent = FullyQualifiedIdentifier.build(Context.class, graph.landscape.getIdentifier(), "default", "default", null, null);
+        URI fooParent = FullyQualifiedIdentifier.build(ComponentClass.context, graph.landscape.getIdentifier(), "default", "default", null, null);
         assertThat(processingChangelog.getChanges()).containsKey(fooParent);
         var fooParentUpdate = processingChangelog.getChanges().get(fooParent);
         assertThat(fooParentUpdate).isNotNull();
@@ -102,20 +104,34 @@ class NodeMergerIntegrationTest {
 
     @Test
     void forItems() {
-        assertThat(false).isTrue();
-    }
+        NodeMerger<Item, ItemDescription, Group> nodeMerger = NodeMergerFactory.forItems(graph.landscape);
 
-    @Test
-    void forUnits() {
-        assertThat(false).isTrue();
-    }
+        ItemDescription item1 = new ItemDescription();
+        item1.setIdentifier(graph.itemAA.getIdentifier());
 
-    @Test
-    void forContexts() {
-        assertThat(false).isTrue();
+        ItemDescription update = new ItemDescription();
+        update.setIdentifier(graph.itemAA.getIdentifier());
+        update.setName("a new name");
+
+        //when
+        ProcessingChangelog processingChangelog = nodeMerger.mergeAndDiff(List.of(item1, update), new ProcessLog(mock(Logger.class), "x"));
+
+        //then
+        assertThat(processingChangelog).isNotNull();
+        assertThat(processingChangelog.getChanges()).isNotNull().hasSize(5);
+
+
+        Item newItem = graph.landscape.getIndexReadAccess().all( Item.class).stream()
+                .filter(item -> item.getName().equals(update.getName()))
+                .findFirst().orElseThrow();
+
+        var change = getChange(processingChangelog, newItem);
+        assertThat(change.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.UPDATED.name());
     }
 
     private ProcessingChangelog.Entry getChange(ProcessingChangelog processingChangelog, Component c) {
-        return processingChangelog.getChanges().get(c.getFullyQualifiedIdentifier());
+        Map<URI, ProcessingChangelog.Entry> changes = processingChangelog.getChanges();
+        assertThat(changes).containsKey(c.getFullyQualifiedIdentifier());
+        return changes.get(c.getFullyQualifiedIdentifier());
     }
 }

@@ -88,7 +88,7 @@ class ScalingKPITest {
     void orangeIfZeroAsDataTarget() {
 
         testA.setLabel(Label.scale, "0");
-        Relation r1 = new Relation(testA, fooBar, null, null, RelationType.PROVIDER);
+        Relation r1 = new Relation(fooBar, testA, null, null, RelationType.DATAFLOW);
         landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
 
         //when

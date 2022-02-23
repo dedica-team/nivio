@@ -130,7 +130,7 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
 
     @JsonGetter("groups")
     public Collection<Group> getGroupItems() {
-        return getGroups().values();
+        return getIndexReadAccess().all(Group.class);
     }
 
     /**

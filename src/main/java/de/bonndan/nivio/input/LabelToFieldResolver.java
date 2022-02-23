@@ -36,7 +36,7 @@ public class LabelToFieldResolver extends Resolver {
 
     @Override
     public void resolve(LandscapeDescription input) {
-        input.getItemDescriptions().forEach(item -> {
+        input.getIndexReadAccess().all(ItemDescription.class).forEach(item -> {
             List<Map.Entry<String, String>> nivioLabels = item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))
                     .collect(Collectors.toList());

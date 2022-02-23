@@ -11,7 +11,7 @@ public class IdentifierValidation {
     /**
      * A valid identifier must be of length greater than zero and start with an a-z character or number.
      */
-    public static final String PATTERN = "^[\\w][\\w.:_-]{0,255}$";
+    public static final String IDENTIFIER_PATTERN = "^[\\w][\\w._-]{0,255}$";
 
     private IdentifierValidation() {
     }
@@ -27,8 +27,8 @@ public class IdentifierValidation {
             throw new IllegalArgumentException("Invalid empty identifier given.");
         }
 
-        if (!identifier.matches(PATTERN)) {
-            throw new IllegalArgumentException(String.format("Invalid  identifier given: '%s', it must match %s", identifier, PATTERN));
+        if (!identifier.matches(IDENTIFIER_PATTERN)) {
+            throw new IllegalArgumentException(String.format("Invalid  identifier given: '%s', it must match %s", identifier, IDENTIFIER_PATTERN));
         }
     }
 

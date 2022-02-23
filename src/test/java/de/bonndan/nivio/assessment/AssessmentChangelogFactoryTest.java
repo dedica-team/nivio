@@ -88,7 +88,7 @@ class AssessmentChangelogFactoryTest {
     @Test
     void entryDeleted() {
 
-        URI identifier = FullyQualifiedIdentifier.build(Item.class, "something", null, null, "different", "baz");
+        URI identifier = FullyQualifiedIdentifier.build(ComponentClass.item, "something", null, null, "different", "baz");
         var update = new Assessment(Map.of(identifier, List.of(StatusValue.summary(identifier,
                 Collections.singletonList(StatusValue.summary(identifier, new ArrayList<>())))))
         );

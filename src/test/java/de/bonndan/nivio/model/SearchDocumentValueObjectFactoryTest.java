@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +52,7 @@ class SearchDocumentValueObjectFactoryTest {
         assertThat(valueObject.getTags()).isEqualTo(item.getTags());
         assertThat(valueObject.getGroup()).isPresent().get().isEqualTo(item.getParentIdentifier());
         assertThat(valueObject.getLayer()).isPresent().get().isEqualTo(item.getLayer());
-        assertThat(valueObject.getComponent()).isEqualTo(Item.class.getSimpleName().toLowerCase(Locale.ROOT));
+        assertThat(valueObject.getComponentClass()).isEqualTo(ComponentClass.item);
     }
 
     @Test
@@ -79,6 +78,6 @@ class SearchDocumentValueObjectFactoryTest {
 
         //then
         assertThat(valueObject).isNotNull();
-        assertThat(valueObject.getComponent()).isEqualTo(Relation.class.getSimpleName().toLowerCase(Locale.ROOT));
+        assertThat(valueObject.getComponentClass()).isEqualTo(ComponentClass.relation);
     }
 }

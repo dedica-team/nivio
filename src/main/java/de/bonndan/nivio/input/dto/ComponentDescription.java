@@ -30,7 +30,7 @@ public abstract class ComponentDescription implements Component, Labeled, Linked
 
     @Schema(required = true, description = "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.",
             example = "shipping",
-            pattern = IdentifierValidation.PATTERN)
+            pattern = IdentifierValidation.IDENTIFIER_PATTERN)
     @NotEmpty
     private String identifier;
 
@@ -265,10 +265,18 @@ public abstract class ComponentDescription implements Component, Labeled, Linked
      */
     @JsonIgnore
     public void setRelations(List<String> relations) {
+        if (!StringUtils.hasLength(identifier)) {
+            throw new IllegalStateException("Item has no identifier");
+        }
         relations.stream()
                 .filter(StringUtils::hasLength)
                 .map(s -> RelationFactory.createDataflowDescription(this, s))
                 .forEach(this::addOrReplaceRelation);
+    }
+
+    @JsonIgnore
+    public void setRelations(Set<String> relations) {
+        setRelations(new ArrayList<>(relations));
     }
 
     /**

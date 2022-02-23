@@ -118,6 +118,24 @@ class ParentResolverTest {
     }
 
     @Test
+    void getParentWithUndefinedGroup() {
+
+        var index = new Index<GraphComponent>(new NullSearchIndex());
+        var landscape = LandscapeFactory.createForTesting("test", "test").withIndex(index).build();
+        landscape.setLog(new ProcessLog(LoggerFactory.getLogger(GraphTestSupport.class), "test"));
+
+        ItemDescription description = new ItemDescription("anItem");
+        description.setGroup(FullyQualifiedIdentifier.UNDEFINED);
+
+        //when
+        Group instantParent = parentResolver.getParent(description, Group.class);
+
+        //then
+        assertThat(instantParent).isNotNull();
+        assertThat(instantParent.getIdentifier()).isEqualTo(Layer.domain.name());
+    }
+
+    @Test
     void getParentWithAmbiguousIdentifier() {
 
         var index = new Index<GraphComponent>(new NullSearchIndex());

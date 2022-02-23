@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
+import static de.bonndan.nivio.model.ComponentClass.landscape;
 import static de.bonndan.nivio.model.ComponentDiff.compareCollections;
 import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 
@@ -23,7 +24,7 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
 public abstract class GraphComponent implements Component, Assessable {
 
     @NotNull
-    @Pattern(regexp = IdentifierValidation.PATTERN)
+    @Pattern(regexp = IdentifierValidation.IDENTIFIER_PATTERN)
     protected final String identifier;
 
     private final String name;
@@ -221,7 +222,7 @@ public abstract class GraphComponent implements Component, Assessable {
             return null;
         }
         if (Landscape.class.equals(cls)) {
-            return (T) indexReadAccess.get(FullyQualifiedIdentifier.build(Landscape.class, parent.getAuthority())).orElseThrow();
+            return (T) indexReadAccess.get(FullyQualifiedIdentifier.build(landscape, parent.getAuthority())).orElseThrow();
         }
         return indexReadAccess.get(parent)
                 .map(graphComponent -> (T) graphComponent)
@@ -238,7 +239,7 @@ public abstract class GraphComponent implements Component, Assessable {
         return set;
     }
 
-    @JsonIgnore //for internal debuggin
+    @JsonIgnore //for internal debugging
     @NonNull
     public abstract GraphComponent getParent();
 

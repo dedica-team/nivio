@@ -4,10 +4,7 @@ import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.assessment.AssessmentRepository;
 import de.bonndan.nivio.input.ProcessingChangelog;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.GraphComponent;
-import de.bonndan.nivio.model.IndexReadAccess;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +22,7 @@ class SearchIndexingEventListenerTest {
     void setUp() {
         landscape = mock(Landscape.class);
         assessmentRepository = mock(AssessmentRepository.class);
-        when(landscape.getFullyQualifiedIdentifier()).thenReturn(FullyQualifiedIdentifier.build(Landscape.class, "foo"));
+        when(landscape.getFullyQualifiedIdentifier()).thenReturn(FullyQualifiedIdentifier.build(ComponentClass.landscape, "foo"));
         listener = new SearchIndexingEventListener(assessmentRepository);
     }
 

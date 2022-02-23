@@ -89,7 +89,7 @@ class SVGGroupArea extends Component {
     @Override
     public DomContent render() {
         List<Component> territoryHexes = components != null ? new ArrayList<>(components) : new ArrayList<>();
-        String fqi = group.getFullyQualifiedIdentifier().getPath();
+        String fqi = group.getFullyQualifiedIdentifier().toString();
         if (!StringUtils.hasLength(fqi)) {
             // we can still render an svg, but area will not be clickable
             LOGGER.warn("Empty group fqi in SVG group area, group {}", group);

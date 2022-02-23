@@ -6,8 +6,9 @@ import de.bonndan.nivio.assessment.AssessmentFactory;
 import de.bonndan.nivio.assessment.kpi.ConditionKPI;
 import de.bonndan.nivio.assessment.kpi.KPI;
 import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.GroupBuilder;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Lifecycle;
 import de.bonndan.nivio.output.LocalServer;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.util.FrontendMapping;
@@ -92,6 +93,7 @@ class GroupingReportGeneratorTest {
     void toDocumentLifecycle() {
         // given
         var assessment = factory.createAssessment(graph.landscape, map);
+        graph.itemAA.setLabel(Label.lifecycle, Lifecycle.PRODUCTION.name());
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"lifecycle"}));
 
         //  when
@@ -100,7 +102,6 @@ class GroupingReportGeneratorTest {
         // then
         assertThat(document).contains("Date: ")
                 .contains(searchConfig.getTitle())
-                .contains("Address: https://www.nivio.com/")
                 .contains("Tags: auth, ui")
                 .contains("<h2>Lifecycle: PRODUCTION</h2>");
 
@@ -110,7 +111,10 @@ class GroupingReportGeneratorTest {
     void toDocumentKpi() {
         // given
         var assessment = factory.createAssessment(graph.landscape, map);
-        var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"kpis"}));
+        var searchConfig = new SearchConfig(Map.of(
+                "title", new String[]{"test"},
+                "reportType", new String[]{"kpis"})
+        );
 
         //  when
         String document = groupingReportGenerator.toDocument(graph.landscape, assessment, searchConfig, frontendMapping);

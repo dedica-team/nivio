@@ -73,12 +73,18 @@ public class RelationDescription implements Labeled {
         if (!validateEndpoint(source)) {
             throw new IllegalArgumentException(String.format("Invalid source identifier used: '%s'", source));
         }
+        if (Objects.equals(source, target)) {
+            throw new IllegalArgumentException(String.format("setSource: Source %s and target %s are equal.", source, target));
+        }
         this.source = source;
     }
 
     public void setTarget(String target) {
         if (!validateEndpoint(target)) {
             throw new IllegalArgumentException(String.format("Invalid target identifier used: '%s'", target));
+        }
+        if (Objects.equals(source, target)) {
+            throw new IllegalArgumentException(String.format("setTarget: Source %s and target %s are equal.", source, target));
         }
         this.target = target;
     }

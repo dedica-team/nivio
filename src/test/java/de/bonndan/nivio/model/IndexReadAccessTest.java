@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.search.LuceneSearchIndex;
+import de.bonndan.nivio.search.SearchField;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -125,6 +126,52 @@ class IndexReadAccessTest {
 
         //then
         assertEquals(1, search.size());
+    }
+
+    @Test
+    @DisplayName("identifier are indexed in string fields")
+    void searchIdentifier() {
+
+        //given
+        var item = graph.getTestItem(graph.groupA.getIdentifier(), "some-thing-1234");
+        graph.indexForSearch(Assessment.empty());
+
+        //when
+        List<Item> search = access.search("some-thing-1234", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+
+        search = access.search("some-thing-12*", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+
+        search = access.search("some-thing-*", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+
+        search = access.search(SearchField.IDENTIFIER.getValue() + ":some-thing-*", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+
+        search = access.search(SearchField.IDENTIFIER.getValue() + ":some-thing-12*", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+
+        search = access.search(SearchField.IDENTIFIER.getValue() + ":some-thing-1234", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+    }
+
+    @Test
+    @DisplayName("parent identifier are indexed in string fields")
+    void searchParentIdentifier() {
+
+        //given
+        var group = graph.getTestGroup("test-123");
+        var item = graph.getTestItem(group.getIdentifier(), "foo");
+        graph.indexForSearch(Assessment.empty());
+
+        //when
+        List<Item> search = access.search(SearchField.PARENT_IDENTIFIER.getValue() + ":test-123", Item.class);
+        assertThat(search).hasSize(1).contains(item);
+
+        //when
+        search = access.search(SearchField.PARENT_IDENTIFIER.getValue() + ":test-12*", Item.class);
+        assertThat(search).hasSize(1).contains(item);
     }
 
     @Test

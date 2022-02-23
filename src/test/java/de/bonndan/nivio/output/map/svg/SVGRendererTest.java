@@ -2,12 +2,15 @@ package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.GroupBuilder;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -15,11 +18,17 @@ import static org.mockito.Mockito.when;
 
 class SVGRendererTest {
 
+    private GraphTestSupport graph;
+
+    @BeforeEach
+    void setup(){
+         graph = new GraphTestSupport();
+    }
+
     @Test
     void testRendering() {
 
         //given
-        var graph = new GraphTestSupport();
 
         IconService iconService = mock(IconService.class);
         when(iconService.getIconUrl(any(Item.class))).thenReturn("https://foo.bar/icon.png");
@@ -35,13 +44,13 @@ class SVGRendererTest {
         assertTrue(rendered.contains("svg version=\"1.1\""));
     }
 
-    private LayoutedComponent getLayoutedLandscape(Landscape foo) {
+    private LayoutedComponent getLayoutedLandscape(Landscape landscape) {
 
+        Group group = GroupBuilder.aGroup().withIdentifier("bar").withName("landscapeIdentifier").withParent(graph.context).build();
+        landscape.getIndexWriteAccess().addOrReplaceChild(group);
 
-        LayoutedComponent lc = new LayoutedComponent(foo);
+        LayoutedComponent lc = new LayoutedComponent(landscape);
 
-        Group group = GroupBuilder.aGroup().withIdentifier("bar").withName("landscapeIdentifier").withParent(ContextBuilder.aTestContext("default").build()).build();
-        foo.getIndexWriteAccess().addOrReplaceChild(group);
 
         LayoutedComponent glc = new LayoutedComponent(group);
         glc.setWidth(100);
@@ -51,7 +60,7 @@ class SVGRendererTest {
 
         lc.getChildren().add(glc);
 
-        Item baz = getTestItem("bar","baz");
+        Item baz = graph.getTestItem("bar","baz");
 
         LayoutedComponent ilc = new LayoutedComponent(baz);
         glc.setWidth(50);

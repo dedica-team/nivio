@@ -33,7 +33,7 @@ public class SearchDocumentValueObjectFactory {
                 component.getFullyQualifiedIdentifier(),
                 component.getIdentifier(),
                 component.getParentIdentifier(),
-                ComponentClass.getFor(component),
+                ComponentClass.valueOf(component.getClass()),
                 component.getName(),
                 component.getDescription(),
                 component.getOwner(),

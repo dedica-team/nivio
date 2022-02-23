@@ -6,8 +6,6 @@ Documentation for Models
 ========================
 
 *   - [Branding](./Models/Branding.rst)
-*   - [ContextDescription](./Models/ContextDescription.rst)
-*   - [GroupDescription](./Models/GroupDescription.rst)
 *   - [InterfaceDescription](./Models/InterfaceDescription.rst)
 *   - [ItemDescription](./Models/ItemDescription.rst)
 *   - [KPIConfig](./Models/KPIConfig.rst)
@@ -15,4 +13,3 @@ Documentation for Models
 *   - [LandscapeDescription](./Models/LandscapeDescription.rst)
 *   - [LayoutConfig](./Models/LayoutConfig.rst)
 *   - [Link](./Models/Link.rst)
-*   - [UnitDescription](./Models/UnitDescription.rst)
