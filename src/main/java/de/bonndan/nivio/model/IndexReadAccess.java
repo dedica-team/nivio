@@ -100,12 +100,16 @@ public class IndexReadAccess<T extends Component> {
      * @param term URL
      */
     public <C extends Component> Collection<C> searchAddress(String term, Class<C> cls) {
-        if (URLFactory.getURL(term).isPresent()) {
-            term = "address:\"" + term + "\"";
-            return search(term, cls);
+        try {
+            URI uri = URI.create(term);
+            if (uri.getScheme() != null) {
+                term = "address:\"" + term + "\"";
+                return search(term, cls);
+            }
+            return Collections.emptyList();
+        } catch (IllegalArgumentException ignored) {
+            return Collections.emptyList();
         }
-
-        throw new IllegalArgumentException("Is not an address/url: " + term);
     }
 
     /**

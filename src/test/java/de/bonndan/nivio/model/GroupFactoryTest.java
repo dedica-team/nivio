@@ -58,7 +58,7 @@ class GroupFactoryTest {
     void usesExistingValues() {
 
         //given
-        Group in = GroupBuilder.aGroup()
+        Group existing = GroupBuilder.aGroup()
                 .withIdentifier("a")
                 .withName("test")
                 .withOwner("Matt")
@@ -66,21 +66,21 @@ class GroupFactoryTest {
                 .withColor("#123123")
                 .withParent(context)
                 .build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(in);
+        landscape.getIndexWriteAccess().addOrReplaceChild(existing);
 
         //when
-        Group merge = GroupFactory.INSTANCE.merge(in, GroupBuilder.aGroup().withIdentifier("a").withParent(context).build());
+        Group merge = GroupFactory.INSTANCE.merge(existing, GroupBuilder.aGroup().withIdentifier("a").withParent(context).build());
 
         //then
         assertThat(merge).isNotNull();
-        assertThat(merge.getIdentifier()).isEqualTo(in.getIdentifier());
-        assertThat(merge.getName()).isEqualTo(in.getName());
-        assertThat(merge.getDescription()).isEqualTo(in.getDescription());
-        assertThat(merge.getContact()).isEqualTo(in.getContact());
-        assertThat(merge.getColor()).isEqualTo(in.getColor());
-        assertThat(merge.getIcon()).isEqualTo(in.getIcon());
-        assertThat(merge.getLinks()).isEqualTo(in.getLinks());
-        assertThat(merge.getLabels()).isEqualTo(in.getLabels());
+        assertThat(merge.getIdentifier()).isEqualTo(existing.getIdentifier());
+        assertThat(merge.getName()).isEqualTo(existing.getName());
+        assertThat(merge.getDescription()).isEqualTo(existing.getDescription());
+        assertThat(merge.getContact()).isEqualTo(existing.getContact());
+        assertThat(merge.getColor()).isEqualTo(existing.getColor());
+        assertThat(merge.getIcon()).isEqualTo(existing.getIcon());
+        assertThat(merge.getLinks()).isEqualTo(existing.getLinks());
+        assertThat(merge.getLabels()).isEqualTo(existing.getLabels());
     }
 
     @Test

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.*;
 
@@ -36,6 +37,10 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
 
     @Schema(description = "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.")
     private String address;
+
+    @Schema(description = "Helper field to assign items to landscapes when unclear", hidden = true)
+    @NotEmpty
+    private String landscape;
 
     public ItemDescription(String identifier) {
         super();
@@ -206,5 +211,13 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
     @Override
     public String getParentIdentifier() {
         return getGroup();
+    }
+
+    public String getLandscape() {
+        return landscape;
+    }
+
+    public void setLandscape(String landscape) {
+        this.landscape = landscape;
     }
 }

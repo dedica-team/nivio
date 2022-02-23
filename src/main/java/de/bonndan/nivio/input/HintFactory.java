@@ -1,20 +1,16 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ComponentDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.IndexReadAccess;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ComponentMatcher;
 import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
 import java.net.URI;
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HintFactory {
@@ -27,44 +23,39 @@ public class HintFactory {
      */
     private static final List<String> URL_PARTS = Arrays.asList("uri", "url", "host");
 
-    private static final Map<String, Supplier<Hint>> uriHints = new HashMap<>();
+    private static final Map<String, Function<URI, Hint>> uriHints = new HashMap<>();
 
     static {
-        uriHints.put("mysql", () -> hintsTo(ItemType.DATABASE, RelationType.PROVIDER));
-        uriHints.put("mongodb", () -> hintsTo(ItemType.DATABASE, RelationType.PROVIDER, "MongoDB"));
-        uriHints.put("http", () -> hintsTo(RelationType.DATAFLOW));
-        uriHints.put("https", () -> hintsTo(RelationType.DATAFLOW));
-        uriHints.put("jdbc", () -> hintsTo(ItemType.DATABASE, RelationType.PROVIDER));
-        uriHints.put("redis", () -> hintsTo(ItemType.KEYVALUESTORE, RelationType.PROVIDER, "Redis"));
-        uriHints.put("rediss", () -> hintsTo(ItemType.KEYVALUESTORE, RelationType.PROVIDER));
-        uriHints.put("smb", () -> hintsTo(ItemType.VOLUME, RelationType.PROVIDER));
+        uriHints.put("mysql", uri -> hintsTo(uri, ItemType.DATABASE, RelationType.PROVIDER));
+        uriHints.put("mongodb", uri -> hintsTo(uri, ItemType.DATABASE, RelationType.PROVIDER, "MongoDB"));
+        uriHints.put("http", uri -> hintsTo(uri, null, RelationType.DATAFLOW, null));
+        uriHints.put("https", uri -> hintsTo(uri, null, RelationType.DATAFLOW, null));
+        uriHints.put("jdbc", uri -> hintsTo(uri, ItemType.DATABASE, RelationType.PROVIDER));
+        uriHints.put("redis", uri -> hintsTo(uri, ItemType.KEYVALUESTORE, RelationType.PROVIDER, "Redis"));
+        uriHints.put("rediss", uri -> hintsTo(uri, ItemType.KEYVALUESTORE, RelationType.PROVIDER));
+        uriHints.put("smb", uri -> hintsTo(uri, ItemType.VOLUME, RelationType.PROVIDER));
     }
 
-    private static Hint hintsTo(String itemType) {
-        return hintsTo(itemType, null, null);
+    private static Hint hintsTo(URI uri, String itemType, RelationType relationType) {
+        return new Hint(uri, itemType, relationType, null);
     }
 
-    private static Hint hintsTo(RelationType relationType) {
-        return hintsTo(null, relationType, null);
-    }
-
-    private static Hint hintsTo(String itemType, RelationType relationType) {
-        return new Hint(itemType, relationType, null);
-    }
-
-    private static Hint hintsTo(String itemType, RelationType relationType, String software) {
-        return new Hint(itemType, relationType, software);
+    private static Hint hintsTo(URI uri, String itemType, RelationType relationType, String software) {
+        return new Hint(uri, itemType, relationType, software);
     }
 
     /**
      * Create a new hint for a relation to a different/new landscape item.
      *
-     * @param landscape landscape description
-     * @param item      the item the hint is created for
-     * @param labelKey  label key
+     * @param readAccess landscape read access
+     * @param item       the item the hint is created for
+     * @param labelKey   label key
      * @return a hint if any label part could be used
      */
-    public Optional<Hint> createForLabel(LandscapeDescription landscape, ItemDescription item, String labelKey) {
+    public Optional<Hint> createForLabel(@NonNull final IndexReadAccess<GraphComponent> readAccess,
+                                         @NonNull final Item item,
+                                         @NonNull final String labelKey
+    ) {
 
         List<String> keyParts = Arrays.stream(labelKey.split(KEY_SEPARATOR))
                 .map(String::toLowerCase)
@@ -72,61 +63,59 @@ public class HintFactory {
         boolean hasUrlLikeKey = URL_PARTS.stream().anyMatch(keyParts::contains);
 
         String value = item.getLabel(labelKey);
+        if (!StringUtils.hasLength(value)) {
+            return Optional.empty();
+        }
         Optional<URI> optionalURI = URIHelper.getURIWithHostAndScheme(value);
 
         if (!hasUrlLikeKey && optionalURI.isEmpty()) {
             return Optional.empty();
         }
 
-        List<ItemDescription> targets = getTarget(landscape.getIndexReadAccess(), value, optionalURI);
+        List<Item> targets = getTargets(readAccess, value, optionalURI);
         if (targets.size() > 1) {
             LOGGER.info("Found ambiguous results searching for target {}", value);
             return Optional.empty();
         }
-        ItemDescription target;
-        if (targets.isEmpty()) {
-            LOGGER.info("Creating new relation target from label {} value {}", labelKey, value);
-            ItemDescription createdTarget = new ItemDescription(optionalURI.map(uri1 -> (uri1.getHost() + uri1.getPath()).replace("/", "_")).orElse(value));
-            createdTarget.setName(value);
-            createdTarget.setGroup(item.getGroup());
-            createdTarget.setLabel(Label.note, String.format("Created from label %s of %s", labelKey, item));
-            optionalURI.ifPresent(uri -> createdTarget.setAddress(uri.toString()));
-            target = createdTarget;
-        } else {
+
+        Item target = null;
+        if (targets.size() == 1) {
             target = targets.get(0);
+            LOGGER.info("Found a target of relation from {}({}) to target '{}' using {}: '{}'", item.getIdentifier(), item.getName(), target, labelKey, value);
+
+            //get a hint based on uri scheme
+            Item finalTarget = target;
+            Optional<Relation> relation = item.getRelations().stream()
+                    .filter(r -> r.getSource().equals(item) && r.getTarget().equals(finalTarget) ||
+                            r.getSource().equals(finalTarget) && r.getTarget().equals(item))
+                    .findFirst();
+
+            if (relation.isPresent()) {
+                return Optional.empty();
+            }
         }
 
-        if (item.getIdentifier().equalsIgnoreCase(target.getIdentifier())) {
-            return Optional.empty();
+        Function<URI, Hint> hintFunction = uriHints.getOrDefault(optionalURI.map(URI::getScheme).orElse(""), (uri -> new Hint(uri, null, null, null)));
+        Hint hint = hintFunction.apply(item.getFullyQualifiedIdentifier());
+        if (target != null) {
+            hint.setTarget(target.getFullyQualifiedIdentifier());
         }
-
-        LOGGER.info("Found a target of relation from {}({}) to target '{}' using {}: '{}'", item.getIdentifier(), item.getName(), target, labelKey, value);
-
-        //get a hint based on uri scheme
-        Hint hint = uriHints.getOrDefault(optionalURI.map(URI::getScheme).orElse(""), Hint::new).get();
-
-        Optional<RelationDescription> relationDescription = item.getRelations().stream()
-                .filter(r -> r.getSource().equals(item.getIdentifier()) && r.getTarget().equals(target.getIdentifier()) ||
-                        r.getSource().equals(target.getIdentifier()) && r.getTarget().equals(item.getIdentifier()))
-                .findFirst();
-
-        hint.use(item, target, relationDescription);
         return Optional.of(hint);
     }
 
-    private static List<ItemDescription> getTarget(IndexReadAccess<ComponentDescription> readAccess, String value, Optional<URI> optionalURI) {
+    private static List<Item> getTargets(IndexReadAccess<GraphComponent> readAccess, String value, Optional<URI> optionalURI) {
 
-        List<ItemDescription> results = new ArrayList<>();
+        List<Item> results = new ArrayList<>();
         if (optionalURI.isPresent()) {
-            readAccess.searchAddress(optionalURI.get().toString(), ItemDescription.class).stream().findFirst().ifPresent(results::add);
+            readAccess.searchAddress(optionalURI.get().toString(), Item.class).stream().findFirst().ifPresent(results::add);
             return results;
         }
 
-        Collection<ItemDescription> query = readAccess.match(ComponentMatcher.forTarget(value), ItemDescription.class);
-        if (query.size() != 1) {
-            LOGGER.debug("Found ambiguous results {}  for query for target '{}'", query, value);
+        Collection<Item> targets = readAccess.matchOrSearchByIdentifierOrName(value, Item.class);
+        if (targets.size() != 1) {
+            LOGGER.debug("Found ambiguous results {} for query for target '{}'", targets, value);
         }
-        results.addAll(query);
+        results.addAll(targets);
         return results;
     }
 }

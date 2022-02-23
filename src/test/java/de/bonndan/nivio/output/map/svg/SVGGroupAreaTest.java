@@ -30,7 +30,7 @@ class SVGGroupAreaTest {
 
         HexMap hexMap = new HexMap();
         hexMap.add(graph.itemAA, e1);
-        hexMap.add(graph.itemAA, e2);
+        hexMap.add(graph.itemAB, e2);
 
         //when
         Set<MapTile> area = GroupAreaFactory.getGroup(hexMap, graph.groupA, Set.of(graph.itemAA, graph.itemAB));

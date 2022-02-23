@@ -1,34 +1,27 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
+import de.bonndan.nivio.model.Index;
 import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.search.LuceneSearchIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.net.URI;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HintFactoryTest {
 
     private HintFactory hintFactory;
-    private LandscapeDescription landscapeDescription;
-    private ItemDescription one;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setUp() {
-        landscapeDescription = new LandscapeDescription("landscape");
-        one = new ItemDescription();
-        one.setIdentifier("one");
-        one.setGroup("foo");
-        landscapeDescription.mergeItems(List.of(one));
-
+        graph = new GraphTestSupport(new Index<>(LuceneSearchIndex.createVolatile()));
         hintFactory = new HintFactory();
     }
 
@@ -36,175 +29,115 @@ class HintFactoryTest {
     void createWithMysqlURI() {
 
         //given
-        one.setLabel("foo", "mysql://somehost/abc");
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        graph.itemAA.setLabel("foo", "mysql://somehost/abc");
+
+        var target = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "someId")
+                .withAddress(URI.create("mysql://somehost/abc"))
+                .withParent(graph.groupA)
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target);
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "foo");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "foo");
 
         //then
         assertThat(foo).isNotEmpty();
-        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
-        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
-
-        ItemDescription created = createdOrModifiedDescriptions.get(1);
-        assertThat(created.getType()).isEqualTo(ItemType.DATABASE);
-        assertThat(created.getGroup()).isEqualTo(one.getGroup());
-        assertThat(created.getIdentifier()).isEqualTo("somehost_abc");
-
-        RelationDescription next = one.getRelations().iterator().next();
-        assertThat(next.getType()).isEqualTo(RelationType.PROVIDER);
+        assertThat(foo.get().getRelationType()).isEqualTo(RelationType.PROVIDER);
+        assertThat(foo.get().getTarget()).isEqualTo(target.getFullyQualifiedIdentifier());
+        assertThat(foo.get().getTargetType()).isEqualTo(ItemType.DATABASE);
     }
 
     @Test
     void createWithHttpURI() {
 
         //given
-        one.setLabel("foo", "http://foo.bar.baz");
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        graph.itemAA.setLabel("foo", "http://foo.bar.baz");
+
+        var target = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo")
+                .withAddress(URI.create("http://foo.bar.baz"))
+                .withParent(graph.groupA)
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target);
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "foo");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "foo");
 
         //then
         assertThat(foo).isNotEmpty();
-        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
-        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
-
-        ItemDescription created = createdOrModifiedDescriptions.get(1);
-        assertThat(created.getIdentifier()).isEqualTo("foo.bar.baz");
-
-        RelationDescription next = one.getRelations().iterator().next();
-        assertThat(next.getType()).isEqualTo(RelationType.DATAFLOW);
+        assertThat(foo.get().getRelationType()).isEqualTo(RelationType.DATAFLOW);
+        assertThat(foo.get().getTarget()).isEqualTo(target.getFullyQualifiedIdentifier());
     }
 
     @Test
-    @DisplayName("does not link same service to itself")
+    @DisplayName("links with identifier")
     void linksByIdentifier() {
+
         //given
-        ItemDescription hihi = new ItemDescription();
-        hihi.setIdentifier("something");
-        landscapeDescription.mergeItems(List.of(hihi));
-
-        one.getLabels().put("BASE_URL", hihi.getIdentifier());
-
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        var target = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo")
+                .withParent(graph.groupA)
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target);
+        graph.itemAA.setLabel("BASE_URL", target.getIdentifier());
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "BASE_URL");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "BASE_URL");
 
         //then
         assertThat(foo).isNotEmpty();
-        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
-        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
-
-        ItemDescription created = createdOrModifiedDescriptions.get(1);
-        assertThat(created).isEqualTo(hihi);
+        assertThat(foo.get().getTarget()).isEqualTo(target.getFullyQualifiedIdentifier());
     }
 
     @Test
     @DisplayName("label points to a name")
     void linksByName() {
         //given
-        ItemDescription hihi = new ItemDescription();
-        hihi.setIdentifier("foo");
-        hihi.setName("bar");
-        landscapeDescription.mergeItems(List.of(hihi));
-
-        one.getLabels().put("FOO_HOST", hihi.getName());
-
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        var target = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo")
+                .withParent(graph.groupA)
+                .withName("aName")
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target);
+        graph.itemAA.setLabel("BASE_URL", target.getName());
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_HOST");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "BASE_URL");
 
         //then
         assertThat(foo).isNotEmpty();
-        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
-        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
-
-        ItemDescription created = createdOrModifiedDescriptions.get(1);
-        assertThat(created).isEqualTo(hihi);
+        assertThat(foo.get().getTarget()).isEqualTo(target.getFullyQualifiedIdentifier());
     }
 
     @Test
     @DisplayName("label points to a name but key contains no special word")
     void linksNotByName() {
         //given
-        ItemDescription hihi = new ItemDescription();
-        hihi.setIdentifier("foo");
-        hihi.setName("bar");
-        landscapeDescription.mergeItems(List.of(hihi));
-
-        one.getLabels().put("FOO", hihi.getName());
-
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        var target = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo")
+                .withName("aName")
+                .withParent(graph.groupA)
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target);
+        graph.itemAA.setLabel("FOO", target.getName());
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "foo");
 
         //then
         assertThat(foo).isEmpty();
     }
 
     @Test
-    @DisplayName("does not link same service to itself")
-    void linksByAddress() {
+    @DisplayName("does not link same item to itself")
+    void doesNotLinkSame() {
         //given
-        ItemDescription hihi = new ItemDescription();
-        hihi.setIdentifier("something");
-        hihi.setAddress("http://foo.bar.com");
-        landscapeDescription.mergeItems(List.of(hihi));
-
-        one.getLabels().put("FOO_URL", hihi.getAddress());
-
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        graph.itemAA.setLabel("BASE_URL", graph.itemAA.getName());
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_URL");
-
-        //then
-        assertThat(foo).isNotEmpty();
-        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
-        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
-
-        ItemDescription created = createdOrModifiedDescriptions.get(1);
-        assertThat(created).isEqualTo(hihi);
-    }
-
-    @Test
-    @DisplayName("address is compared without case")
-    void linksByAddressCaseInsensitive() {
-        //given
-        ItemDescription hihi = new ItemDescription();
-        hihi.setIdentifier("something");
-        hihi.setAddress("http://FOO.bar.com");
-        landscapeDescription.mergeItems(List.of(hihi));
-
-        one.getLabels().put("FOO_URL", "http://foo.bar.com");
-
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
-
-        //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_URL");
-
-        //then
-        assertThat(foo).isNotEmpty();
-        List<ItemDescription> createdOrModifiedDescriptions = foo.get().getCreatedOrModifiedDescriptions();
-        assertThat(createdOrModifiedDescriptions.size()).isEqualTo(2);
-
-        ItemDescription created = createdOrModifiedDescriptions.get(1);
-        assertThat(created).isEqualTo(hihi);
-    }
-
-    @Test
-    @DisplayName("does not link same service to itself")
-    public void doesNotLinkSame() {
-        //given
-        one.getLabels().put("BASE_URL", one.getIdentifier());
-
-        //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "foo");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "foo");
 
         //then
         assertThat(foo).isEmpty();
@@ -212,23 +145,26 @@ class HintFactoryTest {
 
     @Test
     @DisplayName("does nothing with more than one match")
-    public void ifUncertainDoesNotLink() {
+    void ifUncertainDoesNotLink() {
         //given
-        ItemDescription hihi = new ItemDescription();
-        hihi.setIdentifier("foo");
-        hihi.setName("bar");
+        String aName = "aName";
+        var target1 = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo1")
+                .withParent(graph.groupA)
+                .withName(aName)
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target1);
 
-        ItemDescription huhu = new ItemDescription();
-        huhu.setIdentifier("bar");
-        huhu.setName("bar");
-        landscapeDescription.mergeItems(List.of(hihi, huhu));
+        var target2 = graph.getTestItemBuilder(graph.groupA.getIdentifier(), "foo2")
+                .withParent(graph.groupA)
+                .withName(aName)
+                .build();
+        graph.landscape.getIndexWriteAccess().addOrReplaceChild(target2);
 
-        one.getLabels().put("FOO_HOST", "bar");
-
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        graph.itemAA.setLabel("BASE_URL", aName);
+        graph.landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
-        Optional<Hint> foo = hintFactory.createForLabel(landscapeDescription, one, "FOO_HOST");
+        Optional<Hint> foo = hintFactory.createForLabel(graph.landscape.getIndexReadAccess(), graph.itemAA, "BASE_URL");
 
         //then
         assertThat(foo).isEmpty();

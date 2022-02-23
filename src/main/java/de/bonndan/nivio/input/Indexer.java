@@ -100,9 +100,6 @@ public class Indexer {
         // create relation targets on the fly if the landscape is configured "greedy"
         new InstantItemResolver(logger).resolve(input);
 
-        // try to find "magic" relations by examining item labels for keywords and URIs
-        //new LabelRelationResolver(logger, new HintFactory()).resolve(input);
-
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)
         new RelationEndpointResolver(logger).resolve(input);
@@ -122,6 +119,11 @@ public class Indexer {
      */
     private Landscape applyInput(ProcessLog log, LandscapeDescription input, Landscape existing) {
         var processor = new InputProcessor();
-        return processor.process(input, existing, log);
+        Landscape process = processor.process(input, existing, log);
+
+        //add hints concerning possible item links
+        new HintProcessor(new HintFactory()).process(process);
+
+        return process;
     }
 }

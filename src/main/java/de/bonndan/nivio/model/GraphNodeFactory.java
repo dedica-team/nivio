@@ -3,6 +3,7 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.ComponentDescription;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -53,7 +54,9 @@ public interface GraphNodeFactory<T extends GraphComponent, D extends ComponentD
         if (added != null) {
             assignSafe(added.getColor(), s -> builder.getLabels().put(Label.color.name(), s));
             assignSafe(added.getIcon(), s -> builder.getLabels().put(Label.icon.name(), s));
-            assignSafe(added.getName(), builder::withName);
+            if (StringUtils.hasLength(added.getName())) {
+                builder.withName(added.getName());
+            }
             assignSafe(added.getContact(), builder::withContact);
             assignSafe(added.getDescription(), builder::withDescription);
             assignSafe(added.getOwner(), builder::withOwner);

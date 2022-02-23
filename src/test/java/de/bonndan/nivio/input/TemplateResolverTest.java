@@ -77,12 +77,13 @@ class TemplateResolverTest {
     void assignsAllValues() {
 
         LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+
+        //when
         templateResolver.resolve(landscapeDescription);
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
         ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
-        assertNotNull(web);
         assertEquals("content", web.getGroup());
 
         //other values from template

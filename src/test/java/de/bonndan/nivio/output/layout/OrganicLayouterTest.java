@@ -91,7 +91,7 @@ class OrganicLayouterTest extends RenderingTest {
                 ItemDescription itemDescription = new ItemDescription();
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
-                input.getItemDescriptions().add(itemDescription);
+                input.getWriteAccess().addOrReplaceChild(itemDescription);
                 descriptionList.add(itemDescription);
                 i++;
             }
@@ -176,7 +176,7 @@ class OrganicLayouterTest extends RenderingTest {
         Map<String, Object> map = mapper.convertValue(model, Map.class);
 
         LandscapeDescription landscapeDescription = new LandscapeDescription("landscapeItem:model", "Landscape Item Model", null);
-        landscapeDescription.getItemDescriptions().add(model);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(model);
 
         map.forEach((field, o) -> {
             ItemDescription d = new ItemDescription();

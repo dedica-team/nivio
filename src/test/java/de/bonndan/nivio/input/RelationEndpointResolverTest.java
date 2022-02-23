@@ -1,6 +1,7 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.IntegrationTestSupport;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
@@ -36,8 +37,12 @@ class RelationEndpointResolverTest {
     void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+
+        //when
         relationEndpointResolver.resolve(landscapeDescription);
 
+        //then
         ItemDescription one = landscapeDescription.getIndexReadAccess()
                 .matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
                 .orElseThrow();
@@ -64,6 +69,9 @@ class RelationEndpointResolverTest {
     void resolvesTemplatePlaceholdersInProviders() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+
+        //when
         relationEndpointResolver.resolve(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
@@ -85,6 +93,7 @@ class RelationEndpointResolverTest {
     void resolvesTemplatePlaceholdersInDataflow() {
 
         LandscapeDescription landscapeDescription = getLandscapeDescriptionWithAppliedTemplates();
+        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
 
         //when
         relationEndpointResolver.resolve(landscapeDescription);
@@ -107,6 +116,7 @@ class RelationEndpointResolverTest {
         LandscapeDescription resolved = testSupport.getFirstLandscapeDescription(file);
         ProcessLog logger = new ProcessLog(mock(Logger.class), "test");
         assertThat(resolved.getTemplates()).isNotEmpty();
+        resolved.getIndexReadAccess().indexForSearch(Assessment.empty());
         new TemplateResolver(logger).resolve(resolved);
         return resolved;
     }

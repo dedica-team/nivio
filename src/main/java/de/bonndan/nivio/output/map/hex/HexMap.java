@@ -68,8 +68,9 @@ public class HexMap {
      * @param item the item (must have been added before)
      * @return the corresponding {@link Hex}
      */
-    public MapTile getTileForItem(Item item) {
-        return mapState.getHexForItem(item).orElseThrow(() -> new NoSuchElementException(String.format("Item %s has no hex tile assigned.", item)));
+    public MapTile getTileForItem(@NonNull final Item item) {
+        return mapState.getHexForItem(item)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Item %s has no hex tile assigned.", item)));
     }
 
     /**
