@@ -204,7 +204,6 @@ public class ComponentMatcher {
 
         var path = StringUtils.trimLeadingCharacter(other.getPath().toLowerCase(Locale.ROOT), SEPARATOR.charAt(0)).split(SEPARATOR);
 
-
         //check unit
         if (!equalsRegardingUndefined(path[0], unit)) return false;
 
@@ -215,7 +214,7 @@ public class ComponentMatcher {
         //check group
         var otherGroup = path.length > 2 ? path[2] : null;
         boolean equalsGroup;
-        if (!StringUtils.hasLength(group) || FullyQualifiedIdentifier.isUndefined(otherGroup))
+        if (FullyQualifiedIdentifier.isUndefined(group) || FullyQualifiedIdentifier.isUndefined(otherGroup))
             equalsGroup = true;
         else if ((group.equalsIgnoreCase(Layer.domain.name()) || group.equalsIgnoreCase(Layer.infrastructure.name())) && FullyQualifiedIdentifier.isUndefined(otherGroup))
             equalsGroup = true;

@@ -38,28 +38,34 @@ class InputProcessorTest {
     }
 
     @Test
-    void addedItemWithDefaultGroup() {
+    void addedItemWithoutGroup() {
 
         //given
         ArrayList<ItemDescription> items1 = new ArrayList<>();
-        items1.add(new ItemDescription("a"));
-        items1.add(new ItemDescription("b"));
-        items1.add(new ItemDescription("c"));
+        items1.add(new ItemDescription("a")); // -> should match itemAA
+        items1.add(new ItemDescription("b")); // -> should match itemAB
+        items1.add(new ItemDescription("c")); // -> should match itemAC
         items1.forEach(itemDescription -> input.getWriteAccess().addOrReplaceChild(itemDescription));
 
         //when
         Landscape out = processor.process(input, landscape, log);
 
         assertThat(out).isNotNull();
-        assertThat(out.getLog().getChangelog().getChanges()).hasSize(13);
+
+        Map<URI, ProcessingChangelog.Entry> changed = getChanges(out, ProcessingChangelog.ChangeType.UPDATED);
+        assertThat(changed).hasSize(7);
+        assertThat(changed).containsKey(graph.itemAA.getFullyQualifiedIdentifier());
+        assertThat(changed).containsKey(graph.itemAB.getFullyQualifiedIdentifier());
+        assertThat(changed).containsKey(graph.itemAC.getFullyQualifiedIdentifier());
+        assertThat(changed).containsKey(graph.groupA.getFullyQualifiedIdentifier());
+        assertThat(changed).containsKey(graph.context.getFullyQualifiedIdentifier());
+        assertThat(changed).containsKey(graph.unit.getFullyQualifiedIdentifier());
+        assertThat(changed).containsKey(graph.landscape.getFullyQualifiedIdentifier());
+
         Map<URI, ProcessingChangelog.Entry> deleted = getChanges(out, ProcessingChangelog.ChangeType.DELETED);
-        assertThat(deleted).hasSize(6); //3 groups, 3 items
-        assertThat(deleted).containsKey(graph.groupA.getFullyQualifiedIdentifier());
+        assertThat(deleted).hasSize(2); //3 groups, 3 items
         assertThat(deleted).containsKey(graph.groupB.getFullyQualifiedIdentifier());
         assertThat(deleted).containsKey(graph.groupC.getFullyQualifiedIdentifier());
-        assertThat(deleted).containsKey(graph.itemAA.getFullyQualifiedIdentifier());
-        assertThat(deleted).containsKey(graph.itemAB.getFullyQualifiedIdentifier());
-        assertThat(deleted).containsKey(graph.itemAC.getFullyQualifiedIdentifier());
     }
 
     @Test

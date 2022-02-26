@@ -39,23 +39,43 @@ class ComponentMatcherTest {
 
     @Test
     void testEqualsWithoutGroup() {
-        var fqi1 = ComponentMatcher.build(null, null, null, "g1", "d1");
 
         ItemDescription desc1 = new ItemDescription();
         desc1.setIdentifier("d1");
         desc1.setGroup(null);
+
+        ItemDescription otherGroup = new ItemDescription();
+        otherGroup.setIdentifier("d1");
+        otherGroup.setGroup("g2");
+
+        var fqi1 = ComponentMatcher.build(null, null, null, "g1", "d1");
+
+        //when
         assertTrue(fqi1.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
+
+        assertFalse(fqi1.isSimilarTo(otherGroup.getFullyQualifiedIdentifier()));
+    }
+
+    @Test
+    void testEqualsWithoutGroupInMatcher() {
+
+        ItemDescription desc1 = new ItemDescription();
+        desc1.setIdentifier("d1");
+        desc1.setGroup(null);
 
         ItemDescription otherGroup = new ItemDescription();
         otherGroup.setIdentifier("d1");
         otherGroup.setGroup("g2");
 
         var fqiNoGroup = ComponentMatcher.build(null, null, null, null, "d1");
+        var fqiUndefined = ComponentMatcher.build(null, null, null, FullyQualifiedIdentifier.UNDEFINED, "d1");
 
         //when
         assertTrue(fqiNoGroup.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
+        assertTrue(fqiUndefined.isSimilarTo(desc1.getFullyQualifiedIdentifier()));
 
         assertTrue(fqiNoGroup.isSimilarTo(otherGroup.getFullyQualifiedIdentifier()));
+        assertTrue(fqiUndefined.isSimilarTo(otherGroup.getFullyQualifiedIdentifier()));
     }
 
     @Test

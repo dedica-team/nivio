@@ -60,9 +60,9 @@ class NodeMerger<T extends GraphComponent, D extends ComponentDescription, P ext
          * add or update nodes from input dto
          */
         inputNodes.forEach(dto -> {
-            P parent = parentResolver.getParent(dto, pClass);
+            Optional<T> existing = indexReadAccess.matchOneByIdentifiers(dto.getIdentifier(), dto.getParentIdentifier(), tClass);
+            P parent = existing.map(t -> (P) t.getParent()).orElseGet(() -> parentResolver.getParent(dto, pClass));
             T fromDescription = factory.createFromDescription(dto.getIdentifier(), parent, dto);
-            Optional<T> existing = indexReadAccess.matchOneByIdentifiers(fromDescription.getIdentifier(), parent.getIdentifier(), tClass);
 
             T added = existing.map(component -> factory.merge(component, fromDescription)).orElse(fromDescription);
 

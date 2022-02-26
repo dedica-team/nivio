@@ -88,7 +88,7 @@ class HintResolverTest {
     }
 
     @Test
-    void readsLinks() {
+    void doesNotReadLinks() {
 
         //given
         var db = new ItemDescription("x.y.z");
@@ -102,7 +102,7 @@ class HintResolverTest {
         //then
         Map<URI, List<Hint>> hints = log.getHints();
         assertThat(hints).isNotNull()
-                .containsKey(db.getFullyQualifiedIdentifier());
+                .doesNotContainKey(db.getFullyQualifiedIdentifier());
     }
 
     @Test

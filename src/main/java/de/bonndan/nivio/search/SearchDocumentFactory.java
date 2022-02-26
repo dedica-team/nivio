@@ -164,7 +164,6 @@ public class SearchDocumentFactory {
         BiConsumer<String, String> addFacetField = (field, value) ->
                 Optional.ofNullable(value).ifPresent(val -> {
                     if (field != null) {
-                        LOGGER.debug("Adding facet {} to document {}", field, valueProvider.getFullyQualifiedIdentifier());
                         document.add(new FacetField(field, val));
                     }
                 });
