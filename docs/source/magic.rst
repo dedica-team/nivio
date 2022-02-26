@@ -8,7 +8,7 @@ Often lots of items can be read from input data sources, but no information on l
 that, you can describe groups and use the ``contains`` field:
 
 * To pick items by their identifier, add single strings which are treated as identifiers.
-* Furthermore you can use SQL-like WHERE conditions to assign items to groups. In the following example ``identifier LIKE 'DB1%'`` is the query which would match both items.
+* Furthermore you can use Lucene search terms conditions to assign items to groups. In the following example ``identifier:DB1*`` is the query which would match both items. See :ref:`Searching`
 
 .. code-block:: yaml
    :linenos:
@@ -29,7 +29,7 @@ that, you can describe groups and use the ``contains`` field:
         team: Admins
         contains:
           - DB1
-          - "identifier LIKE 'DB1%'"
+          - "identifier:DB1*"
 
 
 Using Templates to dynamically assign data
@@ -42,6 +42,8 @@ if the target value is null.
 
 Multiple templates can be assigned to items too. In this case the first assigned value "wins" and
 will not be overwritten by templates applied later.
+
+Template matching also supports Lucene search terms (see :ref:`Searching`).
 
 .. code-block:: yaml
    :linenos:
@@ -63,8 +65,6 @@ will not be overwritten by templates applied later.
 
       endOfLife:
         tags: [eol]
-
-For CQ queries read https://github.com/npgall/cqengine#string-based-queries-sql-and-cqn-dialects.
 
 
 Using Labels to assign data
@@ -89,6 +89,7 @@ Labels can be set using docker-compose files too. However, docker labels do not 
           nivio.link.repo: "https://github.com/foo/bar"
 
 Remember to escape URLs with double quotes.
+
 
 Relations between landscape items
 ---------------------------------
