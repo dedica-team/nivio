@@ -144,8 +144,8 @@ public class RelationDescription implements Labeled {
     }
 
     private boolean matches(String end1, String end2) {
-        var m1 = ComponentMatcher.forTarget(end1);
-        var m2 = ComponentMatcher.forTarget(end2);
+        var m1 = ComponentMatcher.forComponent(end1);
+        var m2 = ComponentMatcher.forComponent(end2);
         return m1.equals(m2);
     }
 

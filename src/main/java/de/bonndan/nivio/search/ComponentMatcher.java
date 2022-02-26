@@ -23,7 +23,6 @@ import static de.bonndan.nivio.model.FullyQualifiedIdentifier.*;
  */
 public class ComponentMatcher {
 
-
     private String landscape;
     private String unit;
     private String context;
@@ -67,14 +66,14 @@ public class ComponentMatcher {
      * @return fqi
      * @throws IllegalArgumentException if string is empty
      */
-    public static ComponentMatcher forTarget(@NonNull final String string) {
+    public static ComponentMatcher forComponent(@NonNull final String string) {
         if (!StringUtils.hasLength(string)) {
             throw new IllegalArgumentException("identifier must not be empty");
         }
 
         var uri = withAuthority(string);
         if (uri.isPresent()) {
-            return forTarget(uri.get());
+            return forComponent(uri.get());
         }
 
         String[] split = string.split(SEPARATOR);
@@ -101,7 +100,7 @@ public class ComponentMatcher {
         throw new IllegalArgumentException(String.format("Given string %s contains too many parts to build an item matcher.", string));
     }
 
-    public static ComponentMatcher forTarget(@NonNull final URI fqi) {
+    public static ComponentMatcher forComponent(@NonNull final URI fqi) {
         return build(fqi.getAuthority(),
                 getPartPath(1, fqi).orElse(null),
                 getPartPath(2, fqi).orElse(null),
@@ -110,15 +109,15 @@ public class ComponentMatcher {
         );
     }
 
-    public static <C extends Component> ComponentMatcher forTarget(String term, Class<C> cls) {
+    public static <C extends Component> ComponentMatcher forComponent(String term, Class<C> cls) {
 
         var uri = withAuthority(term);
         if (uri.isPresent()) {
-            return forTarget(uri.get());
+            return forComponent(uri.get());
         }
 
         if (Item.class.equals(cls) || ItemDescription.class.equals(cls)) {
-            return forTarget(term);
+            return forComponent(term);
         }
 
         if (Unit.class.equals(cls) || UnitDescription.class.equals(cls)) {
@@ -147,7 +146,7 @@ public class ComponentMatcher {
                 return Optional.of(uri);
             }
         } catch (IllegalArgumentException ignored) {
-
+            // is not an uri, can be ignored
         }
 
         return Optional.empty();
@@ -180,7 +179,10 @@ public class ComponentMatcher {
 
     @Override
     public boolean equals(Object obj) {
-        return hashCode() == obj.hashCode();
+        if (obj == null) {
+            return false;
+        }
+        return getClass().equals(obj.getClass()) && hashCode() == obj.hashCode();
     }
 
     /**
@@ -191,21 +193,16 @@ public class ComponentMatcher {
      */
     public boolean isSimilarTo(@NonNull final URI other) {
 
-        boolean equalsLandscape;
-        if (!StringUtils.hasLength(landscape) || isUndefined(landscape) || FullyQualifiedIdentifier.isUndefined(other.getAuthority())) {
-            equalsLandscape = true; //ignoring landscape because not set
-        } else {
-            equalsLandscape = landscape.equalsIgnoreCase(other.getAuthority());
-        }
-
-        if (!equalsLandscape) {
+        if (!equalsLandscape(other)) {
             return false;
         }
 
         var path = StringUtils.trimLeadingCharacter(other.getPath().toLowerCase(Locale.ROOT), SEPARATOR.charAt(0)).split(SEPARATOR);
 
         //check unit
-        if (!equalsRegardingUndefined(path[0], unit)) return false;
+        if (!equalsRegardingUndefined(path[0], unit)) {
+            return false;
+        }
 
         //check context
         var otherContext = path.length > 1 ? path[1] : null;
@@ -213,26 +210,41 @@ public class ComponentMatcher {
 
         //check group
         var otherGroup = path.length > 2 ? path[2] : null;
-        boolean equalsGroup;
-        if (FullyQualifiedIdentifier.isUndefined(group) || FullyQualifiedIdentifier.isUndefined(otherGroup))
-            equalsGroup = true;
-        else if ((group.equalsIgnoreCase(Layer.domain.name()) || group.equalsIgnoreCase(Layer.infrastructure.name())) && FullyQualifiedIdentifier.isUndefined(otherGroup))
-            equalsGroup = true;
-        else
-            equalsGroup = this.group.equalsIgnoreCase(otherGroup);
-
-        if (!equalsGroup) {
+        if (!equalsGroup(otherGroup)) {
             return false;
         }
 
         boolean equalsItem;
         var otherItem = path.length > 3 ? path[3] : null;
-        if (!StringUtils.hasLength(this.item) || !StringUtils.hasLength(otherItem))
+        if (!StringUtils.hasLength(this.item) || !StringUtils.hasLength(otherItem)) {
             equalsItem = true;
-        else
+        } else {
             equalsItem = this.item.equalsIgnoreCase(otherItem);
+        }
 
         return equalsItem;
+    }
+
+    private boolean equalsGroup(String otherGroup) {
+        boolean equalsGroup;
+        if (FullyQualifiedIdentifier.isUndefined(group) || FullyQualifiedIdentifier.isUndefined(otherGroup)) {
+            equalsGroup = true;
+        } else if ((group.equalsIgnoreCase(Layer.domain.name()) || group.equalsIgnoreCase(Layer.infrastructure.name())) && FullyQualifiedIdentifier.isUndefined(otherGroup)) {
+            equalsGroup = true;
+        } else {
+            equalsGroup = this.group.equalsIgnoreCase(otherGroup);
+        }
+        return equalsGroup;
+    }
+
+    private boolean equalsLandscape(URI other) {
+        boolean equalsLandscape;
+        if (!StringUtils.hasLength(landscape) || isUndefined(landscape) || FullyQualifiedIdentifier.isUndefined(other.getAuthority())) {
+            equalsLandscape = true; //ignoring landscape because not set
+        } else {
+            equalsLandscape = landscape.equalsIgnoreCase(other.getAuthority());
+        }
+        return equalsLandscape;
     }
 
     private boolean equalsRegardingUndefined(String other, String thisVal) {

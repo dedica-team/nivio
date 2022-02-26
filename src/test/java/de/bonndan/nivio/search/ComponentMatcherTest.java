@@ -92,7 +92,7 @@ class ComponentMatcherTest {
     void forTargetComplete() {
 
         String three = "a/b/c";
-        ComponentMatcher fqi = ComponentMatcher.forTarget(three);
+        ComponentMatcher fqi = ComponentMatcher.forComponent(three);
         assertEquals("a", fqi.getLandscape());
         assertEquals("b", fqi.getGroup());
         assertEquals("c", fqi.getItem());
@@ -101,7 +101,7 @@ class ComponentMatcherTest {
     @Test
     void forTargetGroupAndItem() {
         String two = "b/c";
-        ComponentMatcher fqi = ComponentMatcher.forTarget(two);
+        ComponentMatcher fqi = ComponentMatcher.forComponent(two);
         assertEquals("", fqi.getLandscape());
         assertEquals("b", fqi.getGroup());
         assertEquals("c", fqi.getItem());
@@ -110,7 +110,7 @@ class ComponentMatcherTest {
     @Test
     void forItem() {
         String one = "c";
-        ComponentMatcher fqi = ComponentMatcher.forTarget(one);
+        ComponentMatcher fqi = ComponentMatcher.forComponent(one);
         assertEquals("", fqi.getLandscape());
         assertEquals(null, fqi.getGroup());
         assertEquals("c", fqi.getItem());
@@ -119,7 +119,7 @@ class ComponentMatcherTest {
     @Test
     void forTargetWithURIAndClass() {
         String one = "item://_/_/_/g1/i1";
-        ComponentMatcher fqi = ComponentMatcher.forTarget(one, Item.class);
+        ComponentMatcher fqi = ComponentMatcher.forComponent(one, Item.class);
         assertEquals(FullyQualifiedIdentifier.UNDEFINED, fqi.getLandscape());
         assertEquals("i1", fqi.getItem());
         assertEquals("g1", fqi.getGroup());
@@ -128,7 +128,7 @@ class ComponentMatcherTest {
     @Test
     void forTargetWithUnitAndContext() {
         String one = "context://_/unit/context";
-        ComponentMatcher fqi = ComponentMatcher.forTarget(one, Item.class);
+        ComponentMatcher fqi = ComponentMatcher.forComponent(one, Item.class);
         assertEquals(FullyQualifiedIdentifier.UNDEFINED, fqi.getLandscape());
         assertEquals("context", fqi.getContext());
         assertEquals("unit", fqi.getUnit());
@@ -137,7 +137,7 @@ class ComponentMatcherTest {
     @Test
     void forTargetWithURI() {
         String one = "context://_/u1/c1";
-        ComponentMatcher fqi = ComponentMatcher.forTarget(one);
+        ComponentMatcher fqi = ComponentMatcher.forComponent(one);
         assertEquals(FullyQualifiedIdentifier.UNDEFINED, fqi.getLandscape());
         assertEquals("u1", fqi.getUnit());
         assertEquals("c1", fqi.getContext());

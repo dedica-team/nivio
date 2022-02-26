@@ -95,7 +95,7 @@ public class IndexReadAccess<T extends Component> {
         boolean isPath = term.contains("/") && (!term.contains(" "));
         if (isPath) {
             return all(cls).stream()
-                    .filter(item -> ComponentMatcher.forTarget(term, ItemDescription.class).isSimilarTo(item.getFullyQualifiedIdentifier()))
+                    .filter(item -> ComponentMatcher.forComponent(term, ItemDescription.class).isSimilarTo(item.getFullyQualifiedIdentifier()))
                     .collect(Collectors.toList());
         }
 
@@ -139,7 +139,7 @@ public class IndexReadAccess<T extends Component> {
         if (Landscape.class.equals(cls) || LandscapeDescription.class.equals(cls)) {
             return Optional.of((C) getRoot());
         }
-        List<C> components = match(ComponentMatcher.forTarget(identifier, cls), cls);
+        List<C> components = match(ComponentMatcher.forComponent(identifier, cls), cls);
         if (components.isEmpty()) {
             return Optional.empty();
         }

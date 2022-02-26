@@ -318,8 +318,7 @@ class IndexerIntegrationTest {
         Landscape landscape = index("/src/test/resources/example/example_label_relations.yml");
         assertEquals(2, landscape.getReadAccess().all(Item.class).size());
 
-        Item foo = landscape.getReadAccess().all(Item.class).iterator().next();
-        assertEquals("foo", foo.getIdentifier());
+        Item foo = landscape.getReadAccess().matchOneByIdentifiers("foo", null, Item.class).orElseThrow();
         assertEquals(1, foo.getRelations().size());
     }
 

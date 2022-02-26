@@ -119,7 +119,7 @@ public class HintResolver extends Resolver {
 
     private boolean hasTarget(String term, IndexReadAccess<ComponentDescription> allItems) {
 
-        Collection<ItemDescription> result = allItems.match(ComponentMatcher.forTarget(term), ItemDescription.class);
+        Collection<ItemDescription> result = allItems.match(ComponentMatcher.forComponent(term), ItemDescription.class);
         if (result.size() > 1) {
             processLog.warn("Found ambiguous sources matching " + term);
             return true;

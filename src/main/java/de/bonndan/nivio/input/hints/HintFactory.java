@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.ComponentDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.search.ComponentMatcher;
 import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +93,13 @@ public class HintFactory {
             //get a hint based on uri scheme
             ItemDescription finalTarget = target;
             Optional<RelationDescription> relation = item.getRelations().stream()
-                    .filter(r -> r.getSource().equals(item) && r.getTarget().equals(finalTarget) ||
-                            r.getSource().equals(finalTarget) && r.getTarget().equals(item))
+                    .filter(r -> {
+                        var sourceMatcher = ComponentMatcher.forComponent(r.getSource(), ItemDescription.class);
+                        var targetMatcher = ComponentMatcher.forComponent(r.getTarget(), ItemDescription.class);
+                        return sourceMatcher.isSimilarTo(item.getFullyQualifiedIdentifier()) && targetMatcher.isSimilarTo(finalTarget.getFullyQualifiedIdentifier())
+                                ||
+                                sourceMatcher.isSimilarTo(finalTarget.getFullyQualifiedIdentifier()) && targetMatcher.isSimilarTo(item.getFullyQualifiedIdentifier());
+                    })
                     .findFirst();
 
             if (relation.isPresent()) {

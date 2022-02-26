@@ -38,7 +38,7 @@ public class EdgeMerge {
         descriptions.forEach(itemDescription -> {
             final Item origin;
             try {
-                origin = indexReadAccess.matchOne(ComponentMatcher.forTarget(itemDescription.getFullyQualifiedIdentifier()), Item.class).orElseThrow();
+                origin = indexReadAccess.matchOne(ComponentMatcher.forComponent(itemDescription.getFullyQualifiedIdentifier()), Item.class).orElseThrow();
             } catch (NoSuchElementException e) {
                 processLog.warn(String.format("Could not delete relations from %s", itemDescription));
                 return;
@@ -60,8 +60,8 @@ public class EdgeMerge {
         final Item origin;
         final Item target;
         try {
-            ComponentMatcher sourceMatcher = ComponentMatcher.forTarget(relationDescription.getSource(), Item.class);
-            ComponentMatcher targetMatcher = ComponentMatcher.forTarget(relationDescription.getTarget(), Item.class);
+            ComponentMatcher sourceMatcher = ComponentMatcher.forComponent(relationDescription.getSource(), Item.class);
+            ComponentMatcher targetMatcher = ComponentMatcher.forComponent(relationDescription.getTarget(), Item.class);
             origin = indexReadAccess.matchOne(sourceMatcher, Item.class)
                     .orElseThrow(() -> new NoSuchElementException(String.format("Not found anything for source %s", sourceMatcher)));
             target = indexReadAccess.matchOne(targetMatcher, Item.class)

@@ -305,6 +305,11 @@ public abstract class ComponentDescription implements Component, Labeled, Linked
     }
 
     @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
