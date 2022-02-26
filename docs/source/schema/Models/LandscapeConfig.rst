@@ -18,11 +18,6 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
      - 
      - optional, defaults to null
      - null
-   * - greedy
-     - Boolean
-     - Flag that enables instant creation items based relation targets that cannot be found in the sources.
-     - optional, defaults to null
-     - null
    * - groupBlacklist
      - List
      - Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.

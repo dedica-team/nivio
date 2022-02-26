@@ -27,7 +27,7 @@ class EdgeMergeTest {
         graph = new GraphTestSupport();
         input = new LandscapeDescription("test");
 
-        edgeMerge = new EdgeMerge(graph.landscape.getIndexReadAccess(), graph.landscape.getIndexWriteAccess());
+        edgeMerge = new EdgeMerge(graph.landscape.getReadAccess(), graph.landscape.getWriteAccess());
     }
 
     @Test

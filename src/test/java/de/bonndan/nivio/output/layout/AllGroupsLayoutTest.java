@@ -41,14 +41,14 @@ class AllGroupsLayoutTest {
         );
 
         //add some inter-group relations
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(bara, barb));
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(barb, barc));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(bara, barb));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(barb, barc));
 
         //when
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true, graph.landscape.getConfig().getLayoutConfig());
 
         //then
-        Map<URI, Group> sorted = SortedGroups.sort(graph.landscape.getIndexReadAccess().all(Group.class));
+        Map<URI, Group> sorted = SortedGroups.sort(graph.landscape.getReadAccess().all(Group.class));
         LayoutedComponent layoutedLandscape = allGroupsLayout.getRendered(graph.landscape, sorted, map);
         assertNotNull(layoutedLandscape);
         assertEquals(graph.landscape, layoutedLandscape.getComponent());

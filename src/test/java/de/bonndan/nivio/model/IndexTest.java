@@ -253,7 +253,7 @@ class IndexTest {
         var landscape = LandscapeFactory.createForTesting("test", "name").build();
         index.addOrReplace(landscape);
         var foo = GroupBuilder.aGroup().withIdentifier("foo").withParent(graph.context).build();
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(foo);
+        graph.landscape.getWriteAccess().addOrReplaceChild(foo);
         graph.getTestItem(foo.getIdentifier(), "aItem");
 
         //when

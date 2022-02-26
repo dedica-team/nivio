@@ -29,8 +29,8 @@ class SubLayoutTest {
         bar = graph.getTestItem(foo.getIdentifier(), "bar");
         baz = graph.getTestItem(foo.getIdentifier(), "baz");
 
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
     }
 
     @Test

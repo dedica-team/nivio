@@ -138,7 +138,7 @@ class ItemTest {
         var graph = new GraphTestSupport();
 
         Relation forTesting = RelationFactory.create(graph.itemAA, graph.itemAC, new RelationDescription());
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(forTesting);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(forTesting);
 
         //when
         Set<? extends Assessable> children = graph.itemAA.getAssessables();

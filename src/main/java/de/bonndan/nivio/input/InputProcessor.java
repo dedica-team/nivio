@@ -29,7 +29,7 @@ public class InputProcessor {
         Landscape landscape = LandscapeFactory.recreate(existing.getConfiguredBuilder(), input);
         landscape.setLog(log);
 
-        var readAccess = input.getIndexReadAccess();
+        var readAccess = input.getReadAccess();
 
         //handle components
         changelog.merge(NodeMergerFactory.forUnits(landscape).mergeAndDiff(new ArrayList<>(readAccess.all(UnitDescription.class)), log));
@@ -51,11 +51,11 @@ public class InputProcessor {
     private void delete(Landscape landscape, ProcessingChangelog changelog) {
 
         List<URI> toDelete = new ArrayList<>();
-        keepComponent(landscape.getIndexReadAccess().getRoot(), changelog.getChanges(), toDelete);
+        keepComponent(landscape.getReadAccess().getRoot(), changelog.getChanges(), toDelete);
 
 
-        var readAccess = landscape.getIndexReadAccess();
-        var writeAccess = landscape.getIndexWriteAccess();
+        var readAccess = landscape.getReadAccess();
+        var writeAccess = landscape.getWriteAccess();
         var root = readAccess.getRoot();
 
         toDelete.forEach(uri -> {

@@ -55,7 +55,7 @@ class RelationEndpointResolverTest {
         other2343a.setGroup("beta");
         other2343a.setName("baz");
         landscapeDescription.getWriteAccess().addOrReplaceChild(other2343a);
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        landscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
 
 
         ProcessLog log = new ProcessLog(mock(Logger.class), "test");
@@ -69,20 +69,20 @@ class RelationEndpointResolverTest {
         relationEndpointResolver.resolve(landscapeDescription);
 
         //then
-        ItemDescription one = landscapeDescription.getIndexReadAccess()
+        ItemDescription one = landscapeDescription.getReadAccess()
                 .matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = landscapeDescription.getIndexReadAccess()
+        ItemDescription two = landscapeDescription.getReadAccess()
                 .matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class)
                 .orElseThrow();
 
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = landscapeDescription.getIndexReadAccess()
+        ItemDescription three = landscapeDescription.getReadAccess()
                 .matchOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class)
                 .orElseThrow();
 
@@ -98,7 +98,7 @@ class RelationEndpointResolverTest {
         relationEndpointResolver.resolve(landscapeDescription);
 
         //the provider has been resolved using a query instead of naming a service
-        ItemDescription providedbyBar = landscapeDescription.getIndexReadAccess()
+        ItemDescription providedbyBar = landscapeDescription.getReadAccess()
                 .matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(providedbyBar);
@@ -119,7 +119,7 @@ class RelationEndpointResolverTest {
         relationEndpointResolver.resolve(landscapeDescription);
 
         //then
-        ItemDescription hasdataFlow = landscapeDescription.getIndexReadAccess()
+        ItemDescription hasdataFlow = landscapeDescription.getReadAccess()
                 .matchOneByIdentifiers(crappy2343a.getIdentifier(), null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(hasdataFlow);
@@ -147,7 +147,7 @@ class RelationEndpointResolverTest {
         relationEndpointResolver.resolve(landscapeDescription);
 
         //then
-        ItemDescription hasdataFlow = landscapeDescription.getIndexReadAccess()
+        ItemDescription hasdataFlow = landscapeDescription.getReadAccess()
                 .matchOneByIdentifiers(crappy2343a.getIdentifier(), null, ItemDescription.class)
                 .orElseThrow();
         assertNotNull(hasdataFlow);
@@ -182,7 +182,7 @@ class RelationEndpointResolverTest {
         bar2.setIdentifier("bar");
         bar2.setGroup("beta");
         landscapeDescription.getWriteAccess().addOrReplaceChild(bar2);
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        landscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
 
         //when
         relationEndpointResolver.resolve(landscapeDescription);
@@ -222,7 +222,7 @@ class RelationEndpointResolverTest {
         bar2.setIdentifier("bar");
         bar2.setGroup("beta");
         landscapeDescription.getWriteAccess().addOrReplaceChild(bar2);
-        landscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        landscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
 
         //when
         relationEndpointResolver.resolve(landscapeDescription);

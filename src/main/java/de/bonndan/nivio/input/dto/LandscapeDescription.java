@@ -106,7 +106,7 @@ public class LandscapeDescription extends ComponentDescription {
 
     @Schema(hidden = true)
     @JsonIgnore
-    public IndexReadAccess<ComponentDescription> getIndexReadAccess() {
+    public IndexReadAccess<ComponentDescription> getReadAccess() {
         return new IndexReadAccess<>(index);
     }
 
@@ -129,7 +129,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(desc -> {
-            Optional<ItemDescription> existing = getIndexReadAccess().matchOne(
+            Optional<ItemDescription> existing = getReadAccess().matchOne(
                     ComponentMatcher.buildForItemAndGroup(desc.getIdentifier(), desc.getGroup()),
                     ItemDescription.class
             );
@@ -147,7 +147,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(desc -> {
-            Optional<UnitDescription> existing = getIndexReadAccess().matchOne(
+            Optional<UnitDescription> existing = getReadAccess().matchOne(
                     ComponentMatcher.build(null, desc.getIdentifier(), null, null, null),
                     UnitDescription.class
             );
@@ -165,7 +165,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(desc -> {
-            Optional<ContextDescription> existing = getIndexReadAccess().matchOne(
+            Optional<ContextDescription> existing = getReadAccess().matchOne(
                     ComponentMatcher.build(null, desc.getUnit(), desc.getIdentifier(), null, null),
                     ContextDescription.class
             );
@@ -190,7 +190,7 @@ public class LandscapeDescription extends ComponentDescription {
         }
 
         incoming.forEach(groupDescription -> {
-            Optional<GroupDescription> existing = getIndexReadAccess().matchOneByIdentifiers(groupDescription.getIdentifier(), groupDescription.getParentIdentifier(), GroupDescription.class);
+            Optional<GroupDescription> existing = getReadAccess().matchOneByIdentifiers(groupDescription.getIdentifier(), groupDescription.getParentIdentifier(), GroupDescription.class);
             if (existing.isPresent()) {
                 existing.get().assignNotNull(groupDescription);
             } else {

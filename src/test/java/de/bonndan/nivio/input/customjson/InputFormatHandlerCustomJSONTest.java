@@ -7,7 +7,6 @@ import de.bonndan.nivio.input.SeedConfigurationFactory;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,11 +48,11 @@ class InputFormatHandlerCustomJSONTest {
 
         //then
         assertThat(landscapeDescriptions).hasSize(2);
-        assertThat(defaultLandscapeDTO.getIndexReadAccess().all(ItemDescription.class)).isEmpty();
+        assertThat(defaultLandscapeDTO.getReadAccess().all(ItemDescription.class)).isEmpty();
 
         LandscapeDescription other = landscapeDescriptions.get(1);
-        assertThat(other.getIndexReadAccess().all(ItemDescription.class)).isNotEmpty();
-        ItemDescription asd = other.getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
+        assertThat(other.getReadAccess().all(ItemDescription.class)).isNotEmpty();
+        ItemDescription asd = other.getReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getIdentifier()).isEqualTo("asd");
         assertThat(asd.getName()).isEqualTo("John Doe");
@@ -74,7 +73,7 @@ class InputFormatHandlerCustomJSONTest {
         assertThat(landscapeDescriptions).hasSize(2);
         Set<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
         assertThat(itemDescriptions).isNotEmpty();
-        ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = landscapeDescriptions.get(1).getReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getContact()).isEqualTo("John Doe");
     }
@@ -90,7 +89,7 @@ class InputFormatHandlerCustomJSONTest {
 
         //then
         Set<ItemDescription> itemDescriptions = landscapeDescriptions.get(1).getItemDescriptions();
-        ItemDescription asd = landscapeDescriptions.get(1).getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = landscapeDescriptions.get(1).getReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
         assertThat(asd.getLabel("nivio.relations.upstream")).isEqualTo("foo,bar");
     }
@@ -106,9 +105,9 @@ class InputFormatHandlerCustomJSONTest {
         handler.applyData(json, defaultLandscapeDTO);
 
         //then
-        Set<ItemDescription> items = defaultLandscapeDTO.getIndexReadAccess().all(ItemDescription.class);
+        Set<ItemDescription> items = defaultLandscapeDTO.getReadAccess().all(ItemDescription.class);
         assertThat(items).isNotEmpty();
-        ItemDescription asd = defaultLandscapeDTO.getIndexReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
+        ItemDescription asd = defaultLandscapeDTO.getReadAccess().matchOneByIdentifiers("asd", null, ItemDescription.class).get();
         assertThat(asd).isNotNull();
     }
 

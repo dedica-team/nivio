@@ -323,11 +323,6 @@
           "branding" : {
             "$ref" : "#/components/schemas/Branding"
           },
-          "greedy" : {
-            "type" : "boolean",
-            "description" : "Flag that enables instant creation items based relation targets that cannot be found in the sources.",
-            "exampleSetFlag" : false
-          },
           "groupBlacklist" : {
             "type" : "array",
             "description" : "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",

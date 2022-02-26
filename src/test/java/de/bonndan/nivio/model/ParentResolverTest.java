@@ -19,8 +19,8 @@ class ParentResolverTest {
     void setup() {
         graph = new GraphTestSupport();
         parentResolver = new ParentResolver(
-                graph.landscape.getIndexReadAccess(),
-                graph.landscape.getIndexWriteAccess()
+                graph.landscape.getReadAccess(),
+                graph.landscape.getWriteAccess()
         );
     }
 

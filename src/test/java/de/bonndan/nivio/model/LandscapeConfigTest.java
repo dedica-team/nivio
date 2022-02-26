@@ -49,7 +49,6 @@ class LandscapeConfigTest {
                 .containsKey("two")
                 .containsKey("one");
 
-        assertThat(merged.isGreedy()).isFalse();
         assertThat(merged.getBranding().getMapStylesheet()).isEqualTo(config.getBranding().getMapStylesheet());
 
         assertThat(merged.getGroupBlacklist()).hasSameElementsAs(config.getGroupBlacklist());
@@ -63,7 +62,6 @@ class LandscapeConfigTest {
     }
 
     private void createConfig(LandscapeConfig existing, boolean greedy, int val1, String val2) {
-        existing.setGreedy(greedy);
         existing.getLayoutConfig().setGroupLayoutInitialTemp(val1);
         existing.getLayoutConfig().setItemLayoutInitialTemp(val1);
         existing.getLayoutConfig().setGroupMaxDistanceLimit(val1);

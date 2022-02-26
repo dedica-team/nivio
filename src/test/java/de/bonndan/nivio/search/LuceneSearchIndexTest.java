@@ -36,7 +36,7 @@ class LuceneSearchIndexTest {
                 .withLabels(Map.of(Tagged.LABEL_PREFIX_TAG + "strong", "strong"))
                 .build();
         components.add(fooa);
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(fooa);
+        graph.landscape.getWriteAccess().addOrReplaceChild(fooa);
 
         Item foos = graph.getTestItemBuilder("foo", "s")
                 .withParent(foo)
@@ -45,7 +45,7 @@ class LuceneSearchIndexTest {
                 .withLabels(Map.of(Tagged.LABEL_PREFIX_TAG + "strong", "strong"))
                 .build();
         components.add(foos);
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(foos);
+        graph.landscape.getWriteAccess().addOrReplaceChild(foos);
 
         valueObjects = components.stream()
                 .map(SearchDocumentValueObjectFactory::createFor)

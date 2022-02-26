@@ -20,9 +20,9 @@ class NodeMergerFactory {
                 UnitFactory.INSTANCE,
                 Landscape.class,
                 Unit.class,
-                landscape.getIndexReadAccess(),
-                new ParentResolver(landscape.getIndexReadAccess(), landscape.getIndexWriteAccess()),
-                landscape.getIndexWriteAccess()
+                landscape.getReadAccess(),
+                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                landscape.getWriteAccess()
         );
     }
 
@@ -31,9 +31,9 @@ class NodeMergerFactory {
                 ContextFactory.INSTANCE,
                 Unit.class,
                 Context.class,
-                landscape.getIndexReadAccess(),
-                new ParentResolver(landscape.getIndexReadAccess(), landscape.getIndexWriteAccess()),
-                landscape.getIndexWriteAccess()
+                landscape.getReadAccess(),
+                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                landscape.getWriteAccess()
         );
     }
 
@@ -42,9 +42,9 @@ class NodeMergerFactory {
                 GroupFactory.INSTANCE,
                 Context.class,
                 Group.class,
-                landscape.getIndexReadAccess(),
-                new ParentResolver(landscape.getIndexReadAccess(), landscape.getIndexWriteAccess()),
-                landscape.getIndexWriteAccess()
+                landscape.getReadAccess(),
+                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                landscape.getWriteAccess()
         );
     }
 
@@ -53,16 +53,16 @@ class NodeMergerFactory {
                 ItemFactory.INSTANCE,
                 Group.class,
                 Item.class,
-                landscape.getIndexReadAccess(),
-                new ParentResolver(landscape.getIndexReadAccess(), landscape.getIndexWriteAccess()),
-                landscape.getIndexWriteAccess()
+                landscape.getReadAccess(),
+                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                landscape.getWriteAccess()
         );
     }
 
     static EdgeMerge forRelations(Landscape landscape) {
         return new EdgeMerge(
-                landscape.getIndexReadAccess(),
-                landscape.getIndexWriteAccess()
+                landscape.getReadAccess(),
+                landscape.getWriteAccess()
         );
     }
 }

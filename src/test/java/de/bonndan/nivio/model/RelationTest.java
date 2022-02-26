@@ -28,7 +28,7 @@ class RelationTest {
     void toApiModel() {
 
         Relation relation = new Relation(one, two, null, null, RelationType.PROVIDER);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, one);
 
@@ -46,7 +46,7 @@ class RelationTest {
     void inbound() {
 
         Relation relation = RelationFactory.createForTesting(one, two);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, two);
 
@@ -58,10 +58,10 @@ class RelationTest {
     @Test
     void inboundName() {
         Item one = graph.getTestItemBuilder("foo", "bar").withName("huhu").build();
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(one);
+        graph.landscape.getWriteAccess().addOrReplaceChild(one);
         Item two = graph.getTestItem("foo", "baz");
         Relation relation = RelationFactory.createForTesting(one, two);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, two);
 
@@ -75,7 +75,7 @@ class RelationTest {
         Item b = graph.itemAB;
         Item c = graph.itemAC;
         Relation before = new Relation(b, c, "foo", "JSON", null);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(before);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(before);
         Relation after = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
 
         //when

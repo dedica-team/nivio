@@ -18,7 +18,7 @@ public class GroupQueryResolver extends Resolver {
     @Override
     public void resolve(LandscapeDescription input) {
 
-        IndexReadAccess<ComponentDescription> indexReadAccess = input.getIndexReadAccess();
+        IndexReadAccess<ComponentDescription> indexReadAccess = input.getReadAccess();
         indexReadAccess.all(GroupDescription.class).forEach(group -> {
             // run the query against all landscape items which match the condition
             group.getContains().forEach(condition -> indexReadAccess.search(condition, ItemDescription.class)

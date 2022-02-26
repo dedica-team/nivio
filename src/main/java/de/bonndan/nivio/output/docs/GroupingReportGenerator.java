@@ -45,8 +45,8 @@ public class GroupingReportGenerator extends HtmlGenerator {
 
         final Optional<String> searchTerm = StringUtils.hasLength(searchConfig.getSearchTerm()) ? Optional.ofNullable(searchConfig.getSearchTerm()) : Optional.empty();
         final Optional<String> reportType = StringUtils.hasLength(searchConfig.getReportType()) ? Optional.ofNullable(searchConfig.getReportType()) : Optional.empty();
-        List<Item> items = new ArrayList<>(searchTerm.map(s -> landscape.getIndexReadAccess().search(s, Item.class))
-                .orElse(new ArrayList<>(landscape.getIndexReadAccess().all(Item.class))));
+        List<Item> items = new ArrayList<>(searchTerm.map(s -> landscape.getReadAccess().search(s, Item.class))
+                .orElse(new ArrayList<>(landscape.getReadAccess().all(Item.class))));
         return html(
                 getHead(landscape),
                 body(

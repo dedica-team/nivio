@@ -21,7 +21,7 @@ public class RelationEndpointResolver extends Resolver {
 
     @Override
     public void resolve(LandscapeDescription input) {
-        IndexReadAccess<ComponentDescription> indexReadAccess = input.getIndexReadAccess();
+        IndexReadAccess<ComponentDescription> indexReadAccess = input.getReadAccess();
         indexReadAccess.all(ItemDescription.class).forEach(itemDescription -> {
             try {
                 resolveProvidedBy(itemDescription, indexReadAccess);

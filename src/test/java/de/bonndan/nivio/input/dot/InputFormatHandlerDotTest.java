@@ -82,7 +82,7 @@ class InputFormatHandlerDotTest {
         //then
         Set<ItemDescription> itemDescriptions = description.getItemDescriptions();
         assertThat(itemDescriptions).hasSize(8);
-        ItemDescription white = description.getIndexReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
+        ItemDescription white = description.getReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
 
         assertThat(white).isNotNull();
         assertThat(white.getLabel(LabelToFieldResolver.NIVIO_LABEL_PREFIX + "owner")).isEqualTo("Marketing");
@@ -100,7 +100,7 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        ItemDescription white = description.getIndexReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
+        ItemDescription white = description.getReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
 
         Set<RelationDescription> relations = white.getRelations();
         assertThat(relations).isNotEmpty().hasSize(3);
@@ -125,7 +125,7 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        ItemDescription white = description.getIndexReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
+        ItemDescription white = description.getReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
 
         Set<RelationDescription> relations = white.getRelations();
 
@@ -146,7 +146,7 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        assertThat(description.getIndexReadAccess().matchOneByIdentifiers("main", null, ItemDescription.class)).isNotEmpty();
+        assertThat(description.getReadAccess().matchOneByIdentifiers("main", null, ItemDescription.class)).isNotEmpty();
         assertThat(description.getItemDescriptions()).hasSize(8);
     }
 

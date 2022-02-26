@@ -42,7 +42,7 @@ class InputFormatHandlerNivioTest {
         SourceReference file = new SourceReference(new File(s).toURI().toURL());
 
         formatHandlerNivio.applyData(file, landscapeDescription);
-        ItemDescription service = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("blog-server", null, ItemDescription.class).orElseThrow();
+        ItemDescription service = landscapeDescription.getReadAccess().matchOneByIdentifiers("blog-server", null, ItemDescription.class).orElseThrow();
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getLabel(Label.note));
         assertEquals("blog-server", service.getIdentifier());
@@ -77,7 +77,7 @@ class InputFormatHandlerNivioTest {
             }
         });
 
-        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("wordpress-web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("wordpress-web", null, ItemDescription.class).orElseThrow();
         assertEquals("infra", web.getLayer());
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
@@ -102,7 +102,7 @@ class InputFormatHandlerNivioTest {
         formatHandlerNivio.applyData(file, landscapeDescription);
 
         //then
-        Set<GroupDescription> groups = landscapeDescription.getIndexReadAccess().all(GroupDescription.class);
+        Set<GroupDescription> groups = landscapeDescription.getReadAccess().all(GroupDescription.class);
         assertThat(groups).isNotEmpty();
 
         GroupDescription ingress = groups.stream().filter(groupDescription -> groupDescription.getIdentifier().equals("ingress")).findFirst().orElseThrow();

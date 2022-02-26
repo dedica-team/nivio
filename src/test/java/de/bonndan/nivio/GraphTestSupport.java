@@ -47,9 +47,9 @@ public class GraphTestSupport {
         landscape.setLog(new ProcessLog(LoggerFactory.getLogger(GraphTestSupport.class), "test"));
 
         unit = UnitFactory.INSTANCE.createFromDescription(Landscape.DEFAULT_COMPONENT, landscape, new UnitDescription());
-        landscape.getIndexWriteAccess().addOrReplaceChild(unit);
+        landscape.getWriteAccess().addOrReplaceChild(unit);
         context = ContextFactory.INSTANCE.createFromDescription(Landscape.DEFAULT_COMPONENT, unit, new ContextDescription());
-        landscape.getIndexWriteAccess().addOrReplaceChild(context);
+        landscape.getWriteAccess().addOrReplaceChild(context);
 
         groupA = getTestGroup("a");
         groupB = getTestGroup("b");
@@ -58,15 +58,15 @@ public class GraphTestSupport {
         itemAA = getTestItemBuilder("a", "a").withParent(groupA).build();
         itemAB = getTestItemBuilder("a", "b").withParent(groupA).build();
         itemAC = getTestItemBuilder("a", "c").withParent(groupA).build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(itemAA);
-        landscape.getIndexWriteAccess().addOrReplaceChild(itemAB);
-        landscape.getIndexWriteAccess().addOrReplaceChild(itemAC);
+        landscape.getWriteAccess().addOrReplaceChild(itemAA);
+        landscape.getWriteAccess().addOrReplaceChild(itemAB);
+        landscape.getWriteAccess().addOrReplaceChild(itemAC);
     }
 
     public Item getTestItem(String groupId, String id) {
         Group group = landscape.getGroup(groupId).orElseThrow();
         Item item = ItemBuilder.anItem().withIdentifier(id).withParent(group).build();
-        var old = landscape.getIndexWriteAccess().addOrReplaceChild(item);
+        var old = landscape.getWriteAccess().addOrReplaceChild(item);
         assert item.isAttached();
         return item;
     }
@@ -77,12 +77,12 @@ public class GraphTestSupport {
     }
 
     public void indexForSearch(Assessment assessment) {
-        landscape.getIndexReadAccess().indexForSearch(assessment);
+        landscape.getReadAccess().indexForSearch(assessment);
     }
 
     public Group getTestGroup(String identifier) {
         Group group = GroupBuilder.aGroup().withIdentifier(identifier).withName(identifier).withParent(context).build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(group);
+        landscape.getWriteAccess().addOrReplaceChild(group);
         return group;
     }
 }

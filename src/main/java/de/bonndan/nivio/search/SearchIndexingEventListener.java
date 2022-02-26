@@ -24,6 +24,6 @@ public class SearchIndexingEventListener {
         final Landscape landscape = event.getLandscape();
 
         assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier())
-                .ifPresent(assessment -> landscape.getIndexReadAccess().indexForSearch(assessment));
+                .ifPresent(assessment -> landscape.getReadAccess().indexForSearch(assessment));
     }
 }

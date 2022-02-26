@@ -38,7 +38,7 @@ class SearchDocumentValueObjectFactoryTest {
         );
         item.setTags(List.of("foo", "bar").toArray(String[]::new));
 
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(item);
+        graph.landscape.getWriteAccess().addOrReplaceChild(item);
 
         //when
         SearchDocumentValueObject valueObject = SearchDocumentValueObjectFactory.createFor(item);
@@ -58,7 +58,7 @@ class SearchDocumentValueObjectFactoryTest {
     @Test
     void createForChildRelationIsNull() {
 
-        Optional<Relation> first = graph.landscape.getIndexReadAccess().all(Relation.class).stream().findFirst();
+        Optional<Relation> first = graph.landscape.getReadAccess().all(Relation.class).stream().findFirst();
 
         //when
         SearchDocumentValueObject valueObject = SearchDocumentValueObjectFactory.createFor(first.get());
@@ -71,7 +71,7 @@ class SearchDocumentValueObjectFactoryTest {
     void createForRelation() {
 
         Relation relation = RelationFactory.createForTesting(graph.itemAA, graph.itemAC);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         //when
         SearchDocumentValueObject valueObject = SearchDocumentValueObjectFactory.createFor(relation);

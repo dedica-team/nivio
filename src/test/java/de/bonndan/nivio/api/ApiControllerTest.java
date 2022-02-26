@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -150,7 +149,7 @@ class ApiControllerTest {
 
         graph = new GraphTestSupport(new Index<>(LuceneSearchIndex.createVolatile()));
         landscape = graph.landscape;
-        landscape.getIndexReadAccess().indexForSearch(Assessment.empty());
+        landscape.getReadAccess().indexForSearch(Assessment.empty());
 
         Mockito.when(landscapeRepository.findDistinctByIdentifier("")).thenReturn(Optional.empty());
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(Optional.of(landscape));

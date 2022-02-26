@@ -35,16 +35,16 @@ public class LinksResolver extends Resolver {
     @Override
     public void resolve(@NonNull final LandscapeDescription input) {
         List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
-        input.getIndexReadAccess().all(UnitDescription.class).stream()
+        input.getReadAccess().all(UnitDescription.class).stream()
                 .map(this::resolveLinks)
                 .forEach(completableFutures::addAll);
-        input.getIndexReadAccess().all(ContextDescription.class).stream()
+        input.getReadAccess().all(ContextDescription.class).stream()
                 .map(this::resolveLinks)
                 .forEach(completableFutures::addAll);
-        input.getIndexReadAccess().all(GroupDescription.class).stream()
+        input.getReadAccess().all(GroupDescription.class).stream()
                 .map(this::resolveLinks)
                 .forEach(completableFutures::addAll);
-        input.getIndexReadAccess().all(ItemDescription.class).stream()
+        input.getReadAccess().all(ItemDescription.class).stream()
                 .map(this::resolveLinks).forEach(completableFutures::addAll);
 
 

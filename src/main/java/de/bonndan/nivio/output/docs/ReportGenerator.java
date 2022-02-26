@@ -53,7 +53,7 @@ public class ReportGenerator extends HtmlGenerator {
 
     private String writeGroups(Landscape landscape, Assessment assessment) {
         final StringBuilder builder = new StringBuilder();
-        var indexReadAccess = landscape.getIndexReadAccess();
+        var indexReadAccess = landscape.getReadAccess();
         final Set<Group> groups = indexReadAccess.all(Group.class);
         final Set<Item> all = indexReadAccess.all(Item.class);
         groups.forEach(group -> {

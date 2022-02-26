@@ -31,7 +31,7 @@ class ItemApiModelTest {
                 .withType("two")
                 .withParent(group)
                 .build();
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(item);
+        graph.landscape.getWriteAccess().addOrReplaceChild(item);
     }
 
     @Test

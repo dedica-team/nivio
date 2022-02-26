@@ -26,7 +26,7 @@ public class AssessmentChangelogFactory {
                                                  @NonNull final Assessment update
     ) {
         ProcessingChangelog changelog = new ProcessingChangelog();
-        Objects.requireNonNull(update).getResults().forEach((key, value) -> landscape.getIndexReadAccess().get(key)
+        Objects.requireNonNull(update).getResults().forEach((key, value) -> landscape.getReadAccess().get(key)
                 .ifPresentOrElse(
                         component1 -> changelog.addEntry(component1, ProcessingChangelog.ChangeType.CREATED),
                         () -> LOGGER.error(COULD_NOT_FIND_COMPONENT, key)
@@ -42,7 +42,7 @@ public class AssessmentChangelogFactory {
     ) {
 
         ProcessingChangelog changelog = new ProcessingChangelog();
-        var readAccess = landscape.getIndexReadAccess();
+        var readAccess = landscape.getReadAccess();
 
         //updated and deleted
         current.getResults().keySet().forEach(key -> readAccess.get(key).ifPresent(component1 -> {

@@ -87,10 +87,10 @@ public class SourceReferencesResolver {
                 throw new IllegalArgumentException(String.format("Other landscape description has different fqi %s", otherFQI));
             }
 
-            landscapeDescription1.mergeUnits(landscapeDescription.getIndexReadAccess().all(UnitDescription.class));
-            landscapeDescription1.mergeContexts(landscapeDescription.getIndexReadAccess().all(ContextDescription.class));
-            landscapeDescription1.mergeGroups(landscapeDescription.getIndexReadAccess().all(GroupDescription.class));
-            landscapeDescription1.mergeItems(landscapeDescription.getIndexReadAccess().all(ItemDescription.class));
+            landscapeDescription1.mergeUnits(landscapeDescription.getReadAccess().all(UnitDescription.class));
+            landscapeDescription1.mergeContexts(landscapeDescription.getReadAccess().all(ContextDescription.class));
+            landscapeDescription1.mergeGroups(landscapeDescription.getReadAccess().all(GroupDescription.class));
+            landscapeDescription1.mergeItems(landscapeDescription.getReadAccess().all(ItemDescription.class));
         } else {
             map.put(landscapeDescription.getIdentifier(), landscapeDescription);
         }

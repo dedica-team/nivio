@@ -38,16 +38,16 @@ class TemplateResolverTest {
         templateResolver.resolve(landscapeDescription);
 
         //then
-        ItemDescription redis = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
+        ItemDescription redis = landscapeDescription.getReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertEquals("foo", redis.getGroup());
 
-        ItemDescription datadog = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
+        ItemDescription datadog = landscapeDescription.getReadAccess().matchOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
         assertNotNull(datadog);
         assertEquals("foo", datadog.getGroup());
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(web);
         assertEquals("content", web.getGroup());
     }
@@ -61,15 +61,15 @@ class TemplateResolverTest {
         //when
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription one = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
+        ItemDescription one = landscapeDescription.getReadAccess().matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
+        ItemDescription two = landscapeDescription.getReadAccess().matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
+        ItemDescription three = landscapeDescription.getReadAccess().matchOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(three);
         assertEquals("beta", three.getGroup());
     }
@@ -84,7 +84,7 @@ class TemplateResolverTest {
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertEquals("content", web.getGroup());
 
         //other values from template
@@ -105,7 +105,7 @@ class TemplateResolverTest {
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertEquals("content", web.getGroup());
 
         //other values from template
@@ -122,7 +122,7 @@ class TemplateResolverTest {
         //when
         templateResolver.resolve(landscapeDescription);
 
-        ItemDescription redis = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
+        ItemDescription redis = landscapeDescription.getReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertNull(redis.getLabel(Label.software));
     }
@@ -131,7 +131,7 @@ class TemplateResolverTest {
         File file = new File(RootPath.get() + s);
         LandscapeDescription firstLandscapeDescription = testSupport.getFirstLandscapeDescription(file);
 
-        firstLandscapeDescription.getIndexReadAccess().indexForSearch(Assessment.empty());
+        firstLandscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
 
         return firstLandscapeDescription;
     }

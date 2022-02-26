@@ -13,9 +13,6 @@ import java.util.*;
  */
 public class LandscapeConfig {
 
-    @Schema(description = "Flag that enables instant creation items based relation targets that cannot be found in the sources.")
-    private boolean greedy = true;
-
     @Schema(description = "Settings to tweak the positioning of groups in the map")
     private LayoutConfig layoutConfig = new LayoutConfig();
 
@@ -32,14 +29,6 @@ public class LandscapeConfig {
 
     @Schema(description = "Key performance indicator configs. Each KPI must have a unique identifier.")
     private final Map<String, KPIConfig> kpis = new HashMap<>();
-
-    public boolean isGreedy() {
-        return greedy;
-    }
-
-    public void setGreedy(boolean greedy) {
-        this.greedy = greedy;
-    }
 
     /**
      * @return a list of group identifiers which are excluded from the landscape
@@ -87,13 +76,11 @@ public class LandscapeConfig {
     public LandscapeConfig merge(LandscapeConfig update) {
         LandscapeConfig landscapeConfig = new LandscapeConfig();
         landscapeConfig.layoutConfig = layoutConfig;
-        landscapeConfig.greedy = greedy;
         landscapeConfig.groupBlacklist.addAll(groupBlacklist);
         landscapeConfig.labelBlacklist.addAll(labelBlacklist);
         landscapeConfig.branding.setMapStylesheet(branding.mapStylesheet);
         landscapeConfig.kpis.putAll(kpis);
 
-        landscapeConfig.greedy = update.greedy;
         landscapeConfig.kpis.putAll(update.kpis);
 
         landscapeConfig.layoutConfig.setItemLayoutInitialTemp(update.layoutConfig.getItemLayoutInitialTemp());

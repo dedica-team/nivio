@@ -49,7 +49,7 @@ class SVGRelationTest {
     void relationContainsBothEnds() {
 
         Relation relation = RelationFactory.createForTesting(foo, bar);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
         DomContent render = svgRelation.render();
@@ -64,7 +64,7 @@ class SVGRelationTest {
     void providerRelationsContainsEndpoint() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -80,7 +80,7 @@ class SVGRelationTest {
 
         //only works with provider relations, because dataflow inner path is dashed
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -95,7 +95,7 @@ class SVGRelationTest {
     void dataflowRelationIsDashed() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -110,7 +110,7 @@ class SVGRelationTest {
     void supportsVisualFocus() {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
 
         //when
@@ -128,7 +128,7 @@ class SVGRelationTest {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
         itemRelationItem.setLabel(Label.weight, "2.44");
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
@@ -152,7 +152,7 @@ class SVGRelationTest {
     @DisplayName("Is translated based on port count")
     void hasTranslation() {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(itemRelationItem);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
         List<PathTile> tiles = hexpath.getTiles();
         hexpath.setPortCount(20);
         PathTile penultimate = tiles.get(tiles.size() - 2);

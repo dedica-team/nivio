@@ -50,7 +50,7 @@ class InputFormatHandlerCSVTest {
         factoryCSV.applyData(file, landscapeDescription);
 
         assertEquals(3, landscapeDescription.getItemDescriptions().size());
-        ItemDescription foo = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("foo", null, ItemDescription.class).orElseThrow();
+        ItemDescription foo = landscapeDescription.getReadAccess().matchOneByIdentifiers("foo", null, ItemDescription.class).orElseThrow();
         assertNotNull(foo);
 
         assertEquals("foo", foo.getIdentifier());
@@ -59,7 +59,7 @@ class InputFormatHandlerCSVTest {
         assertTrue(foo.getLabels().containsKey("nivio.description"));
         assertEquals("This does nothing", foo.getLabels().get("nivio.description"));
 
-        ItemDescription bar = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("bar", null, ItemDescription.class).orElseThrow();
+        ItemDescription bar = landscapeDescription.getReadAccess().matchOneByIdentifiers("bar", null, ItemDescription.class).orElseThrow();
         assertNotNull(bar);
 
         assertEquals("bar", bar.getIdentifier());
@@ -68,7 +68,7 @@ class InputFormatHandlerCSVTest {
         assertTrue(bar.getLabels().containsKey("nivio.description"));
         assertEquals("", bar.getLabels().get("nivio.description"));
 
-        ItemDescription super1 = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("super1", null, ItemDescription.class).orElseThrow();
+        ItemDescription super1 = landscapeDescription.getReadAccess().matchOneByIdentifiers("super1", null, ItemDescription.class).orElseThrow();
         assertNotNull(super1);
 
         assertEquals("super1", super1.getIdentifier());
@@ -101,7 +101,7 @@ class InputFormatHandlerCSVTest {
 
         //then
         assertEquals(1, landscapeDescription.getItemDescriptions().size());
-        ItemDescription foo = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("foo", null, ItemDescription.class).orElseThrow();
+        ItemDescription foo = landscapeDescription.getReadAccess().matchOneByIdentifiers("foo", null, ItemDescription.class).orElseThrow();
         assertNotNull(foo);
 
         assertThat(foo.getRelations()).hasSize(1).satisfies(relationDescriptions -> {

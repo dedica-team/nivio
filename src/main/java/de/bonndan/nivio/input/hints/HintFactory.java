@@ -1,7 +1,10 @@
-package de.bonndan.nivio.input;
+package de.bonndan.nivio.input.hints;
 
+import de.bonndan.nivio.input.ItemType;
+import de.bonndan.nivio.input.dto.ComponentDescription;
+import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.search.ComponentMatcher;
 import de.bonndan.nivio.util.URIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Factory to create {@link Hint}s.
+ */
 public class HintFactory {
 
     public static final String KEY_SEPARATOR = "_";
@@ -52,8 +58,8 @@ public class HintFactory {
      * @param labelKey   label key
      * @return a hint if any label part could be used
      */
-    public Optional<Hint> createForLabel(@NonNull final IndexReadAccess<GraphComponent> readAccess,
-                                         @NonNull final Item item,
+    public Optional<Hint> createForLabel(@NonNull final IndexReadAccess<ComponentDescription> readAccess,
+                                         @NonNull final ItemDescription item,
                                          @NonNull final String labelKey
     ) {
 
@@ -72,20 +78,20 @@ public class HintFactory {
             return Optional.empty();
         }
 
-        List<Item> targets = getTargets(readAccess, value, optionalURI);
+        List<ItemDescription> targets = getTargets(readAccess, value, optionalURI);
         if (targets.size() > 1) {
             LOGGER.info("Found ambiguous results searching for target {}", value);
             return Optional.empty();
         }
 
-        Item target = null;
+        ItemDescription target = null;
         if (targets.size() == 1) {
             target = targets.get(0);
             LOGGER.info("Found a target of relation from {}({}) to target '{}' using {}: '{}'", item.getIdentifier(), item.getName(), target, labelKey, value);
 
             //get a hint based on uri scheme
-            Item finalTarget = target;
-            Optional<Relation> relation = item.getRelations().stream()
+            ItemDescription finalTarget = target;
+            Optional<RelationDescription> relation = item.getRelations().stream()
                     .filter(r -> r.getSource().equals(item) && r.getTarget().equals(finalTarget) ||
                             r.getSource().equals(finalTarget) && r.getTarget().equals(item))
                     .findFirst();
@@ -98,24 +104,43 @@ public class HintFactory {
         Function<URI, Hint> hintFunction = uriHints.getOrDefault(optionalURI.map(URI::getScheme).orElse(""), (uri -> new Hint(uri, null, null, null)));
         Hint hint = hintFunction.apply(item.getFullyQualifiedIdentifier());
         if (target != null) {
-            hint.setTarget(target.getFullyQualifiedIdentifier());
+            hint.setTarget(target.getFullyQualifiedIdentifier().toString());
         }
         return Optional.of(hint);
     }
 
-    private static List<Item> getTargets(IndexReadAccess<GraphComponent> readAccess, String value, Optional<URI> optionalURI) {
+    private static List<ItemDescription> getTargets(IndexReadAccess<ComponentDescription> readAccess,
+                                                    String value,
+                                                    Optional<URI> optionalURI
+    ) {
 
-        List<Item> results = new ArrayList<>();
+        List<ItemDescription> results = new ArrayList<>();
         if (optionalURI.isPresent()) {
-            readAccess.searchAddress(optionalURI.get().toString(), Item.class).stream().findFirst().ifPresent(results::add);
+            readAccess.searchAddress(optionalURI.get().toString(), ItemDescription.class).stream()
+                    .findFirst()
+                    .ifPresent(results::add);
             return results;
         }
 
-        Collection<Item> targets = readAccess.matchOrSearchByIdentifierOrName(value, Item.class);
+        Collection<ItemDescription> targets = readAccess.matchOrSearchByIdentifierOrName(value, ItemDescription.class);
         if (targets.size() != 1) {
             LOGGER.debug("Found ambiguous results {} for query for target '{}'", targets, value);
         }
         results.addAll(targets);
         return results;
+    }
+
+    /**
+     * Creates a hint to relation target
+     *
+     * @param source       dto to which the hint belongs
+     * @param relationType relation type
+     * @param term         used target term
+     */
+    @NonNull
+    public Hint createForTarget(ItemDescription source, RelationType relationType, String term) {
+        Hint hint = new Hint(source.getFullyQualifiedIdentifier(), null, relationType, null);
+        hint.setTarget(term);
+        return hint;
     }
 }

@@ -35,7 +35,7 @@ class GroupBlacklist extends Resolver {
      * Blacklists groups and removes items from the input which are part of a blacklisted group.
      */
     private void filterGroups(@NonNull final LandscapeDescription input) {
-        Set<GroupDescription> groupDescriptions = input.getIndexReadAccess().all(GroupDescription.class);
+        Set<GroupDescription> groupDescriptions = input.getReadAccess().all(GroupDescription.class);
         var toDelete = groupDescriptions.stream()
                 .filter(e -> isBlacklisted(e.getIdentifier()))
                 .collect(Collectors.toList());
@@ -48,7 +48,7 @@ class GroupBlacklist extends Resolver {
      *
      */
     private void filterItems(@NonNull final LandscapeDescription input) {
-        input.getIndexReadAccess().all(ItemDescription.class).stream()
+        input.getReadAccess().all(ItemDescription.class).stream()
                 .filter(dto -> isBlacklisted(dto.getGroup()))
                 .forEach(dto -> input.getWriteAccess().removeChild(dto));
     }

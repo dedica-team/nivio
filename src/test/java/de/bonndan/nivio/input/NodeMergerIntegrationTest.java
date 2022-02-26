@@ -99,7 +99,7 @@ class NodeMergerIntegrationTest {
         assertThat(processingChangelog.getChanges()).isNotNull().hasSize(5);
 
         //assert it is only scheduled for removal, but still in the graph
-        assertThat(graph.landscape.getIndexReadAccess().get(graph.groupB.getFullyQualifiedIdentifier())).isNotEmpty();
+        assertThat(graph.landscape.getReadAccess().get(graph.groupB.getFullyQualifiedIdentifier())).isNotEmpty();
     }
 
     @Test
@@ -121,7 +121,7 @@ class NodeMergerIntegrationTest {
         assertThat(processingChangelog.getChanges()).isNotNull().hasSize(5);
 
 
-        Item newItem = graph.landscape.getIndexReadAccess().all( Item.class).stream()
+        Item newItem = graph.landscape.getReadAccess().all( Item.class).stream()
                 .filter(item -> item.getName().equals(update.getName()))
                 .findFirst().orElseThrow();
 

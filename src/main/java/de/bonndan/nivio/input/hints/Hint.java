@@ -1,4 +1,4 @@
-package de.bonndan.nivio.input;
+package de.bonndan.nivio.input.hints;
 
 import de.bonndan.nivio.model.RelationType;
 import org.springframework.lang.NonNull;
@@ -11,13 +11,13 @@ import java.util.Objects;
  * A hint to new relations or items based on label values.
  *
  */
-class Hint {
+public class Hint {
 
     private final String targetType;
     private final RelationType relationType;
     private final String software;
     private final URI uri;
-    private URI target;
+    private String target;
 
     /**
      * @param targetType   item.type of the target item description
@@ -51,11 +51,11 @@ class Hint {
         return uri;
     }
 
-    public void setTarget(URI target) {
+    public void setTarget(String target) {
         this.target = target;
     }
 
-    public URI getTarget() {
+    public String getTarget() {
         return target;
     }
 }

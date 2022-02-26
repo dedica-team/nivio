@@ -37,7 +37,7 @@ public class OrganicLayouter implements Layouter {
 
         Map<URI, SubLayout> subGraphs = new LinkedHashMap<>();
         LayoutConfig layoutConfig = landscape.getConfig().getLayoutConfig();
-        Objects.requireNonNull(landscape).getIndexReadAccess().all(Group.class).forEach( group -> {
+        Objects.requireNonNull(landscape).getReadAccess().all(Group.class).forEach(group -> {
             Set<Item> items = group.getChildren();
             if (items.isEmpty()) return;
             SubLayout subLayout = new SubLayout(debug, layoutConfig);
@@ -47,7 +47,7 @@ public class OrganicLayouter implements Layouter {
 
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug, layoutConfig);
         Map<URI, Group> sortedGroups = new LinkedHashMap<>();
-        landscape.getIndexReadAccess().all(Group.class).stream()
+        landscape.getReadAccess().all(Group.class).stream()
                 .sorted(new SortedGroups())
                 .forEach(group -> sortedGroups.put(group.getFullyQualifiedIdentifier(), group));
         LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(

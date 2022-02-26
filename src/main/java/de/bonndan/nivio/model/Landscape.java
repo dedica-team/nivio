@@ -103,13 +103,13 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
     }
 
     @JsonIgnore
-    public IndexReadAccess<GraphComponent> getIndexReadAccess() {
+    public IndexReadAccess<GraphComponent> getReadAccess() {
         return new IndexReadAccess<>(index);
     }
 
     @JsonIgnore
-    public GraphWriteAccess<GraphComponent> getIndexWriteAccess() {
-        return new GraphWriteAccess<>(index, getIndexReadAccess());
+    public GraphWriteAccess<GraphComponent> getWriteAccess() {
+        return new GraphWriteAccess<>(index, getReadAccess());
     }
 
     @JsonIgnore
@@ -130,7 +130,7 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
 
     @JsonGetter("groups")
     public Collection<Group> getGroupItems() {
-        return getIndexReadAccess().all(Group.class);
+        return getReadAccess().all(Group.class);
     }
 
     /**

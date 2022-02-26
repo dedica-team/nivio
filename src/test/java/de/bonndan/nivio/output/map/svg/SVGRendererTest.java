@@ -47,7 +47,7 @@ class SVGRendererTest {
     private LayoutedComponent getLayoutedLandscape(Landscape landscape) {
 
         Group group = GroupBuilder.aGroup().withIdentifier("bar").withName("landscapeIdentifier").withParent(graph.context).build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(group);
+        landscape.getWriteAccess().addOrReplaceChild(group);
 
         LayoutedComponent lc = new LayoutedComponent(landscape);
 

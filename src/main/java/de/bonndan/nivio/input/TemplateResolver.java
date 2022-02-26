@@ -46,7 +46,7 @@ public class TemplateResolver extends Resolver {
             LandscapeDescription landscape
     ) {
         templateTargets.forEach(term -> {
-            List<ItemDescription> hits = landscape.getIndexReadAccess().search(term, ItemDescription.class);
+            List<ItemDescription> hits = landscape.getReadAccess().search(term, ItemDescription.class);
             hits.forEach(item -> item.assignFromTemplate(template));
         });
     }

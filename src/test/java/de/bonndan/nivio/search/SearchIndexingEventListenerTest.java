@@ -31,7 +31,7 @@ class SearchIndexingEventListenerTest {
         //given
         AssessmentChangedEvent e = new AssessmentChangedEvent(landscape, new ProcessingChangelog());
         IndexReadAccess<GraphComponent> readAccess = mock(IndexReadAccess.class);
-        when(landscape.getIndexReadAccess()).thenReturn(readAccess);
+        when(landscape.getReadAccess()).thenReturn(readAccess);
         when(landscape.getKpis()).thenReturn(Map.of());
         when(assessmentRepository.getAssessment(any())).thenReturn(java.util.Optional.of(Assessment.empty()));
 
@@ -39,7 +39,7 @@ class SearchIndexingEventListenerTest {
         listener.onProcessingFinishedEvent(e);
 
         //then
-        verify(landscape).getIndexReadAccess();
+        verify(landscape).getReadAccess();
         verify(readAccess).indexForSearch(any(Assessment.class));
     }
 }

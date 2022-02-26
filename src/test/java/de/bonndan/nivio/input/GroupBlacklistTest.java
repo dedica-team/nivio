@@ -42,7 +42,7 @@ class GroupBlacklistTest {
         blacklist.resolve(input);
 
         //then
-        assertEquals(2, input.getIndexReadAccess().all(GroupDescription.class).size());
+        assertEquals(2, input.getReadAccess().all(GroupDescription.class).size());
     }
 
     @Test
@@ -56,7 +56,7 @@ class GroupBlacklistTest {
         blacklist.resolve(input);
 
         //then
-        assertThat(input.getIndexReadAccess().all(GroupDescription.class)).hasSize(1);
+        assertThat(input.getReadAccess().all(GroupDescription.class)).hasSize(1);
     }
 
     @Test
@@ -75,7 +75,7 @@ class GroupBlacklistTest {
 
         //then
         assertEquals(0, input.getItemDescriptions().size());
-        assertEquals(1, input.getIndexReadAccess().all(GroupDescription.class).size());
+        assertEquals(1, input.getReadAccess().all(GroupDescription.class).size());
     }
 
     @Test
@@ -89,7 +89,7 @@ class GroupBlacklistTest {
         blacklist.resolve(input);
 
         //when
-        assertEquals(1, input.getIndexReadAccess().all(GroupDescription.class).size());
+        assertEquals(1, input.getReadAccess().all(GroupDescription.class).size());
     }
 
     @Test
@@ -103,7 +103,7 @@ class GroupBlacklistTest {
         blacklist.resolve(input);
 
         //then
-        assertThat(input.getIndexReadAccess().all(GroupDescription.class)).hasSize(0);
+        assertThat(input.getReadAccess().all(GroupDescription.class)).hasSize(0);
     }
 
     @Test
@@ -118,7 +118,7 @@ class GroupBlacklistTest {
         blacklist.resolve(input);
 
         //then
-        assertThat(input.getIndexReadAccess().all(GroupDescription.class)).hasSize(1);
+        assertThat(input.getReadAccess().all(GroupDescription.class)).hasSize(1);
     }
 
     @Test
@@ -140,7 +140,7 @@ class GroupBlacklistTest {
         //when
         blacklist.resolve(input);
 
-        assertEquals(1, input.getIndexReadAccess().all(GroupDescription.class).size());
+        assertEquals(1, input.getReadAccess().all(GroupDescription.class).size());
 
         //deletes item of blacklisted group
         assertThat(input.getItemDescriptions()).hasSize(1);

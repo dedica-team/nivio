@@ -4,6 +4,8 @@ import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.demo.PetClinicSimulatorResolver;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
+import de.bonndan.nivio.input.hints.HintFactory;
+import de.bonndan.nivio.input.hints.HintResolver;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.LandscapeRepository;
@@ -53,7 +55,6 @@ public class Indexer {
                     landscapeRepo.save(created);
                     return created;
                 });
-
         try {
             ProcessLog processLog = runInputResolvers(input);
             Landscape created = applyInput(processLog, input, existing);
@@ -77,13 +78,17 @@ public class Indexer {
         ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(input.getIdentifier()), input.getIdentifier());
 
         // index all current components
-        input.getIndexReadAccess().indexForSearch(Assessment.empty());
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         // apply template values to items
+        // reindex because parent identifiers might have been set
         new TemplateResolver(logger).resolve(input);
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         // read special labels on items and assign the values to fields (must be run before links resolver)
+        // reindex because parent identifiers might have been set
         new LabelToFieldResolver(logger).resolve(input);
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         // resolve links on components to gather more data.
         new LinksResolver(logger, linkHandlerFactory).resolve(input);
@@ -91,21 +96,21 @@ public class Indexer {
         // mask any label containing secrets
         new SecureLabelsResolver(logger).resolve(input);
 
-        //filter groups
+        //filter groups, reindex because components might have been removed
         new GroupBlacklist(logger, input.getConfig().getGroupBlacklist()).resolve(input);
-
-        // index all current components
-        input.getIndexReadAccess().indexForSearch(Assessment.empty());
-
-        // create relation targets on the fly if the landscape is configured "greedy"
-        new InstantItemResolver(logger).resolve(input);
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         // find items for relation endpoints (which can be queries, identifiers...)
         // KEEP here (must run late after other resolvers)
         new RelationEndpointResolver(logger).resolve(input);
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         // execute group "contains" queries
         new GroupQueryResolver(logger).resolve(input);
+        input.getReadAccess().indexForSearch(Assessment.empty());
+
+        //add hints concerning possible items, does not modify the input
+        new HintResolver(new HintFactory(), logger).resolve(input);
 
         //for simulating pet clinic events
         new PetClinicSimulatorResolver(logger).resolve(input);
@@ -120,11 +125,6 @@ public class Indexer {
      */
     private Landscape applyInput(ProcessLog log, LandscapeDescription input, Landscape existing) {
         var processor = new InputProcessor();
-        Landscape process = processor.process(input, existing, log);
-
-        //add hints concerning possible item links
-        new HintProcessor(new HintFactory()).process(process);
-
-        return process;
+        return processor.process(input, existing, log);
     }
 }

@@ -20,7 +20,7 @@ class GraphWriteAccessTest {
     @BeforeEach
     void setup() {
         graph = new GraphTestSupport();
-        writeAccess = graph.landscape.getIndexWriteAccess();
+        writeAccess = graph.landscape.getWriteAccess();
         g = graph.getTestGroup("foo");
     }
 
@@ -40,7 +40,7 @@ class GraphWriteAccessTest {
     void addOrReplaceChildCheckPresence() {
 
         //then
-        assertThrows(IllegalArgumentException.class, () -> graph.landscape.getIndexWriteAccess().addOrReplaceChild(graph.getTestGroup("a")));
+        assertThrows(IllegalArgumentException.class, () -> graph.landscape.getWriteAccess().addOrReplaceChild(graph.getTestGroup("a")));
     }
 
     @Test

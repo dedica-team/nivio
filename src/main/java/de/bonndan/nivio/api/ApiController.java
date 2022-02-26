@@ -102,7 +102,7 @@ public class ApiController {
         }
 
         try {
-            Item item = landscape.getIndexReadAccess().matchOneByIdentifiers(itemIdentifier, groupIdentifier, Item.class).orElseThrow();
+            Item item = landscape.getReadAccess().matchOneByIdentifiers(itemIdentifier, groupIdentifier, Item.class).orElseThrow();
             ItemApiModel apiModel = new ItemApiModel(item);
             linkFactory.setItemSelfLink(apiModel);
             return new ResponseEntity<>(apiModel, HttpStatus.OK);
@@ -171,7 +171,7 @@ public class ApiController {
         }
 
         try {
-            Set<ItemApiModel> results = landscape.getIndexReadAccess().search(query, Item.class).stream()
+            Set<ItemApiModel> results = landscape.getReadAccess().search(query, Item.class).stream()
                     .map(ItemApiModel::new)
                     .collect(Collectors.toSet());
             return new ResponseEntity<>(results, HttpStatus.OK);
@@ -191,7 +191,7 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(landscape.getIndexReadAccess().getFacets(), HttpStatus.OK);
+        return new ResponseEntity<>(landscape.getReadAccess().getFacets(), HttpStatus.OK);
     }
 
     @Operation(summary = "Returns the mapping of internally used terms to terms to be displayed")

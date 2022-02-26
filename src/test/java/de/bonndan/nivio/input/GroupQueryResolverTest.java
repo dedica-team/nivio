@@ -47,7 +47,7 @@ class GroupQueryResolverTest {
 
         groupDescription.setContains(List.of("itemIdentifier"));
 
-        input.getIndexReadAccess().indexForSearch(Assessment.empty());
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         //when
         groupResolver.resolve(input);
@@ -67,7 +67,7 @@ class GroupQueryResolverTest {
 
         groupDescription.setContains(List.of("itemidentifier"));
 
-        input.getIndexReadAccess().indexForSearch(Assessment.empty());
+        input.getReadAccess().indexForSearch(Assessment.empty());
 
         //when
         groupResolver.resolve(input);

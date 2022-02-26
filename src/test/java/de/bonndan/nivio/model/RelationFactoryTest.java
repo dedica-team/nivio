@@ -6,8 +6,6 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.NoSuchElementException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -72,7 +70,7 @@ class RelationFactoryTest {
         Item bar = graph.getTestItem("b", "bar");
         Relation relation = RelationFactory.createProviderRelation(foo, bar);
         relation.setLabel("foo1", "bar1");
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
         providerDescription.setFormat("json");
@@ -102,7 +100,7 @@ class RelationFactoryTest {
 
         Item bar = graph.getTestItem("b", "bar");
         Relation relation = RelationFactory.createProviderRelation(foo, bar);
-        graph.landscape.getIndexWriteAccess().addOrReplaceRelation(relation);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationDescription providerDescription = RelationFactory.createProviderDescription("foo", "bar");
 

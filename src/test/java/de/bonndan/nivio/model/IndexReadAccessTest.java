@@ -27,7 +27,7 @@ class IndexReadAccessTest {
     void setUp() {
         graph = new GraphTestSupport(new Index<>(LuceneSearchIndex.createVolatile()));
         graph.indexForSearch(Assessment.empty());
-        access = graph.landscape.getIndexReadAccess();
+        access = graph.landscape.getReadAccess();
     }
 
     @Test
@@ -75,7 +75,7 @@ class IndexReadAccessTest {
         Item inOtherGroup = graph.getTestItemBuilder(graph.groupB.getIdentifier(), graph.itemAA.getIdentifier())
                 .withParent(graph.groupB)
                 .build();
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(inOtherGroup);
+        graph.landscape.getWriteAccess().addOrReplaceChild(inOtherGroup);
 
         //when
         Item resultA = access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), "a", Item.class).orElseThrow();
@@ -104,7 +104,7 @@ class IndexReadAccessTest {
         Item inOtherGroup = graph.getTestItemBuilder(graph.groupB.getIdentifier(), graph.itemAA.getIdentifier())
                 .withParent(graph.groupB)
                 .build();
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(inOtherGroup);
+        graph.landscape.getWriteAccess().addOrReplaceChild(inOtherGroup);
 
         //when
         assertThrows(NoSuchElementException.class, () -> access.matchOneByIdentifiers(graph.itemAA.getIdentifier(), null, Item.class));
@@ -114,7 +114,7 @@ class IndexReadAccessTest {
     void searchIdentifierStartingWithWildcard() {
 
         //given
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(
+        graph.landscape.getWriteAccess().addOrReplaceChild(
                 graph.getTestItemBuilder(graph.groupA.getIdentifier(), "hihi")
                         .withName("foo.bar")
                         .build()
@@ -177,7 +177,7 @@ class IndexReadAccessTest {
     @Test
     void queryUrl() {
         //given
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(
+        graph.landscape.getWriteAccess().addOrReplaceChild(
                 graph.getTestItemBuilder(graph.groupA.getIdentifier(), "hasaddress")
                         .withParent(graph.groupA)
                         .withAddress(URI.create("https://foo.bar/"))
@@ -214,7 +214,7 @@ class IndexReadAccessTest {
                 .withParent(graph.groupA)
                 .withDescription("foobar")
                 .build();
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(newItem);
+        graph.landscape.getWriteAccess().addOrReplaceChild(newItem);
         graph.indexForSearch(Assessment.empty());
 
         //when

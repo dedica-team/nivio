@@ -34,7 +34,7 @@ class GroupFactoryTest {
                 .withColor("#123123")
                 .withParent(context)
                 .build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(one);
+        landscape.getWriteAccess().addOrReplaceChild(one);
 
         Group added = GroupBuilder.aGroup()
                 .withIdentifier("a")
@@ -66,7 +66,7 @@ class GroupFactoryTest {
                 .withColor("#123123")
                 .withParent(context)
                 .build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(existing);
+        landscape.getWriteAccess().addOrReplaceChild(existing);
 
         //when
         Group merge = GroupFactory.INSTANCE.merge(existing, GroupBuilder.aGroup().withIdentifier("a").withParent(context).build());
@@ -88,7 +88,7 @@ class GroupFactoryTest {
         Group one = GroupBuilder.aGroup().withIdentifier("a").withName("test").withOwner("Matt").withContact("mail")
                 .withParent(context)
                 .build();
-        landscape.getIndexWriteAccess().addOrReplaceChild(one);
+        landscape.getWriteAccess().addOrReplaceChild(one);
 
         Group two = GroupBuilder.aGroup().withIdentifier("a").withName("test").withOwner("Matt").withContact("mail")
                 .withParent(context)

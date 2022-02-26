@@ -71,7 +71,7 @@ class ScalingKPITest {
     void redIfZeroAsProvider() {
         testA.setLabel(Label.scale, "0");
         Relation r1 = new Relation(testA, fooBar, null, null, RelationType.PROVIDER);
-        landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
+        landscape.getWriteAccess().addOrReplaceRelation(r1);
 
         //when
         List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
@@ -89,7 +89,7 @@ class ScalingKPITest {
 
         testA.setLabel(Label.scale, "0");
         Relation r1 = new Relation(fooBar, testA, null, null, RelationType.DATAFLOW);
-        landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
+        landscape.getWriteAccess().addOrReplaceRelation(r1);
 
         //when
         List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);
@@ -110,8 +110,8 @@ class ScalingKPITest {
         Relation r2 = new Relation(testA, testItem, null, null, RelationType.PROVIDER);
 
         testA.setLabel(Label.scale, "1");
-        landscape.getIndexWriteAccess().addOrReplaceRelation(r1);
-        landscape.getIndexWriteAccess().addOrReplaceRelation(r2);
+        landscape.getWriteAccess().addOrReplaceRelation(r1);
+        landscape.getWriteAccess().addOrReplaceRelation(r2);
 
         //when
         List<StatusValue> statusValues = scalingKPI.getStatusValues(testA);

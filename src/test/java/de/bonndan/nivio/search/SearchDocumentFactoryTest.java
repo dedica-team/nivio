@@ -46,7 +46,7 @@ class SearchDocumentFactoryTest {
         item.setTags(new String[]{"one", "two"});
         item.setLabel(Label.framework.withPrefix("java"), "8");
         item.setLabel(Label.framework.withPrefix("Spring Boot"), "2.0.1");
-        graph.landscape.getIndexWriteAccess().addOrReplaceChild(item);
+        graph.landscape.getWriteAccess().addOrReplaceChild(item);
 
         valueObject = SearchDocumentValueObjectFactory.createFor(item);
     }

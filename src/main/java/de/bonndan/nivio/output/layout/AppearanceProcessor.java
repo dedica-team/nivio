@@ -25,7 +25,7 @@ public class AppearanceProcessor {
     }
 
     public void process(@NonNull final Landscape landscape) {
-        Objects.requireNonNull(landscape).getIndexReadAccess().all(Group.class).forEach(group -> {
+        Objects.requireNonNull(landscape).getReadAccess().all(Group.class).forEach(group -> {
             setIconAndFillAppearance(group);
             group.getChildren().forEach(this::setIconAndFillAppearance);
         });

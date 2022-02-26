@@ -36,8 +36,8 @@ class InputFormatHandlerCompose2Test {
         factoryCompose2.applyData(file, landscapeDescription);
 
         //then
-        assertEquals(3, landscapeDescription.getIndexReadAccess().all(ItemDescription.class).size());
-        ItemDescription service = landscapeDescription.getIndexReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        assertEquals(3, landscapeDescription.getReadAccess().all(ItemDescription.class).size());
+        ItemDescription service = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(service);
 
         assertEquals("web", service.getIdentifier());

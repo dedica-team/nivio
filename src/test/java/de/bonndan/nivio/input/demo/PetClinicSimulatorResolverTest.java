@@ -31,7 +31,7 @@ class PetClinicSimulatorResolverTest {
     @Test
     void simulatesChangingRadiation() {
 
-        ItemDescription sensor = input.getIndexReadAccess().matchOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
+        ItemDescription sensor = input.getReadAccess().matchOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
         int currentRad = 0;
         sensor.setLabel(RADIATION, String.valueOf(currentRad));
 
