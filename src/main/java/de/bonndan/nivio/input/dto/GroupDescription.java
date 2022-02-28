@@ -37,7 +37,7 @@ public class GroupDescription extends ComponentDescription {
     @NonNull
     @Override
     public URI getFullyQualifiedIdentifier() {
-        return FullyQualifiedIdentifier.forDescription(GroupDescription.class, null,null, null, getIdentifier(), null, null);
+        return FullyQualifiedIdentifier.forDescription(GroupDescription.class, null,null, getParentIdentifier(), getIdentifier(), null, null);
     }
 
     @NonNull

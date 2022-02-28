@@ -26,11 +26,11 @@ class HintResolverTest {
 
     @BeforeEach
     public void setup() {
-
-        log = new ProcessLog(mock(Logger.class), "test");
-        hintResolver = new HintResolver(new HintFactory(), log);
+        hintResolver = new HintResolver(new HintFactory());
 
         landscape = new LandscapeDescription("test");
+        log = new ProcessLog(mock(Logger.class), "test");
+        landscape.setProcessLog(log);
     }
 
     @Test
@@ -109,6 +109,8 @@ class HintResolverTest {
     void addsNewItems() {
 
         landscape = new LandscapeDescription("identifier", "name", null);
+        landscape.setProcessLog(log);
+
         ItemDescription a = new ItemDescription();
         a.setIdentifier("a");
         a.setGroup("a");
@@ -139,6 +141,8 @@ class HintResolverTest {
     void addsNewItemsOnlyOnce() {
 
         landscape = new LandscapeDescription("identifier", "name", null);
+        landscape.setProcessLog(log);
+
         ItemDescription a = new ItemDescription();
         a.setIdentifier("a");
         a.setGroup("a");

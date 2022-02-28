@@ -69,7 +69,13 @@ public class RelationDescription implements Labeled {
         return source;
     }
 
-    public void setSource(String source) {
+    /**
+     * Set the relation source.
+     *
+     * @param source item identifier/fqi
+     * @throws IllegalArgumentException if the identifier is invalid or same as target
+     */
+    public void setSource(@NonNull final String source) {
         if (!validateEndpoint(source)) {
             throw new IllegalArgumentException(String.format("Invalid source identifier used: '%s'", source));
         }
@@ -79,7 +85,13 @@ public class RelationDescription implements Labeled {
         this.source = source;
     }
 
-    public void setTarget(String target) {
+    /**
+     * Set the relation target.
+     *
+     * @param target item identifier/fqi
+     * @throws IllegalArgumentException if the identifier is invalid or same as source
+     */
+    public void setTarget(@NonNull final String target) {
         if (!validateEndpoint(target)) {
             throw new IllegalArgumentException(String.format("Invalid target identifier used: '%s'", target));
         }

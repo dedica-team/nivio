@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Link;
@@ -10,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Inspects item description labels for keys starting with "nivio" and tries to set the corresponding values to fields.
  */
-public class LabelToFieldResolver extends Resolver {
+public class LabelToFieldResolver implements Resolver {
 
     public static final String NIVIO_LABEL_PREFIX = "nivio.";
     public static final String COLLECTION_DELIMITER = ",";
@@ -30,12 +32,9 @@ public class LabelToFieldResolver extends Resolver {
     public static final String LINKS_LABEL = "links";
     public static final String MAP_KEY_VALUE_DELIMITER = ":";
 
-    public LabelToFieldResolver(ProcessLog logger) {
-        super(logger);
-    }
-
+    @NonNull
     @Override
-    public void resolve(LandscapeDescription input) {
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
         input.getReadAccess().all(ItemDescription.class).forEach(item -> {
             List<Map.Entry<String, String>> nivioLabels = item.getLabels().entrySet().stream()
                     .filter(entry -> entry.getKey().toLowerCase().startsWith(NIVIO_LABEL_PREFIX))
@@ -43,11 +42,13 @@ public class LabelToFieldResolver extends Resolver {
 
             nivioLabels.forEach(entry -> {
                 String field = entry.getKey().substring(LabelToFieldResolver.NIVIO_LABEL_PREFIX.length());
-                setValue(item, field, entry.getValue());
+                setValue(item, field, entry.getValue(), input.getProcessLog());
             });
 
             nivioLabels.forEach(entry -> item.getLabels().remove(entry.getKey()));
         });
+
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 
     private Optional<PropertyDescriptor> getDescriptor(String name) {
@@ -59,7 +60,7 @@ public class LabelToFieldResolver extends Resolver {
         return Optional.empty();
     }
 
-    private void setValue(ItemDescription item, String name, String value) {
+    private void setValue(ItemDescription item, String name, String value, ProcessLog processLog) {
 
         if (!StringUtils.hasLength(value)) {
             return;
@@ -70,14 +71,14 @@ public class LabelToFieldResolver extends Resolver {
             name = descriptor.get().getName();
         }
 
-        if (handleLinksAndFrameworks(item, name, value)) {
+        if (handleLinksAndFrameworks(item, name, value, processLog)) {
             return;
         }
 
-        setUsingAccessor(item, name, value);
+        setUsingAccessor(item, name, value, processLog);
     }
 
-    private void setUsingAccessor(ItemDescription item, String name, String value) {
+    private void setUsingAccessor(ItemDescription item, String name, String value, ProcessLog processLog) {
         PropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(item);
         Class<?> propertyType = accessor.getPropertyType(name);
 
@@ -114,9 +115,9 @@ public class LabelToFieldResolver extends Resolver {
         }
     }
 
-    private boolean handleLinksAndFrameworks(ItemDescription item, String name, String value) {
-        if (handleLinksInLabels(item, name, value)) return true;
-        if (handleSingleLink(item, name, value)) return true;
+    private boolean handleLinksAndFrameworks(ItemDescription item, String name, String value, ProcessLog processLog) {
+        if (handleLinksInLabels(item, name, value, processLog)) return true;
+        if (handleSingleLink(item, name, value, processLog)) return true;
 
         if (handleFrameworksInLabels(item, name, value)) return true;
 
@@ -125,7 +126,7 @@ public class LabelToFieldResolver extends Resolver {
         return false;
     }
 
-    private boolean handleSingleLink(ItemDescription item, String name, String value) {
+    private boolean handleSingleLink(ItemDescription item, String name, String value, ProcessLog processLog) {
         if (name.startsWith(LINK_LABEL_PREFIX)) {
             try {
                 item.setLink(name.replace(LINK_LABEL_PREFIX, ""), new URL(value));
@@ -175,13 +176,18 @@ public class LabelToFieldResolver extends Resolver {
         return false;
     }
 
-    private boolean handleLinksInLabels(ItemDescription item, String name, String value) {
+    private boolean handleLinksInLabels(ItemDescription item, String name, String value, ProcessLog processLog) {
         if (LINKS_LABEL.equals(name)) {
-            processLog.info("Found list-style label named 'links'.");
             String[] o = getParts(value);
             for (int i = 0; i < o.length; i++) {
                 String key = String.valueOf(i + 1);
-                getLink(o[i]).ifPresent(link1 -> item.getLinks().put(key, link1));
+                String link = o[i];
+                try {
+                    Optional.of(new Link(new URL(link))).ifPresent(link1 -> item.getLinks().put(key, link1));
+                } catch (MalformedURLException e) {
+                    processLog.warn("Failed to parse link " + link);
+                    return false;
+                }
             }
             return true;
         }
@@ -193,12 +199,4 @@ public class LabelToFieldResolver extends Resolver {
         return Arrays.stream(split).map(String::trim).toArray(String[]::new);
     }
 
-    private Optional<Link> getLink(String url) {
-        try {
-            return Optional.of(new Link(new URL(url)));
-        } catch (MalformedURLException e) {
-            processLog.warn("Failed to parse link " + url);
-            return Optional.empty();
-        }
-    }
 }

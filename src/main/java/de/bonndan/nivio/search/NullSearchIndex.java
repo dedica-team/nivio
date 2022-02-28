@@ -1,7 +1,6 @@
 package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.model.Component;
 import org.apache.lucene.facet.FacetResult;
 import org.springframework.lang.NonNull;
 
@@ -16,8 +15,10 @@ import java.util.Set;
 public class NullSearchIndex implements SearchIndex {
 
     @Override
-    public void indexForSearch(@NonNull final Set<SearchDocumentValueObject> components, Assessment assessment) {
-
+    public void indexForSearch(@NonNull final Set<SearchDocumentValueObject> components,
+                               @NonNull final Assessment assessment
+    ) {
+        //no-op
     }
 
     @NonNull
@@ -26,13 +27,9 @@ public class NullSearchIndex implements SearchIndex {
         return Collections.emptySet();
     }
 
+    @NonNull
     @Override
     public List<FacetResult> facets() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public <T extends Component> void remove(T component) {
-
     }
 }

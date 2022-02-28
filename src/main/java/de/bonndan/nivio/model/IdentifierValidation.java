@@ -42,10 +42,9 @@ public class IdentifierValidation {
     @NonNull
     public static String getValidIdentifier(@Nullable final String identifier) {
         if (FullyQualifiedIdentifier.isUndefined(identifier)) {
-            throw new IllegalArgumentException(String.format("Invalid identifier '%s'given.", identifier));
+            throw new IllegalArgumentException(String.format("Invalid identifier '%s' given.", identifier));
         }
-        //noinspection ConstantConditions
-        String trimmed = StringUtils.trimWhitespace(identifier);
+        @SuppressWarnings("ConstantConditions") String trimmed = StringUtils.trimWhitespace(identifier); //NOSONAR
         IdentifierValidation.assertValid(trimmed);
         return trimmed;
     }

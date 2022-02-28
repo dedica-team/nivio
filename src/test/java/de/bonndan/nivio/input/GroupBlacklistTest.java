@@ -28,21 +28,18 @@ class GroupBlacklistTest {
         input.getWriteAccess().addOrReplaceChild(new GroupDescription("test2"));
 
         log = new ProcessLog(LoggerFactory.getLogger(GroupBlacklistTest.class), landscape.getIdentifier());
-        initBlacklist();
-    }
-
-    void initBlacklist() {
-        blacklist = new GroupBlacklist(log, input.getConfig().getGroupBlacklist());
+        input.setProcessLog(log);
+        blacklist = new GroupBlacklist();
     }
 
     @Test
     void resolve() {
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
         //then
-        assertEquals(2, input.getReadAccess().all(GroupDescription.class).size());
+        assertEquals(2, out.getReadAccess().all(GroupDescription.class).size());
     }
 
     @Test
@@ -50,13 +47,12 @@ class GroupBlacklistTest {
 
         //given
         input.getConfig().getGroupBlacklist().add("test1");
-        initBlacklist();
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
         //then
-        assertThat(input.getReadAccess().all(GroupDescription.class)).hasSize(1);
+        assertThat(out.getReadAccess().all(GroupDescription.class)).hasSize(1);
     }
 
     @Test
@@ -68,14 +64,13 @@ class GroupBlacklistTest {
         input.mergeItems(List.of(itemDescription));
 
         input.getConfig().getGroupBlacklist().add("test1");
-        initBlacklist();
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
         //then
-        assertEquals(0, input.getItemDescriptions().size());
-        assertEquals(1, input.getReadAccess().all(GroupDescription.class).size());
+        assertEquals(0, out.getReadAccess().all(ItemDescription.class).size());
+        assertEquals(1, out.getReadAccess().all(GroupDescription.class).size());
     }
 
     @Test
@@ -83,13 +78,12 @@ class GroupBlacklistTest {
 
         //given
         input.getConfig().getGroupBlacklist().add("test2");
-        initBlacklist();
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
         //when
-        assertEquals(1, input.getReadAccess().all(GroupDescription.class).size());
+        assertEquals(1, out.getReadAccess().all(GroupDescription.class).size());
     }
 
     @Test
@@ -97,13 +91,12 @@ class GroupBlacklistTest {
 
         //given
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
-        initBlacklist();
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
         //then
-        assertThat(input.getReadAccess().all(GroupDescription.class)).hasSize(0);
+        assertThat(out.getReadAccess().all(GroupDescription.class)).hasSize(0);
     }
 
     @Test
@@ -112,19 +105,17 @@ class GroupBlacklistTest {
         //given
         input.getWriteAccess().addOrReplaceChild(new GroupDescription("foo"));
         input.getConfig().getGroupBlacklist().add("^test[0-9].*");
-        initBlacklist();
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
         //then
-        assertThat(input.getReadAccess().all(GroupDescription.class)).hasSize(1);
+        assertThat(out.getReadAccess().all(GroupDescription.class)).hasSize(1);
     }
 
     @Test
     void testBlacklistOnItems() {
         input.getConfig().getGroupBlacklist().add("test2");
-        initBlacklist();
 
         ItemDescription test1item = new ItemDescription();
         test1item.setIdentifier("intest1");
@@ -138,11 +129,11 @@ class GroupBlacklistTest {
 
 
         //when
-        blacklist.resolve(input);
+        var out = blacklist.resolve(input);
 
-        assertEquals(1, input.getReadAccess().all(GroupDescription.class).size());
+        assertEquals(1, out.getReadAccess().all(GroupDescription.class).size());
 
         //deletes item of blacklisted group
-        assertThat(input.getItemDescriptions()).hasSize(1);
+        assertThat(out.getReadAccess().all(ItemDescription.class)).hasSize(1);
     }
 }

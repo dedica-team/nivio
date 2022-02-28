@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.bonndan.nivio.input.ProcessLog;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.search.ComponentMatcher;
 import de.bonndan.nivio.search.LuceneSearchIndex;
@@ -42,6 +43,9 @@ public class LandscapeDescription extends ComponentDescription {
     @Schema(hidden = true)
     private final Index<ComponentDescription> index = new Index<>(LuceneSearchIndex.createVolatile());
 
+    @Schema(hidden = true)
+    private ProcessLog processLog;
+
     private final Map<String, List<String>> assignTemplates = new LinkedHashMap<>();
 
     @JsonCreator
@@ -74,7 +78,7 @@ public class LandscapeDescription extends ComponentDescription {
         units.forEach(index::addOrReplace);
         contexts.forEach(index::addOrReplace);
         groups.forEach((s, groupDescription) -> {
-            if (!StringUtils.hasLength(groupDescription.getIdentifier())) {
+            if (!StringUtils.hasLength(groupDescription.getIdentifier()) ) {
                 groupDescription.setIdentifier(s);
             }
             index.addOrReplace(groupDescription);
@@ -240,6 +244,14 @@ public class LandscapeDescription extends ComponentDescription {
 
     public void setConfig(LandscapeConfig config) {
         this.config = config;
+    }
+
+    public ProcessLog getProcessLog() {
+        return processLog;
+    }
+
+    public void setProcessLog(ProcessLog processLog) {
+        this.processLog = processLog;
     }
 
     @NonNull

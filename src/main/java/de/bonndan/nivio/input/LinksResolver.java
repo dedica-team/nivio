@@ -17,35 +17,37 @@ import java.util.concurrent.TimeoutException;
 /**
  * Resolves all links of all landscape components.
  */
-public class LinksResolver extends Resolver {
+public class LinksResolver implements Resolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinksResolver.class);
 
     private final LinkHandlerFactory linkHandlerFactory;
 
     /**
-     * @param logger             the log belonging to the landscape.
      * @param linkHandlerFactory factory responsible to create single link resolvers.
      */
-    public LinksResolver(ProcessLog logger, LinkHandlerFactory linkHandlerFactory) {
-        super(logger);
+    public LinksResolver(LinkHandlerFactory linkHandlerFactory) {
         this.linkHandlerFactory = linkHandlerFactory;
     }
 
+    @NonNull
     @Override
-    public void resolve(@NonNull final LandscapeDescription input) {
-        List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
+        final ProcessLog processLog = input.getProcessLog();
+        final List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input, processLog);
         input.getReadAccess().all(UnitDescription.class).stream()
-                .map(this::resolveLinks)
+                .map(dto -> resolveLinks(dto, processLog))
                 .forEach(completableFutures::addAll);
         input.getReadAccess().all(ContextDescription.class).stream()
-                .map(this::resolveLinks)
+                .map(dto -> resolveLinks(dto, processLog))
                 .forEach(completableFutures::addAll);
         input.getReadAccess().all(GroupDescription.class).stream()
-                .map(this::resolveLinks)
+                .map(dto -> resolveLinks(dto, processLog))
                 .forEach(completableFutures::addAll);
         input.getReadAccess().all(ItemDescription.class).stream()
-                .map(this::resolveLinks).forEach(completableFutures::addAll);
+                .map(dto -> resolveLinks(dto, processLog)).forEach(completableFutures::addAll);
+
+        //TODO relation links
 
 
         LOGGER.info("Waiting for completion of {} external link handlers.", completableFutures.size());
@@ -57,9 +59,11 @@ public class LinksResolver extends Resolver {
                 Thread.currentThread().interrupt();
             }
         }
+
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 
-    private  List<CompletableFuture<ComponentDescription>> resolveLinks(final ComponentDescription dto) {
+    private  List<CompletableFuture<ComponentDescription>> resolveLinks(final ComponentDescription dto, ProcessLog processLog) {
 
         List<CompletableFuture<ComponentDescription>> all = new ArrayList<>();
         dto.getLinks().forEach((key, link) -> linkHandlerFactory.getResolver(key).ifPresent(handler -> {

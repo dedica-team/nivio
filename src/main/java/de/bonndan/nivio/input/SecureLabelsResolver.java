@@ -1,8 +1,11 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
 import de.bonndan.nivio.util.URIHelper;
 import de.bonndan.nivio.util.URLFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.net.URI;
@@ -14,19 +17,16 @@ import java.util.*;
  *
  * Replaces value completely unless it is an url containing userinfo.
  */
-public class SecureLabelsResolver extends Resolver {
+public class SecureLabelsResolver implements Resolver {
 
     private static final List<String> keyBlacklist = Arrays.asList("secret", "pass", "credentials", "token", "key");
     public static final String MASK = "*";
 
-    protected SecureLabelsResolver(ProcessLog processLog) {
-        super(processLog);
-    }
-
+    @NonNull
     @Override
-    public void resolve(LandscapeDescription input) {
+    public LandscapeDescription resolve(LandscapeDescription input) {
 
-        input.getItemDescriptions().forEach(itemDescription -> {
+        input.getReadAccess().all(ItemDescription.class).forEach(itemDescription -> {
             Map<String, Object> cleaned = new HashMap<>();
             itemDescription.getLabels().forEach((s, s2) -> {
                 Optional<Object> cleanedValue = getCleanedValue(s, s2);
@@ -34,6 +34,8 @@ public class SecureLabelsResolver extends Resolver {
             });
             cleaned.forEach((s, o) -> itemDescription.setLabel(s, String.valueOf(o)));
         });
+
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 
     /**
@@ -90,7 +92,7 @@ public class SecureLabelsResolver extends Resolver {
 
     private String replaceIfSecret(URI uri) {
         String userInfo = uri.getUserInfo();
-        if (!StringUtils.isEmpty(userInfo)) {
+        if (StringUtils.hasLength(userInfo)) {
             String s = uri.getScheme() + "://*@" + uri.getHost();
 
             if (uri.getPort() != -1) {

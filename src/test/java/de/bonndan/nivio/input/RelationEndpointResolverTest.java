@@ -56,10 +56,9 @@ class RelationEndpointResolverTest {
         other2343a.setName("baz");
         landscapeDescription.getWriteAccess().addOrReplaceChild(other2343a);
         landscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
+        landscapeDescription.setProcessLog(new ProcessLog(mock(Logger.class), "test"));
 
-
-        ProcessLog log = new ProcessLog(mock(Logger.class), "test");
-        relationEndpointResolver = new RelationEndpointResolver(log);
+        relationEndpointResolver = new RelationEndpointResolver();
     }
 
     @Test

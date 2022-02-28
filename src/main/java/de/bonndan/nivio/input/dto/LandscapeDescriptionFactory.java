@@ -2,9 +2,11 @@ package de.bonndan.nivio.input.dto;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.Mappers;
 import de.bonndan.nivio.input.ReadingException;
 import de.bonndan.nivio.input.SeedConfiguration;
+import de.bonndan.nivio.model.IndexReadAccess;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.springframework.lang.NonNull;
@@ -13,10 +15,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Objects;
-
-import static org.apache.commons.codec.digest.DigestUtils.md5;
+import java.util.stream.Collectors;
 
 /**
  * A factory to create Landscape DTO instances.
@@ -63,8 +64,7 @@ public class LandscapeDescriptionFactory {
             throw new IllegalArgumentException("Seed config does not have an identifier to create a default landscape description.");
         }
         String identifier = StringUtils.hasLength(seedConfiguration.getIdentifier()) ?
-                seedConfiguration.getIdentifier() :
-                new String(md5(seedConfiguration.getSource().toString().getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+                seedConfiguration.getIdentifier() : String.valueOf(seedConfiguration.getSource().toString().hashCode());
 
         LandscapeDescription landscapeDescription = new LandscapeDescription(
                 identifier,
@@ -78,12 +78,44 @@ public class LandscapeDescriptionFactory {
         );
 
         landscapeDescription.setLabels(seedConfiguration.getLabels());
+        landscapeDescription.setLinks(seedConfiguration.getLinks());
         if (seedConfiguration.getTemplates() != null) {
             landscapeDescription.setTemplates(seedConfiguration.getTemplates());
         }
+
         landscapeDescription.setConfig(seedConfiguration.getConfig());
         return landscapeDescription;
+    }
 
+    /**
+     * Creates a copy of the dto with a newly created index.
+     *
+     * @param input old dto
+     * @return new dto
+     */
+    public static LandscapeDescription refreshedCopyOf(@NonNull final LandscapeDescription input) {
+        IndexReadAccess<ComponentDescription> readAccess = Objects.requireNonNull(input).getReadAccess();
+        LandscapeDescription landscapeDescription = new LandscapeDescription(
+                input.getIdentifier(),
+                StringUtils.hasLength(input.getName()) ? input.getName() : "",
+                input.getContact(),
+                input.getDescription(),
+                new ArrayList<>(readAccess.all(UnitDescription.class)),
+                new ArrayList<>(readAccess.all(ContextDescription.class)),
+                readAccess.all(GroupDescription.class).stream()
+                        .collect(Collectors.toMap(GroupDescription::getIdentifier, o -> o)),
+                new ArrayList<>(readAccess.all(ItemDescription.class))
+        );
+        landscapeDescription.setProcessLog(input.getProcessLog());
+        landscapeDescription.setLabels(input.getLabels());
+        landscapeDescription.setLinks(input.getLinks());
+        landscapeDescription.setTemplates(input.getTemplates());
+        landscapeDescription.setAssignTemplates(input.getAssignTemplates());
+        landscapeDescription.setConfig(input.getConfig());
+        landscapeDescription.setIsPartial(input.isPartial());
+
+        landscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
+        return landscapeDescription;
     }
 
     /**

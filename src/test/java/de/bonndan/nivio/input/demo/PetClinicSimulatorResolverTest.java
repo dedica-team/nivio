@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import static de.bonndan.nivio.input.demo.PetClinicSimulatorResolver.LANDSCAPE_IDENTIFIER_PETCLINIC;
 import static de.bonndan.nivio.input.demo.PetClinicSimulatorResolver.RADIATION;
@@ -25,7 +26,8 @@ class PetClinicSimulatorResolverTest {
         ItemDescription customerDB = new ItemDescription("customer-db");
         customerDB.setGroup("xray");
         input.getWriteAccess().addOrReplaceChild(customerDB);
-        resolver = new PetClinicSimulatorResolver(mock(ProcessLog.class));
+        input.setProcessLog(new ProcessLog(mock(Logger.class), input.getIdentifier()));
+        resolver = new PetClinicSimulatorResolver();
     }
 
     @Test

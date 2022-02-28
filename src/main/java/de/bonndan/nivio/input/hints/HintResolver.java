@@ -22,33 +22,34 @@ import java.util.stream.Collectors;
  *
  * Does not modify the input, only writes to the {@link ProcessLog}.
  */
-public class HintResolver extends Resolver {
+public class HintResolver implements Resolver {
 
     private final HintFactory hintFactory;
 
-    public HintResolver(@NonNull final HintFactory hintFactory, @NonNull final ProcessLog log) {
-        super(log);
+    public HintResolver(@NonNull final HintFactory hintFactory) {
         this.hintFactory = hintFactory;
     }
 
-    public void resolve(@NonNull final LandscapeDescription landscape) {
+    @NonNull
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
 
-        final List<Function<String, Boolean>> blacklistSpecs = getBlacklistSpecs(landscape.getConfig().getLabelBlacklist());
+        final List<Function<String, Boolean>> blacklistSpecs = getBlacklistSpecs(input.getConfig().getLabelBlacklist());
 
         Map<URI, List<Hint>> hints = new HashMap<>();
-        final IndexReadAccess<ComponentDescription> readAccess = landscape.getReadAccess();
+        final IndexReadAccess<ComponentDescription> readAccess = input.getReadAccess();
 
         readAccess.all(ItemDescription.class)
                 .forEach(dto -> {
                     List<Hint> itemHints = new ArrayList<>();
                     itemHints.addAll(getHints(readAccess, dto, blacklistSpecs));
-                    itemHints.addAll(getRelationHints(dto, readAccess));
+                    itemHints.addAll(getRelationHints(dto, input));
                     if (!itemHints.isEmpty()) {
                         hints.put(dto.getFullyQualifiedIdentifier(), itemHints);
                     }
                 });
 
-        processLog.setHints(hints);
+        input.getProcessLog().setHints(hints);
+        return input;
     }
 
     private List<Hint> getHints(final IndexReadAccess<ComponentDescription> readAccess,
@@ -87,12 +88,12 @@ public class HintResolver extends Resolver {
         }).collect(Collectors.toList());
     }
 
-    private List<Hint> getRelationHints(ItemDescription description, IndexReadAccess<ComponentDescription> readAccess) {
+    private List<Hint> getRelationHints(ItemDescription description, LandscapeDescription input) {
 
         List<Hint> hints = new ArrayList<>();
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<ItemDescription> provider = readAccess.matchOrSearchByIdentifierOrName(term.toLowerCase(), ItemDescription.class).stream().findFirst();
+            Optional<ItemDescription> provider = input.getReadAccess().matchOrSearchByIdentifierOrName(term.toLowerCase(), ItemDescription.class).stream().findFirst();
 
             if (provider.isEmpty()) {
                 hints.add(hintFactory.createForTarget(description, RelationType.PROVIDER, term));
@@ -103,13 +104,13 @@ public class HintResolver extends Resolver {
         description.getRelations().forEach(rel -> {
             //inverse links, e.g. from docker compose
             if (rel.getTarget() == null) {
-                processLog.warn(String.format("Found relation %s without target", rel));
+                input.getProcessLog().warn(String.format("Found relation %s without target", rel));
                 return;
             }
             String target = rel.getTarget().equalsIgnoreCase(description.getIdentifier()) ?
                     rel.getSource() : rel.getTarget();
-            if (StringUtils.hasLength(target) && !hasTarget(target.toLowerCase(), readAccess)) {
-                processLog.info(String.format("%s: creating a new target item '%s' instantly.", description, target.toLowerCase()));
+            if (StringUtils.hasLength(target) && !hasTarget(target.toLowerCase(), input.getReadAccess(), input.getProcessLog())) {
+                input.getProcessLog().info(String.format("%s: hints to a new target '%s'.", description, target.toLowerCase()));
                 hints.add(hintFactory.createForTarget(description, rel.getType(), rel.getTarget()));
             }
         });
@@ -117,7 +118,7 @@ public class HintResolver extends Resolver {
         return hints;
     }
 
-    private boolean hasTarget(String term, IndexReadAccess<ComponentDescription> allItems) {
+    private boolean hasTarget(String term, IndexReadAccess<ComponentDescription> allItems, ProcessLog processLog) {
 
         Collection<ItemDescription> result = allItems.match(ComponentMatcher.forComponent(term), ItemDescription.class);
         if (result.size() > 1) {

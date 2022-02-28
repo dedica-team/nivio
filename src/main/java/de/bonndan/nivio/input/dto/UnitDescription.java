@@ -26,6 +26,6 @@ public class UnitDescription extends ComponentDescription {
     @NonNull
     @Override
     public URI getFullyQualifiedIdentifier() {
-        return FullyQualifiedIdentifier.forDescription(UnitDescription.class, null, getIdentifier(), null, null ,null, null);
+        return FullyQualifiedIdentifier.forDescription(UnitDescription.class, getParentIdentifier(), getIdentifier(), null, null ,null, null);
     }
 }

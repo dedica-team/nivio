@@ -15,6 +15,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Stream;
+
 /**
  * This component is a wrapper around all the steps to examine and index a landscape input dto.
  */
@@ -56,8 +58,7 @@ public class Indexer {
                     return created;
                 });
         try {
-            ProcessLog processLog = runInputResolvers(input);
-            Landscape created = applyInput(processLog, input, existing);
+            Landscape created = applyInput(runInputResolvers(input), existing);
             landscapeRepo.save(created);
             eventPublisher.publishEvent(new ProcessingFinishedEvent(input, created, created.getLog().getChangelog()));
             created.getLog().info(String.format("Reindexed landscape %s", input.getIdentifier()));
@@ -71,51 +72,59 @@ public class Indexer {
 
     /**
      * mutates and enhances the given input
+     *
+     * @param in unresolved dto
+     * @return dto with resolved data and transformations
      */
-    private ProcessLog runInputResolvers(LandscapeDescription input) {
+    private LandscapeDescription runInputResolvers(final LandscapeDescription in) {
 
         //a detailed textual log
-        ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(input.getIdentifier()), input.getIdentifier());
+        ProcessLog logger = new ProcessLog(LoggerFactory.getLogger(in.getIdentifier()), in.getIdentifier());
+        in.setProcessLog(logger);
 
         // index all current components
-        input.getReadAccess().indexForSearch(Assessment.empty());
+        in.getReadAccess().indexForSearch(Assessment.empty());
 
-        // apply template values to items
-        // reindex because parent identifiers might have been set
-        new TemplateResolver(logger).resolve(input);
-        input.getReadAccess().indexForSearch(Assessment.empty());
-
-        // read special labels on items and assign the values to fields (must be run before links resolver)
-        // reindex because parent identifiers might have been set
-        new LabelToFieldResolver(logger).resolve(input);
-        input.getReadAccess().indexForSearch(Assessment.empty());
-
-        // resolve links on components to gather more data.
-        new LinksResolver(logger, linkHandlerFactory).resolve(input);
-
-        // mask any label containing secrets
-        new SecureLabelsResolver(logger).resolve(input);
-
-        //filter groups, reindex because components might have been removed
-        new GroupBlacklist(logger, input.getConfig().getGroupBlacklist()).resolve(input);
-        input.getReadAccess().indexForSearch(Assessment.empty());
-
-        // find items for relation endpoints (which can be queries, identifiers...)
-        // KEEP here (must run late after other resolvers)
-        new RelationEndpointResolver(logger).resolve(input);
-        input.getReadAccess().indexForSearch(Assessment.empty());
-
-        // execute group "contains" queries
-        new GroupQueryResolver(logger).resolve(input);
-        input.getReadAccess().indexForSearch(Assessment.empty());
-
-        //add hints concerning possible items, does not modify the input
-        new HintResolver(new HintFactory(), logger).resolve(input);
-
-        //for simulating pet clinic events
-        new PetClinicSimulatorResolver(logger).resolve(input);
-
-        return logger;
+        return Stream.of(in)
+                .map(input -> {
+                    // apply template values to items
+                    // reindex because parent identifiers might have been set
+                    return new TemplateResolver().resolve(input);
+                })
+                .map(input -> {
+                    // read special labels on items and assign the values to fields (must be run before links resolver)
+                    // reindex because parent identifiers might have been set
+                    return new LabelToFieldResolver().resolve(input);
+                })
+                .map(input -> {
+                    // resolve links on components to gather more data.
+                    return new LinksResolver(linkHandlerFactory).resolve(input);
+                })
+                .map(input -> {
+                    // mask any label containing secrets
+                    return new SecureLabelsResolver().resolve(input);
+                })
+                .map(input -> {
+                    //filter groups, reindex because components might have been removed
+                    return new GroupBlacklist().resolve(input);
+                })
+                .map(input -> {
+                    // find items for relation endpoints (which can be queries, identifiers...)
+                    // KEEP here (must run late after other resolvers)
+                    return new RelationEndpointResolver().resolve(input);
+                })
+                .map(input -> {
+                    // execute group "contains" queries
+                    return new ContainsResolver().resolve(input);
+                })
+                .map(input -> {
+                    //add hints concerning possible items, does not modify the input
+                    return new HintResolver(new HintFactory()).resolve(input);
+                })
+                .map(input -> {
+                    //for simulating pet clinic events
+                    return new PetClinicSimulatorResolver().resolve(input);
+                }).findFirst().orElseThrow();
     }
 
     /**
@@ -123,8 +132,8 @@ public class Indexer {
      *
      * @return new landscape
      */
-    private Landscape applyInput(ProcessLog log, LandscapeDescription input, Landscape existing) {
+    private Landscape applyInput(LandscapeDescription input, Landscape existing) {
         var processor = new InputProcessor();
-        return processor.process(input, existing, log);
+        return processor.process(input, existing);
     }
 }

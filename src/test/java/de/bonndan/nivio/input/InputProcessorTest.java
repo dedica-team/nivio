@@ -33,6 +33,7 @@ class InputProcessorTest {
 
         //new empty log
         log = new ProcessLog(mock(Logger.class), landscape.getIdentifier());
+        input.setProcessLog(log);
 
         processor = new InputProcessor();
     }
@@ -48,7 +49,7 @@ class InputProcessorTest {
         items1.forEach(itemDescription -> input.getWriteAccess().addOrReplaceChild(itemDescription));
 
         //when
-        Landscape out = processor.process(input, landscape, log);
+        Landscape out = processor.process(input, landscape);
 
         assertThat(out).isNotNull();
 
@@ -86,7 +87,7 @@ class InputProcessorTest {
         input.getWriteAccess().addOrReplaceChild(other);
 
         //when
-        Landscape out = processor.process(input, landscape, log);
+        Landscape out = processor.process(input, landscape);
 
         assertThat(out).isNotNull();
         assertThat(out.getLog().getChangelog().getChanges()).hasSize(10);
@@ -116,7 +117,7 @@ class InputProcessorTest {
         input.getWriteAccess().addOrReplaceChild(c);
 
         //when
-        Landscape out = processor.process(input, landscape, log);
+        Landscape out = processor.process(input, landscape);
 
         assertThat(out).isNotNull();
         assertThat(out.getLog().getChangelog().getChanges()).hasSize(9);
@@ -142,7 +143,7 @@ class InputProcessorTest {
         //given
 
         //when
-        Landscape out = processor.process(input, landscape, log);
+        Landscape out = processor.process(input, landscape);
 
         assertThat(out).isNotNull();
         assertThat(out.getLog().getChangelog().getChanges()).hasSize(8);
@@ -164,7 +165,7 @@ class InputProcessorTest {
         input.setIsPartial(true);
 
         //when
-        Landscape out = processor.process(input, landscape, log);
+        Landscape out = processor.process(input, landscape);
 
         assertThat(out).isNotNull();
         assertThat(out.getLog().getChangelog().getChanges()).hasSize(0);

@@ -158,6 +158,8 @@ class IndexerIntegrationTest {
     @Test
     void testIncrementalUpdate() {
         Landscape landscape = index();
+        integrationTestSupport.getLandscapeRepository().save(landscape);
+
         Item blog = landscape.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         int before = landscape.getReadAccess().all(Item.class).size();
 
@@ -180,7 +182,7 @@ class IndexerIntegrationTest {
         landscapeDescription.getWriteAccess().addOrReplaceChild(existingWordPress);
 
 
-        //given
+        //when
         integrationTestSupport.getIndexer().index(landscapeDescription);
 
         //then

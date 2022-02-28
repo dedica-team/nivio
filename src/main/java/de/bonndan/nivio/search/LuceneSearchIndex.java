@@ -1,7 +1,6 @@
 package de.bonndan.nivio.search;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.model.Component;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -56,8 +55,8 @@ public class LuceneSearchIndex implements SearchIndex {
             SearchField.LUCENE_FIELD_GENERIC.getValue(),
     };
 
-    private Directory searchIndexDir;
-    private Directory taxoIndexDir;
+    private final Directory searchIndexDir;
+    private final Directory taxoIndexDir;
     private final MultiFieldQueryParser parser;
 
     /**
@@ -103,15 +102,6 @@ public class LuceneSearchIndex implements SearchIndex {
     public void indexForSearch(@NonNull final Set<SearchDocumentValueObject> components, @NonNull final Assessment assessment) {
         LOGGER.debug("Indexing {} components for search.", Objects.requireNonNull(components).size());
         Objects.requireNonNull(assessment);
-
-        /*
-        if (this.searchIndexDir instanceof RAMDirectory)
-            this.searchIndexDir = new RAMDirectory();
-
-        if (this.taxoIndexDir instanceof RAMDirectory)
-            this.taxoIndexDir = new RAMDirectory();
-
-         */
 
         try {
             FacetsConfig config = SearchDocumentFactory.getConfig();
@@ -191,6 +181,7 @@ public class LuceneSearchIndex implements SearchIndex {
      *
      * @return top 10 facets
      */
+    @NonNull
     @Override
     public List<FacetResult> facets() {
         try {
@@ -210,10 +201,5 @@ public class LuceneSearchIndex implements SearchIndex {
         }
 
         return Collections.emptyList();
-    }
-
-    @Override
-    public <T extends Component> void remove(T component) {
-
     }
 }

@@ -55,7 +55,8 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
               @NonNull final Map<String, KPI> kpis,
               @NonNull final Index<GraphComponent> index
     ) {
-        super(identifier, name, owner, contact, description, type, null);
+        //noinspection ConstantConditions
+        super(identifier, name, owner, contact, description, type, null); //NOSONAR
 
         this.source = source;
         this.config = config != null ? config : new LandscapeConfig();

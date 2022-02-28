@@ -4,6 +4,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.search.SearchDocumentValueObject;
+import de.bonndan.nivio.search.SearchEngineException;
 import de.bonndan.nivio.search.SearchIndex;
 import org.apache.lucene.facet.FacetResult;
 import org.springframework.lang.NonNull;
@@ -139,10 +140,16 @@ public class Index<T extends Component> {
     }
 
     public List<T> search(@NonNull final String queryString) {
-        return searchIndex.search(queryString).stream()
-                .map(uri -> get(uri).orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        final Set<URI> results = searchIndex.search(queryString);
+        List<T> list = new ArrayList<>();
+        for (URI uri : results) {
+            var o = get(uri);
+            if (o.isEmpty()) {
+                throw new SearchEngineException(String.format("No node for URI %s", uri));
+            }
+            list.add(o.get());
+        }
+        return list;
     }
 
     Stream<Component> all() {

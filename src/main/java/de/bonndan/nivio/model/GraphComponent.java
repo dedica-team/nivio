@@ -216,7 +216,6 @@ public abstract class GraphComponent implements Component, Assessable {
         return fullyQualifiedIdentifier == null ? identifier : getFullyQualifiedIdentifier().toString();
     }
 
-
     protected <T extends GraphComponent> T _getParent(Class<T> cls) {
         if (parent == null) {
             return null;
@@ -244,7 +243,7 @@ public abstract class GraphComponent implements Component, Assessable {
     public abstract GraphComponent getParent();
 
     @NonNull
-    public abstract Set<? extends GraphComponent> getChildren();
+    public abstract Set<? extends GraphComponent> getChildren(); //NOSONAR
 
     @NonNull
     @Override

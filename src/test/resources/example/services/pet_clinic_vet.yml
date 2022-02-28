@@ -132,3 +132,15 @@ items:
     providedBy:
       - vet-db
       - schedule-db
+
+  - identifier: schedule-db
+    owner: David Gillespie
+    description: DB for appointments
+    address: venus.acme.com
+    software: MariaDB
+    version: 10.2.11
+    type: database
+    team: Beta
+    scale: 2
+    hostType: docker
+    group: vet

@@ -19,12 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class TemplateResolverTest {
 
     private TemplateResolver templateResolver;
+    private ProcessLog log;
     private IntegrationTestSupport testSupport;
 
     @BeforeEach
     public void setup() {
-        ProcessLog log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class), "test");
-        templateResolver = new TemplateResolver(log);
+        log = new ProcessLog(LoggerFactory.getLogger(TemplateResolver.class), "test");
+        templateResolver = new TemplateResolver();
         testSupport = new IntegrationTestSupport();
     }
 
@@ -33,21 +34,22 @@ class TemplateResolverTest {
     void assignTemplateToAll() {
 
         LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        landscapeDescription.setProcessLog(log);
 
         //when
-        templateResolver.resolve(landscapeDescription);
+        var out = templateResolver.resolve(landscapeDescription);
 
         //then
-        ItemDescription redis = landscapeDescription.getReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
+        ItemDescription redis = out.getReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertEquals("foo", redis.getGroup());
 
-        ItemDescription datadog = landscapeDescription.getReadAccess().matchOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
+        ItemDescription datadog = out.getReadAccess().matchOneByIdentifiers("datadog", null, ItemDescription.class).orElseThrow();
         assertNotNull(datadog);
         assertEquals("foo", datadog.getGroup());
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = out.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertNotNull(web);
         assertEquals("content", web.getGroup());
     }
@@ -57,19 +59,20 @@ class TemplateResolverTest {
     void assignTemplateWithRegex() {
 
         LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates2.yml");
+        landscapeDescription.setProcessLog(log);
 
         //when
-        templateResolver.resolve(landscapeDescription);
+        var out = templateResolver.resolve(landscapeDescription);
 
-        ItemDescription one = landscapeDescription.getReadAccess().matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
+        ItemDescription one = out.getReadAccess().matchOneByIdentifiers("crappy_dockername-78345", null, ItemDescription.class).orElseThrow();
         assertNotNull(one);
         assertEquals("alpha", one.getGroup());
 
-        ItemDescription two = landscapeDescription.getReadAccess().matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
+        ItemDescription two = out.getReadAccess().matchOneByIdentifiers("crappy_dockername-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(two);
         assertEquals("alpha", two.getGroup());
 
-        ItemDescription three = landscapeDescription.getReadAccess().matchOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
+        ItemDescription three = out.getReadAccess().matchOneByIdentifiers("other_crappy_name-2343a", null, ItemDescription.class).orElseThrow();
         assertNotNull(three);
         assertEquals("beta", three.getGroup());
     }
@@ -78,13 +81,14 @@ class TemplateResolverTest {
     void assignsAllValues() {
 
         LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        landscapeDescription.setProcessLog(log);
 
         //when
-        templateResolver.resolve(landscapeDescription);
+        var out = templateResolver.resolve(landscapeDescription);
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = out.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertEquals("content", web.getGroup());
 
         //other values from template
@@ -99,13 +103,14 @@ class TemplateResolverTest {
     void assignsRelations() {
 
         LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        landscapeDescription.setProcessLog(log);
 
         //when
-        templateResolver.resolve(landscapeDescription);
+        var out = templateResolver.resolve(landscapeDescription);
 
 
         //web has previously been assigned to group "content" and will not be overwritten by further templates
-        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
+        ItemDescription web = out.getReadAccess().matchOneByIdentifiers("web", null, ItemDescription.class).orElseThrow();
         assertEquals("content", web.getGroup());
 
         //other values from template
@@ -118,11 +123,12 @@ class TemplateResolverTest {
     void assignsOnlyToGivenTargets() {
 
         LandscapeDescription landscapeDescription = getIndexedLandscapeDescription("/src/test/resources/example/example_templates.yml");
+        landscapeDescription.setProcessLog(log);
 
         //when
-        templateResolver.resolve(landscapeDescription);
+        var out = templateResolver.resolve(landscapeDescription);
 
-        ItemDescription redis = landscapeDescription.getReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
+        ItemDescription redis = out.getReadAccess().matchOneByIdentifiers("redis", null, ItemDescription.class).orElseThrow();
         assertNotNull(redis);
         assertNull(redis.getLabel(Label.software));
     }

@@ -17,12 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class InputProcessor {
 
+    public Landscape process(@NonNull final LandscapeDescription input, @NonNull final Landscape existing) {
 
-    InputProcessor() {
-    }
-
-    public Landscape process(@NonNull final LandscapeDescription input, @NonNull final Landscape existing, ProcessLog log) {
-
+        ProcessLog log = input.getProcessLog();
         ProcessingChangelog changelog = new ProcessingChangelog();
 
         //recreate new landscape

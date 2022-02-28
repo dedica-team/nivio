@@ -6,31 +6,29 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-@ExtendWith(MockitoExtension.class)
-class GroupQueryResolverTest {
+class ContainsResolverTest {
 
-    private GroupQueryResolver groupResolver;
+    private ContainsResolver groupResolver;
 
-    @Mock
-    private ProcessLog processLog;
     private LandscapeDescription input;
     private GroupDescription groupDescription;
 
     @BeforeEach
     public void setup() {
-        groupResolver = new GroupQueryResolver(processLog);
+        groupResolver = new ContainsResolver();
 
         input = new LandscapeDescription("landscapeIdentifier", "testLandscape", null);
+        input.setProcessLog(new ProcessLog(mock(Logger.class), "landscapeIdentifier"));
+
         groupDescription = new GroupDescription();
         groupDescription.setIdentifier("groupIdentifier");
 

@@ -3,6 +3,7 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -16,28 +17,24 @@ import java.util.stream.Collectors;
  *
  * Blacklists groups and removes items from the input which are part of a blacklisted group.
  */
-class GroupBlacklist extends Resolver {
+class GroupBlacklist implements Resolver {
 
-    private final List<Function<String, Boolean>> specs;
-
-    GroupBlacklist(@NonNull final ProcessLog processLog, @NonNull final List<String> groupBlacklist) {
-        super(processLog);
-        specs = getSpecs(groupBlacklist);
-    }
-
+    @NonNull
     @Override
-    public void resolve(@NonNull final LandscapeDescription input) {
-        filterGroups(input);
-        filterItems(input);
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
+        final var specs = getSpecs(input.getConfig().getGroupBlacklist());
+        filterGroups(input, specs);
+        filterItems(input, specs);
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 
     /**
      * Blacklists groups and removes items from the input which are part of a blacklisted group.
      */
-    private void filterGroups(@NonNull final LandscapeDescription input) {
+    private void filterGroups(@NonNull final LandscapeDescription input, final List<Function<String, Boolean>> specs) {
         Set<GroupDescription> groupDescriptions = input.getReadAccess().all(GroupDescription.class);
         var toDelete = groupDescriptions.stream()
-                .filter(e -> isBlacklisted(e.getIdentifier()))
+                .filter(e -> specs.stream().anyMatch(spec -> spec.apply(e.getIdentifier())))
                 .collect(Collectors.toList());
 
         toDelete.forEach(dto -> input.getWriteAccess().removeChild(dto));
@@ -45,11 +42,10 @@ class GroupBlacklist extends Resolver {
 
     /**
      * Blacklists groups and removes items from the input which are part of a blacklisted group.
-     *
      */
-    private void filterItems(@NonNull final LandscapeDescription input) {
+    private void filterItems(@NonNull final LandscapeDescription input, final List<Function<String, Boolean>> specs) {
         input.getReadAccess().all(ItemDescription.class).stream()
-                .filter(dto -> isBlacklisted(dto.getGroup()))
+                .filter(dto -> specs.stream().anyMatch(spec -> spec.apply(dto.getGroup())))
                 .forEach(dto -> input.getWriteAccess().removeChild(dto));
     }
 
@@ -65,7 +61,4 @@ class GroupBlacklist extends Resolver {
         }).collect(Collectors.toList());
     }
 
-    private boolean isBlacklisted(String group) {
-        return specs.stream().anyMatch(spec -> spec.apply(group));
-    }
 }

@@ -1,22 +1,19 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ComponentDescription;
-import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.*;
 import de.bonndan.nivio.model.IndexReadAccess;
+import org.springframework.lang.NonNull;
 
 /**
  * This class resolves all "contains" queries of a group description, i.e. the items are assigned dynamically to a group.
+ *
+ * TODO extend to {@link UnitDescription}, {@link ContextDescription}
  */
-public class GroupQueryResolver extends Resolver {
+public class ContainsResolver implements Resolver {
 
-    protected GroupQueryResolver(ProcessLog processLog) {
-        super(processLog);
-    }
-
+    @NonNull
     @Override
-    public void resolve(LandscapeDescription input) {
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
 
         IndexReadAccess<ComponentDescription> indexReadAccess = input.getReadAccess();
         indexReadAccess.all(GroupDescription.class).forEach(group -> {
@@ -24,5 +21,7 @@ public class GroupQueryResolver extends Resolver {
             group.getContains().forEach(condition -> indexReadAccess.search(condition, ItemDescription.class)
                     .forEach(itemDescription -> itemDescription.setGroup(group.getIdentifier())));
         });
+
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 }
