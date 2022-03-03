@@ -61,9 +61,10 @@ public class EdgeMerge {
         final Item target;
         try {
             ComponentMatcher sourceMatcher = ComponentMatcher.forComponent(relationDescription.getSource(), Item.class);
-            ComponentMatcher targetMatcher = ComponentMatcher.forComponent(relationDescription.getTarget(), Item.class);
             origin = indexReadAccess.matchOne(sourceMatcher, Item.class)
                     .orElseThrow(() -> new NoSuchElementException(String.format("Not found anything for source %s", sourceMatcher)));
+
+            ComponentMatcher targetMatcher = ComponentMatcher.forComponent(relationDescription.getTarget(), Item.class);
             target = indexReadAccess.matchOne(targetMatcher, Item.class)
                     .orElseThrow(() -> new NoSuchElementException(String.format("Not found anything for target %s", targetMatcher)));
         } catch (NoSuchElementException e) {

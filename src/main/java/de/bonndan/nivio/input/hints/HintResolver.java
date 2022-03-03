@@ -91,11 +91,11 @@ public class HintResolver implements Resolver {
     private List<Hint> getRelationHints(ItemDescription description, LandscapeDescription input) {
 
         List<Hint> hints = new ArrayList<>();
+        var smartSearch = FlexSearch.forClassOn(ItemDescription.class, input.getReadAccess());
+
         //providers
         description.getProvidedBy().forEach(term -> {
-            Optional<ItemDescription> provider = input.getReadAccess().matchOrSearchByIdentifierOrName(term.toLowerCase(), ItemDescription.class).stream().findFirst();
-
-            if (provider.isEmpty()) {
+            if (smartSearch.search(term.toLowerCase()).isEmpty()) {
                 hints.add(hintFactory.createForTarget(description, RelationType.PROVIDER, term));
             }
         });

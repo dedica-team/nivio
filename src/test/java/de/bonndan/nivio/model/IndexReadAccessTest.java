@@ -194,17 +194,7 @@ class IndexReadAccessTest {
         assertThat(next.getIdentifier()).isEqualTo("hasaddress");
     }
 
-    @Test
-    void matchOrSearchUsesSearch() {
 
-        //given
-        graph.indexForSearch(Assessment.empty());
-        //when
-        Collection<Item> items = access.matchOrSearchByIdentifierOrName(graph.itemAA.getIdentifier(), Item.class);
-
-        //then
-        assertThat(items).isNotNull().hasSize(1).contains(graph.itemAA);
-    }
 
     @Test
     void searchOnFields() {
@@ -222,15 +212,5 @@ class IndexReadAccessTest {
 
         //then
         assertThat(items).isNotNull().hasSize(1).contains(newItem);
-    }
-
-    @Test
-    void matchOrSearchByPath() {
-
-        //when
-        Collection<Item> items = access.matchOrSearchByIdentifierOrName(graph.itemAA.getParentIdentifier() + "/" + graph.itemAA.getIdentifier(), Item.class);
-
-        //then
-        assertThat(items).isNotNull().hasSize(1).contains(graph.itemAA);
     }
 }

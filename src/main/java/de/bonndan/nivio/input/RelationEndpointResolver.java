@@ -3,9 +3,11 @@ package de.bonndan.nivio.input;
 import de.bonndan.nivio.input.dto.*;
 import de.bonndan.nivio.model.IndexReadAccess;
 import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.model.FlexSearch;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -34,12 +36,10 @@ public class RelationEndpointResolver implements Resolver {
     private void resolveProvidedBy(final ItemDescription description,
                                    final LandscapeDescription input
     ) {
-        //providers
+        var smartSearch = FlexSearch.forClassOn(ItemDescription.class, input.getReadAccess());
+
         description.getProvidedBy().forEach(term -> {
-            var provider = input.getReadAccess()
-                    .matchOrSearchByIdentifierOrName(term, ItemDescription.class)
-                    .stream()
-                    .findFirst();
+            var provider = smartSearch.searchOne(term, description.getParentIdentifier());
             provider.ifPresentOrElse(
                     source -> {
                         try {
@@ -58,6 +58,9 @@ public class RelationEndpointResolver implements Resolver {
     private void resolveRelations(final ItemDescription description,
                                   final LandscapeDescription input
     ) {
+
+        var smartSearch = FlexSearch.forClassOn(ItemDescription.class, input.getReadAccess());
+
         description.getRelations().forEach(rel -> {
 
             var source = rel.getSource();
@@ -71,11 +74,10 @@ public class RelationEndpointResolver implements Resolver {
                 Optional<ItemDescription> sourceDTO = input.getReadAccess().matchOneByIdentifiers(source, parentIdentifier, ItemDescription.class);
                 sourceDTO.ifPresent(resolvedSource -> rel.setSource(resolvedSource.getFullyQualifiedIdentifier().toString()));
 
-                var targets = input.getReadAccess().matchOrSearchByIdentifierOrName(rel.getTarget(), ItemDescription.class);
-                Optional<ItemDescription> target = targets.stream().findFirst();
-                target.ifPresent(resolvedTarget -> rel.setTarget(resolvedTarget.getFullyQualifiedIdentifier().toString()));
-            } catch (IllegalArgumentException e) {
-                input.getProcessLog().error("Failed to create relation: " + e.getMessage());
+                var target = smartSearch.searchOne(rel.getTarget(), parentIdentifier).orElseThrow();
+                rel.setTarget(target.getFullyQualifiedIdentifier().toString());
+            } catch (IllegalArgumentException | NoSuchElementException e) {
+                input.getProcessLog().error(String.format("Failed to create relation: %s", e.getMessage()));
             }
         });
 

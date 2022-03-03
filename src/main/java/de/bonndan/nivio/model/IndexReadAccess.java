@@ -1,7 +1,6 @@
 package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.assessment.Assessment;
-import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.search.ComponentMatcher;
 import org.apache.lucene.facet.FacetResult;
@@ -12,8 +11,6 @@ import org.springframework.util.StringUtils;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static de.bonndan.nivio.model.IdentifierValidation.IDENTIFIER_PATTERN;
 
 /**
  * A read proxy to the index.
@@ -76,33 +73,6 @@ public class IndexReadAccess<T extends Component> {
                 .filter(cls::isInstance)
                 .map(cls::cast)
                 .collect(Collectors.toUnmodifiableSet());
-    }
-
-    /**
-     * Returns all items matching the given term.
-     *
-     * Uses a {@link ComponentMatcher} for path-like terms, otherwise executes a search.
-     *
-     * @param term "*" as wildcard for all | {@link FullyQualifiedIdentifier} string paths | identifier | url
-     * @return all matching items.
-     */
-    public <C extends Component> Collection<C> matchOrSearchByIdentifierOrName(String term, Class<C> cls) {
-        if ("*".equals(term)) {
-            return all(cls);
-        }
-
-        //term is like "groupA/itemB"
-        boolean isPath = term.contains("/") && (!term.contains(" "));
-        if (isPath) {
-            return all(cls).stream()
-                    .filter(item -> ComponentMatcher.forComponent(term, ItemDescription.class).isSimilarTo(item.getFullyQualifiedIdentifier()))
-                    .collect(Collectors.toList());
-        }
-
-        //single word compared against identifier
-        boolean isIdentifier = term.matches(IDENTIFIER_PATTERN);
-        String query = isIdentifier ? String.format("identifier:%s OR name:%s", term, term) : term;
-        return search(query, cls);
     }
 
     /**

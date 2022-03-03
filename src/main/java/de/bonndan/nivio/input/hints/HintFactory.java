@@ -69,26 +69,33 @@ public class HintFactory {
                 .collect(Collectors.toList());
         boolean hasUrlLikeKey = URL_PARTS.stream().anyMatch(keyParts::contains);
 
-        String value = item.getLabel(labelKey);
-        if (!StringUtils.hasLength(value)) {
+        String labelValue = item.getLabel(labelKey);
+        if (!StringUtils.hasLength(labelValue)) {
             return Optional.empty();
         }
-        Optional<URI> optionalURI = URIHelper.getURIWithHostAndScheme(value);
+        Optional<URI> optionalURI = URIHelper.getURIWithHostAndScheme(labelValue);
 
         if (!hasUrlLikeKey && optionalURI.isEmpty()) {
             return Optional.empty();
         }
 
-        List<ItemDescription> targets = getTargets(readAccess, value, optionalURI);
+        List<ItemDescription> targets = getTargets(readAccess, labelValue, optionalURI);
         if (targets.size() > 1) {
-            LOGGER.info("Found ambiguous results searching for target {}", value);
-            return Optional.empty();
+            var sameParent = targets.stream()
+                    .filter(itemDescription -> Objects.equals(itemDescription.getParentIdentifier(),item.getParentIdentifier()))
+                    .findFirst();
+            if (sameParent.isPresent()) {
+                targets = List.of(sameParent.get());
+            } else {
+                LOGGER.info("Found ambiguous results searching for target {}", labelValue);
+                return Optional.empty();
+            }
         }
 
         ItemDescription target = null;
         if (targets.size() == 1) {
             target = targets.get(0);
-            LOGGER.info("Found a target of relation from {}({}) to target '{}' using {}: '{}'", item.getIdentifier(), item.getName(), target, labelKey, value);
+            LOGGER.info("Found a target of relation from {}({}) to target '{}' using {}: '{}'", item.getIdentifier(), item.getName(), target, labelKey, labelValue);
 
             //get a hint based on uri scheme
             ItemDescription finalTarget = target;
@@ -128,10 +135,12 @@ public class HintFactory {
             return results;
         }
 
-        Collection<ItemDescription> targets = readAccess.matchOrSearchByIdentifierOrName(value, ItemDescription.class);
-        if (targets.size() != 1) {
-            LOGGER.debug("Found ambiguous results {} for query for target '{}'", targets, value);
+        var smartSearch = FlexSearch.forClassOn(ItemDescription.class, readAccess);
+        Collection<ItemDescription> targets = smartSearch.search(value);
+        if (targets.isEmpty()) {
+            LOGGER.debug("Found no results for query for target '{}'", value);
         }
+
         results.addAll(targets);
         return results;
     }

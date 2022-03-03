@@ -147,17 +147,41 @@ class HintFactoryTest {
     }
 
     @Test
-    @DisplayName(" more than one match")
-    void addsTwoHints() {
+    @DisplayName("more than one match can be matched by group")
+    void twoTargetsMatchedByGroups() {
         //given
         String aName = "aName";
         var target1 = new ItemDescription("foo1");
-        target1.setGroup("a");
+        target1.setGroup(itemAA.getGroup());
         target1.setName(aName);
         landscape.getWriteAccess().addOrReplaceChild(target1);
 
         var target2 = new ItemDescription("foo1");
         target2.setGroup("b");
+        target2.setName(aName);
+        landscape.getWriteAccess().addOrReplaceChild(target2);
+
+        itemAA.setLabel("BASE_URL", aName);
+        landscape.getReadAccess().indexForSearch(Assessment.empty());
+
+        //when
+        Optional<Hint> foo = hintFactory.createForLabel(landscape.getReadAccess(), itemAA, "BASE_URL");
+
+        //then
+        assertThat(foo).isNotEmpty();
+        assertThat(foo.get().getTarget()).isEqualTo(target1.getFullyQualifiedIdentifier().toString());
+    }
+
+    @Test
+    @DisplayName("more than one match is empty")
+    void addsTwoHints() {
+        //given
+        String aName = "aName";
+        var target1 = new ItemDescription("foo1");
+        target1.setName(aName);
+        landscape.getWriteAccess().addOrReplaceChild(target1);
+
+        var target2 = new ItemDescription("foo2");
         target2.setName(aName);
         landscape.getWriteAccess().addOrReplaceChild(target2);
 

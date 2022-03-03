@@ -55,8 +55,8 @@ public class GraphTestSupport {
         groupB = getTestGroup("b");
         groupC = getTestGroup("c");
 
-        itemAA = getTestItemBuilder("a", "a").withParent(groupA).build();
-        itemAB = getTestItemBuilder("a", "b").withParent(groupA).build();
+        itemAA = getTestItemBuilder("a", "a").withParent(groupA).withName("itemA").build();
+        itemAB = getTestItemBuilder("a", "b").withParent(groupA).withName("itemB").build();
         itemAC = getTestItemBuilder("a", "c").withParent(groupA).build();
         landscape.getWriteAccess().addOrReplaceChild(itemAA);
         landscape.getWriteAccess().addOrReplaceChild(itemAB);

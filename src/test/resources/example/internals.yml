@@ -97,24 +97,15 @@ items:
     group: indexing
     description: Applies labels prefixed with "nivio" to item fields.
     relations:
-      - target: indexing/greedy
+      - target: hints/dynrelations
         type: dataflow
-
-  - identifier: greedy
-    name: items on the fly
-    group: indexing
-    description: Creates items on the fly if nivio is configured "greedy".
-    relations:
-      - target: indexing/dynrelations
+      - target: indexing/groups
         type: dataflow
 
   - identifier: dynrelations
-    group: indexing
-    name: dynamic relations
-    description: Finds relation endpoints based on regexes or queries
-    relations:
-      - target: indexing/groups
-        type: dataflow
+    group: hints
+    name: hints to items
+    description: Finds relation endpoints based on labels and relations
 
   - identifier: groups
     group: indexing

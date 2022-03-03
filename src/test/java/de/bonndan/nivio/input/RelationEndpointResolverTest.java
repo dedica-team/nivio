@@ -237,4 +237,41 @@ class RelationEndpointResolverTest {
         RelationDescription next = relations.get(0);
         assertEquals(bar1.getFullyQualifiedIdentifier().toString(), next.getTarget());
     }
+
+    @Test
+    void prefersBetterMatch() {
+
+        //given, new landscape dto
+        landscapeDescription = new LandscapeDescription("test");
+
+        var foo = new ItemDescription();
+        foo.setIdentifier("foo");
+        var rel = new RelationDescription();
+        rel.setTarget("bar");
+        rel.setType(RelationType.DATAFLOW);
+        foo.getRelations().add(rel);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(foo);
+
+        var bar1 = new ItemDescription();
+        bar1.setIdentifier("bar");
+        landscapeDescription.getWriteAccess().addOrReplaceChild(bar1);
+
+        var bar2 = new ItemDescription();
+        bar2.setIdentifier("bar-notsogoodmatch");
+        landscapeDescription.getWriteAccess().addOrReplaceChild(bar2);
+        landscapeDescription.getReadAccess().indexForSearch(Assessment.empty());
+
+        //when
+        relationEndpointResolver.resolve(landscapeDescription);
+
+        //then
+        List<RelationDescription> relations = foo.getRelations().stream()
+                .filter(relation -> RelationType.DATAFLOW.equals(relation.getType()))
+                .collect(Collectors.toUnmodifiableList());
+        assertThat(relations).hasSize(1);
+
+        // should pick "other_crappy_name..." from own group (alpha)
+        RelationDescription next = relations.get(0);
+        assertEquals(bar1.getFullyQualifiedIdentifier().toString(), next.getTarget());
+    }
 }

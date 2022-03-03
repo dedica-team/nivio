@@ -68,14 +68,13 @@ public class SearchDocumentFactory {
                 );
 
         //single words, keeps numbers
+        var type = new FieldType(); //like textfield, for searching
+        type.setTokenized(true);
+        type.setIndexOptions(IndexOptions.DOCS);
         BiConsumer<String, String> addStringField = (field, value) -> Optional.ofNullable(value)
                 .ifPresentOrElse(
                         val -> {
                             document.add(new StringField(field, val, Field.Store.NO)); //for exact matching
-
-                            var type = new FieldType(); //like textfield, for searching
-                            type.setTokenized(true);
-                            type.setIndexOptions(IndexOptions.DOCS);
                             document.add(new Field(field, val, type));
                         },
                         () -> document.add(new StringField(field, "", Field.Store.NO))
