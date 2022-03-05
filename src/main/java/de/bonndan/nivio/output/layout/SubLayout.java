@@ -14,6 +14,8 @@ import java.util.Set;
 
 /**
  * Layout for one group (for the items INSIDE the group).
+ *
+ *
  */
 public class SubLayout {
 
@@ -29,15 +31,18 @@ public class SubLayout {
         this.layoutConfig = layoutConfig;
     }
 
-    public void render(@NonNull final Component group, @NonNull final Set<Item> items) {
+    public void render(@NonNull final Component group, @NonNull final Set<Item> groupItems) {
         this.parent = Objects.requireNonNull(group);
         String name = group.getName();
 
-        List<LayoutedComponent> components = getLayoutedComponents(group, items);
+        List<LayoutedComponent> components = getLayoutedComponents(group, groupItems);
 
         layout = new FastOrganicLayout(
                 components,
-                new CollisionRegardingForces(layoutConfig.getItemMinDistanceLimit(), layoutConfig.getItemMaxDistanceLimit()),
+                new CollisionRegardingForces(
+                        layoutConfig.getItemMinDistanceLimit(),
+                        layoutConfig.getItemMaxDistanceLimit()
+                ),
                 layoutConfig.getItemLayoutInitialTemp()
         );
         layout.setDebug(debug);
@@ -47,20 +52,20 @@ public class SubLayout {
 
     static List<LayoutedComponent> getLayoutedComponents(Component group, Set<Item> items) {
         List<LayoutedComponent> list = new ArrayList<>();
+        var sorted = ItemSorter.sort(items);
         items.forEach(item -> {
             List<Component> relationTargets = new ArrayList<>();
-            item.getRelations().stream()
-                    .filter(relation -> relation.getTarget() instanceof Item)
-                    .forEach(relationItem -> {
-                        if (!relationItem.getSource().equals(item))
-                            return;
+            item.getRelations().stream().forEach(relationItem -> {
+                if (!relationItem.getSource().equals(item))
+                    return;
 
-                        Item other = (Item) relationItem.getTarget();
-                        if (item.getParent().equals(other.getParent())) {
-                            relationTargets.add(other);
-                        }
+                Item other = relationItem.getTarget();
+                if (item.getParent().equals(other.getParent())) {
+                    relationTargets.add(other);
+                }
 
-                    });
+            });
+
             LayoutedComponent e = new LayoutedComponent(item, relationTargets);
             e.setDefaultColor(group.getColor());
             list.add(e);

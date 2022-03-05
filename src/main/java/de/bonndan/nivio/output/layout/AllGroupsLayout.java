@@ -93,12 +93,7 @@ public class AllGroupsLayout {
             LayoutedComponent groupNode = findGroupBounds(item.getParent(), groupNodes);
 
             item.getRelations().forEach(relationItem -> {
-                Item targetItem = (Item) relationItem.getTarget();
-                if (targetItem == null) {
-                    LOGGER.warn("Virtual connections: No target in relation item {}", relationItem);
-                    return;
-                }
-
+                Item targetItem = relationItem.getTarget();
                 String targetGroup = targetItem.getParent().getIdentifier();
                 LayoutedComponent targetGroupNode = findGroupBounds(targetItem.getParent(), groupNodes);
 
