@@ -29,18 +29,14 @@ class FastOrganicLayoutTest {
         Item testItemB = ItemFactory.getTestItem("test", "b");
 
 
-        a = new LayoutedComponent(testItemA, List.of(testItemB));
-        a.setX(0);
-        a.setY(0);
-        a.setWidth(100);
-        a.setHeight(100);
+        a = new LayoutedComponent(testItemA, new ArrayList<>(),List.of(testItemB),  100, 100);
+        a.setCenterX(0);
+        a.setCenterY(0);
         layoutedComponents.add(a);
 
-        b = new LayoutedComponent(testItemB, List.of(testItemA));
-        b.setX(0);
-        b.setY(200);
-        b.setWidth(100);
-        b.setHeight(100);
+        b = new LayoutedComponent(testItemB, new ArrayList<>(), List.of(testItemA),  100, 100);
+        b.setCenterX(0);
+        b.setCenterY(200);
         layoutedComponents.add(b);
 
         forces = new OriginalForces(LayoutConfig.ITEM_MIN_DISTANCE_LIMIT, LayoutConfig.ITEM_MAX_DISTANCE_LIMIT, OriginalForces.FORCE_CONSTANT);

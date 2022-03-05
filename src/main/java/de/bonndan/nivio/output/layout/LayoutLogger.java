@@ -29,8 +29,8 @@ class LayoutLogger {
         return messages;
     }
 
-    public void recordLocations(double[][] centerLocations) {
-        locations.add(new Wrap(centerLocations));
+    public void recordLocations(double[][] centerLocations, double[] radiuses) {
+        locations.add(new Wrap(centerLocations, radiuses));
     }
 
     public void dump(File out) throws IOException {
@@ -42,9 +42,11 @@ class LayoutLogger {
     }
 
     private static class Wrap {
-        double[][] centerLocations;
+        final double[] radiuses;
+        final double[][] centerLocations;
 
-        Wrap(double[][] centerLocations) {
+        Wrap(double[][] centerLocations, double[] radiuses) {
+            this.radiuses = radiuses;
             this.centerLocations = new double[centerLocations.length][];
             for (int i = 0; i < centerLocations.length; i++) {
                 this.centerLocations[i] = new double[2];
@@ -95,6 +97,20 @@ class LayoutLogger {
                 )
                 .collect(Collectors.toList());
 
+
+        var radiuses = locations.get(locations.size() - 1).radiuses;
+        List<ContainerTag> radiusCircles = new ArrayList<>();
+        for (int i = 0, endPointsLength = endPoints.length; i < endPointsLength; i++) {
+            double[] doubles = endPoints[i];
+            ContainerTag attr = SvgTagCreator.circle()
+                    .attr("cx", doubles[0])
+                    .attr("cy", doubles[1])
+                    .attr("r", radiuses[i])
+                    .attr("fill", "red")
+                    .attr("fill-opacity", "0.4");
+            radiusCircles.add(attr);
+        }
+
         double width = maxX.get() - minX.get();
         double height = maxY.get() - minY.get();
         ContainerTag svg = SvgTagCreator.svg()
@@ -105,7 +121,8 @@ class LayoutLogger {
                 .attr("height", height)
                 .attr("viewBox", minX.get() + " " + minY.get() + " " + width + " " + height)
                 .with(paths)
-                .with(points);
+                .with(points)
+                .with(radiusCircles);
 
         String content = svg.render();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(out))) {

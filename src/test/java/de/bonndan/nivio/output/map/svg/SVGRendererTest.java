@@ -11,6 +11,9 @@ import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,8 +24,8 @@ class SVGRendererTest {
     private GraphTestSupport graph;
 
     @BeforeEach
-    void setup(){
-         graph = new GraphTestSupport();
+    void setup() {
+        graph = new GraphTestSupport();
     }
 
     @Test
@@ -38,7 +41,7 @@ class SVGRendererTest {
         LayoutedComponent lc = getLayoutedLandscape(graph.landscape);
 
         //when
-        String rendered = svgRenderer.render(lc, Assessment.empty(),true);
+        String rendered = svgRenderer.render(lc, Assessment.empty(), true);
 
         //check svg xml is returned
         assertTrue(rendered.contains("svg version=\"1.1\""));
@@ -49,27 +52,18 @@ class SVGRendererTest {
         Group group = GroupBuilder.aGroup().withIdentifier("bar").withName("landscapeIdentifier").withParent(graph.context).build();
         landscape.getWriteAccess().addOrReplaceChild(group);
 
-        LayoutedComponent lc = new LayoutedComponent(landscape);
+
+        Item baz = graph.getTestItem("bar", "baz");
+        LayoutedComponent itemLayout = new LayoutedComponent(baz, List.of(), Collections.emptyList(), 100, 100);
+        itemLayout.setCenterX(50);
+        itemLayout.setCenterY(66);
 
 
-        LayoutedComponent glc = new LayoutedComponent(group);
-        glc.setWidth(100);
-        glc.setHeight(100);
-        glc.setX(100);
-        glc.setY(100);
+        LayoutedComponent groupLayout = new LayoutedComponent(group, List.of(itemLayout), Collections.emptyList(), 100, 100);
+        groupLayout.setCenterX(50);
+        groupLayout.setCenterY(66);
 
-        lc.getChildren().add(glc);
 
-        Item baz = graph.getTestItem("bar","baz");
-
-        LayoutedComponent ilc = new LayoutedComponent(baz);
-        glc.setWidth(50);
-        glc.setHeight(50);
-        glc.setX(50);
-        glc.setY(66);
-
-        glc.getChildren().add(ilc);
-
-        return lc;
+        return LayoutedComponent.from(landscape, List.of(groupLayout));
     }
 }

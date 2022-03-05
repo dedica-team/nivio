@@ -29,7 +29,7 @@ public class HexMap {
      * @return the created hex
      */
     public MapTile findFreeSpot(LayoutedComponent component) {
-        Hex hex = HexFactory.getInstance().hexAt(new Point2D.Double(component.getX(), component.getY()));
+        Hex hex = HexFactory.getInstance().hexAt(new Point2D.Double(component.getCenterX(), component.getCenterY()));
         MapTile tile = mapState.getOrAdd(hex);
         if (!mapState.hasItem(hex)) {
             return tile;

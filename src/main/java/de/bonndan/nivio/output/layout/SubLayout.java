@@ -53,7 +53,7 @@ public class SubLayout {
     static List<LayoutedComponent> getLayoutedComponents(Component group, Set<Item> items) {
         List<LayoutedComponent> list = new ArrayList<>();
         var sorted = ItemSorter.sort(items);
-        items.forEach(item -> {
+        sorted.forEach(item -> {
             List<Component> relationTargets = new ArrayList<>();
             item.getRelations().stream().forEach(relationItem -> {
                 if (!relationItem.getSource().equals(item))

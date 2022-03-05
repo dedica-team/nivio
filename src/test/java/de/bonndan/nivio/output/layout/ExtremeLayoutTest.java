@@ -32,7 +32,7 @@ class ExtremeLayoutTest {
 
     @Test
     void originalSimple() throws IOException {
-        testSimple(originalForces, "original");
+        assertThatThrownBy(() -> testSimple(originalForces, "original")).isInstanceOf(LayoutException.class);
     }
 
     @Test

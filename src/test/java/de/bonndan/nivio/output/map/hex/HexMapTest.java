@@ -6,6 +6,7 @@ import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,14 +30,14 @@ class HexMapTest {
     void getPath() {
         Item bar = getTestItem("foo", "bar");
 
-        LayoutedComponent barComponent = new LayoutedComponent(bar);
-        barComponent.setX(0);
-        barComponent.setY(0);
+        LayoutedComponent barComponent = new LayoutedComponent(bar, Collections.emptyList());
+        barComponent.setCenterX(0);
+        barComponent.setCenterY(0);
 
         Item baz = getTestItem("moo", "baz");
-        LayoutedComponent bazComponent = new LayoutedComponent(baz);
-        barComponent.setX(500);
-        barComponent.setY(500);
+        LayoutedComponent bazComponent = new LayoutedComponent(baz, Collections.emptyList());
+        barComponent.setCenterX(500);
+        barComponent.setCenterY(500);
 
         HexMap hexMap = new HexMap();
         hexMap.add(bar, hexMap.findFreeSpot(barComponent));
@@ -63,9 +64,9 @@ class HexMapTest {
     @Test
     void addCreatesHexWithItem() {
         Item bar = getTestItem("foo", "bar");
-        LayoutedComponent barComponent = new LayoutedComponent(bar);
-        barComponent.setX(0);
-        barComponent.setY(0);
+        LayoutedComponent barComponent = new LayoutedComponent(bar, Collections.emptyList());
+        barComponent.setCenterX(0);
+        barComponent.setCenterY(0);
 
         HexMap hexMap = new HexMap();
 

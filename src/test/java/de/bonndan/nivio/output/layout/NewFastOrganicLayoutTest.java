@@ -31,22 +31,19 @@ class NewFastOrganicLayoutTest {
         Item testItemC = ItemFactory.getTestItem("test", "c");
 
 
-        a = new LayoutedComponent(testItemA, List.of(testItemB, testItemC));
-        a.setX(100);
-        a.setY(100);
-        a.setHeight(500);
+        a = new LayoutedComponent(testItemA, new ArrayList<>(), List.of(testItemB, testItemC), 50, 500D);
+        a.setCenterX(100);
+        a.setCenterY(100);
         layoutedComponents.add(a);
 
-        b = new LayoutedComponent(testItemB, List.of(testItemA, testItemC));
-        b.setX(101);
-        b.setY(101);
-        b.setHeight(500);
+        b = new LayoutedComponent(testItemB, new ArrayList<>(), List.of(testItemA, testItemC), 50, 500D);
+        b.setCenterX(101);
+        b.setCenterY(101);
         layoutedComponents.add(b);
 
-        c = new LayoutedComponent(testItemC, List.of(testItemA, testItemB));
-        c.setX(102);
-        c.setY(102);
-        c.setHeight(500);
+        c = new LayoutedComponent(testItemC, new ArrayList<>(), List.of(testItemA, testItemB), 50, 500D);
+        c.setCenterX(102);
+        c.setCenterY(102);
         layoutedComponents.add(c);
 
         layout = new FastOrganicLayout(layoutedComponents, new CollisionRegardingForces(50, 150), LayoutConfig.GROUP_LAYOUT_INITIAL_TEMP);
@@ -60,15 +57,15 @@ class NewFastOrganicLayoutTest {
         layout.execute();
 
         //then
-        var xDelta1 = a.getX() - b.getX();
-        var yDelta1 = a.getY() - b.getY();
+        var xDelta1 = a.getCenterX() - b.getCenterX();
+        var yDelta1 = a.getCenterY() - b.getCenterY();
         var dist1 = Math.sqrt((xDelta1 * xDelta1) + (yDelta1 * yDelta1)) - 50 - 50; //two times the radius
 
         assertThat(Math.abs(dist1))
                 .isGreaterThan((long) LayoutConfig.ITEM_MIN_DISTANCE_LIMIT);
 
-        var xDelta = b.getX() - c.getX();
-        var yDelta = b.getY()- c.getY();
+        var xDelta = b.getCenterX() - c.getCenterX();
+        var yDelta = b.getCenterY() - c.getCenterY();
         var dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta)) - 50 - 50; //two times the radius
 
         assertThat(Math.abs(dist))

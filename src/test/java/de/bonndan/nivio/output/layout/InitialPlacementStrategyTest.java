@@ -76,9 +76,6 @@ class InitialPlacementStrategyTest {
     }
 
     LayoutedComponent getLayoutedComponent(String identifier, double width, double height) {
-        LayoutedComponent layoutedComponent = new LayoutedComponent(getTestItem("test", identifier));
-        layoutedComponent.setWidth(width);
-        layoutedComponent.setHeight(height);
-        return layoutedComponent;
+        return new LayoutedComponent(getTestItem("test", identifier), width, height);
     }
 }

@@ -67,37 +67,47 @@ public class OrganicLayouter implements Layouter {
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
         layoutedLandscape.getChildren().forEach(groupBounds -> {
-            if (groupBounds.getX() < minX.get()) {
-                minX.set((int) groupBounds.getX());
+            if (groupBounds.getCenterX() < minX.get()) {
+                minX.set((int) groupBounds.getCenterX());
             }
 
-            if (groupBounds.getY() < minY.get()) {
-                minY.set((int) groupBounds.getY());
+            if (groupBounds.getCenterY() < minY.get()) {
+                minY.set((int) groupBounds.getCenterY());
             }
         });
 
         final int groupPadding = Hex.HEX_SIZE;
 
-        layoutedLandscape.getChildren().forEach(groupBounds -> {
+        final int xCorr = minX.get() - groupPadding;
+        final int yCorr = minY.get() - groupPadding;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("shifting all components by x {} y {}", xCorr, yCorr);
+        }
+        layoutedLandscape.getChildren().forEach(groupLayout -> {
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+                LOGGER.debug("group {} offset {} {}", groupLayout.getComponent().getIdentifier(), groupLayout.getCenterX(), groupLayout.getCenterY());
             }
-            groupBounds.setX((groupBounds.getX() - minX.get()) + groupPadding);
-            groupBounds.setY(groupBounds.getY() - minY.get() + groupPadding);
+
+            groupLayout.setCenterX(groupLayout.getCenterX() - xCorr);
+            groupLayout.setCenterY(groupLayout.getCenterY() - yCorr);
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+                LOGGER.debug("corrected group {} offset {} {}", groupLayout.getComponent().getIdentifier(), groupLayout.getCenterX(), groupLayout.getCenterY());
             }
 
-            groupBounds.getChildren().forEach(itemBounds -> {
+            // the group items still have their own sublayout rendering offset independent from the parent group position
+            // so it is necessary to adjust all items to their common center as null point
+            final LayoutedComponent.DimAndCenter dimAndCenter = LayoutedComponent.getDimAndCenter(groupLayout.getChildren());
+
+            groupLayout.getChildren().forEach(itemBounds -> {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
+                    LOGGER.debug("original item pos {} {}", itemBounds.getCenterX(), itemBounds.getCenterY());
                 }
-                itemBounds.setX(itemBounds.getX() + groupBounds.getX());
-                itemBounds.setY(itemBounds.getY() + groupBounds.getY());
+                itemBounds.setCenterX((long) (itemBounds.getCenterX() - dimAndCenter.x + groupLayout.getCenterX()));
+                itemBounds.setCenterY((long) (itemBounds.getCenterY() - dimAndCenter.y + groupLayout.getCenterY()));
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("item {} pos with group offset: {} {}", itemBounds, itemBounds.getX(), itemBounds.getY());
+                    LOGGER.debug("item {} pos with group offset: {} {}", itemBounds, itemBounds.getCenterX(), itemBounds.getCenterY());
                 }
             });
         });

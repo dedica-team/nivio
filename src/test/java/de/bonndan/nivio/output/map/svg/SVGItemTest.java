@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
+import java.util.Collections;
 import java.util.List;
 
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
@@ -29,14 +30,14 @@ class SVGItemTest {
     @DisplayName("ensure item uses proper fqi as id")
     void regression184() {
 
-        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 1));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo, Collections.emptyList()), List.of(), new Point2D.Double(1, 1));
         assertThat(svgItem.render().render()).contains(foo.getFullyQualifiedIdentifier().toString());
     }
 
     @Test
     @DisplayName("contains x and y data")
     void xyData() {
-        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 2.0303030));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo, Collections.emptyList()), List.of(), new Point2D.Double(1, 2.0303030));
 
         assertTrue(svgItem.render().render().contains("data-x=\"1.00\""));
         assertTrue(svgItem.render().render().contains("data-y=\"2.03\""));
@@ -45,7 +46,7 @@ class SVGItemTest {
     @Test
     void supportsVisualFocus() {
 
-        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo), List.of(), new Point2D.Double(1, 2.0303030));
+        SVGItem svgItem = new SVGItem(null, new LayoutedComponent(foo, Collections.emptyList()), List.of(), new Point2D.Double(1, 2.0303030));
 
         //then
         String render1 = svgItem.render().render();
