@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Landscape extends GraphComponent implements Linked, Labeled, Assessable {
 
-    //todo make configurable
-    public static final String DEFAULT_COMPONENT = "default";
-
     @JsonIgnore
     private final Source source;
 

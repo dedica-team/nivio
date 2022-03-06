@@ -9,6 +9,8 @@ import org.springframework.lang.NonNull;
 
 /**
  * A factory to create {@link NodeMerger} instances.
+ *
+ *
  */
 class NodeMergerFactory {
 
@@ -21,7 +23,7 @@ class NodeMergerFactory {
                 Landscape.class,
                 Unit.class,
                 landscape.getReadAccess(),
-                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                createParentResolver(landscape),
                 landscape.getWriteAccess()
         );
     }
@@ -32,7 +34,7 @@ class NodeMergerFactory {
                 Unit.class,
                 Context.class,
                 landscape.getReadAccess(),
-                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                createParentResolver(landscape),
                 landscape.getWriteAccess()
         );
     }
@@ -43,7 +45,7 @@ class NodeMergerFactory {
                 Context.class,
                 Group.class,
                 landscape.getReadAccess(),
-                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                createParentResolver(landscape),
                 landscape.getWriteAccess()
         );
     }
@@ -54,7 +56,7 @@ class NodeMergerFactory {
                 Group.class,
                 Item.class,
                 landscape.getReadAccess(),
-                new ParentResolver(landscape.getReadAccess(), landscape.getWriteAccess()),
+                createParentResolver(landscape),
                 landscape.getWriteAccess()
         );
     }
@@ -65,4 +67,14 @@ class NodeMergerFactory {
                 landscape.getWriteAccess()
         );
     }
+
+    private static ParentResolver createParentResolver(Landscape landscape) {
+        return new ParentResolver(
+                landscape.getReadAccess(),
+                landscape.getWriteAccess(),
+                landscape.getConfig().getDefaultUnit(),
+                landscape.getConfig().getDefaultContext()
+        );
+    }
+
 }

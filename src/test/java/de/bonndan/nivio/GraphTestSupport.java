@@ -46,9 +46,9 @@ public class GraphTestSupport {
         landscape = LandscapeFactory.createForTesting("test", "test").withIndex(index).build();
         landscape.setLog(new ProcessLog(LoggerFactory.getLogger(GraphTestSupport.class), "test"));
 
-        unit = UnitFactory.INSTANCE.createFromDescription(Landscape.DEFAULT_COMPONENT, landscape, new UnitDescription());
+        unit = UnitFactory.INSTANCE.createFromDescription(landscape.getConfig().getDefaultUnit(), landscape, new UnitDescription());
         landscape.getWriteAccess().addOrReplaceChild(unit);
-        context = ContextFactory.INSTANCE.createFromDescription(Landscape.DEFAULT_COMPONENT, unit, new ContextDescription());
+        context = ContextFactory.INSTANCE.createFromDescription(landscape.getConfig().getDefaultContext(), unit, new ContextDescription());
         landscape.getWriteAccess().addOrReplaceChild(context);
 
         groupA = getTestGroup("a");

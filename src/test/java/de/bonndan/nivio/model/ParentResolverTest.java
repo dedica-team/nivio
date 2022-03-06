@@ -20,7 +20,9 @@ class ParentResolverTest {
         graph = new GraphTestSupport();
         parentResolver = new ParentResolver(
                 graph.landscape.getReadAccess(),
-                graph.landscape.getWriteAccess()
+                graph.landscape.getWriteAccess(),
+                graph.landscape.getConfig().getDefaultUnit(),
+                graph.landscape.getConfig().getDefaultContext()
         );
     }
 

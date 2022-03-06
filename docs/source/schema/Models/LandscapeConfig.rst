@@ -18,6 +18,16 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
      - 
      - optional, defaults to null
      - null
+   * - defaultContext
+     - String
+     - 
+     - optional, defaults to null
+     - null
+   * - defaultUnit
+     - String
+     - 
+     - optional, defaults to null
+     - null
    * - groupBlacklist
      - List
      - Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.

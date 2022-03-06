@@ -323,6 +323,14 @@
           "branding" : {
             "$ref" : "#/components/schemas/Branding"
           },
+          "defaultContext" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          },
+          "defaultUnit" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          },
           "groupBlacklist" : {
             "type" : "array",
             "description" : "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",

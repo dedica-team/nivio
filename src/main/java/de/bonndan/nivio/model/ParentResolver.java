@@ -1,9 +1,6 @@
 package de.bonndan.nivio.model;
 
-import de.bonndan.nivio.input.dto.ComponentDescription;
-import de.bonndan.nivio.input.dto.ContextDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.UnitDescription;
+import de.bonndan.nivio.input.dto.*;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
@@ -11,22 +8,43 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Finds the parent for a {@link GraphComponent}.
+ *
+ * Creates new default parent instances if necessary.
+ *
+ */
 public class ParentResolver {
-
+    @NonNull
     private final IndexReadAccess<GraphComponent> readAccess;
+    @NonNull
     private final GraphWriteAccess<GraphComponent> writeAccess;
+    @NonNull
+    private final String defaultUnit;
+    @NonNull
+    private final String defaultContext;
 
     public ParentResolver(@NonNull final IndexReadAccess<GraphComponent> readAccess,
-                          @NonNull final GraphWriteAccess<GraphComponent> writeAccess
+                          @NonNull final GraphWriteAccess<GraphComponent> writeAccess,
+                          @NonNull final String defaultUnit,
+                          @NonNull final String defaultContext
+
     ) {
         this.readAccess = Objects.requireNonNull(readAccess);
         this.writeAccess = Objects.requireNonNull(writeAccess);
+        this.defaultUnit = Objects.requireNonNull(defaultUnit);
+        this.defaultContext = Objects.requireNonNull(defaultContext);
     }
 
     /**
      * Returns or creates the parent for a given {@link ComponentDescription}.
+     *
+     * @param dto input dto
+     * @param pClass parent class
      */
-    public <P extends GraphComponent, D extends ComponentDescription> P getParent(@NonNull final D dto, Class<P> pClass) {
+    public <P extends GraphComponent, D extends ComponentDescription> P getParent(@NonNull final D dto,
+                                                                                  @NonNull final Class<P> pClass
+    ) {
         final String parentIdentifier = getParentIdentifier(dto);
         return readAccess.matchOneByIdentifiers(parentIdentifier, null, pClass)
                 .orElseGet(() -> createParentInstantly(parentIdentifier, pClass));
@@ -83,14 +101,14 @@ public class ParentResolver {
 
     private Context getDefaultContext(Set<Context> contexts) {
         return contexts.stream()
-                .filter(context -> context.identifier.equals(Landscape.DEFAULT_COMPONENT))
+                .filter(context -> context.identifier.equals(defaultContext))
                 .findFirst()
                 .orElseGet(
                         () -> {
 
                             Context newDefaultContext = ContextFactory.INSTANCE.createFromDescription(
-                                    Landscape.DEFAULT_COMPONENT,
-                                    getParentForContext(Landscape.DEFAULT_COMPONENT),
+                                    defaultContext,
+                                    getParentForContext(defaultContext),
                                     new ContextDescription());
                             writeAccess.addOrReplaceChild(newDefaultContext);
                             return newDefaultContext;
@@ -100,11 +118,11 @@ public class ParentResolver {
 
     private Unit getDefaultUnit(Set<Unit> units) {
         return units.stream()
-                .filter(unit -> unit.identifier.equals(Landscape.DEFAULT_COMPONENT))
+                .filter(unit -> unit.identifier.equals(defaultUnit))
                 .findFirst()
                 .orElseGet(() -> {
                             Unit newDefaultUnit = UnitFactory.INSTANCE.createFromDescription(
-                                    Landscape.DEFAULT_COMPONENT,
+                                    defaultUnit,
                                     (Landscape) readAccess.getRoot(),
                                     new UnitDescription());
                             writeAccess.addOrReplaceChild(newDefaultUnit);
@@ -138,6 +156,18 @@ public class ParentResolver {
             return groupIdentifier;
         }
 
-        return !StringUtils.hasLength(dto.getParentIdentifier()) ? Landscape.DEFAULT_COMPONENT : dto.getParentIdentifier();
+        if (StringUtils.hasLength(dto.getParentIdentifier())) {
+            return dto.getParentIdentifier();
+        }
+
+        if (dto instanceof GroupDescription) {
+            return defaultContext;
+        }
+
+        if (dto instanceof ContextDescription) {
+            return defaultUnit;
+        }
+
+        throw new IllegalArgumentException(String.format("Cannot determine parent identifier for dto %s", dto.getClass()));
     }
 }
