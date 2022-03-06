@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import MapRelation from './MapRelation';
+import { IRelation } from '../../../../interfaces';
 
 it('should render mapRelation component', () => {
   const source = {
@@ -32,14 +33,15 @@ it('should render mapRelation component', () => {
     networks: ['vpn', 'lan'],
   };
 
-  const relation = {
+  const relation: IRelation = {
     source: source.fullyQualifiedIdentifier,
     target: target.fullyQualifiedIdentifier,
     type: 'PROVIDER',
-    id: target.fullyQualifiedIdentifier,
     direction: 'outbound',
     name: 'bar',
     labels: {},
+    fullyQualifiedIdentifier:
+      'relation://' + source.fullyQualifiedIdentifier + '?to=' + target.fullyQualifiedIdentifier,
   };
   const { getByText, getByTestId } = render(
     <MapRelation source={source} target={target} relation={relation} />
