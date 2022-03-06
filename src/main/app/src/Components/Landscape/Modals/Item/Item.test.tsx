@@ -17,6 +17,7 @@ describe('<Item />', () => {
     direction: 'outbound',
     labels: {},
     type: 'PROVIDER',
+    fullyQualifiedIdentifier: ''
   };
   const useItem: IItem = {
     identifier: 'foo',
@@ -29,7 +30,7 @@ describe('<Item />', () => {
     interfaces: [],
     labels: { 'framework.spring boot': '2.2', 'team': 'ops guys' },
     type: 'foo',
-    fullyQualifiedIdentifier: 'foo',
+    fullyQualifiedIdentifier: 'item://foo/bar/baz/bak/item1',
     tags: [],
     color: 'foo',
     icon: 'foo',
@@ -41,7 +42,7 @@ describe('<Item />', () => {
     const mock = jest.spyOn(APIClient, 'get');
     mock.mockReturnValue(Promise.resolve(useItem));
 
-    const { queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { queryByText } = render(<Item fullyQualifiedItemIdentifier={useItem.fullyQualifiedIdentifier} />);
 
     expect(queryByText('foo (undefined foo), format: foo')).toBeNull();
     expect(queryByText('undefined')).toBeNull();
@@ -54,7 +55,7 @@ describe('<Item />', () => {
     mock.mockReturnValue(Promise.resolve(useItem));
 
     //when
-    const { container, getByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { container, getByText } = render(<Item fullyQualifiedItemIdentifier={useItem.fullyQualifiedIdentifier} />);
 
     //then
     await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));
@@ -67,7 +68,7 @@ describe('<Item />', () => {
     mock.mockReturnValue(Promise.resolve(useItem));
 
     //when
-    const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { container, queryByText } = render(<Item fullyQualifiedItemIdentifier={useItem.fullyQualifiedIdentifier} />);
     fireEvent.click(getByTitle(container, 'API / Interfaces'));
 
     //then
@@ -86,7 +87,7 @@ describe('<Item />', () => {
     //when
     const { container, getByTestId } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
-        <Item fullyQualifiedItemIdentifier={'foo'} />
+        <Item fullyQualifiedItemIdentifier={useItem.fullyQualifiedIdentifier} />
       </LandscapeContext.Provider>
     );
 
