@@ -1,8 +1,6 @@
 package de.bonndan.nivio.output.dto;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.bonndan.nivio.model.GraphComponent;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.model.RelationType;
@@ -18,11 +16,9 @@ public class RelationApiModel {
     public static final String INBOUND = "inbound";
     public static final String OUTBOUND = "outbound";
 
-    @JsonIdentityReference(alwaysAsId = true)
-    public final GraphComponent source;
+    public final URI source;
 
-    @JsonIdentityReference(alwaysAsId = true)
-    public final GraphComponent target;
+    public final URI target;
 
     public final String description;
 
@@ -39,19 +35,21 @@ public class RelationApiModel {
     public final Map<String, String> labels;
 
     public RelationApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
-        source = relation.getSource();
-        target = relation.getTarget();
+        source = relation.getSource().getFullyQualifiedIdentifier();
+        target = relation.getTarget().getFullyQualifiedIdentifier();
         description = relation.getDescription();
         format = relation.getFormat();
         type = RelationType.from(relation.getType());
         id = relation.getFullyQualifiedIdentifier();
         labels = relation.getLabels();
 
-        if (source.equals(owner)) {
-            name = !StringUtils.hasLength(target.getName()) ? target.getIdentifier() : target.getName();
+        if (relation.getSource().equals(owner)) {
+            name = !StringUtils.hasLength(relation.getTarget().getName()) ?
+                    relation.getTarget().getIdentifier() : relation.getTarget().getName();
             direction = OUTBOUND;
         } else {
-            name = !StringUtils.hasLength(source.getName()) ? source.getIdentifier() : source.getName();
+            name = !StringUtils.hasLength(relation.getSource().getName()) ?
+                    relation.getSource().getIdentifier() : relation.getSource().getName();
             direction = INBOUND;
         }
     }

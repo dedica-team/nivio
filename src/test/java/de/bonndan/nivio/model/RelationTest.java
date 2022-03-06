@@ -36,8 +36,8 @@ class RelationTest {
         assertThat(apiModel.direction).isEqualTo(RelationApiModel.OUTBOUND);
         assertThat(apiModel.name).isEqualTo("baz");
         assertThat(apiModel.type.name()).isEqualTo(relation.getType());
-        assertThat(apiModel.source).isEqualTo(relation.getSource());
-        assertThat(apiModel.target).isEqualTo(relation.getTarget());
+        assertThat(apiModel.source).isEqualTo(relation.getSource().getFullyQualifiedIdentifier());
+        assertThat(apiModel.target).isEqualTo(relation.getTarget().getFullyQualifiedIdentifier());
         assertThat(apiModel.description).isEqualTo(relation.getDescription());
         assertThat(apiModel.format).isEqualTo(relation.getFormat());
     }

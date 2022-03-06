@@ -44,6 +44,7 @@ import ItemAvatar from './ItemAvatar';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { a11yProps, TabPanel } from '../../Utils/TabUtils';
 import MappedString from '../../Utils/MappedString';
+import { FullyQualifiedIdentifier } from "../../Utils/FullyQualifiedIdentifier";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -205,7 +206,8 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
 
   useEffect(() => {
     if (!item && fullyQualifiedItemIdentifier) {
-      get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
+      const fqi = new FullyQualifiedIdentifier(fullyQualifiedItemIdentifier);
+      get(`/api/${fqi.getLandscape()}/${fqi.getGroup()}/${fqi.getItem()}`).then((loaded) => {
         setItem(loaded);
       });
     }
@@ -217,13 +219,14 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
     }
   }, [small]);
 
+
   if (item && landscapeContext.landscape) {
     for (let key of Object.keys(item.relations)) {
       let relation = item.relations[key];
       const isInbound = relation.direction === 'inbound';
       const primary = `${relation.name}`;
       let secondary = `${relation.description || ''} ${
-        relation.type ? '(' + relation.type + ')' : ''
+        relation.type ? `(${relation.type})` : ''
       }`;
       if (relation.format) secondary += ', format: ' + relation.format;
       let other = getItem(

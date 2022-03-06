@@ -110,7 +110,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
-    const fqi = e.currentTarget.getAttribute('data-identifier');
+    const fqi = e.currentTarget.getAttribute('data-identifier')
     setVisualFocus(fqi);
 
     if (fqi && landscapeContext.landscape) {

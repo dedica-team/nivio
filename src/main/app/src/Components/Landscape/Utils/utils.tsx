@@ -8,20 +8,19 @@ import MappedString from './MappedString';
  *
  * @param landscape object containing groups
  * @param fullyQualifiedIdentifier string to identify the item
+ * TODO ineffective, group identifier can be extract from fullyQualifiedIdentifier
  */
 export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
-  let item: IItem | null = null;
-  for (const value of landscape.groups) {
-    for (let i = 0; i < value.items.length; i++) {
-      let value1 = value.items[i];
-      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-        item = value1;
-        break;
+
+  for (const group of landscape.groups) {
+    for (const item of group.items) {
+      if (item.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+        return item;
       }
     }
   }
 
-  return item;
+  return null;
 };
 
 /**

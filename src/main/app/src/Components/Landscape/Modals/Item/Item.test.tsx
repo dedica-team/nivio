@@ -7,7 +7,7 @@ import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import landscapeContextValue from '../../../../utils/testing/LandscapeContextValue';
 
 describe('<Item />', () => {
-  const IRelations = {
+  const fooRelation = {
     source: 'foo',
     target: 'test/groupA/foo',
     description: 'foo',
@@ -18,7 +18,6 @@ describe('<Item />', () => {
     labels: {},
     type: 'PROVIDER',
   };
-  const Irelations = { foo: IRelations };
   const useItem: IItem = {
     identifier: 'foo',
     group: 'foo',
@@ -26,7 +25,7 @@ describe('<Item />', () => {
     owner: 'foo',
     description: 'foo',
     contact: 'foo',
-    relations: Irelations,
+    relations: { foo: fooRelation },
     interfaces: [],
     labels: { 'framework.spring boot': '2.2', 'team': 'ops guys' },
     type: 'foo',
