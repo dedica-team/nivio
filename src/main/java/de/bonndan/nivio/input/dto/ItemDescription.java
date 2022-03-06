@@ -33,7 +33,8 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
     @Schema(description = "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.", example = "shipping-mysqldb")
     private List<String> providedBy = new ArrayList<>();
 
-    private List<PartDescription> parts = new ArrayList<>();
+    @Schema(description = "Subcomponents")
+    private Set<PartDescription> parts = new HashSet<>();
 
     @Schema(description = "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.")
     private String address;
@@ -203,9 +204,18 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
                     .forEach(s -> this.getProvidedBy().add(s));
         }
 
+        if (increment.getParts() != null) {
+            increment.getParts().forEach(this::addOrReplacePart);
+        }
+
         increment.getRelations().forEach(this::addOrReplaceRelation);
 
         assignSafe(increment.getInterfaces(), set -> set.forEach(intf -> getInterfaces().add(intf)));
+    }
+
+    private void addOrReplacePart(PartDescription partDescription) {
+        parts.remove(partDescription);
+        parts.add(partDescription);
     }
 
     @NonNull
@@ -225,5 +235,13 @@ public class ItemDescription extends ComponentDescription implements Tagged, Ite
 
     public void setLandscape(String landscape) {
         this.landscape = landscape;
+    }
+
+    public Set<PartDescription> getParts() {
+        return parts;
+    }
+
+    public void setParts(Set<PartDescription> parts) {
+        this.parts = parts;
     }
 }

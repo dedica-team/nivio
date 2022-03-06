@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.PartDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
@@ -9,8 +10,10 @@ import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ItemDescriptionValuesTest {
@@ -224,5 +227,36 @@ class ItemDescriptionValuesTest {
         assertEquals("2", sd1.getLabels().get("a"));
         //b is new
         assertEquals("3", sd1.getLabels().get("b"));
+    }
+
+    @Test
+    void assignsParts() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+        sd1.getLabels().put("a", "1");
+        PartDescription foo = new PartDescription("foo");
+        foo.setName("bar");
+        sd1.getParts().add(foo);
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.getLabels().put("a", "2");
+        increment.getLabels().put("b", "3");
+        PartDescription fooBaz = new PartDescription("foo");
+        fooBaz.setName("baz");
+        increment.getParts().add(fooBaz);
+
+        PartDescription bar = new PartDescription("bar");
+        increment.getParts().add(bar);
+
+        sd1.assignNotNull(increment);
+
+        assertThat(sd1.getParts()).hasSize(2)
+                .contains(fooBaz)
+                .contains(bar);
+
+        Optional<PartDescription> first = sd1.getParts().stream().filter(partDescription -> "baz".equals(partDescription.getName())).findFirst();
+        assertThat(first).isNotEmpty();
     }
 }

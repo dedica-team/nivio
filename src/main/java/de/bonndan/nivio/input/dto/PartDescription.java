@@ -12,6 +12,15 @@ public class PartDescription extends ComponentDescription {
 
     private String item;
 
+    public PartDescription() {
+
+    }
+
+    public PartDescription(String identifier) {
+        super();
+        this.setIdentifier(identifier);
+    }
+
     public String getItem() {
         return item;
     }
@@ -30,5 +39,18 @@ public class PartDescription extends ComponentDescription {
     @Override
     public String getParentIdentifier() {
         return getItem();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PartDescription)) return false;
+
+        return getIdentifier().equals(((PartDescription) o).getIdentifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

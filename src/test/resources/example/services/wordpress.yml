@@ -106,6 +106,9 @@ items:
   - content
   hostType: docker
   layer: infrastructure
+  parts:
+    - identifier: wpdb
+      type: schema
 
 - description: Cache for Wordpress
   software: Redis
