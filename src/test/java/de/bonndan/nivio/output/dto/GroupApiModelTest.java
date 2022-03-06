@@ -27,9 +27,9 @@ class GroupApiModelTest {
                 .withColor("testColor")
                 .withParent(ContextBuilder.aTestContext("default").build())
                 .build();
+        group.setLabel(Label._icondata, "iconurl,base64");
 
         groupApiModel = new GroupApiModel(group, new HashSet<>());
-        group.setLabel(Label._icondata, "iconurl,base64");
     }
 
     @Test

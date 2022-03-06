@@ -6,7 +6,6 @@ import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.ServiceInterface;
 
 import javax.validation.constraints.NotNull;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -19,36 +18,11 @@ public class ItemApiModel extends ComponentApiModel {
     @NotNull
     @JsonIgnore
     private final Item item;
-    private final String color;
 
     public ItemApiModel(@NotNull final Item item) {
+        super(item);
         this.item = Objects.requireNonNull(item);
-        this.color = item.getColor();
         hateoasLinks.putAll(item.getLinks());
-    }
-
-    public String getIdentifier() {
-        return item.getIdentifier();
-    }
-
-    public URI getFullyQualifiedIdentifier() {
-        return item.getFullyQualifiedIdentifier();
-    }
-
-    public String getName() {
-        return item.getName();
-    }
-
-    public String getOwner() {
-        return item.getOwner();
-    }
-
-    public String getIcon() {
-        return item.getLabel(Label._icondata);
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public String getContact() {
@@ -57,15 +31,6 @@ public class ItemApiModel extends ComponentApiModel {
 
     public String getGroup() {
         return item.getParent().getIdentifier();
-    }
-
-    public String getDescription() {
-        return item.getDescription();
-    }
-
-    @Override
-    public Map<String, String> getLabels() {
-        return getPublicLabels(item.getLabels());
     }
 
     @JsonProperty("relations")
@@ -81,10 +46,6 @@ public class ItemApiModel extends ComponentApiModel {
         return map;
     }
 
-    public String getType() {
-        return item.getType();
-    }
-
     public String getAddress() {
         return item.getAddress();
     }
@@ -92,18 +53,6 @@ public class ItemApiModel extends ComponentApiModel {
     @JsonManagedReference
     public Set<ServiceInterface> getInterfaces() {
         return item.getInterfaces();
-    }
-
-    public String[] getTags() {
-        return item.getTags();
-    }
-
-    /**
-     * @return the fully qualified identifier for this service
-     */
-    @Override
-    public String toString() {
-        return getFullyQualifiedIdentifier().toString();
     }
 
     public String[] getNetworks() {

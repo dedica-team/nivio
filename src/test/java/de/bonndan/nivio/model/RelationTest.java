@@ -33,13 +33,13 @@ class RelationTest {
         RelationApiModel apiModel = new RelationApiModel(relation, one);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(RelationApiModel.OUTBOUND);
-        assertThat(apiModel.name).isEqualTo("baz");
-        assertThat(apiModel.type.name()).isEqualTo(relation.getType());
+        assertThat(apiModel.getDirection()).isEqualTo(RelationApiModel.OUTBOUND);
+        assertThat(apiModel.getName()).isEqualTo("baz");
+        assertThat(apiModel.getType()).isEqualTo(relation.getType());
         assertThat(apiModel.source).isEqualTo(relation.getSource().getFullyQualifiedIdentifier());
-        assertThat(apiModel.target).isEqualTo(relation.getTarget().getFullyQualifiedIdentifier());
-        assertThat(apiModel.description).isEqualTo(relation.getDescription());
-        assertThat(apiModel.format).isEqualTo(relation.getFormat());
+        assertThat(apiModel.getTarget()).isEqualTo(relation.getTarget().getFullyQualifiedIdentifier());
+        assertThat(apiModel.getDescription()).isEqualTo(relation.getDescription());
+        assertThat(apiModel.getFormat()).isEqualTo(relation.getFormat());
     }
 
     @Test
@@ -51,8 +51,8 @@ class RelationTest {
         RelationApiModel apiModel = new RelationApiModel(relation, two);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(RelationApiModel.INBOUND);
-        assertThat(apiModel.name).isEqualTo("bar");
+        assertThat(apiModel.getDirection()).isEqualTo(RelationApiModel.INBOUND);
+        assertThat(apiModel.getName()).isEqualTo("bar");
     }
 
     @Test
@@ -66,8 +66,8 @@ class RelationTest {
         RelationApiModel apiModel = new RelationApiModel(relation, two);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(RelationApiModel.INBOUND);
-        assertThat(apiModel.name).isEqualTo("huhu");
+        assertThat(apiModel.getDirection()).isEqualTo(RelationApiModel.INBOUND);
+        assertThat(apiModel.getName()).isEqualTo("huhu");
     }
 
     @Test

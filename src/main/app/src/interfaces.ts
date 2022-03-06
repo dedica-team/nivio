@@ -137,7 +137,7 @@ export interface IRelation {
   description?: string;
   format?: string;
   name: string;
-  id: string;
+  fullyQualifiedIdentifier: string;
   direction: string;
   labels: ILabels;
 }
