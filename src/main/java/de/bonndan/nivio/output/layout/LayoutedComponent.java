@@ -110,14 +110,14 @@ public class LayoutedComponent {
     }
 
     /**
-     * lowest x coord (top left)
+     * center coordinate
      */
     public long getCenterX() {
         return centerX;
     }
 
     /**
-     * lowest y coord (top left)
+     * center coordinate
      */
     public long getCenterY() {
         return centerY;
@@ -153,7 +153,7 @@ public class LayoutedComponent {
 
     public String getFill() {
         if (component instanceof Item) {
-            return ((Item) component).getLabel(Label._filldata);
+            return component.getLabel(Label._filldata);
         }
 
         return null;
@@ -170,7 +170,7 @@ public class LayoutedComponent {
 
     public String getIcon() {
         if (component instanceof Item) {
-            return ((Item) component).getLabel(Label._icondata);
+            return component.getLabel(Label._icondata);
         }
 
         return null;

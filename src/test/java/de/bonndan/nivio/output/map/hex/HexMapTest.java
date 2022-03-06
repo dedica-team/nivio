@@ -82,14 +82,16 @@ class HexMapTest {
     void allAreaHexesHaveCorrectGroup() {
         MapTile one = new MapTile(new Hex(1, 1));
         MapTile two = new MapTile(new Hex(3, 3));
+        MapTile three = new MapTile(new Hex(3, 5));
 
 
         HexMap hexMap = new HexMap();
         hexMap.add(graph.itemAA, one);
         hexMap.add(graph.itemAB, two);
+        hexMap.add(graph.itemAC, three);
 
         //when
-        Set<MapTile> groupArea = hexMap.getGroupArea(graph.groupA, Set.of(graph.itemAA, graph.itemAB));
+        Set<MapTile> groupArea = hexMap.getGroupArea(graph.groupA);
 
         //then
         long count = groupArea.stream().filter(hex -> hex.getGroup() != null).count();

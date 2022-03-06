@@ -101,7 +101,7 @@ public class SVGDocument extends Component {
         List<SVGGroupArea> groupAreas = new ArrayList<>();
         layouted.getChildren().forEach(groupLayout -> {
             Group group = (Group) groupLayout.getComponent();
-            Set<MapTile> groupArea = hexMap.getGroupArea(group, group.getChildren());
+            Set<MapTile> groupArea = hexMap.getGroupArea(group);
             SVGGroupArea area = SVGGroupArea.forGroup(group, groupArea, debug);
             groupAreas.add(area);
         });
@@ -198,7 +198,7 @@ public class SVGDocument extends Component {
     }
 
     private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
-        Optional<HexPath> bestPath = hexMap.getPath(source, (Item) rel.getTarget(), debug);
+        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget(), debug);
         if (bestPath.isPresent()) {
             SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
             LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());
