@@ -110,7 +110,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
-    const fqi = e.currentTarget.getAttribute('data-identifier')
+    const fqi = e.currentTarget.getAttribute('data-identifier');
     setVisualFocus(fqi);
 
     if (fqi && landscapeContext.landscape) {
@@ -145,7 +145,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     if (!landscapeContext.landscape) return;
 
     const dataSource = e.currentTarget.getAttribute('data-source');
-    const fqi = e.currentTarget.getAttribute('data-identifier');
+    const fqi = e.currentTarget.getAttribute('data-identifier') || '';
     setVisualFocus(fqi);
 
     let source, sourceElement, sourceX, sourceY;
@@ -183,14 +183,13 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     }
 
     if (source && target && dataTarget) {
-      const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
-      let relation = source.relations[relId];
+      let relation = source.relations[fqi];
       const mapRelation = (
         <MapRelation
           relation={relation}
           source={source}
           target={target}
-          key={`relation_${relId}_${Math.random()}`}
+          key={`relation_${fqi}_${Math.random()}`}
         />
       );
       // @ts-ignore

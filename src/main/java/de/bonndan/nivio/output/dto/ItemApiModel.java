@@ -40,7 +40,7 @@ public class ItemApiModel extends ComponentApiModel {
 
         item.getRelations().forEach(relation -> {
             RelationApiModel apiModel = new RelationApiModel(relation, this.item);
-            map.put(this.item.getFullyQualifiedIdentifier().toString(), apiModel);
+            map.put(relation.getFullyQualifiedIdentifier().toString(), apiModel);
         });
 
         return map;

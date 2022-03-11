@@ -149,8 +149,8 @@ class SVGRelation extends Component {
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
         String type = relation.getType() != null ? relation.getType() : "-";
         g.attr("data-type", type)
-                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().getPath())
-                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().getPath())
+                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().toString())
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().toString())
                 .attr(DATA_IDENTIFIER, relation.getFullyQualifiedIdentifier())
                 .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
 
