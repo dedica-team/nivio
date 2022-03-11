@@ -13,3 +13,4 @@ Documentation for Models
 *   - [LandscapeDescription](./Models/LandscapeDescription.rst)
 *   - [LayoutConfig](./Models/LayoutConfig.rst)
 *   - [Link](./Models/Link.rst)
+*   - [PartDescription](./Models/PartDescription.rst)

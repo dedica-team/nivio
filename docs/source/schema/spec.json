@@ -203,6 +203,15 @@
             "type" : "string",
             "exampleSetFlag" : false
           },
+          "parts" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "description" : "Subcomponents",
+            "exampleSetFlag" : false,
+            "items" : {
+              "$ref" : "#/components/schemas/PartDescription"
+            }
+          },
           "providedBy" : {
             "type" : "array",
             "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
@@ -325,10 +334,12 @@
           },
           "defaultContext" : {
             "type" : "string",
+            "description" : "Identifier of the context to use as default parent for groups",
             "exampleSetFlag" : false
           },
           "defaultUnit" : {
             "type" : "string",
+            "description" : "Identifier of the unit to use as default parent for contexts",
             "exampleSetFlag" : false
           },
           "groupBlacklist" : {
@@ -622,6 +633,103 @@
         "description" : "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.",
         "example" : "github: https://github.com/dedica-team/nivio",
         "exampleSetFlag" : true
+      },
+      "PartDescription" : {
+        "required" : [ "identifier", "name" ],
+        "type" : "object",
+        "properties" : {
+          "color" : {
+            "type" : "string",
+            "description" : "The HTML (hexcode only!) color used to draw the group and its items. If no color is given, one is computed.",
+            "example" : "05ffaa",
+            "exampleSetFlag" : true
+          },
+          "contact" : {
+            "type" : "string",
+            "description" : "A contact method, preferably email.",
+            "exampleSetFlag" : false
+          },
+          "contains" : {
+            "type" : "array",
+            "description" : "A list of item identifiers or SQL-like queries to easily assign items to this group.",
+            "example" : "identifier LIKE 'DB1'",
+            "exampleSetFlag" : true,
+            "items" : {
+              "type" : "string",
+              "description" : "A list of item identifiers or SQL-like queries to easily assign items to this group.",
+              "example" : "identifier LIKE 'DB1'",
+              "exampleSetFlag" : true
+            }
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "A brief description.",
+            "exampleSetFlag" : false
+          },
+          "fullyQualifiedIdentifier" : {
+            "type" : "string",
+            "format" : "uri",
+            "exampleSetFlag" : false
+          },
+          "identifier" : {
+            "pattern" : "^[\\w][\\w._-]{0,255}$",
+            "type" : "string",
+            "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.",
+            "example" : "shipping",
+            "exampleSetFlag" : true
+          },
+          "item" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          },
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string",
+              "exampleSetFlag" : false
+            },
+            "writeOnly" : true,
+            "exampleSetFlag" : false
+          },
+          "links" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Link"
+            },
+            "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
+            "example" : "github: https://github.com/dedica-team/nivio",
+            "exampleSetFlag" : true
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "A human-readable name",
+            "exampleSetFlag" : false
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "The business owner of the group.",
+            "exampleSetFlag" : false
+          },
+          "parentIdentifier" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          },
+          "tags" : {
+            "type" : "array",
+            "exampleSetFlag" : false,
+            "items" : {
+              "type" : "string",
+              "exampleSetFlag" : false
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "The type of the component. A string describing its nature. If no icon is set, the type determines the displayed icon.",
+            "exampleSetFlag" : false
+          }
+        },
+        "description" : "Subcomponents",
+        "exampleSetFlag" : false
       }
     }
   }
