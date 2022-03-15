@@ -5,7 +5,7 @@ import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Tagged;
+import de.bonndan.nivio.model.Labeled;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,7 +96,7 @@ class TemplateResolverTest {
         assertEquals("Wordpress", web.getLabel(Label.software));
         assertEquals("alphateam", web.getLabel(Label.team));
         assertEquals("alphateam@acme.io", web.getContact());
-        assertEquals(1, web.getLabels(Tagged.LABEL_PREFIX_TAG).size());
+        assertEquals(1, web.getLabels(Labeled.LABEL_PREFIX_TAG).size());
     }
 
     @Test

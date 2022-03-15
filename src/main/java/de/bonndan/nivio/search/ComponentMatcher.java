@@ -1,9 +1,7 @@
 package de.bonndan.nivio.search;
 
-import de.bonndan.nivio.input.dto.ContextDescription;
-import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.UnitDescription;
+import de.bonndan.nivio.input.dto.*;
+import de.bonndan.nivio.model.Process;
 import de.bonndan.nivio.model.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -130,6 +128,10 @@ public class ComponentMatcher {
 
         if (Group.class.equals(cls) || GroupDescription.class.equals(cls)) {
             return ComponentMatcher.build(null, null, null, term, null);
+        }
+
+        if (Process.class.equals(cls) || ProcessDescription.class.equals(cls)) {
+            return ComponentMatcher.build(null, term, null, null, null);
         }
 
         throw new IllegalArgumentException(cls + " is not supported");

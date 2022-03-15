@@ -10,7 +10,7 @@ import java.net.URI;
  *
  * Is not {@link de.bonndan.nivio.assessment.Assessable}
  */
-public interface Component extends Linked, Labeled, Tagged {
+public interface Component extends Linked, Labeled {
 
     /**
      * Returns the local level identifier

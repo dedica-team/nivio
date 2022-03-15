@@ -33,7 +33,7 @@ class LuceneSearchIndexTest {
                 .withParent(foo)
                 .withName("Arnold")
                 .withDescription("is a strong guy")
-                .withLabels(Map.of(Tagged.LABEL_PREFIX_TAG + "strong", "strong"))
+                .withLabels(Map.of(Labeled.LABEL_PREFIX_TAG + "strong", "strong"))
                 .build();
         components.add(fooa);
         graph.landscape.getWriteAccess().addOrReplaceChild(fooa);
@@ -42,7 +42,7 @@ class LuceneSearchIndexTest {
                 .withParent(foo)
                 .withName("Sylvester")
                 .withDescription("is a tough guy")
-                .withLabels(Map.of(Tagged.LABEL_PREFIX_TAG + "strong", "strong"))
+                .withLabels(Map.of(Labeled.LABEL_PREFIX_TAG + "strong", "strong"))
                 .build();
         components.add(foos);
         graph.landscape.getWriteAccess().addOrReplaceChild(foos);

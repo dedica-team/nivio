@@ -38,7 +38,7 @@ class ItemFactoryTest {
         itemDescription.setLabel(Label.version, "1");
         itemDescription.setLabel(Label.team, "A-Team");
         itemDescription.setLabel(Label.visibility, "public");
-        Arrays.stream(new String[]{"a", "b"}).forEach(s -> itemDescription.setPrefixed(Tagged.LABEL_PREFIX_TAG, s));
+        Arrays.stream(new String[]{"a", "b"}).forEach(s -> itemDescription.setPrefixed(Labeled.LABEL_PREFIX_TAG, s));
         itemDescription.setLabel(Label.costs, "10000");
         itemDescription.setLabel(Label.capability, "billing");
         itemDescription.setAddress("foobar.com");
@@ -56,7 +56,7 @@ class ItemFactoryTest {
         assertEquals(itemDescription.getType(), created.getType());
         assertEquals(itemDescription.getOwner(), created.getOwner());
         assertEquals(itemDescription.getLinks(), created.getLinks());
-        assertEquals(itemDescription.getLabels(Tagged.LABEL_PREFIX_TAG).size(), created.getTags().length);
+        assertEquals(itemDescription.getLabels(Labeled.LABEL_PREFIX_TAG).size(), created.getTags().length);
         assertEquals(itemDescription.getContact(), created.getContact());
         assertEquals(itemDescription.getLabel(Label.note), created.getLabel(Label.note));
         assertEquals(itemDescription.getLabel(Label.team), created.getLabel(Label.team));

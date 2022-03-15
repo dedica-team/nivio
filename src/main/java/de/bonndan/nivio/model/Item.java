@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import static de.bonndan.nivio.model.ComponentDiff.compareCollections;
 import static de.bonndan.nivio.model.ComponentDiff.compareOptionals;
 
-public class Item extends GraphComponent implements PhysicalComponent, Tagged, ItemComponent {
+public class Item extends GraphComponent implements PhysicalComponent, ItemComponent {
 
     private final Layer layer;
 

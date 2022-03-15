@@ -66,7 +66,7 @@ public class AsciiDocGenerator {
         builder.append("Links:: " + item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> stringURLEntry.getValue().toString() + "[" + stringURLEntry.getKey() + "]")
                 .collect(Collectors.joining(" ")) + NL);
-        builder.append("Tags:: " + FormatUtils.nice(item.getLabels(Tagged.LABEL_PREFIX_TAG)) + NL);
+        builder.append("Tags:: " + FormatUtils.nice(item.getLabels(Labeled.LABEL_PREFIX_TAG)) + NL);
         builder.append("Contact:: " + nice(item.getContact()) + NL);
         builder.append("Team:: " + nice(item.getLabel(Label.team)) + NL);
         builder.append("Owner:: " + nice(item.getOwner()) + NL);

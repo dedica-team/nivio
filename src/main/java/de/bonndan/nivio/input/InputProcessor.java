@@ -37,6 +37,9 @@ public class InputProcessor {
         //update relations
         changelog.merge(NodeMergerFactory.forRelations(landscape).mergeAndDiff(new ArrayList<>(readAccess.all(ItemDescription.class)), log));
 
+        //update processes
+        changelog.merge(NodeMergerFactory.forProcesses(landscape).mergeAndDiff(new ArrayList<>(readAccess.all(ProcessDescription.class)), log));
+
         //delete components
         if (!input.isPartial()) {
             delete(landscape, changelog);

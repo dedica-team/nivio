@@ -162,7 +162,7 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
     public Map<String, String> getJSONLabels() {
 
         return Labeled.groupedByPrefixes(
-                Labeled.withoutKeys(getLabels(), Label.status.name(), Tagged.LABEL_PREFIX_TAG),
+                Labeled.withoutKeys(getLabels(), Label.status.name(), Labeled.LABEL_PREFIX_TAG),
                 ","
         );
     }

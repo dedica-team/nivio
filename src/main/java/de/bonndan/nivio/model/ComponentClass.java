@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public enum ComponentClass {
 
-    landscape, unit, context, group, item, part, relation; //NOSONAR
+    landscape, unit, context, group, item, part, relation, process; //NOSONAR
 
     private static final Map<Class<? extends Component>, ComponentClass> mapping = Map.ofEntries(
             Map.entry(LandscapeDescription.class, landscape),
@@ -25,7 +25,8 @@ public enum ComponentClass {
             Map.entry(PartDescription.class, part),
             Map.entry(Part.class, part),
             //Map.entry(RelationDescription.class, relation),
-            Map.entry(Relation.class, relation)
+            Map.entry(Relation.class, relation),
+            Map.entry(Process.class, process)
     );
 
     /**

@@ -17,7 +17,7 @@ import static de.bonndan.nivio.util.SafeAssign.assignSafeIfAbsent;
 /**
  * This is representation of a service in the textual form as described in a source file.
  */
-public class ItemDescription extends ComponentDescription implements Tagged, ItemComponent {
+public class ItemDescription extends ComponentDescription implements ItemComponent {
 
     @Schema(description = "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to its layer.",
             example = "shipping")

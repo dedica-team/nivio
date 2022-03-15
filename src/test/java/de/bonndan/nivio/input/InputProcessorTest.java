@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.GraphTestSupport;
+import de.bonndan.nivio.input.dto.BranchDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ProcessDescription;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -135,7 +138,31 @@ class InputProcessorTest {
 
     }
 
+    @Test
+    void addProcesses() {
 
+        //given
+        ProcessDescription dto = new ProcessDescription();
+        dto.setLandscape(landscape.getIdentifier());
+        dto.setIdentifier("foo");
+
+        dto.getBranches().add(new BranchDescription(
+                List.of(graph.itemAA.getFullyQualifiedIdentifier().toString(),
+                        graph.itemAB.getFullyQualifiedIdentifier().toString())
+        ));
+        input.getWriteAccess().addOrReplaceChild(dto);
+
+        //when
+        Landscape out = processor.process(input, landscape);
+
+        assertThat(out).isNotNull();
+
+        Map<URI, ProcessingChangelog.Entry> created = getChanges(out, ProcessingChangelog.ChangeType.CREATED);
+        assertThat(created).hasSize(1);
+        URI key = URI.create("process://" +landscape.getIdentifier() + "/" +dto.getIdentifier());
+        assertThat(created.get(key).getComponentType()).isEqualTo(Process.class.getSimpleName());
+
+    }
 
     @Test
     void keptNone() {

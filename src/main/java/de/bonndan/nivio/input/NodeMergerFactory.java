@@ -1,9 +1,7 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ContextDescription;
-import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.UnitDescription;
+import de.bonndan.nivio.input.dto.*;
+import de.bonndan.nivio.model.Process;
 import de.bonndan.nivio.model.*;
 import org.springframework.lang.NonNull;
 
@@ -61,14 +59,14 @@ class NodeMergerFactory {
         );
     }
 
-    static EdgeMerge forRelations(Landscape landscape) {
+    static EdgeMerge forRelations(@NonNull final Landscape landscape) {
         return new EdgeMerge(
                 landscape.getReadAccess(),
                 landscape.getWriteAccess()
         );
     }
 
-    private static ParentResolver createParentResolver(Landscape landscape) {
+    private static ParentResolver createParentResolver(@NonNull final Landscape landscape) {
         return new ParentResolver(
                 landscape.getReadAccess(),
                 landscape.getWriteAccess(),
@@ -77,4 +75,14 @@ class NodeMergerFactory {
         );
     }
 
+    public static NodeMerger<Process, ProcessDescription, Landscape> forProcesses(Landscape landscape) {
+        return new NodeMerger<>(
+                ProcessFactory.INSTANCE,
+                Landscape.class,
+                Process.class,
+                landscape.getReadAccess(),
+                createParentResolver(landscape),
+                landscape.getWriteAccess()
+        );
+    }
 }
