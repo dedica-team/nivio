@@ -47,8 +47,7 @@ class AssessmentChangelogFactoryTest {
 
         List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.RED, null));
         var update = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI,
-                Collections.singletonList(StatusValue.summary(TEST_FQI, security)))))
-        );
+                Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
 
         //when
         ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, assessment, update);

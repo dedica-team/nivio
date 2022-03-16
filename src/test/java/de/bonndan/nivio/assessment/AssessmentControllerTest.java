@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +38,7 @@ class AssessmentControllerTest {
 
     @Test
     void assessmentFoundInRepository() {
-        var assessment = new Assessment(Map.of());
+        var assessment = Assessment.empty();
         var landscape = LandscapeFactory.createForTesting("test", "test").build();
         Mockito.when(assessmentRepository.getAssessment(landscape.getFullyQualifiedIdentifier())).thenReturn(Optional.of(assessment));
         landscapeRepository.save(landscape);

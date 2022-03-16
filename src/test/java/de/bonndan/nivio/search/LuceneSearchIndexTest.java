@@ -51,14 +51,14 @@ class LuceneSearchIndexTest {
                 .map(SearchDocumentValueObjectFactory::createFor)
                 .collect(Collectors.toSet());
 
-        searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));
+        searchIndex.indexForSearch(valueObjects, Assessment.empty());
     }
 
     @Test
     void checksNull() {
 
         //when
-        assertThatThrownBy(() -> searchIndex.indexForSearch(null, new Assessment(Map.of()))).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> searchIndex.indexForSearch(null, Assessment.empty())).isInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> searchIndex.indexForSearch(valueObjects, null)).isInstanceOf(NullPointerException.class);
     }
@@ -135,14 +135,14 @@ class LuceneSearchIndexTest {
         assertThat(searchIndex.facets()).hasSize(3);
 
         //when
-        searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));
+        searchIndex.indexForSearch(valueObjects, Assessment.empty());
 
         //then
         assertThat(searchIndex.search("*")).hasSize(2);
         assertThat(searchIndex.facets()).hasSize(3);
 
         //when
-        searchIndex.indexForSearch(valueObjects, new Assessment(Map.of()));
+        searchIndex.indexForSearch(valueObjects, Assessment.empty());
 
         //then
         assertThat(searchIndex.search("*")).hasSize(2);

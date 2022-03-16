@@ -6,6 +6,7 @@ import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.GroupBuilder;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.icons.IconService;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ class SVGRendererTest {
         LayoutedComponent lc = getLayoutedLandscape(graph.landscape);
 
         //when
-        String rendered = svgRenderer.render(lc, Assessment.empty(), true);
+        String rendered = svgRenderer.render(lc, new RendererOptions(Assessment.empty(), true));
 
         //check svg xml is returned
         assertTrue(rendered.contains("svg version=\"1.1\""));

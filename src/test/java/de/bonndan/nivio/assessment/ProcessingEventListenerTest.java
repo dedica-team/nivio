@@ -61,7 +61,7 @@ class ProcessingEventListenerTest {
         LandscapeDescription description = new LandscapeDescription(graph.landscape.getIdentifier());
         URI uri = graph.itemAA.getFullyQualifiedIdentifier();
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(description, graph.landscape, mock(ProcessingChangelog.class));
-        Assessment assessment = new Assessment(Map.of());
+        Assessment assessment = Assessment.empty();
         when(factory.createAssessment(any(Landscape.class))).thenReturn(assessment);
         when(repo.getAssessment(any())).thenReturn(Optional.of(assessment));
 

@@ -65,7 +65,7 @@ class DocsControllerTest {
         var httpHeader = new HttpHeaders();
         httpHeader.add(HttpHeaders.CONTENT_TYPE, "text/html");
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(java.util.Optional.of(LandscapeFactory.createForTesting("test", "test").build()));
-        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(new Assessment(Map.of())));
+        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(Assessment.empty()));
         var response = docsController.htmlResource("test", httpServletRequest);
         assertThat(response).isEqualToIgnoringGivenFields(new ResponseEntity<>("", httpHeader, HttpStatus.OK), "body");
     }
@@ -76,7 +76,7 @@ class DocsControllerTest {
         var httpHeader = new HttpHeaders();
         httpHeader.add(HttpHeaders.CONTENT_TYPE, "text/html");
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(java.util.Optional.of(LandscapeFactory.createForTesting("test", "test").build()));
-        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(new Assessment(Map.of())));
+        Mockito.when(assessmentRepository.getAssessment(Mockito.any())).thenReturn(Optional.of(Assessment.empty()));
         Mockito.when(httpServletRequest.getParameterMap()).thenReturn(Map.of());
         var response = docsController.owners("test", httpServletRequest);
         assertThat(response).isEqualToIgnoringGivenFields(new ResponseEntity<>("", httpHeader, HttpStatus.OK), "body");

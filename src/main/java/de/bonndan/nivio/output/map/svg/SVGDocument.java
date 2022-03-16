@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
@@ -29,8 +30,8 @@ import static j2html.TagCreator.rawHtml;
  */
 public class SVGDocument extends Component {
 
-    public static final int PADDING = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGDocument.class);
+    public static final int PADDING = 10;
     public static final int LABEL_WIDTH = 140;
     public static final String VISUAL_FOCUS_UNSELECTED = "unselected";
     public static final String DATA_IDENTIFIER = "data-identifier";
@@ -47,10 +48,13 @@ public class SVGDocument extends Component {
     private static final String HEIGHT = "height";
 
 
-    public SVGDocument(@NonNull final LayoutedComponent layouted, @Nullable final Assessment assessment, @Nullable final String cssStyles) {
+    public SVGDocument(@NonNull final LayoutedComponent layouted,
+                       @NonNull final RendererOptions options,
+                       @Nullable final String cssStyles
+    ) {
         this.layouted = Objects.requireNonNull(layouted);
         this.landscape = (Landscape) layouted.getComponent();
-        this.assessment = assessment == null ? Assessment.empty() : assessment;
+        this.assessment = options.getAssessment();
         this.cssStyles = !StringUtils.hasLength(cssStyles) ? "" : cssStyles;
     }
 

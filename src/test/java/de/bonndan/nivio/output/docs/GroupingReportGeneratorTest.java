@@ -135,7 +135,7 @@ class GroupingReportGeneratorTest {
         var searchConfig = new SearchConfig(Map.of("title", new String[]{"test"}, "reportType", new String[]{"owners"}, "searchTerm", new String[]{"ownerz"}));
 
         //items need to be indexed before the search can execute
-        graph.landscape.getReadAccess().indexForSearch(new Assessment(new HashMap<>()));
+        graph.landscape.getReadAccess().indexForSearch(Assessment.empty());
 
         //  when
         String document = groupingReportGenerator.toDocument(graph.landscape, assessment, searchConfig, frontendMapping);
