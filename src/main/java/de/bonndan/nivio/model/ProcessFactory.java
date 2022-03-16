@@ -55,7 +55,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
         validateGraph(itemsPerBranch);
 
         var branches = itemsPerBranch.stream()
-                .map(nodes -> createBranchWithRelations(nodes, parent.getWriteAccess()))
+                .map(ProcessFactory::createBranchWithRelations)
                 .collect(Collectors.toList());
 
         return new Process(identifier,
@@ -74,10 +74,9 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
      * Creates relations if absent.
      *
      * @param branchNodes items
-     * @param writeAccess to create new relations
      * @return a new branch
      */
-    private static Branch createBranchWithRelations(final List<Item> branchNodes, GraphWriteAccess<GraphComponent> writeAccess) {
+    private static Branch createBranchWithRelations(final List<Item> branchNodes) {
         List<Relation> relations = new ArrayList<>();
         for (int i = 0; i < branchNodes.size(); i++) {
             Item item = branchNodes.get(i);
@@ -87,11 +86,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
             Item next = branchNodes.get(i + 1);
             Relation relation1 = item.getRelations().stream().filter(relation -> relation.getSource().equals(item) && relation.getTarget().equals(next))
                     .findFirst()
-                    .orElseGet(() -> {
-                        Relation relation = createRelation(item, next);
-                        writeAccess.addOrReplaceRelation(relation);
-                        return relation;
-                    });
+                    .orElseGet(() -> createRelation(item, next));
             relations.add(relation1);
         }
 

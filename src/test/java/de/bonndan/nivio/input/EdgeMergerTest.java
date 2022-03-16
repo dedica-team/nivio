@@ -16,18 +16,18 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class EdgeMergeTest {
+class EdgeMergerTest {
 
     private GraphTestSupport graph;
     private LandscapeDescription input;
-    private EdgeMerge edgeMerge;
+    private EdgeMerger edgeMerger;
 
     @BeforeEach
     void setUp() {
         graph = new GraphTestSupport();
         input = new LandscapeDescription("test");
 
-        edgeMerge = new EdgeMerge(graph.landscape.getReadAccess(), graph.landscape.getWriteAccess());
+        edgeMerger = new EdgeMerger(graph.landscape.getReadAccess(), graph.landscape.getWriteAccess());
     }
 
     @Test
@@ -39,7 +39,7 @@ class EdgeMergeTest {
         input.mergeItems(List.of(description));
 
         //when
-        ProcessingChangelog process = edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
+        ProcessingChangelog process = edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
 
         //then
         assertThat(process.getChanges()).hasSize(3); //no updates, one created
@@ -55,7 +55,7 @@ class EdgeMergeTest {
         ProcessLog processLog = new ProcessLog(mock(Logger.class), graph.landscape.getIdentifier());
 
         //when
-        ProcessingChangelog process = edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), processLog);
+        ProcessingChangelog process = edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), processLog);
 
         //then
         assertThat(process.getChanges()).isEmpty();
@@ -73,7 +73,7 @@ class EdgeMergeTest {
         ProcessLog processLog = new ProcessLog(mock(Logger.class), graph.landscape.getIdentifier());
 
         //when
-        ProcessingChangelog process = edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), processLog);
+        ProcessingChangelog process = edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), processLog);
 
         //then
         assertThat(process.getChanges()).isEmpty();
@@ -90,7 +90,7 @@ class EdgeMergeTest {
         description.setGroup(graph.groupA.getIdentifier());
         description.addOrReplaceRelation(new RelationDescription(graph.itemAA.getIdentifier(), graph.itemAC.getIdentifier()));
         input.mergeItems(List.of(description));
-        edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
+        edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
 
         //add a -> b, keep a -> c
         description = new ItemDescription(graph.itemAA.getIdentifier());
@@ -101,7 +101,7 @@ class EdgeMergeTest {
 
         //when
         ProcessLog processLog = new ProcessLog(mock(Logger.class), graph.landscape.getIdentifier());
-        ProcessingChangelog changelog = edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), processLog);
+        ProcessingChangelog changelog = edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), processLog);
 
         //then
         assertThat(changelog.getChanges()).hasSize(4); //one create, 3 updates for nodes and relation
@@ -120,7 +120,7 @@ class EdgeMergeTest {
         description.setGroup(graph.groupA.getIdentifier());
         description.addOrReplaceRelation(new RelationDescription(graph.itemAA.getIdentifier(), graph.itemAC.getIdentifier()));
         input.mergeItems(List.of(description));
-        edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
+        edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
 
         //update with independent "fresh" data
         input = new LandscapeDescription("test");
@@ -129,7 +129,7 @@ class EdgeMergeTest {
         input.mergeItems(List.of(description));
 
         //when
-        ProcessingChangelog changelog = edgeMerge.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
+        ProcessingChangelog changelog = edgeMerger.mergeAndDiff(new ArrayList<>(input.getItemDescriptions()), graph.landscape.getLog());
 
         //then
         assertThat(graph.itemAA.getRelations()).isEmpty();

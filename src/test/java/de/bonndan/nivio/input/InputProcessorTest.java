@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.ProcessDescription;
 import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.Relation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -158,9 +159,12 @@ class InputProcessorTest {
         assertThat(out).isNotNull();
 
         Map<URI, ProcessingChangelog.Entry> created = getChanges(out, ProcessingChangelog.ChangeType.CREATED);
-        assertThat(created).hasSize(1);
+        assertThat(created).hasSize(2);
         URI key = URI.create("process://" +landscape.getIdentifier() + "/" +dto.getIdentifier());
         assertThat(created.get(key).getComponentType()).isEqualTo(Process.class.getSimpleName());
+
+        key = URI.create("relation://" +landscape.getIdentifier() + "/default/default/a/a?to=item://test/default/default/a/b");
+        assertThat(created.get(key).getComponentType()).isEqualTo(Relation.class.getSimpleName());
 
     }
 

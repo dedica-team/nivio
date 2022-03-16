@@ -14,13 +14,13 @@ import java.util.*;
  *
  * TODO support {@link Part}
  */
-public class EdgeMerge {
+public class EdgeMerger {
 
     private final IndexReadAccess<GraphComponent> indexReadAccess;
     private final GraphWriteAccess<GraphComponent> graphWriteAccess;
 
-    public EdgeMerge(IndexReadAccess<GraphComponent> indexReadAccess,
-                     GraphWriteAccess<GraphComponent> graphWriteAccess
+    public EdgeMerger(IndexReadAccess<GraphComponent> indexReadAccess,
+                      GraphWriteAccess<GraphComponent> graphWriteAccess
     ) {
 
         this.indexReadAccess = indexReadAccess;

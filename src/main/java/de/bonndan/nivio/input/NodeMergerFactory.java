@@ -7,8 +7,6 @@ import org.springframework.lang.NonNull;
 
 /**
  * A factory to create {@link NodeMerger} instances.
- *
- *
  */
 class NodeMergerFactory {
 
@@ -59,8 +57,8 @@ class NodeMergerFactory {
         );
     }
 
-    static EdgeMerge forRelations(@NonNull final Landscape landscape) {
-        return new EdgeMerge(
+    static EdgeMerger forRelations(@NonNull final Landscape landscape) {
+        return new EdgeMerger(
                 landscape.getReadAccess(),
                 landscape.getWriteAccess()
         );
@@ -75,14 +73,17 @@ class NodeMergerFactory {
         );
     }
 
-    public static NodeMerger<Process, ProcessDescription, Landscape> forProcesses(Landscape landscape) {
-        return new NodeMerger<>(
-                ProcessFactory.INSTANCE,
-                Landscape.class,
-                Process.class,
-                landscape.getReadAccess(),
-                createParentResolver(landscape),
-                landscape.getWriteAccess()
+    public static ProcessMerger forProcesses(@NonNull final Landscape landscape) {
+        return new ProcessMerger(
+                new NodeMerger<>(
+                        ProcessFactory.INSTANCE,
+                        Landscape.class,
+                        Process.class,
+                        landscape.getReadAccess(),
+                        createParentResolver(landscape),
+                        landscape.getWriteAccess()
+                ),
+                landscape
         );
     }
 }
