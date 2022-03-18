@@ -3,12 +3,14 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
-import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -41,7 +43,7 @@ public class SVGDocument extends Component {
     private final String cssStyles;
     private final Assessment assessment;
     private boolean debug = false;
-    private HexMap hexMap;
+    private final HexMap hexMap;
 
     private static final String CLASS = "class";
     private static final String WIDTH = "width";
@@ -49,25 +51,22 @@ public class SVGDocument extends Component {
 
 
     public SVGDocument(@NonNull final LayoutedComponent layouted,
+                       @NonNull final HexMap hexMap,
                        @NonNull final RendererOptions options,
                        @Nullable final String cssStyles
     ) {
         this.layouted = Objects.requireNonNull(layouted);
+        this.hexMap = Objects.requireNonNull(hexMap);
         this.landscape = (Landscape) layouted.getComponent();
         this.assessment = options.getAssessment();
+        this.debug = options.isDebug();
         this.cssStyles = !StringUtils.hasLength(cssStyles) ? "" : cssStyles;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 
     public DomContent render() {
 
         List<DomContent> defs = new ArrayList<>();
         List<SVGItem> items = new ArrayList<>();
-
-        hexMap = new HexMap();
 
         defs.add(SVGStatus.glowFilter());
         defs.add(SVGStatus.patternFor(Status.UNKNOWN));
@@ -83,9 +82,7 @@ public class SVGDocument extends Component {
             }
             group.getChildren().forEach(layoutedItem -> {
 
-                MapTile freeSpot = hexMap.findFreeSpot(layoutedItem);
                 Item item = (Item) layoutedItem.getComponent();
-                hexMap.add(item, freeSpot);
 
                 //collect patterns for icons
                 if (StringUtils.hasLength(layoutedItem.getFill())) {
@@ -187,29 +184,23 @@ public class SVGDocument extends Component {
      * Iterates over all items and invokes pathfinding for their relations.
      */
     private List<SVGRelation> getRelations(LayoutedComponent layouted) {
+
         List<SVGRelation> relations = new ArrayList<>();
-        layouted.getChildren().forEach(layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
-            Item item = (Item) layoutedItem.getComponent();
-            LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
-            item.getRelations().stream()
-                    .filter(rel -> rel.getSource().equals(item)) //do not paint twice / incoming (inverse) relations
-                    .map(rel -> getSvgRelation(layoutedItem, item, rel))
-                    .filter(Objects::nonNull)
-                    .forEach(relations::add);
-        }));
+        layouted.getChildren().forEach(
+                layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
+                    Item item = (Item) layoutedItem.getComponent();
+                    LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
+                    item.getRelations().stream()
+                            .map(rel -> hexMap.getPath(rel)
+                                    .map(hexPath ->
+                                            new SVGRelation(hexPath, layoutedItem.getColor(), rel, null)
+                                    ).orElse(null)
+                            )
+                            .filter(Objects::nonNull)
+                            .forEach(relations::add);
+                }));
 
         return relations;
-    }
-
-    private SVGRelation getSvgRelation(LayoutedComponent layoutedItem, Item source, Relation rel) {
-        Optional<HexPath> bestPath = hexMap.getPath(source, rel.getTarget(), debug);
-        if (bestPath.isPresent()) {
-            SVGRelation svgRelation = new SVGRelation(bestPath.get(), layoutedItem.getColor(), rel, null);
-            LOGGER.debug("Added path for item {} relation {} -> {}", source, rel.getSource(), rel.getTarget());
-            return svgRelation;
-        }
-        LOGGER.error("No path found for item {} relation {}", source, rel);
-        return null;
     }
 
     public String getXML() {

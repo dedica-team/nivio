@@ -2,6 +2,8 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,23 +30,29 @@ class HexMapTest {
 
     @Test
     void getPath() {
-        Item bar = getTestItem("foo", "bar");
+        graph.getTestGroup("foo");
+        Item bar = graph.getTestItem("foo", "bar");
 
         LayoutedComponent barComponent = new LayoutedComponent(bar, Collections.emptyList());
         barComponent.setCenterX(0);
         barComponent.setCenterY(0);
 
-        Item baz = getTestItem("moo", "baz");
+        graph.getTestGroup("moo");
+        Item baz = graph.getTestItem("moo", "baz");
         LayoutedComponent bazComponent = new LayoutedComponent(baz, Collections.emptyList());
         barComponent.setCenterX(500);
         barComponent.setCenterY(500);
+
+        Relation relation = RelationFactory.createForTesting(bar, baz);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         HexMap hexMap = new HexMap();
         hexMap.add(bar, hexMap.findFreeSpot(barComponent));
         hexMap.add(baz, hexMap.findFreeSpot(bazComponent));
 
         //when
-        Optional<HexPath> path = hexMap.getPath(bar, baz, true);
+        hexMap.addPath(relation, true);
+        Optional<HexPath> path = hexMap.getPath(relation);
 
         //then
         assertThat(path).isNotEmpty();
@@ -89,6 +97,8 @@ class HexMapTest {
         hexMap.add(graph.itemAA, one);
         hexMap.add(graph.itemAB, two);
         hexMap.add(graph.itemAC, three);
+
+        hexMap.addGroupArea(graph.groupA);
 
         //when
         Set<MapTile> groupArea = hexMap.getGroupArea(graph.groupA);

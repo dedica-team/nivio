@@ -4,6 +4,7 @@ import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Renderer;
 import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import de.bonndan.nivio.output.map.hex.HexMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -35,8 +36,11 @@ public class SVGRenderer implements Renderer<String> {
 
     @Override
     public String render(@NonNull final LayoutedComponent landscape, @NonNull final RendererOptions options) {
-        SVGDocument svgDocument = new SVGDocument(landscape, options, getStyles((Landscape) landscape.getComponent()));
-        svgDocument.setDebug(options.isDebug());
+
+        HexMap hexMap = new HexMap();
+        HexMapDataProvider.fillMap(hexMap, landscape);
+
+        SVGDocument svgDocument = new SVGDocument(landscape, hexMap, options, getStyles((Landscape) landscape.getComponent()));
         return svgDocument.getXML();
     }
 
