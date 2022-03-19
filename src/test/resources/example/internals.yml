@@ -262,3 +262,12 @@ items:
     group: reports
     icon: file-chart
     description: Written report containing all landscape data
+
+
+processes:
+  ingestion:
+    description: Data ingestion
+    branches:
+      - nodes:
+          - start/seed
+          - start/config

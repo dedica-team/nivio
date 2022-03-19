@@ -131,18 +131,6 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
         return getReadAccess().all(Group.class);
     }
 
-    /**
-     * Returns the group with the given name.
-     *
-     * @param group name
-     * @return group or null if the group cannot be found as optional
-     */
-    public Optional<Group> getGroup(String group) {
-        return indexReadAccess.all(Group.class).stream()
-                .filter(group1 -> group1.getIdentifier().equals(group))
-                .findFirst();
-    }
-
     @JsonIgnore
     public ProcessLog getLog() {
         return processLog;

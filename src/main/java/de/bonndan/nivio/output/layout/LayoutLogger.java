@@ -56,7 +56,7 @@ class LayoutLogger {
         }
     }
 
-    public void traceLocations(File out) throws IOException {
+    public void traceLocations(File out) throws IOException { //NOSONAR
         Map<Integer, List<String>> pathCoords = new HashMap<>();
         for (int i = 0; i < locations.get(0).centerLocations.length; i++) {
             pathCoords.put(i, new ArrayList<>());

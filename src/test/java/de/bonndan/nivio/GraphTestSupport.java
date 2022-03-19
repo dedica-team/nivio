@@ -64,15 +64,21 @@ public class GraphTestSupport {
     }
 
     public Item getTestItem(String groupId, String id) {
-        Group group = landscape.getGroup(groupId).orElseThrow();
+        Group group = landscape.getGroups().values().stream()
+                .filter(group1 -> group1.getIdentifier().equals(groupId))
+                .findFirst()
+                .orElseThrow();
         Item item = ItemBuilder.anItem().withIdentifier(id).withParent(group).build();
-        var old = landscape.getWriteAccess().addOrReplaceChild(item);
+        landscape.getWriteAccess().addOrReplaceChild(item);
         assert item.isAttached();
         return item;
     }
 
     public ItemBuilder getTestItemBuilder(String groupId, String id) {
-        Group group = landscape.getGroup(groupId).orElseThrow(() -> new NoSuchElementException("Invalid test item group " + groupId));
+        Group group = landscape.getGroups().values().stream()
+                .filter(group1 -> group1.getIdentifier().equals(groupId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Invalid test item group " + groupId));
         return ItemBuilder.anItem().withIdentifier(id).withParent(group);
     }
 

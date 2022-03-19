@@ -78,6 +78,9 @@ public class SeedConfiguration  {
     @Schema(description = "Description of items (optional, can also be given in sources).")
     private List<ItemDescription> items = new ArrayList<>();
 
+    @Schema(description = "Description of processes (optional, can also be given in sources).")
+    private Map<String, ProcessDescription> processes = new HashMap<>();
+
     private URL baseUrl;
     private Source source;
 
@@ -227,6 +230,14 @@ public class SeedConfiguration  {
         this.groups = groups;
     }
 
+    public Map<String, ProcessDescription> getProcesses() {
+        return processes;
+    }
+
+    public void setProcesses(Map<String, ProcessDescription> processes) {
+        this.processes = processes;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -260,4 +271,5 @@ public class SeedConfiguration  {
     public Source getSource() {
         return source;
     }
+
 }

@@ -44,4 +44,24 @@ public class ProcessDescription extends ComponentDescription {
     public void setBranches(@NonNull final List<BranchDescription> branches) {
         this.branches = Objects.requireNonNull(branches);
     }
+
+    public void assignNotNull(ProcessDescription increment) {
+        super.assignNotNull(increment);
+        if (increment.getBranches() != null) {
+            setBranches(increment.getBranches());
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProcessDescription)) return false;
+
+        return getIdentifier().equals(((ProcessDescription) o).getIdentifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

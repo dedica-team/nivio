@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -79,7 +76,10 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<Group> group = landscape.getGroup(groupIdentifier);
+        Optional<Group> group = landscape.getGroups().entrySet().stream()
+                .filter(uriGroupEntry -> uriGroupEntry.getValue().getIdentifier().equalsIgnoreCase(groupIdentifier))
+                .findFirst()
+                .map(Map.Entry::getValue);
         if (group.isPresent()) {
             Group group1 = group.get();
             GroupApiModel groupItem = new GroupApiModel(group1, Set.copyOf(group1.getChildren()));

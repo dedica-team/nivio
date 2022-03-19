@@ -91,6 +91,7 @@ public class SourceReferencesResolver {
             landscapeDescription1.mergeContexts(landscapeDescription.getReadAccess().all(ContextDescription.class));
             landscapeDescription1.mergeGroups(landscapeDescription.getReadAccess().all(GroupDescription.class));
             landscapeDescription1.mergeItems(landscapeDescription.getReadAccess().all(ItemDescription.class));
+            landscapeDescription1.mergeProcesses(landscapeDescription.getReadAccess().all(ProcessDescription.class));
         } else {
             map.put(landscapeDescription.getIdentifier(), landscapeDescription);
         }

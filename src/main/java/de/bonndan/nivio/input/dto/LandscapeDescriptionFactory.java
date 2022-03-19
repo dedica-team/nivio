@@ -74,7 +74,8 @@ public class LandscapeDescriptionFactory {
                 seedConfiguration.getUnits(),
                 seedConfiguration.getContexts(),
                 seedConfiguration.getGroups(),
-                seedConfiguration.getItems()
+                seedConfiguration.getItems(),
+                seedConfiguration.getProcesses()
         );
 
         landscapeDescription.setLabels(seedConfiguration.getLabels());
@@ -104,7 +105,9 @@ public class LandscapeDescriptionFactory {
                 new ArrayList<>(readAccess.all(ContextDescription.class)),
                 readAccess.all(GroupDescription.class).stream()
                         .collect(Collectors.toMap(GroupDescription::getIdentifier, o -> o)),
-                new ArrayList<>(readAccess.all(ItemDescription.class))
+                new ArrayList<>(readAccess.all(ItemDescription.class)),
+                readAccess.all(ProcessDescription.class).stream()
+                        .collect(Collectors.toMap(ProcessDescription::getIdentifier, o -> o))
         );
         landscapeDescription.setProcessLog(input.getProcessLog());
         landscapeDescription.setLabels(input.getLabels());

@@ -58,6 +58,7 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
         defaultLandscape.mergeUnits(asSetWithAlignedKeys(source.units));
         defaultLandscape.mergeContexts(asSetWithAlignedKeys(source.contexts));
         defaultLandscape.mergeGroups(asSetWithAlignedKeys(source.groups));
+        defaultLandscape.mergeProcesses(asSetWithAlignedKeys(source.processes));
         defaultLandscape.mergeItems(source.items);
 
         if (source.templates != null) {

@@ -70,7 +70,8 @@ public class LandscapeDescription extends ComponentDescription {
                                 List<UnitDescription> units,
                                 List<ContextDescription> contexts,
                                 Map<String, GroupDescription> groups,
-                                List<ItemDescription> items
+                                List<ItemDescription> items,
+                                Map<String, ProcessDescription> processes
     ) {
         this(identifier, name, contact);
         this.setDescription(description);
@@ -84,6 +85,10 @@ public class LandscapeDescription extends ComponentDescription {
             index.addOrReplace(groupDescription);
         });
         items.forEach(index::addOrReplace);
+        processes.forEach((s, processDescription) -> {
+            processDescription.setLandscape(this.getIdentifier());
+            index.addOrReplace(processDescription);
+        });
     }
 
     public void setIsPartial(boolean isPartial) {
@@ -199,6 +204,28 @@ public class LandscapeDescription extends ComponentDescription {
                 existing.get().assignNotNull(groupDescription);
             } else {
                 this.index.addOrReplace(groupDescription);
+            }
+        });
+    }
+
+    /**
+     * Merges the incoming groups with existing ones.
+     *
+     * Already existing ones are updated.
+     *
+     * @param incoming new data
+     */
+    public void mergeProcesses(@Nullable Collection<ProcessDescription> incoming) {
+        if (incoming == null) {
+            return;
+        }
+
+        incoming.forEach(dto -> {
+            Optional<ProcessDescription> existing = getReadAccess().matchOneByIdentifiers(dto.getIdentifier(), dto.getParentIdentifier(), ProcessDescription.class);
+            if (existing.isPresent()) {
+                existing.get().assignNotNull(dto);
+            } else {
+                this.index.addOrReplace(dto);
             }
         });
     }

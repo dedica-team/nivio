@@ -18,6 +18,7 @@ infrastructure. Both landscapes could have items in common (like a database, loa
 .. include:: ./schema/Models/Branding.rst
 .. include:: ./schema/Models/GroupDescription.rst
 .. include:: ./schema/Models/ItemDescription.rst
+.. include:: ./schema/Models/ProcessDescription.rst
 .. include:: ./schema/Models/InterfaceDescription.rst
 .. include:: ./schema/Models/Link.rst
 
@@ -87,6 +88,37 @@ Groups can have the following attributes:
 
       infrastructure:
         team: Admins
+
+Processes
+---------
+Groups can have the following attributes:
+
+* ``identifier``: A unique identifier in the landscape. Provided automatically via the dictionary key, so do not set it.
+* ``contains`` Array of references to other items (identifiers and CQN queries).
+* ``owner`` Owning party (e.g. marketing).
+* ``description`` A short description.
+* ``team`` Technical owner.
+* ``contact`` Support/notification contact (email). May be addressed in case of errors.
+* ``color`` A hex color code for rendering.
+* ``links`` A map/dictionary of URLs to more information.
+
+**Process configuration**
+
+.. code-block:: yaml
+   :linenos:
+
+    processes:
+      ingestion:
+        description: Data gathering
+        owner: Joe Armstrong
+        team: Team Content
+        contact: joe@acme.org
+        color: "#345345"
+        links:
+          wiki: http://wiki.acme.org/ingestion_process
+        branches:
+          -
+
 
 
 Item Identification and Referencing

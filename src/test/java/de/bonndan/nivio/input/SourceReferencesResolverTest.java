@@ -1,8 +1,10 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.IntegrationTestSupport;
+import de.bonndan.nivio.input.dto.BranchDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ProcessDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +63,28 @@ class SourceReferencesResolverTest {
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getLabel(Label.shortname));
         assertEquals("name2", mapped.getName());
+    }
+
+    @Test
+    void containsProcesses() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/internals.yml");
+        SeedConfiguration configuration = factory.fromFile(file);
+
+        //when
+        List<LandscapeDescription> resolve = sourceReferencesResolver.resolve(configuration);
+
+        //then
+        assertThat(resolve).isNotEmpty();
+
+        Set<ProcessDescription> processDescriptions = resolve.get(0).getReadAccess().all(ProcessDescription.class);
+        assertThat(processDescriptions).isNotEmpty().hasSize(1);
+        ProcessDescription start = processDescriptions.iterator().next();
+        assertThat(start.getBranches()).hasSize(1);
+        BranchDescription firstBranch = start.getBranches().get(0);
+        assertThat(firstBranch.getNodes()).hasSize(2)
+                .contains("start/seed")
+                .contains("start/config");
     }
 
     @Test
