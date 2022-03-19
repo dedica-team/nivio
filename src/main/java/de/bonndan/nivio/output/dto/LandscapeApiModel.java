@@ -2,7 +2,10 @@ package de.bonndan.nivio.output.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.Process;
+import de.bonndan.nivio.model.Unit;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -44,6 +47,13 @@ public class LandscapeApiModel extends ComponentApiModel {
                 .map(group -> new GroupApiModel(group, Set.copyOf(group.getChildren())))
                 .collect(Collectors.toSet());
     }
+
+    public Set<ProcessApiModel> getProcesses() {
+        return landscape.getReadAccess().all(Process.class).stream()
+                .map(ProcessApiModel::new)
+                .collect(Collectors.toSet());
+    }
+
 
     public ZonedDateTime getLastUpdate() {
         return landscape.getLastUpdate();
