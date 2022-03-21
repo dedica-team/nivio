@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 
 /**
  * Used like a default component factory, but does not merge processes.
- *
- *
  */
 public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescription, Landscape> {
 
@@ -28,7 +26,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
      * @param identifier identifier of the process
      * @param parent     landscape
      * @param dto        process description
-     * @return a validated process
+     * @return a validated process with branches containing existing or new relations
      * @throws NoSuchElementException if a branch node cannot be found
      * @throws ProcessingException    if the process has gaps
      */
@@ -45,7 +43,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
         FlexSearch<? extends GraphComponent, Item> itemFlexSearch = new FlexSearch<>(Item.class, parent.indexReadAccess);
         List<List<Item>> itemsPerBranch = dto.getBranches().stream()
                 .map(
-                        branchDescription -> branchDescription.getNodes().stream()
+                        branchDescription -> branchDescription.getItems().stream()
                                 .map(s -> itemFlexSearch.searchOne(s, null).orElseThrow(
                                                 () -> new NoSuchElementException(String.format("No branch node found matching: %s", s))
                                         )
@@ -55,7 +53,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
         validateGraph(itemsPerBranch);
 
         var branches = itemsPerBranch.stream()
-                .map(ProcessFactory::createBranchWithRelations)
+                .map(branchNodes -> createBranchWithRelations(parent.getWriteAccess(), branchNodes))
                 .collect(Collectors.toList());
 
         return new Process(identifier,
@@ -73,10 +71,11 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
      *
      * Creates relations if absent.
      *
+     * @param writeAccess
      * @param branchNodes items
      * @return a new branch
      */
-    private static Branch createBranchWithRelations(final List<Item> branchNodes) {
+    private static Branch createBranchWithRelations(GraphWriteAccess<GraphComponent> writeAccess, final List<Item> branchNodes) {
         List<Relation> relations = new ArrayList<>();
         for (int i = 0; i < branchNodes.size(); i++) {
             Item item = branchNodes.get(i);
@@ -86,7 +85,11 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
             Item next = branchNodes.get(i + 1);
             Relation relation1 = item.getRelations().stream().filter(relation -> relation.getSource().equals(item) && relation.getTarget().equals(next))
                     .findFirst()
-                    .orElseGet(() -> createRelation(item, next));
+                    .orElseGet(() -> {
+                        Relation created = createRelation(item, next);
+                        writeAccess.addOrReplaceRelation(created);
+                        return created;
+                    });
             relations.add(relation1);
         }
 

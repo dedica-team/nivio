@@ -26,6 +26,7 @@ public enum ComponentClass {
             Map.entry(Part.class, part),
             //Map.entry(RelationDescription.class, relation),
             Map.entry(Relation.class, relation),
+            Map.entry(ProcessDescription.class, process),
             Map.entry(Process.class, process)
     );
 

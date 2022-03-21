@@ -8,22 +8,22 @@ import java.util.Objects;
 
 public class BranchDescription {
 
-    private List<String> nodes = new ArrayList<>();
+    private List<String> items = new ArrayList<>();
 
     public BranchDescription() {
 
     }
 
-    public BranchDescription(@NonNull final List<String> nodes) {
-        this.nodes = Objects.requireNonNull(nodes);
+    public BranchDescription(@NonNull final List<String> items) {
+        this.items = Objects.requireNonNull(items);
     }
 
 
-    public List<String> getNodes() {
-        return nodes;
+    public List<String> getItems() {
+        return items;
     }
 
-    public void setNodes(@NonNull final List<String> nodes) {
-        this.nodes = Objects.requireNonNull(nodes);
+    public void setItems(@NonNull final List<String> items) {
+        this.items = Objects.requireNonNull(items);
     }
 }

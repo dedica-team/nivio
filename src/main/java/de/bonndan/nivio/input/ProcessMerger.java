@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Merges {@link Process}es into a {@link Landscape}
  *
- *
+ * Decorates a common {@link NodeMerger} and adds missing relations.
  */
 public class ProcessMerger {
 
@@ -31,7 +31,9 @@ public class ProcessMerger {
      *
      *
      */
-    public ProcessingChangelog mergeAndDiff(@NonNull final List<ProcessDescription> processDescriptions, @NonNull final ProcessLog log) {
+    public ProcessingChangelog mergeAndDiff(@NonNull final List<ProcessDescription> processDescriptions,
+                                            @NonNull final ProcessLog log
+    ) {
         ProcessingChangelog changelog = nodeMerger.mergeAndDiff(processDescriptions, log);
         addMissingRelations(changelog);
         return changelog;

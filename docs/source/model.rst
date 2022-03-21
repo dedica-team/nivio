@@ -117,7 +117,10 @@ Groups can have the following attributes:
         links:
           wiki: http://wiki.acme.org/ingestion_process
         branches:
-          -
+          - items:
+            - foo/baz
+            - foo/bar
+            - anothergroup/anotheritem
 
 
 

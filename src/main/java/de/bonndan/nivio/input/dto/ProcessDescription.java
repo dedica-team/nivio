@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * todo parent getchildren, assessment
+ * todo parent getchildren
  */
 public class ProcessDescription extends ComponentDescription {
 

@@ -35,6 +35,7 @@ public class Relation implements Component, Assessable {
     private final Map<String, String> labels = new ConcurrentHashMap<>();
 
     private final URI fullyQualifiedIdentifier;
+
     private IndexReadAccess<? extends GraphComponent> indexReadAccess;
 
     public Relation(@NonNull final GraphComponent source,

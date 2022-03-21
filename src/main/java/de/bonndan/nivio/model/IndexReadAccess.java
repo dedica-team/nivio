@@ -185,7 +185,7 @@ public class IndexReadAccess<T extends Component> {
      * @param target target uri
      * @return the relation if present
      */
-    public Optional<Relation> findRelation(URI source, URI target) {
+    public Optional<Relation> findRelation(@NonNull final URI source, @NonNull final URI target) {
         return index.getRelations(source).stream()
                 .filter(relation -> relation.getTarget().getFullyQualifiedIdentifier().equals(target))
                 .findFirst();

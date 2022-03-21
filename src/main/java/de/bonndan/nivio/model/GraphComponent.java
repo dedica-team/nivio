@@ -114,7 +114,6 @@ public abstract class GraphComponent implements Component, Assessable {
         return Set.copyOf(getChildren(component -> true, GraphComponent.class));
     }
 
-
     @Override
     @NonNull
     public String getName() {

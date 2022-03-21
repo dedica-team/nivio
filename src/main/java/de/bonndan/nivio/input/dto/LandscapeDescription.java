@@ -86,6 +86,9 @@ public class LandscapeDescription extends ComponentDescription {
         });
         items.forEach(index::addOrReplace);
         processes.forEach((s, processDescription) -> {
+            if (!StringUtils.hasLength(processDescription.getIdentifier())) {
+                processDescription.setIdentifier(s);
+            }
             processDescription.setLandscape(this.getIdentifier());
             index.addOrReplace(processDescription);
         });
@@ -233,7 +236,7 @@ public class LandscapeDescription extends ComponentDescription {
     /**
      * Transform incoming data into a set with entries where each has an identifier.
      */
-     public static <D extends ComponentDescription> Collection<D> asSetWithAlignedKeys(Map<String, D> map) {
+     public static <D extends ComponentDescription> Collection<D> asSetWithAlignedKeys(@Nullable final Map<String, D> map) {
         if (map == null) {
             return Set.of();
         }

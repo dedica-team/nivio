@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class ProcessFactoryTest {
 
@@ -82,8 +81,13 @@ class ProcessFactoryTest {
         assertThat(fromDescription.getBranches()).hasSize(dto.getBranches().size());
 
         long edges = fromDescription.getBranches().get(0).getEdges().size();
-        long dtoNodes = dto.getBranches().get(0).getNodes().size();
+        long dtoNodes = dto.getBranches().get(0).getItems().size();
         assertThat(edges).isEqualTo(dtoNodes-1);
+
+        //assert all relations are attached
+        fromDescription.getBranches().get(0).getEdges().forEach(relation -> {
+            assertThatCode(relation::getSource).doesNotThrowAnyException();
+        });
     }
 
     @Test

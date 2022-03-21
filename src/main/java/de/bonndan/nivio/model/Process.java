@@ -1,5 +1,6 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.assessment.Assessable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -7,11 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A directed subgraph with possibly more than one start or end points describing a process in the landscape.
- *
- *
  */
 public class Process extends GraphComponent {
 
@@ -46,6 +46,14 @@ public class Process extends GraphComponent {
     @NonNull
     public List<Branch> getBranches() {
         return branches;
+    }
+
+    @NonNull
+    @Override
+    public Set<Assessable> getAssessables() {
+        return branches.stream()
+                .flatMap(branch -> branch.getEdges().stream())
+                .collect(Collectors.toSet());
     }
 
     @Override
