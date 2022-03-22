@@ -8,7 +8,6 @@ import de.bonndan.nivio.input.*;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.model.Relation;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,7 @@ import java.util.*;
 public class InputFormatHandlerCSV implements InputFormatHandler {
 
     public static final String IDENTIFIER_KEY = "identifier";
+    public static final String DELIMITER = ";";
 
     private final FileFetcher fileFetcher;
 
@@ -60,8 +60,8 @@ public class InputFormatHandlerCSV implements InputFormatHandler {
 
                 String columnValue = strings[colNum];
                 if (IDENTIFIER_KEY.equals(key)) {
-                    if (columnValue.contains(Relation.DELIMITER)) {
-                        String[] split = columnValue.split(Relation.DELIMITER);
+                    if (columnValue.contains(DELIMITER)) {
+                        String[] split = columnValue.split(DELIMITER);
                         itemDescription.setIdentifier(split[0]);
                         relationDescription = new RelationDescription(split[0], split[1]);
                     } else {

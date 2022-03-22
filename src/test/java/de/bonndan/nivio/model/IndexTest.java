@@ -57,6 +57,20 @@ class IndexTest {
     }
 
     @Test
+    void getReturnsRelation() {
+
+        //given
+        Relation relation = RelationFactory.createForTesting(graph.itemAA, graph.itemAB);
+        index.addOrReplace(relation);
+
+        //when
+        Optional<GraphComponent> graphComponent = index.get(relation.getFullyQualifiedIdentifier());
+
+        //then
+        assertThat(graphComponent).isPresent().get().isEqualTo(relation);
+    }
+
+    @Test
     void getRoot() {
         //given
         var component = LandscapeFactory.createForTesting("foo", "name").build();

@@ -23,7 +23,7 @@ class ProcessApiModelTest {
         List<Branch> branches = new ArrayList<>();
         Relation relation1 = RelationFactory.createForTesting(graph.itemAA, graph.itemAB);
         Relation relation2 = RelationFactory.createForTesting(graph.itemAB, graph.itemAC);
-        branches.add(new Branch(List.of(relation1, relation2)));
+        branches.add(new Branch(List.of(relation1.getFullyQualifiedIdentifier(), relation2.getFullyQualifiedIdentifier())));
         Process process = new Process("foo", "bar", "baz", null, null, null, branches, graph.landscape);
 
         //when

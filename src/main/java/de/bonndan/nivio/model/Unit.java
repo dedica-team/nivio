@@ -26,7 +26,7 @@ public class Unit extends GraphComponent {
 
     @NonNull
     @Override
-    public Set<Group> getChildren() {
-        return getChildren(component -> true, Group.class);
+    public Set<Context> getChildren() {
+        return getChildren(component -> true, Context.class);
     }
 }

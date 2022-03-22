@@ -1,9 +1,9 @@
 package de.bonndan.nivio.output.dto;
 
 import de.bonndan.nivio.model.Process;
-import de.bonndan.nivio.model.Relation;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,11 +16,8 @@ public class ProcessApiModel extends ComponentApiModel {
         super(process);
         this.contact = process.getContact();
         this.branches = process.getBranches().stream()
-                .map(
-                        branch -> branch.getEdges().stream()
-                                .map(Relation::getFullyQualifiedIdentifier)
-                                .collect(Collectors.toList())
-                ).collect(Collectors.toList());
+                .map(branch -> new ArrayList<>(branch.getEdges()))
+                .collect(Collectors.toList());
     }
 
     public String getContact() {

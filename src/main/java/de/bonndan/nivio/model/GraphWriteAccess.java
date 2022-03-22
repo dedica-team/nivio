@@ -1,5 +1,7 @@
 package de.bonndan.nivio.model;
 
+import org.springframework.lang.NonNull;
+
 import java.net.URI;
 import java.util.Objects;
 
@@ -9,9 +11,9 @@ public class GraphWriteAccess<T extends GraphComponent> {
     private final Index<T> index;
     private final IndexReadAccess<T> readAccess;
 
-    public GraphWriteAccess(Index<T> index, IndexReadAccess<T> readAccess) {
-        this.index = index;
-        this.readAccess = readAccess;
+    public GraphWriteAccess(@NonNull final Index<T> index, @NonNull final IndexReadAccess<T> readAccess) {
+        this.index = Objects.requireNonNull(index);
+        this.readAccess = Objects.requireNonNull(readAccess);
     }
 
     /**
@@ -52,13 +54,24 @@ public class GraphWriteAccess<T extends GraphComponent> {
      * @return true if successful
      */
     public boolean removeChild(T node) {
-        T parent = (T) node.getParent();
+        @SuppressWarnings("unchecked") T parent = (T) node.getParent();
         return index.removeChild(parent, node);
     }
 
-    public void addOrReplaceRelation(Relation relation) {
-        relation.attach(readAccess);
-        index.addOrReplace(relation).ifPresent(Relation::detach);
+    /**
+     * Adds a relation to the index.
+     *
+     * If a similar relation exists, it is removed and detached from index access.
+     *
+     * @param relation relation to add
+     */
+    public void addOrReplaceRelation(@NonNull final Relation relation) {
+        Objects.requireNonNull(relation).attach(readAccess);
+        index.addOrReplace(relation).ifPresent(relation1 -> {
+            if (relation1 != relation) { //safety net
+                relation1.detach();
+            }
+        });
     }
 
     public void removeRelation(Relation relation) {

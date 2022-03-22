@@ -8,7 +8,7 @@ import org.springframework.lang.NonNull;
 /**
  * A factory to create {@link NodeMerger} instances.
  */
-class NodeMergerFactory {
+public class NodeMergerFactory {
 
     private NodeMergerFactory() {
     }

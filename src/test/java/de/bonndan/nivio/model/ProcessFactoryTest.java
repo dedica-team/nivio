@@ -82,12 +82,7 @@ class ProcessFactoryTest {
 
         long edges = fromDescription.getBranches().get(0).getEdges().size();
         long dtoNodes = dto.getBranches().get(0).getItems().size();
-        assertThat(edges).isEqualTo(dtoNodes-1);
-
-        //assert all relations are attached
-        fromDescription.getBranches().get(0).getEdges().forEach(relation -> {
-            assertThatCode(relation::getSource).doesNotThrowAnyException();
-        });
+        assertThat(edges).isEqualTo(dtoNodes - 1);
     }
 
     @Test

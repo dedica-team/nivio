@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.Relation.DELIMITER;
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static j2html.TagCreator.*;
@@ -115,7 +114,7 @@ public abstract class HtmlGenerator {
                                 , iff(hasLength(item.getType()), li("Type: " + item.getType()))
                                 , iff(hasLength(item.getAddress()), li("Address: " + item.getAddress()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
-                                , iff(!frameworks.isEmpty(), li("Frameworks: " + String.join(String.format("%s ", DELIMITER), frameworks)))
+                                , iff(!frameworks.isEmpty(), li("Frameworks: " + String.join(String.format("%s ", ";"), frameworks)))
                         ).with(labelList),
 
 

@@ -5,9 +5,10 @@ import de.bonndan.nivio.output.dto.RelationApiModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class RelationTest {
 
@@ -129,4 +130,51 @@ class RelationTest {
         //then
         assertThat(changes).isNotNull().hasSize(0);
     }
+
+    @Test
+    void parseSourceUri() {
+
+        //given
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
+        Relation relation = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+
+        //when
+        URI uri = Relation.parseSourceURI(relation.getFullyQualifiedIdentifier());
+
+        //then
+        assertThat(uri).isEqualTo(graph.itemAB.getFullyQualifiedIdentifier());
+    }
+
+    @Test
+    void parseSourceUriWithNonRelationURI() {
+
+        //then
+        assertThatThrownBy(() -> Relation.parseSourceURI(graph.itemAB.getFullyQualifiedIdentifier())).isInstanceOf(IllegalArgumentException.class);
+
+    }
+
+    @Test
+    void parseTargetUri() {
+
+        //given
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
+        Relation relation = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+
+        //when
+        URI uri = Relation.parseTargetURI(relation.getFullyQualifiedIdentifier());
+
+        //then
+        assertThat(uri).isEqualTo(graph.itemAC.getFullyQualifiedIdentifier());
+    }
+
+    @Test
+    void parseTargetUriWithNonRelationURI() {
+
+        //then
+        assertThatThrownBy(() -> Relation.parseTargetURI(graph.itemAB.getFullyQualifiedIdentifier())).isInstanceOf(IllegalArgumentException.class);
+
+    }
+
 }

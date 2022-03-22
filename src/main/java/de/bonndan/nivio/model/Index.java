@@ -36,7 +36,14 @@ public class Index<T extends Component> {
     /**
      * Returns for node for an URI.
      */
-    public Optional<T> get(URI uri) {
+    public Optional<T> get(@NonNull final URI uri) {
+        if (ComponentClass.relation.name().equals(uri.getScheme())) {
+            URI target = Relation.parseTargetURI(uri);
+            return edges.columnMap().get(target).values().stream()
+                    .filter(relation -> relation.getFullyQualifiedIdentifier().equals(uri))
+                    .map(relation -> (T)relation)
+                    .findFirst();
+        }
         return Optional.ofNullable(nodes.get(uri));
     }
 
@@ -52,6 +59,10 @@ public class Index<T extends Component> {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param uri uri of an endpoint
+     * @return all inbound and outbound relations
+     */
     public Set<Relation> getRelations(@NonNull final URI uri) {
         Map<URI, Relation> outgoing = edges.rowMap().get(Objects.requireNonNull(uri));
         if (outgoing == null) {

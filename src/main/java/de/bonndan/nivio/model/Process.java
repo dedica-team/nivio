@@ -4,10 +4,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +50,9 @@ public class Process extends GraphComponent {
     public Set<Assessable> getAssessables() {
         return branches.stream()
                 .flatMap(branch -> branch.getEdges().stream())
+                .map(uri -> indexReadAccess.findRelation(Relation.parseSourceURI(uri), Relation.parseTargetURI(uri))
+                        .orElseThrow(()->new NoSuchElementException(String.format("%s not present", uri)))
+                )
                 .collect(Collectors.toSet());
     }
 

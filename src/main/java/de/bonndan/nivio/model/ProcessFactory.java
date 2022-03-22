@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.dto.RelationDescription;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
         validateGraph(itemsPerBranch);
 
         var branches = itemsPerBranch.stream()
-                .map(branchNodes -> createBranchWithRelations(parent.getWriteAccess(), branchNodes))
+                .map(ProcessFactory::createBranchWithRelations)
                 .collect(Collectors.toList());
 
         return new Process(identifier,
@@ -71,36 +72,25 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
      *
      * Creates relations if absent.
      *
-     * @param writeAccess
      * @param branchNodes items
      * @return a new branch
      */
-    private static Branch createBranchWithRelations(GraphWriteAccess<GraphComponent> writeAccess, final List<Item> branchNodes) {
-        List<Relation> relations = new ArrayList<>();
+    private static Branch createBranchWithRelations(final List<Item> branchNodes) {
+        List<URI> relations = new ArrayList<>();
         for (int i = 0; i < branchNodes.size(); i++) {
             Item item = branchNodes.get(i);
             if (i == branchNodes.size() - 1) {
                 break;
             }
             Item next = branchNodes.get(i + 1);
-            Relation relation1 = item.getRelations().stream().filter(relation -> relation.getSource().equals(item) && relation.getTarget().equals(next))
+            Relation relation = item.getRelations().stream()
+                    .filter(relation1 -> relation1.getSource().equals(item) && relation1.getTarget().equals(next))
                     .findFirst()
-                    .orElseGet(() -> {
-                        Relation created = createRelation(item, next);
-                        writeAccess.addOrReplaceRelation(created);
-                        return created;
-                    });
-            relations.add(relation1);
+                    .orElseGet(() -> RelationFactory.create(item, next, new RelationDescription()));
+            relations.add(relation.getFullyQualifiedIdentifier());
         }
 
         return new Branch(relations);
-    }
-
-    @NonNull
-    private static Relation createRelation(Item item, Item next) {
-        RelationDescription description = new RelationDescription();
-        description.setType(RelationType.DATAFLOW);
-        return RelationFactory.create(item, next, description);
     }
 
     /**

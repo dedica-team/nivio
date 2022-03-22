@@ -126,11 +126,6 @@ public class Landscape extends GraphComponent implements Linked, Labeled, Assess
                 .collect(Collectors.toMap(GraphComponent::getFullyQualifiedIdentifier, group -> group));
     }
 
-    @JsonGetter("groups")
-    public Collection<Group> getGroupItems() {
-        return getReadAccess().all(Group.class);
-    }
-
     @JsonIgnore
     public ProcessLog getLog() {
         return processLog;

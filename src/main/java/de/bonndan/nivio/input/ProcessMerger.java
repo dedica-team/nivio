@@ -1,8 +1,9 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.ProcessDescription;
-import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Process;
+import de.bonndan.nivio.model.*;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -35,24 +36,36 @@ public class ProcessMerger {
                                             @NonNull final ProcessLog log
     ) {
         ProcessingChangelog changelog = nodeMerger.mergeAndDiff(processDescriptions, log);
-        addMissingRelations(changelog);
+        changelog.merge(addMissingRelations());
         return changelog;
     }
 
-    private void addMissingRelations(ProcessingChangelog changelog) {
+    private ProcessingChangelog addMissingRelations() {
+
+        final IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
+
+        ProcessingChangelog changelog = new ProcessingChangelog();
+        readAccess.all(Process.class).forEach(process -> changelog.merge(addMissingRelations(process, landscape)));
+        return changelog;
+    }
+
+    public static ProcessingChangelog addMissingRelations(Process process, Landscape landscape) {
 
         final IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
         final GraphWriteAccess<GraphComponent> writeAccess = landscape.getWriteAccess();
+        final ProcessingChangelog changelog = new ProcessingChangelog();
 
-        readAccess.all(Process.class).forEach(
-                process -> process.getBranches().stream()
-                        .flatMap(branch -> branch.getEdges().stream())
-                        .filter(relation -> readAccess.get(relation.getFullyQualifiedIdentifier()).isEmpty())
-                        .forEach(relation -> {
-                            writeAccess.addOrReplaceRelation(relation);
-                            changelog.addEntry(relation, ProcessingChangelog.ChangeType.CREATED);
-                        })
+        process.getBranches().stream()
+                .flatMap(branch -> branch.getEdges().stream())
+                .filter(uri -> readAccess.get(uri).isEmpty())
+                .forEach(uri -> {
+                    Item source = (Item) readAccess.get(Relation.parseSourceURI(uri)).orElseThrow();
+                    Item target = (Item) readAccess.get(Relation.parseTargetURI(uri)).orElseThrow();
+                    var relation = RelationFactory.create(source, target, new RelationDescription());
+                    writeAccess.addOrReplaceRelation(relation);
+                    changelog.addEntry(relation, ProcessingChangelog.ChangeType.CREATED);
+                });
 
-        );
+        return changelog;
     }
 }

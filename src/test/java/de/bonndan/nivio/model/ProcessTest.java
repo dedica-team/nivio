@@ -2,6 +2,7 @@ package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Assessable;
+import de.bonndan.nivio.input.ProcessMerger;
 import de.bonndan.nivio.search.LuceneSearchIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ProcessTest {
 
@@ -26,16 +26,17 @@ class ProcessTest {
     void getAssessables() {
 
         //given
-
         List<Branch> branches = new ArrayList<>();
         Relation relation1 = RelationFactory.createForTesting(graph.itemAA, graph.itemAB);
         Relation relation2 = RelationFactory.createForTesting(graph.itemAB, graph.itemAC);
-        branches.add(new Branch(List.of(relation1, relation2)));
+        branches.add(new Branch(List.of(relation1.getFullyQualifiedIdentifier(), relation2.getFullyQualifiedIdentifier())));
 
         Relation relation3 = RelationFactory.createForTesting(graph.getTestItem(graph.groupB.getIdentifier(), "foo"), graph.itemAC);
-        branches.add(new Branch(List.of(relation3)));
+        branches.add(new Branch(List.of(relation3.getFullyQualifiedIdentifier())));
 
         Process process = new Process("foo", "bar", "baz", null, null, null, branches, graph.landscape);
+        graph.landscape.getWriteAccess().addOrReplaceChild(process);
+        ProcessMerger.addMissingRelations(process, graph.landscape);
 
         //when
         Set<Assessable> assessables = process.getAssessables();

@@ -20,7 +20,7 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  */
 public class Relation implements Component, Assessable {
 
-    public static final String DELIMITER = ";";
+    public static final String TO = "to=";
 
     protected final URI sourceURI;
 
@@ -57,12 +57,38 @@ public class Relation implements Component, Assessable {
             this.fullyQualifiedIdentifier = new URI(Relation.class.getSimpleName().toLowerCase(Locale.ROOT),
                     source.getFullyQualifiedIdentifier().getAuthority(),
                     source.getFullyQualifiedIdentifier().getPath(),
-                    "to=" + target.getFullyQualifiedIdentifier(),
+                    TO + target.getFullyQualifiedIdentifier(),
                     null
             );
         } catch (URISyntaxException e) {
             throw new ProcessingException("Failed to generate fqi", e);
         }
+    }
+
+    /**
+     * @param uri relation uri
+     * @return the relation source item uri
+     */
+    public static URI parseSourceURI(@NonNull final URI uri) {
+
+        if (!uri.getScheme().equals(ComponentClass.relation.name())) {
+            throw new IllegalArgumentException(String.format("Relation URI must be given, was: %s", uri));
+        }
+
+        return URI.create(ComponentClass.item.name() + "://" + Objects.requireNonNull(uri).getAuthority() + uri.getPath());
+    }
+
+    /**
+     * @param uri relation uri
+     * @return the relation target item uri
+     */
+    public static URI parseTargetURI(URI uri) {
+
+        if (!uri.getScheme().equals(ComponentClass.relation.name())) {
+            throw new IllegalArgumentException(String.format("Relation URI must be given, was: %s", uri));
+        }
+
+        return URI.create(uri.getQuery().replace(TO, ""));
     }
 
     @Override
@@ -129,12 +155,18 @@ public class Relation implements Component, Assessable {
 
     @NonNull
     public Item getTarget() {
+        if (!isAttached()) {
+            throw new IllegalStateException(String.format("Relation %s is already detached", fullyQualifiedIdentifier));
+        }
         return (Item) indexReadAccess.get(targetURI)
                 .orElseThrow(() -> new NoSuchElementException(String.format("Source %s not in index.", sourceURI)));
     }
 
     @NonNull
     public Item getSource() {
+        if (!isAttached()) {
+            throw new IllegalStateException(String.format("Relation %s is already detached", fullyQualifiedIdentifier));
+        }
         return (Item) indexReadAccess.get(sourceURI)
                 .orElseThrow(() -> new NoSuchElementException(String.format("Source %s not in index.", sourceURI)));
     }
@@ -205,8 +237,8 @@ public class Relation implements Component, Assessable {
         return fullyQualifiedIdentifier.toString();
     }
 
-    void attach(IndexReadAccess<? extends GraphComponent> indexReadAccess) {
-        this.indexReadAccess = indexReadAccess;
+    void attach(@NonNull final IndexReadAccess<? extends GraphComponent> indexReadAccess) {
+        this.indexReadAccess = Objects.requireNonNull(indexReadAccess);
     }
 
     void detach() {
