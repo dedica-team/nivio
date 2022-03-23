@@ -50,15 +50,15 @@ class SvgRelationEndMarker {
             double tx = endPoint.x - HALF_MARKER_SIZE + offset.x;
             double ty = endPoint.y - HALF_MARKER_SIZE + offset.y;
             return SvgTagCreator.polygon()
-                    .attr("transform", String.format("translate(%s %s) rotate(%d 25 25)", tx, ty, degree))
+                    .attr(SVGAttr.TRANSFORM, String.format("translate(%s %s) rotate(%d 25 25)", tx, ty, degree))
                     .attr("points", MARKER_POINTS)
-                    .attr("fill", fillId);
+                    .attr(SVGAttr.FILL, fillId);
         } else {
             return SvgTagCreator.circle()
                     .attr("cx", endPoint.x)
                     .attr("cy", endPoint.y)
                     .attr("r", 35)
-                    .attr("fill", fillId);
+                    .attr(SVGAttr.FILL, fillId);
         }
     }
 

@@ -28,8 +28,8 @@ class SVGItemLabel extends Component {
         ContainerTag labelText = new SVGLabelText(name, "0", 2 * DEFAULT_ICON_SIZE + 30 + "", "itemLabel").render();
 
         return SvgTagCreator.g(null, labelText)
-                .attr("class", "label")
-                .attr("id", id)
+                .attr(SVGAttr.CLASS, "label")
+                .attr(SVGAttr.ID, id)
                 .attr("text-anchor", "middle");
     }
 

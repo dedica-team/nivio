@@ -101,15 +101,15 @@ class SVGRelation extends Component {
             String statusColor = statusValue.getStatus().getName();
             shadow = SvgTagCreator.path()
                     .attr("d", points)
-                    .attr("stroke", statusColor)
-                    .attr("stroke-width", Math.round(BASIC_STROKE_WIDTH * factor));
+                    .attr(SVGAttr.STROKE, statusColor)
+                    .attr(SVGAttr.STROKE_WIDTH, Math.round(BASIC_STROKE_WIDTH * factor));
         }
 
         int translation = getTranslation();
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
-                .attr("stroke", fillId)
-                .attr("stroke-width", innerStrokeWidth)
+                .attr(SVGAttr.STROKE, fillId)
+                .attr(SVGAttr.STROKE_WIDTH, innerStrokeWidth)
                 .attr("transform", String.format("translate(0 %d)", translation));
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
@@ -117,7 +117,7 @@ class SVGRelation extends Component {
         }
 
         if (RelationType.DATAFLOW.name().equals(relation.getType())) {
-            path.attr("fill", fillId);
+            path.attr(SVGAttr.FILL, fillId);
             path.attr("stroke-dasharray", 15);
         }
 
@@ -152,7 +152,7 @@ class SVGRelation extends Component {
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().toString())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().toString())
                 .attr(DATA_IDENTIFIER, relation.getFullyQualifiedIdentifier())
-                .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
+                .attr(SVGAttr.CLASS, "relation " + VISUAL_FOCUS_UNSELECTED);
 
         return g;
     }
@@ -182,7 +182,7 @@ class SVGRelation extends Component {
                 .attr("refY", 5)
                 .attr("orient", "auto")
                 .attr("viewBox", "0 0 10 10")
-                .attr("stroke", "context-stroke")
+                .attr(SVGAttr.STROKE, "context-stroke")
                 .attr("markerUnits", "userSpaceOnUse")
                 .with(path)
                 ;

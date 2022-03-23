@@ -45,11 +45,6 @@ public class SVGDocument extends Component {
     private final boolean debug;
     private final HexMap hexMap;
 
-    private static final String CLASS = "class";
-    private static final String WIDTH = "width";
-    private static final String HEIGHT = "height";
-
-
     public SVGDocument(@NonNull final LayoutedComponent layouted,
                        @NonNull final HexMap hexMap,
                        @NonNull final RendererOptions options,
@@ -143,9 +138,9 @@ public class SVGDocument extends Component {
                 .attr("version", "1.1")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
-                .attr(WIDTH, dimension.cartesian.horMax - dimension.cartesian.horMin + 3 * extraPadding)
-                .attr(HEIGHT, dimension.cartesian.vertMax - dimension.cartesian.vertMin + 3 * extraPadding)
-                .attr(CLASS, "map")
+                .attr(SVGAttr.WIDTH, dimension.cartesian.horMax - dimension.cartesian.horMin + 3 * extraPadding)
+                .attr(SVGAttr.HEIGHT, dimension.cartesian.vertMax - dimension.cartesian.vertMin + 3 * extraPadding)
+                .attr(SVGAttr.CLASS, "map")
 
                 .with(background)
                 .with(logo, title)
@@ -166,9 +161,9 @@ public class SVGDocument extends Component {
                     .attr("xlink:href", logoUrl)
                     .attr("x", dimension.cartesian.horMin + PADDING + offset.x)
                     .attr("y", dimension.cartesian.vertMin + PADDING + offset.x + 80)
-                    .attr(WIDTH, LABEL_WIDTH)
-                    .attr(HEIGHT, LABEL_WIDTH)
-                    .attr(CLASS, "logo");
+                    .attr(SVGAttr.WIDTH, LABEL_WIDTH)
+                    .attr(SVGAttr.HEIGHT, LABEL_WIDTH)
+                    .attr(SVGAttr.CLASS, "logo");
         }
         return logo;
     }
@@ -177,7 +172,7 @@ public class SVGDocument extends Component {
         return SvgTagCreator.text(landscape.getName())
                 .attr("x", dimension.cartesian.horMin + PADDING + offset.x)
                 .attr("y", dimension.cartesian.vertMin + PADDING + 60 + offset.y)
-                .attr(CLASS, "title");
+                .attr(SVGAttr.CLASS, "title");
     }
 
     /**

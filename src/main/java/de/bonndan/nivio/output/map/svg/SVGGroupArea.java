@@ -104,7 +104,7 @@ class SVGGroupArea extends Component {
                 .attr(DATA_IDENTIFIER, fqi)
                 .attr("data-x", anchor.x)
                 .attr("data-y", anchor.y)
-                .attr("class", "groupArea " + VISUAL_FOCUS_UNSELECTED);
+                .attr(SVGAttr.CLASS, "groupArea " + VISUAL_FOCUS_UNSELECTED);
     }
 
     /**
@@ -132,11 +132,11 @@ class SVGGroupArea extends Component {
         return SvgTagCreator.text(group.getIdentifier())
                 .attr("x", x)
                 .attr("y", y)
-                .attr("fill", fillId)
+                .attr(SVGAttr.FILL, fillId)
                 .attr("text-anchor", "middle")
                 .attr("style", "text-shadow: 1px 2px 2px black")
                 .attr("font-size", fontSize + "em")
-                .attr("class", "groupLabel");
+                .attr(SVGAttr.CLASS, "groupLabel");
     }
 
     @NonNull
