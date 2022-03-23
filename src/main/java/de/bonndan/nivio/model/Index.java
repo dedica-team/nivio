@@ -37,13 +37,6 @@ public class Index<T extends Component> {
      * Returns for node for an URI.
      */
     public Optional<T> get(@NonNull final URI uri) {
-        if (ComponentClass.relation.name().equals(uri.getScheme())) {
-            URI target = Relation.parseTargetURI(uri);
-            return edges.columnMap().get(target).values().stream()
-                    .filter(relation -> relation.getFullyQualifiedIdentifier().equals(uri))
-                    .map(relation -> (T)relation)
-                    .findFirst();
-        }
         return Optional.ofNullable(nodes.get(uri));
     }
 
@@ -191,11 +184,21 @@ public class Index<T extends Component> {
         return get(root).orElseThrow(() -> ex);
     }
 
+    /**
+     * Returns a relation by its fully qualified id.
+     *
+     * @param uri fqi
+     * @return relation if present
+     */
     public Optional<Relation> getRelation(@NonNull final URI uri) {
+
+        if (!ComponentClass.relation.name().equals(uri.getScheme())) {
+           throw new IllegalArgumentException(String.format("URI must belong to a relation: %s", uri));
+        }
+
         var targetURI = Relation.parseTargetURI(uri);
-        Optional<Relation> first = edges.columnMap().get(targetURI).values().stream()
+        return edges.columnMap().get(targetURI).values().stream()
                 .filter(relation -> relation.getFullyQualifiedIdentifier().equals(uri))
                 .findFirst();
-        return first;
     }
 }

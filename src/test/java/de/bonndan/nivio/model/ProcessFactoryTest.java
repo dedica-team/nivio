@@ -163,6 +163,7 @@ class ProcessFactoryTest {
         );
 
         Process existing = ProcessFactory.INSTANCE.createFromDescription(dto1.getIdentifier(), graph.landscape, dto1);
+        graph.landscape.getWriteAccess().addOrReplaceChild(existing);
         Process update = ProcessFactory.INSTANCE.createFromDescription(dto2.getIdentifier(), graph.landscape, dto2);
 
         //when

@@ -64,11 +64,12 @@ class IndexTest {
         index.addOrReplace(relation);
 
         //when
-        Optional<GraphComponent> graphComponent = index.get(relation.getFullyQualifiedIdentifier());
+        Optional<Relation> relation1 = index.getRelation(relation.getFullyQualifiedIdentifier());
 
         //then
-        assertThat(graphComponent).isPresent().get().isEqualTo(relation);
+        assertThat(relation1).isPresent().get().isEqualTo(relation);
     }
+
 
     @Test
     void getRoot() {
