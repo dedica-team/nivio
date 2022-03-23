@@ -67,9 +67,9 @@ public class GraphWriteAccess<T extends GraphComponent> {
      */
     public void addOrReplaceRelation(@NonNull final Relation relation) {
         Objects.requireNonNull(relation).attach(readAccess);
-        index.addOrReplace(relation).ifPresent(relation1 -> {
-            if (relation1 != relation) { //safety net
-                relation1.detach();
+        index.addOrReplace(relation).ifPresent(present -> {
+            if (present != relation) { //safety net
+                present.detach();
             }
         });
     }

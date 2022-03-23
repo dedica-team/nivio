@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.util.StringUtils.countOccurrencesOf;
 
 class SVGDocumentTest extends RenderingTest {
 
@@ -33,6 +34,21 @@ class SVGDocumentTest extends RenderingTest {
         assertThat(svg).contains("class=\"logo\"")
                 .contains("default/output/svg\" class=\"item")
                 .contains(">Docker Compose files</text>");
+    }
+
+    @Test
+    void rendersRelationsOnce() throws IOException {
+        String path = "/src/test/resources/example/inout";
+        Landscape landscape = getLandscape(path + ".yml");
+
+        //when
+        String svg = renderLandscape(path, landscape);
+
+        //when
+        String s = "class=\"relation";
+        assertThat(svg).contains(s);
+        int occurrences = countOccurrencesOf(svg, s);
+        assertThat(occurrences).isEqualTo(12);
     }
 
     @Test

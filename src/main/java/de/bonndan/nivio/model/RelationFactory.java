@@ -90,6 +90,7 @@ public class RelationFactory {
         );
 
         Labeled.merge(description, relation);
+        existing.getProcesses().forEach(relation::assignProcess);
         return relation;
     }
 

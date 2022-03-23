@@ -191,6 +191,7 @@ public class SVGDocument extends Component {
                     Item item = (Item) layoutedItem.getComponent();
                     LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
                     item.getRelations().stream()
+                            .filter(relation -> relation.getSource().equals(item))
                             .map(rel -> hexMap.getPath(rel)
                                     .map(hexPath ->
                                             new SVGRelation(hexPath, layoutedItem.getColor(), rel, null)
