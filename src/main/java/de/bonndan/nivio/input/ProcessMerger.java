@@ -29,27 +29,30 @@ public class ProcessMerger {
 
     /**
      * Uses the common {@link NodeMerger} for the objects and the adds missing relations from process branches.
-     *
-     *
      */
     public ProcessingChangelog mergeAndDiff(@NonNull final List<ProcessDescription> processDescriptions,
                                             @NonNull final ProcessLog log
     ) {
         ProcessingChangelog changelog = nodeMerger.mergeAndDiff(processDescriptions, log);
-        changelog.merge(addMissingRelations());
+        changelog.merge(assignRelations());
         return changelog;
     }
 
-    private ProcessingChangelog addMissingRelations() {
+    private ProcessingChangelog assignRelations() {
 
         final IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
 
         ProcessingChangelog changelog = new ProcessingChangelog();
-        readAccess.all(Process.class).forEach(process -> changelog.merge(addMissingRelations(process, landscape)));
+        readAccess.all(Process.class).forEach(process -> changelog.merge(assignRelations(process, landscape)));
         return changelog;
     }
 
-    public static ProcessingChangelog addMissingRelations(Process process, Landscape landscape) {
+    /**
+     * Creates missing relations and adds a reference to the process to each.
+     *
+     *
+     */
+    public static ProcessingChangelog assignRelations(Process process, Landscape landscape) {
 
         final IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
         final GraphWriteAccess<GraphComponent> writeAccess = landscape.getWriteAccess();
@@ -57,14 +60,17 @@ public class ProcessMerger {
 
         process.getBranches().stream()
                 .flatMap(branch -> branch.getEdges().stream())
-                .filter(uri -> readAccess.get(uri).isEmpty())
-                .forEach(uri -> {
-                    Item source = (Item) readAccess.get(Relation.parseSourceURI(uri)).orElseThrow();
-                    Item target = (Item) readAccess.get(Relation.parseTargetURI(uri)).orElseThrow();
-                    var relation = RelationFactory.create(source, target, new RelationDescription());
-                    writeAccess.addOrReplaceRelation(relation);
-                    changelog.addEntry(relation, ProcessingChangelog.ChangeType.CREATED);
-                });
+                .forEach(uri -> readAccess.getRelation(uri)
+                        .ifPresentOrElse(
+                                rel -> rel.assignProcess(process.getFullyQualifiedIdentifier()),
+                                () -> {
+                                    Item source = (Item) readAccess.get(Relation.parseSourceURI(uri)).orElseThrow();
+                                    Item target = (Item) readAccess.get(Relation.parseTargetURI(uri)).orElseThrow();
+                                    var relation = RelationFactory.create(source, target, new RelationDescription());
+                                    writeAccess.addOrReplaceRelation(relation);
+                                    relation.assignProcess(process.getFullyQualifiedIdentifier());
+                                    changelog.addEntry(relation, ProcessingChangelog.ChangeType.CREATED);
+                                }));
 
         return changelog;
     }

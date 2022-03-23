@@ -28,8 +28,8 @@ class SubLayoutTest {
         bar = graph.getTestItem(groupFoo.getIdentifier(), "bar");
         baz = graph.getTestItem(groupFoo.getIdentifier(), "baz");
 
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(baz, bar));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(baz, bar));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(baz, bar));
     }
 
     @Test

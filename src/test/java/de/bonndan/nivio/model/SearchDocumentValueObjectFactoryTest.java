@@ -70,7 +70,7 @@ class SearchDocumentValueObjectFactoryTest {
     @Test
     void createForRelation() {
 
-        Relation relation = RelationFactory.createForTesting(graph.itemAA, graph.itemAC);
+        Relation relation = RelationFactory.create(graph.itemAA, graph.itemAC);
         graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         //when

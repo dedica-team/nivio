@@ -79,7 +79,7 @@ class ProcessingChangelogTest {
     void addRelation() {
         //when
         Item bar = ItemFactory.getTestItem("foo", "bar");
-        Relation relation = RelationFactory.createForTesting(this.testItem, bar);
+        Relation relation = RelationFactory.create(this.testItem, bar);
         changelog.addEntry(relation, ProcessingChangelog.ChangeType.DELETED, null);
 
         //then

@@ -71,7 +71,7 @@ class ExtremeLayoutTest {
                     if (!other.equals(item)) {
                         targets.add(other);
                     }
-            targets.forEach(target -> graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(item, target)));
+            targets.forEach(target -> graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(item, target)));
         }
 
         var components = SubLayout.getLayoutedComponents(group, new HashSet<>(items));
@@ -118,7 +118,7 @@ class ExtremeLayoutTest {
                 j++;
             }
             targets.forEach(target -> {
-                graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(item, target));
+                graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(item, target));
             });
         }
 

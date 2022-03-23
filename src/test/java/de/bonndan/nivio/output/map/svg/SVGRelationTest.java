@@ -48,7 +48,7 @@ class SVGRelationTest {
     @Test
     void relationContainsBothEnds() {
 
-        Relation relation = RelationFactory.createForTesting(foo, bar);
+        Relation relation = RelationFactory.create(foo, bar);
         graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);

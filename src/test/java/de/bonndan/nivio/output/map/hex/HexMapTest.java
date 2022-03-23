@@ -43,7 +43,7 @@ class HexMapTest {
         barComponent.setCenterX(500);
         barComponent.setCenterY(500);
 
-        Relation relation = RelationFactory.createForTesting(bar, baz);
+        Relation relation = RelationFactory.create(bar, baz);
         graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         HexMap hexMap = new HexMap();

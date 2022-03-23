@@ -67,7 +67,7 @@ class SVGDimensionFactoryTest {
         //when
         PathTile three = new PathTile(new MapTile(new Hex(-10, -10)));
         PathTile four = new PathTile(new MapTile(new Hex(-11, -10)));
-        Relation forTesting = RelationFactory.createForTesting(graph.getTestItem("foo", "bar"),
+        Relation forTesting = RelationFactory.create(graph.getTestItem("foo", "bar"),
                 graph.getTestItem("foo", "baz"));
         SVGRelation svgRelation = new SVGRelation(new HexPath(List.of(three, four)), "aaccee", forTesting, null);
         SVGDimension dimension = SVGDimensionFactory.getDimension(List.of(svgGroupArea), List.of(svgRelation));

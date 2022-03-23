@@ -60,7 +60,7 @@ class IndexTest {
     void getReturnsRelation() {
 
         //given
-        Relation relation = RelationFactory.createForTesting(graph.itemAA, graph.itemAB);
+        Relation relation = RelationFactory.create(graph.itemAA, graph.itemAB);
         index.addOrReplace(relation);
 
         //when

@@ -42,7 +42,7 @@ public class SVGDocument extends Component {
     private final Landscape landscape;
     private final String cssStyles;
     private final Assessment assessment;
-    private boolean debug = false;
+    private final boolean debug;
     private final HexMap hexMap;
 
     private static final String CLASS = "class";

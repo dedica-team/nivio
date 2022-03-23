@@ -33,11 +33,11 @@ class ItemSorterTest {
         Item six = graph.getTestItem(test.getIdentifier(), "six");
         Item seven = graph.getTestItem(test.getIdentifier(), "seven");
 
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(one, two));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(two, three));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(three, four));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(one, two));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(two, three));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(three, four));
 
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(five, six));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(five, six));
 
         var groupItems = List.of(one, two, three, four, five, six, seven);
 
@@ -69,9 +69,9 @@ class ItemSorterTest {
         Item six = graph.getTestItem(test.getIdentifier(), "six");
         Item seven = graph.getTestItem(test.getIdentifier(), "seven");
 
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(one, three));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(three, four));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(four, seven));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(one, three));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(three, four));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(four, seven));
 
         var groupItems = List.of(one, two, three, four, five, six, seven);
 
@@ -100,9 +100,9 @@ class ItemSorterTest {
         Item six = graph.getTestItem(test.getIdentifier(), "six");
         Item seven = graph.getTestItem(test.getIdentifier(), "seven");
 
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(three, one));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(one, two));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(two, three));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(three, one));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(one, two));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(two, three));
 
         var groupItems = List.of(one, two, three, four, five, six, seven);
 

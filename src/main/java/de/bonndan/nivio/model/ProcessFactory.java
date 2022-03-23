@@ -2,7 +2,6 @@ package de.bonndan.nivio.model;
 
 import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.dto.ProcessDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -18,9 +17,23 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
     public static final ProcessFactory INSTANCE = new ProcessFactory();
 
 
+    /**
+     * Merges the values, but only takes the branches from the newer one.
+     *
+     * @param existing copy base
+     * @param added    carries additional values
+     * @return new Process
+     */
     @Override
     public Process merge(@NonNull final Process existing, @NonNull final Process added) {
-        return added;
+        ProcessBuilder builder = ProcessBuilder.aProcess().withParent(existing.getParent());
+        if (added.isAttached()) {
+            builder.withParent(added.getParent());
+        }
+        mergeValuesIntoBuilder(existing, added, builder);
+        builder.withBranches(added.getBranches());
+
+        return builder.build();
     }
 
     /**
@@ -86,7 +99,7 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
             Relation relation = item.getRelations().stream()
                     .filter(relation1 -> relation1.getSource().equals(item) && relation1.getTarget().equals(next))
                     .findFirst()
-                    .orElseGet(() -> RelationFactory.create(item, next, new RelationDescription()));
+                    .orElseGet(() -> RelationFactory.create(item, next));
             relations.add(relation.getFullyQualifiedIdentifier());
         }
 

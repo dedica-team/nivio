@@ -46,7 +46,7 @@ class RelationTest {
     @Test
     void inbound() {
 
-        Relation relation = RelationFactory.createForTesting(one, two);
+        Relation relation = RelationFactory.create(one, two);
         graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, two);
@@ -61,7 +61,7 @@ class RelationTest {
         Item one = graph.getTestItemBuilder("foo", "bar").withName("huhu").build();
         graph.landscape.getWriteAccess().addOrReplaceChild(one);
         Item two = graph.getTestItem("foo", "baz");
-        Relation relation = RelationFactory.createForTesting(one, two);
+        Relation relation = RelationFactory.create(one, two);
         graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, two);

@@ -190,4 +190,12 @@ public class Index<T extends Component> {
         }
         return get(root).orElseThrow(() -> ex);
     }
+
+    public Optional<Relation> getRelation(@NonNull final URI uri) {
+        var targetURI = Relation.parseTargetURI(uri);
+        Optional<Relation> first = edges.columnMap().get(targetURI).values().stream()
+                .filter(relation -> relation.getFullyQualifiedIdentifier().equals(uri))
+                .findFirst();
+        return first;
+    }
 }

@@ -41,8 +41,8 @@ class AllGroupsLayoutTest {
         );
 
         //add some inter-group relations
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(bara, barb));
-        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.createForTesting(barb, barc));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(bara, barb));
+        graph.landscape.getWriteAccess().addOrReplaceRelation(RelationFactory.create(barb, barc));
 
         //when
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(true, graph.landscape.getConfig().getLayoutConfig());

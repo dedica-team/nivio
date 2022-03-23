@@ -202,4 +202,8 @@ public class IndexReadAccess<T extends Component> {
     public Set<Relation> getRelations(URI fullyQualifiedIdentifier) {
         return index.getRelations(fullyQualifiedIdentifier);
     }
+
+    public Optional<Relation> getRelation(@NonNull final URI uri) {
+        return index.getRelation(uri);
+    }
 }

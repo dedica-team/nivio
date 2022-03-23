@@ -123,7 +123,7 @@ public class RelationFactory {
     /**
      * Creates a relation instance without any checks.
      */
-    public static Relation createForTesting(Item source, Item target) {
+    public static Relation create(@NonNull final Item source, @NonNull final Item target) {
         return new Relation(source, target, null, null, null);
     }
 

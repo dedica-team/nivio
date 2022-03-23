@@ -4,6 +4,7 @@ import de.bonndan.nivio.assessment.Assessable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class Process extends GraphComponent {
 
     @NonNull
     @Override
-    public GraphComponent getParent() {
+    public Landscape getParent() {
         return _getParent(Landscape.class);
     }
 
@@ -51,9 +52,22 @@ public class Process extends GraphComponent {
         return branches.stream()
                 .flatMap(branch -> branch.getEdges().stream())
                 .map(uri -> indexReadAccess.findRelation(Relation.parseSourceURI(uri), Relation.parseTargetURI(uri))
-                        .orElseThrow(()->new NoSuchElementException(String.format("%s not present", uri)))
+                        .orElseThrow(() -> new NoSuchElementException(String.format("%s not present", uri)))
                 )
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns true if the relation is part of the process.
+     *
+     * @param relation relation to search for
+     * @return true if a branch contains the relation
+     */
+    public boolean contains(@NonNull final Relation relation) {
+        final URI fullyQualifiedIdentifier = Objects.requireNonNull(relation).getFullyQualifiedIdentifier();
+        return branches.stream()
+                .flatMap(branch -> branch.getEdges().stream())
+                .anyMatch(uri -> uri.equals(fullyQualifiedIdentifier));
     }
 
     @Override

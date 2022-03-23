@@ -109,6 +109,70 @@ class ProcessFactoryTest {
         //when
         assertThatThrownBy(() -> ProcessFactory.INSTANCE.createFromDescription(dto.getIdentifier(), graph.landscape, dto))
                 .isInstanceOf(ProcessingException.class);
+    }
 
+    @Test
+    void merge() {
+
+        var dto1 = new ProcessDescription();
+        dto1.setIdentifier("fooproc");
+        dto1.getBranches().add(
+                new BranchDescription(List.of(
+                        bOne.getFullyQualifiedIdentifier().toString(),
+                        bTwo.getFullyQualifiedIdentifier().toString(),
+                        bThree.getFullyQualifiedIdentifier().toString()
+                ))
+        );
+
+        dto1.getBranches().add(
+                new BranchDescription(List.of(
+                        graph.itemAA.getFullyQualifiedIdentifier().toString(),
+                        graph.itemAB.getFullyQualifiedIdentifier().toString(),
+                        bThree.getFullyQualifiedIdentifier().toString()
+                ))
+        );
+        dto1.getBranches().add(
+                new BranchDescription(List.of(
+                        bThree.getFullyQualifiedIdentifier().toString(),
+                        cOne.getFullyQualifiedIdentifier().toString(),
+                        cTwo.getFullyQualifiedIdentifier().toString(),
+                        cThree.getFullyQualifiedIdentifier().toString()
+                ))
+        );
+
+        var dto2 = new ProcessDescription();
+        dto2.setIdentifier("fooproc");
+        dto2.setName("foo");
+        dto2.setDescription("bar");
+        dto2.setLabel(Label.team, "ateam");
+        dto2.setOwner("Hans");
+        dto2.getBranches().add(
+                new BranchDescription(List.of(
+                        bOne.getFullyQualifiedIdentifier().toString(),
+                        bTwo.getFullyQualifiedIdentifier().toString(),
+                        bThree.getFullyQualifiedIdentifier().toString()
+                ))
+        );
+
+        dto2.getBranches().add(
+                new BranchDescription(List.of(
+                        graph.itemAA.getFullyQualifiedIdentifier().toString(),
+                        graph.itemAB.getFullyQualifiedIdentifier().toString(),
+                        bThree.getFullyQualifiedIdentifier().toString()
+                ))
+        );
+
+        Process existing = ProcessFactory.INSTANCE.createFromDescription(dto1.getIdentifier(), graph.landscape, dto1);
+        Process update = ProcessFactory.INSTANCE.createFromDescription(dto2.getIdentifier(), graph.landscape, dto2);
+
+        //when
+        Process merge = ProcessFactory.INSTANCE.merge(existing, update);
+
+        //then
+        assertThat(merge).isNotNull();
+        assertThat(merge.getIdentifier()).isEqualTo(existing.getIdentifier());
+        assertThat(merge.getName()).isEqualTo(update.getName());
+        assertThat(merge.getDescription()).isEqualTo(update.getDescription());
+        assertThat(merge.getOwner()).isEqualTo(update.getOwner());
     }
 }

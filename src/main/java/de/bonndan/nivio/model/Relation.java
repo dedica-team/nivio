@@ -36,7 +36,12 @@ public class Relation implements Component, Assessable {
 
     private final URI fullyQualifiedIdentifier;
 
+    private final Map<String, Link> links = new HashMap<>();
+
+    private final Set<URI> processes = new HashSet<>();
+
     private IndexReadAccess<? extends GraphComponent> indexReadAccess;
+
 
     public Relation(@NonNull final GraphComponent source,
                     @NonNull final GraphComponent target,
@@ -44,12 +49,13 @@ public class Relation implements Component, Assessable {
                     final String format,
                     final RelationType type
     ) {
+        this.sourceURI = Objects.requireNonNull(source, "Source is null").getFullyQualifiedIdentifier();
+        this.targetURI = Objects.requireNonNull(target, "Target is null").getFullyQualifiedIdentifier();
+
         if (source.equals(target)) {
             throw new IllegalArgumentException(String.format("Relation source and target are equal.%s %s", source, target));
         }
 
-        this.sourceURI = Objects.requireNonNull(source, "Source is null").getFullyQualifiedIdentifier();
-        this.targetURI = Objects.requireNonNull(target, "Target is null").getFullyQualifiedIdentifier();
         this.description = description;
         this.format = format;
         this.type = type;
@@ -216,7 +222,7 @@ public class Relation implements Component, Assessable {
 
     @Override
     public Map<String, Link> getLinks() {
-        return Map.of();
+        return links;
     }
 
     @Override
@@ -247,5 +253,17 @@ public class Relation implements Component, Assessable {
 
     boolean isAttached() {
         return indexReadAccess != null;
+    }
+
+    public void assignProcess(URI fullyQualifiedIdentifier) {
+        processes.add(fullyQualifiedIdentifier);
+    }
+
+    /**
+     * Returns all processes this relation is part of.
+     *
+     */
+    public Set<URI> getProcesses() {
+        return processes;
     }
 }
