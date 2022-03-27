@@ -3,10 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.Hex;
@@ -188,8 +185,12 @@ public class SVGDocument extends Component {
                     item.getRelations().stream()
                             .filter(relation -> relation.getSource().equals(item))
                             .map(rel -> hexMap.getPath(rel)
-                                    .map(hexPath ->
-                                            new SVGRelation(hexPath, layoutedItem.getColor(), rel, null)
+                                    .map(hexPath -> new SVGRelation(
+                                                    hexPath,
+                                                    layoutedItem.getColor(),
+                                                    rel, null,
+                                                    rel.getProcess().orElse(null)
+                                            )
                                     ).orElse(null)
                             )
                             .filter(Objects::nonNull)

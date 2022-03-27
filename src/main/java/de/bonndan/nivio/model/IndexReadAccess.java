@@ -191,8 +191,8 @@ public class IndexReadAccess<T extends Component> {
                 .findFirst();
     }
 
-    public Optional<T> get(URI parent) {
-        return index.get(parent);
+    public Optional<T> get(URI uri) {
+        return index.get(uri);
     }
 
     public List<T> getChildren(URI fullyQualifiedIdentifier) {

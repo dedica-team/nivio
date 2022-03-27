@@ -21,6 +21,8 @@ public class StatusValue {
     public static final String LABEL_SUFFIX_MESSAGE = "message";
     public static final String SUMMARY_FIELD_VALUE = "summary";
 
+    public static final StatusValue UNKNOWN = new StatusValue(URI.create("component://nostatus"), "unknown", Status.UNKNOWN, "");
+
     @NonNull
     private final URI identifier;
 

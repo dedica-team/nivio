@@ -1,7 +1,6 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.Assessable;
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
@@ -18,6 +17,7 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
@@ -100,16 +100,13 @@ class SVGItem extends Component {
         }
 
         String stroke = "#" + (layoutedComponent.getColor() != null ? layoutedComponent.getColor() : Color.GRAY);
-        Status status = Status.UNKNOWN;
-        if (itemStatuses != null) {
-            status = Assessable.getWorst(itemStatuses).stream().findFirst().map(StatusValue::getStatus).orElse(Status.UNKNOWN);
-        }
-        ContainerTag statusCircle = SvgTagCreator.circle()
-                .attr(SVGAttr.CLASS, String.format("assessment %s", status.getName()))
-                .attr("cx", 70)
-                .attr("cy", 70)
-                .attr("r", DEFAULT_ICON_SIZE / 2)
-                .attr(SVGAttr.STROKE, "grey");
+        StatusValue statusValue = Optional.ofNullable(itemStatuses)
+                .flatMap(statusValues -> Assessable.getWorst(itemStatuses).stream().findFirst())
+                .orElse(StatusValue.UNKNOWN);
+
+        var statusCircle = new SVGStatusCircle(DEFAULT_ICON_SIZE / 2f, stroke, statusValue)
+                .setCenter(70,70)
+                .render();
 
         ContainerTag circle = SvgTagCreator.circle()
                 .attr("id", this.id)

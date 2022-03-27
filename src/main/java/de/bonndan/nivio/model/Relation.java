@@ -38,7 +38,7 @@ public class Relation implements Component, Assessable {
 
     private final Map<String, Link> links = new HashMap<>();
 
-    private final Set<URI> processes = new HashSet<>();
+    private final List<URI> processes = new ArrayList<>();
 
     private IndexReadAccess<? extends GraphComponent> indexReadAccess;
 
@@ -261,9 +261,15 @@ public class Relation implements Component, Assessable {
 
     /**
      * Returns all processes this relation is part of.
-     *
      */
-    public Set<URI> getProcesses() {
+    public List<URI> getProcesses() {
         return processes;
+    }
+
+    public Optional<Process> getProcess() {
+        if (processes.isEmpty()) {
+            return Optional.empty();
+        }
+        return indexReadAccess.get(processes.get(0)).map(Process.class::cast);
     }
 }

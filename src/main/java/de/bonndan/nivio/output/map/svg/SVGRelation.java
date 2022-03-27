@@ -1,11 +1,9 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Lifecycle;
-import de.bonndan.nivio.model.Relation;
-import de.bonndan.nivio.model.RelationType;
+import de.bonndan.nivio.model.Process;
+import de.bonndan.nivio.model.*;
+import de.bonndan.nivio.output.Color;
 import de.bonndan.nivio.output.map.hex.HexPath;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -16,6 +14,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,9 @@ class SVGRelation extends Component {
     @Nullable
     private final StatusValue statusValue;
 
+    @Nullable
+    private final Process process;
+
     private Point2D.Double offset = new Point2D.Double(0, 0);
 
     /**
@@ -53,7 +55,8 @@ class SVGRelation extends Component {
     SVGRelation(@NonNull final HexPath hexPath,
                 @NonNull final String fill,
                 @NonNull final Relation relation,
-                @Nullable final StatusValue statusValue
+                @Nullable final StatusValue statusValue,
+                @Nullable final Process process
     ) {
         this.hexPath = hexPath;
         if (!StringUtils.hasLength(fill)) {
@@ -62,6 +65,7 @@ class SVGRelation extends Component {
         this.fill = fill;
         this.relation = relation;
         this.statusValue = statusValue;
+        this.process = process;
     }
 
     @Override
@@ -73,15 +77,9 @@ class SVGRelation extends Component {
     public DomContent render() {
 
         var fillId = "#" + fill;
-
-        var points = hexPath.getPoints().stream()
+        final var points = hexPath.getPoints().stream()
                 .map(pathElement -> pathElement.shift(offset).toString())
                 .collect(Collectors.joining(""));
-
-        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
-        BezierPath bezierPath = new BezierPath();
-        bezierPath.parsePathString(points);
-
 
         ContainerTag shadow = null;
         float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
@@ -97,12 +95,13 @@ class SVGRelation extends Component {
             }
         }).orElse(1f);
         int innerStrokeWidth = Math.round(5 * factor);
-        if (statusValue != null && !statusValue.getStatus().equals(Status.UNKNOWN)) {
-            String statusColor = statusValue.getStatus().getName();
+
+        if (process != null) {
             shadow = SvgTagCreator.path()
                     .attr("d", points)
-                    .attr(SVGAttr.STROKE, statusColor)
-                    .attr(SVGAttr.STROKE_WIDTH, Math.round(BASIC_STROKE_WIDTH * factor));
+                    .attr(SVGAttr.STROKE, Objects.requireNonNullElseGet(process.getColor(), ()-> "#" + Color.getGroupColor(process.getIdentifier())))
+                    .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2))
+                    .attr("data-process", process.getIdentifier());
         }
 
         int translation = getTranslation();
@@ -130,7 +129,9 @@ class SVGRelation extends Component {
         );
         ContainerTag endMarker = marker.render();
 
-        return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);
+        ContainerTag label = createLabel(relation.getLabel(Label.label), points, fillId,statusValue);
+
+        return addAttributes(g(shadow, path, endMarker, label), relation);
     }
 
     private int getTranslation() {
@@ -152,17 +153,19 @@ class SVGRelation extends Component {
                 .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().toString())
                 .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().toString())
                 .attr(DATA_IDENTIFIER, relation.getFullyQualifiedIdentifier())
-                .attr(SVGAttr.CLASS, "relation " + VISUAL_FOCUS_UNSELECTED);
+                .attr(SVGAttr.CLASS, String.format("relation %s", VISUAL_FOCUS_UNSELECTED));
 
         return g;
     }
 
     @Nullable
-    private ContainerTag label(String text, BezierPath bezierPath, String fillId) {
-        if (!StringUtils.hasLength(text)) {
-            return null;
-        }
-        return new SvgRelationLabel(text, bezierPath.eval(0.49f), bezierPath.eval(0.51f), fillId, true).render();
+    private ContainerTag createLabel(String text, String points, String fillId, StatusValue statusValue) {
+
+        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
+        final BezierPath bezierPath = new BezierPath();
+        bezierPath.parsePathString(points);
+
+        return new SvgRelationLabel(text, bezierPath.eval(0.49f), bezierPath.eval(0.51f), fillId, statusValue).render();
     }
 
     /**

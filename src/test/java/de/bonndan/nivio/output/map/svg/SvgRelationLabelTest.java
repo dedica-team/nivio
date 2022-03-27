@@ -1,29 +1,53 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.assessment.Status;
+import de.bonndan.nivio.assessment.StatusValue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
+import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SvgRelationLabelTest {
 
-    @Test
-    void render() {
-        SvgRelationLabel svgRelationLabel = new SvgRelationLabel("foo",
+    private SvgRelationLabel svgRelationLabel;
+
+    @BeforeEach
+    void setup() {
+         svgRelationLabel = new SvgRelationLabel(
+                "foo",
                 new Point2D.Float(10f, 10f),
                 new Point2D.Float(20f, 20f),
-                "red",
-                true
+                "blue",
+                new StatusValue(URI.create("relation://bar"), "cost", Status.RED, "")
         );
+    }
 
+    @Test
+    void render() {
         assertThat(svgRelationLabel).isNotNull();
 
         String render = svgRelationLabel.render().render();
         assertThat(render)
                 .contains("text-anchor=\"middle\"")
-                .contains("transform=\"translate(10.0 0.0) rotate(45.0 0 0)\"")
+                .contains("transform=\"rotate(45.0 0 0)\"")
                 .contains("foo")
-                .contains("fill=\"red\"");
+                .contains("fill=\"blue\"");
     }
+
+    @Test
+    void statusCircle() {
+
+        //when
+        String render = svgRelationLabel.render().render();
+
+        //when
+        assertThat(render)
+                .contains("foo")
+                .contains("fill=\"red\"")
+                .contains("stroke=\"blue\"");
+    }
+
 }

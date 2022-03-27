@@ -6,7 +6,7 @@
   stroke-width: 0.3;
 }
 
-.map g circle {
+.map g.item g circle {
   stroke-width: 0.8em;
 }
 
