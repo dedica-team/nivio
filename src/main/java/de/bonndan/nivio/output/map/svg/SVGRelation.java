@@ -81,7 +81,6 @@ class SVGRelation extends Component {
                 .map(pathElement -> pathElement.shift(offset).toString())
                 .collect(Collectors.joining(""));
 
-        ContainerTag shadow = null;
         float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
             try {
                 float v = Float.parseFloat(s);
@@ -94,22 +93,23 @@ class SVGRelation extends Component {
                 return 1f;
             }
         }).orElse(1f);
-        int innerStrokeWidth = Math.round(5 * factor);
+        final int innerStrokeWidth = Math.round(5 * factor);
 
+        ContainerTag shadow = null;
         if (process != null) {
             shadow = SvgTagCreator.path()
                     .attr("d", points)
-                    .attr(SVGAttr.STROKE, Objects.requireNonNullElseGet(process.getColor(), ()-> "#" + Color.getGroupColor(process.getIdentifier())))
+                    .attr(SVGAttr.STROKE, Objects.requireNonNullElseGet(process.getColor(), () -> "#" + Color.getGroupColor(process.getIdentifier())))
                     .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2))
                     .attr("data-process", process.getIdentifier());
         }
 
-        int translation = getTranslation();
+        final int translation = getTranslation();
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
                 .attr(SVGAttr.STROKE, fillId)
                 .attr(SVGAttr.STROKE_WIDTH, innerStrokeWidth)
-                .attr("transform", String.format("translate(0 %d)", translation));
+                .attr(SVGAttr.TRANSFORM, String.format("translate(0 %d)", translation));
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
             path.attr("opacity", "0.5");
@@ -122,14 +122,14 @@ class SVGRelation extends Component {
 
         var lastDirection = hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size() - 1);
         SvgRelationEndMarker marker = new SvgRelationEndMarker(
-                new Point2D.Double(hexPath.getEndPoint().x + offset.x, hexPath.getEndPoint().y + offset.y),
+                new Point2D.Double(hexPath.getEndPoint().x + offset.x, hexPath.getEndPoint().y + offset.y + translation),
                 RelationType.from(relation.getType()),
                 fillId,
                 lastDirection
         );
         ContainerTag endMarker = marker.render();
 
-        ContainerTag label = createLabel(relation.getLabel(Label.label), points, fillId,statusValue);
+        ContainerTag label = createLabel(relation.getLabel(Label.label), points, fillId, statusValue, translation);
 
         return addAttributes(g(shadow, path, endMarker, label), relation);
     }
@@ -159,13 +159,18 @@ class SVGRelation extends Component {
     }
 
     @Nullable
-    private ContainerTag createLabel(String text, String points, String fillId, StatusValue statusValue) {
+    private ContainerTag createLabel(String text, String points, String fillId, StatusValue statusValue, int translation) {
 
         //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
         final BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(points);
 
-        return new SvgRelationLabel(text, bezierPath.eval(0.49f), bezierPath.eval(0.51f), fillId, statusValue).render();
+        Point2D.Float point1 = bezierPath.eval(0.49f);
+        point1.setLocation(point1.x, point1.y + translation);
+        Point2D.Float point2 = bezierPath.eval(0.51f);
+        point2.setLocation(point2.x, point2.y + translation);
+
+        return new SvgRelationLabel(text, point1, point2, fillId, statusValue).render();
     }
 
     /**
