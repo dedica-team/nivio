@@ -22,6 +22,8 @@ import static org.springframework.util.StringUtils.hasLength;
  */
 public class ReportGenerator extends HtmlGenerator {
 
+    public static final String CLASS = "class";
+
     public ReportGenerator(LocalServer localServer, IconService iconService) {
         super(localServer, iconService);
     }
@@ -44,7 +46,7 @@ public class ReportGenerator extends HtmlGenerator {
                         iff(hasLength(landscape.getContact()), p("Contact: " + nice(landscape.getContact()))),
                         div(embed()
                                 .attr("src", MapController.PATH + "/" + landscape.getIdentifier() + "/" + MAP_SVG_ENDPOINT)
-                                .attr("class", "img-fluid img-thumbnail mx-auto d-block")),
+                                .attr(CLASS, "img-fluid img-thumbnail mx-auto d-block")),
                         br(), br(),
                         rawHtml(writeGroups(landscape, assessment))
                 )
@@ -60,10 +62,10 @@ public class ReportGenerator extends HtmlGenerator {
             String color = "#" + group.getColor();
             builder.append(
                     h2(rawHtml("Group: " + "<span style=\"color: " + color + "\">" + GROUP_CIRCLE + "</span> " + group.getIdentifier()))
-                            .attr("class", "rounded").render()
+                            .attr(CLASS, "rounded").render()
             );
             builder.append(
-                    div().attr("class", "group")
+                    div().attr(CLASS, "group")
                             .with(group.getChildren().stream().map(item -> this.writeItem(item, assessment, all)))
                             .render()
             );
