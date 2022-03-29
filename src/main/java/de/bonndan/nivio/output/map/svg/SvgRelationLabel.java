@@ -53,7 +53,7 @@ public class SvgRelationLabel extends Component {
         ContainerTag labelText = text != null ?
                 SvgTagCreator.text(this.text)
                         .attr("x", 0)
-                        .attr("y", 5)
+                        .attr("y", -25)
                         .attr("text-anchor", "middle")
                         .attr("font-size", "1.5em")
                         .attr(SVGAttr.TRANSFORM, textTransform)
