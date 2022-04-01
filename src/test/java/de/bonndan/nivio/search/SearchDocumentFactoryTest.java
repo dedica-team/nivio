@@ -97,6 +97,28 @@ class SearchDocumentFactoryTest {
     }
 
     @Test
+    void addsFacets() {
+        //when
+        Document document = SearchDocumentFactory.from(valueObject, new ArrayList<StatusValue>());
+
+        //then
+
+        FacetField unitFacet = getField(SearchField.LUCENE_FIELD_UNIT.getValue(), document.getFields());
+        assertThat(unitFacet).isNotNull();
+        assertThat(unitFacet.path[0]).isEqualTo("default");
+
+        FacetField contextFacet = getField(SearchField.LUCENE_FIELD_CONTEXT.getValue(), document.getFields());
+        assertThat(contextFacet).isNotNull();
+        assertThat(contextFacet.path[0]).isEqualTo("default");
+
+        FacetField groupFacet = getField(SearchField.LUCENE_FIELD_GROUP.getValue(), document.getFields());
+        assertThat(groupFacet).isNotNull();
+        assertThat(groupFacet.path[0]).isEqualTo("a");
+
+
+    }
+
+    @Test
     void addsKPIFacets() {
         //given
         List<StatusValue> statusValues = new ArrayList<>();

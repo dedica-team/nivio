@@ -20,7 +20,9 @@ public enum SearchField {
     
     LUCENE_FIELD_FQI ( "fqi", "fully qualified identifier", false),
     LUCENE_FIELD_COMPONENT ( "component", "class of the component (item, group, relation...)", true),
-    LUCENE_FIELD_GROUP ( "group", "parent group of an item", true),
+    LUCENE_FIELD_UNIT ( "unit", "parent unit", true),
+    LUCENE_FIELD_CONTEXT ( "context", "parent context", true),
+    LUCENE_FIELD_GROUP ( "group", "parent group", true),
     LUCENE_FIELD_TYPE ( "type", "type of the component", true),
     LUCENE_FIELD_OWNER ( "owner", "owner of the component", true),
     LUCENE_FIELD_TAG ( "tag", "assigned tag(s)", true),

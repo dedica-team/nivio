@@ -1,9 +1,6 @@
 package de.bonndan.nivio.search;
 
-import de.bonndan.nivio.model.ComponentClass;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Labeled;
-import de.bonndan.nivio.model.Link;
+import de.bonndan.nivio.model.*;
 import org.springframework.lang.NonNull;
 
 import java.net.URI;
@@ -23,7 +20,9 @@ public class SearchDocumentValueObject {
     private final String layer;
     private final String type;
     private final Map<String, Link> links;
-    private Map<String, String> labels;
+    private final Map<String, String> labels;
+    private final String unit;
+    private final String context;
     private final String group;
     private final String address;
 
@@ -39,10 +38,14 @@ public class SearchDocumentValueObject {
                                      Map<String, Link> links,
                                      Map<String, String> labels,
                                      String layer,
-                                     String group,
                                      String address
     ) {
+        final var componentMatcher = ComponentMatcher.forComponent(fullyQualifiedIdentifier);
+
         this.fullyQualifiedIdentifier = fullyQualifiedIdentifier;
+        this.unit = componentMatcher.getUnit();
+        this.context = componentMatcher.getContext();
+        this.group = componentMatcher.getGroup();
         this.identifier = identifier;
         this.parentIdentifier = parentIdentifier;
         this.component = component;
@@ -54,7 +57,6 @@ public class SearchDocumentValueObject {
         this.type = type;
         this.links = links;
         this.labels = labels;
-        this.group = group;
         this.address = address;
     }
 
@@ -84,9 +86,18 @@ public class SearchDocumentValueObject {
         return description;
     }
 
+    public Optional<String> getUnit() {
+        return Optional.ofNullable(unit);
+    }
+
+    public Optional<String> getContext() {
+        return Optional.ofNullable(context);
+    }
+
     public Optional<String> getGroup() {
         return Optional.ofNullable(group);
     }
+
 
     public String getType() {
         return type;

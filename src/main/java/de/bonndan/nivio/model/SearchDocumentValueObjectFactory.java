@@ -42,18 +42,8 @@ public class SearchDocumentValueObjectFactory {
                 component.getLinks(),
                 component.getLabels(),
                 getLayer(component),
-                getGroup(component),
                 getAddress(component)
         );
-    }
-
-    private static String getGroup(Component component) {
-        if (component instanceof Item)
-            return ((Item) component).getParentIdentifier();
-        if (component instanceof ItemDescription)
-            return ((ItemDescription) component).getGroup();
-
-        return null;
     }
 
     private static String getLayer(Component component) {

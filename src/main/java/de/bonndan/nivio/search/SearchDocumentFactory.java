@@ -92,6 +92,8 @@ public class SearchDocumentFactory {
         addTextField.accept(SearchField.LUCENE_FIELD_OWNER.getValue(), valueObject.getOwner());
 
         valueObject.getLayer().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_LAYER.getValue(), s));
+        valueObject.getUnit().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_UNIT.getValue(), s));
+        valueObject.getContext().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_CONTEXT.getValue(), s));
         valueObject.getGroup().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_GROUP.getValue(), s));
         valueObject.getAddress().ifPresent(s -> addTextField.accept(SearchField.LUCENE_FIELD_ADDRESS.getValue(), s));
 
@@ -184,6 +186,8 @@ public class SearchDocumentFactory {
         addFacetField.accept(SearchField.LUCENE_FIELD_OWNER.getValue(), valueProvider.getOwner());
         addFacetField.accept(SearchField.LUCENE_FIELD_TYPE.getValue(), valueProvider.getType());
 
+        valueProvider.getUnit().ifPresent(s -> addFacetField.accept(SearchField.LUCENE_FIELD_UNIT.getValue(), s));
+        valueProvider.getContext().ifPresent(s -> addFacetField.accept(SearchField.LUCENE_FIELD_CONTEXT.getValue(), s));
         valueProvider.getGroup().ifPresent(s -> addFacetField.accept(SearchField.LUCENE_FIELD_GROUP.getValue(), s));
         valueProvider.getLayer().ifPresent(s -> addFacetField.accept(SearchField.LUCENE_FIELD_LAYER.getValue(), s));
 

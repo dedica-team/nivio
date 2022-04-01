@@ -50,6 +50,8 @@ class SearchDocumentValueObjectFactoryTest {
         assertThat(valueObject.getDescription()).isEqualTo(item.getDescription());
         assertThat(valueObject.getType()).isEqualTo(item.getType());
         assertThat(valueObject.getTags()).isEqualTo(item.getTags());
+        assertThat(valueObject.getUnit()).isPresent().get().isEqualTo(graph.context.getParentIdentifier());
+        assertThat(valueObject.getContext()).isPresent().get().isEqualTo(graph.groupA.getParentIdentifier());
         assertThat(valueObject.getGroup()).isPresent().get().isEqualTo(item.getParentIdentifier());
         assertThat(valueObject.getLayer()).isPresent().get().isEqualTo(item.getLayer());
         assertThat(valueObject.getComponentClass()).isEqualTo(ComponentClass.item);
