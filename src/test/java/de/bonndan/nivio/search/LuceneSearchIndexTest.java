@@ -119,33 +119,37 @@ class LuceneSearchIndexTest {
     @Test
     void testFacets() {
 
-
+        //when
         var facets = searchIndex.facets();
+
+        //then
         assertThat(facets.getClass()).isEqualTo(ArrayList.class);
-        assertThat(facets).hasSize(3);
+        assertThat(facets).hasSize(5);
         List<String> actual = facets.stream().map(facetResult -> facetResult.dim).collect(Collectors.toList());
         assertThat(actual).contains("tag")
                 .contains("group")
+                .contains("context")
+                .contains("unit")
                 .contains("layer");
     }
 
     @Test
     void stableAfterReindexing() {
         assertThat(searchIndex.search("*")).hasSize(2);
-        assertThat(searchIndex.facets()).hasSize(3);
+        assertThat(searchIndex.facets()).hasSize(5);
 
         //when
         searchIndex.indexForSearch(valueObjects, Assessment.empty());
 
         //then
         assertThat(searchIndex.search("*")).hasSize(2);
-        assertThat(searchIndex.facets()).hasSize(3);
+        assertThat(searchIndex.facets()).hasSize(5);
 
         //when
         searchIndex.indexForSearch(valueObjects, Assessment.empty());
 
         //then
         assertThat(searchIndex.search("*")).hasSize(2);
-        assertThat(searchIndex.facets()).hasSize(3);
+        assertThat(searchIndex.facets()).hasSize(5);
     }
 }

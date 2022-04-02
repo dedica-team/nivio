@@ -82,9 +82,12 @@ class SourceReferencesResolverTest {
         ProcessDescription start = processDescriptions.iterator().next();
         assertThat(start.getBranches()).hasSize(1);
         BranchDescription firstBranch = start.getBranches().get(0);
-        assertThat(firstBranch.getItems()).hasSize(2)
+        assertThat(firstBranch.getItems()).hasSize(4)
                 .contains("start/seed")
-                .contains("start/config");
+                .contains("start/config")
+                .contains("sources/parsing")
+                .contains("sources/factory")
+        ;
     }
 
     @Test

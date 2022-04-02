@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.svg;
 
 public abstract class SVGAttr {
 
+    static final String POINTS = "points";
     static final String TEXT_ANCHOR = "text-anchor";
     static final String ID = "id";
     static final String TRANSFORM = "transform";

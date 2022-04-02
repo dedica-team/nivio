@@ -18,8 +18,7 @@ class SvgRelationLabelTest {
     void setup() {
          svgRelationLabel = new SvgRelationLabel(
                 "foo",
-                new Point2D.Float(10f, 10f),
-                new Point2D.Float(20f, 20f),
+                new BezierPath.PointWithAngle(new Point2D.Float(10f, 10f), 90),
                 "blue",
                 new StatusValue(URI.create("relation://bar"), "cost", Status.RED, "")
         );
@@ -32,7 +31,7 @@ class SvgRelationLabelTest {
         String render = svgRelationLabel.render().render();
         assertThat(render)
                 .contains("text-anchor=\"middle\"")
-                .contains("transform=\"rotate(45.0 0 0)\"")
+                .contains("transform=\"rotate(90.0 0 0)\"")
                 .contains("foo")
                 .contains("fill=\"blue\"");
     }

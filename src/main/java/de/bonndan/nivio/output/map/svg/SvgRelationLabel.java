@@ -6,7 +6,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.awt.geom.Point2D;
 import java.util.Objects;
 
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
@@ -23,30 +22,23 @@ public class SvgRelationLabel extends Component {
      * Creates a new label object.
      *
      * @param text        the text to display
-     * @param point       first point
-     * @param point2      second point (diffed to first to determine angle)
+     * @param point       point and angle for the label
      * @param fillId      color
      * @param statusValue assessment status
      */
     public SvgRelationLabel(@Nullable final String text,
-                            @NonNull final Point2D.Float point,
-                            @NonNull final Point2D.Float point2,
+                            @NonNull final BezierPath.PointWithAngle point,
                             @Nullable final String fillId,
                             @Nullable final StatusValue statusValue
     ) {
-        Objects.requireNonNull(point, "First point is null");
-        Objects.requireNonNull(point2, "Second point is null");
+        Objects.requireNonNull(point, "point is null");
 
         this.text = text;
         this.statusValue = statusValue != null ? statusValue : StatusValue.UNKNOWN;
         this.fillId = fillId;
 
-        var degrees = Math.atan2((point2.y - point.y), (point2.x - point.x)) * 180 / Math.PI;
-        if ((degrees > 90 || degrees < -90)) {
-            degrees += 180; //always upright
-        }
-        transform = "translate(" + round(point.getX()) + ' ' + round(point.getY()) + ")";
-        textTransform = "rotate(" + round(degrees) + " 0 0)";
+        transform = "translate(" + round(point.point.getX()) + ' ' + round(point.point.getY()) + ")";
+        textTransform = "rotate(" + round(point.degrees) + " 0 0)";
     }
 
     public ContainerTag render() {

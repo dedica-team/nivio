@@ -4,7 +4,10 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Item;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
+
+import java.util.Objects;
 
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 
@@ -15,12 +18,10 @@ class SVGItemLabel extends Component {
 
     private final String name;
     private final String id;
-    private final String identifier;
 
-    SVGItemLabel(Item item) {
-        name = !StringUtils.hasLength(item.getName()) ? item.getIdentifier() : item.getName();
+    SVGItemLabel(@NonNull final Item item) {
+        name = !StringUtils.hasLength(Objects.requireNonNull(item).getName()) ? item.getIdentifier() : item.getName();
         id = getId(item);
-        identifier = item.getFullyQualifiedIdentifier().getPath();
     }
 
     public DomContent render() {

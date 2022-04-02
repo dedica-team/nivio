@@ -267,7 +267,10 @@ items:
 processes:
   ingestion:
     description: Data ingestion
+    color: 50C878
     branches:
       - items:
           - start/seed
           - start/config
+          - sources/parsing
+          - sources/factory

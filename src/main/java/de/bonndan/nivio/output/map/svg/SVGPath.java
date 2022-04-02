@@ -31,7 +31,7 @@ public class SVGPath extends Component {
     @Override
     public DomContent render() {
         String path = pointsPath.stream()
-                .map(pathElement -> pathElement.shift(offset).toString())
+                .map(pathElement -> pathElement.shifted(offset))
                 .collect(Collectors.joining(" "));
 
         return SvgTagCreator.path()
