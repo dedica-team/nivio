@@ -1,13 +1,11 @@
 package de.bonndan.nivio.output;
 
-import de.bonndan.nivio.model.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
@@ -15,6 +13,8 @@ import static org.apache.commons.lang3.StringUtils.leftPad;
  * Color generation utility.
  */
 public class Color {
+
+    private Color() {}
 
     public static final String DARKGRAY = "333333";
     public static final String GRAY = "aaaaaa";
@@ -31,7 +31,7 @@ public class Color {
      */
     @Nullable
     public static String nameToRGB(@Nullable final String name, @Nullable final String defaultColor) {
-        if (StringUtils.isEmpty(name)) {
+        if (!StringUtils.hasLength(name)) {
             return defaultColor;
         }
 
@@ -77,7 +77,7 @@ public class Color {
      * @return hex color string
      */
     public static String lighten(@NonNull final String color) {
-        if (StringUtils.isEmpty(color)) {
+        if (!StringUtils.hasLength(color)) {
             LOGGER.error("lighten used with empty color.");
             return DARKGRAY;
         }
@@ -155,20 +155,6 @@ public class Color {
         }
     }
 
-    /**
-     * Returns the color of a group.
-     *
-     * @param group group object
-     * @return hex color
-     */
-    public static String getGroupColor(Group group) {
-        if (group == null) {
-            return Color.DARKGRAY;
-        }
-        return Optional.ofNullable(group.getColor())
-                .orElse(getGroupColor(group.getIdentifier()));
-    }
-
     public static String getGroupColor(String groupIdentifier) {
         return Color.nameToRGB(groupIdentifier, Color.DARKGRAY);
     }
@@ -180,7 +166,7 @@ public class Color {
      * @return safe hex code
      */
     public static String safe(@Nullable final String input) {
-        if (StringUtils.isEmpty(input)) {
+        if (!StringUtils.hasLength(input)) {
             return "";
         }
         String color;
@@ -194,5 +180,15 @@ public class Color {
         color = color.concat("000000").substring(0, 6);
         color = Integer.toHexString(java.awt.Color.decode("0x" + color).getRGB()).substring(2);
         return color;
+    }
+
+    public static String htmlSafe(@Nullable final String input) {
+        if (!StringUtils.hasLength(input)) {
+            return "";
+        }
+        if (!input.startsWith("#")) {
+            return "#" +  input;
+        }
+        return input;
     }
 }

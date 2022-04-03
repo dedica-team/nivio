@@ -109,7 +109,7 @@ class SVGRelation extends Component {
         ContainerTag shadow = null;
         ContainerTag shadowMarker = null;
         if (process != null) {
-            String processColor = Objects.requireNonNullElseGet(process.getColor(), () -> "#" + Color.getGroupColor(process.getIdentifier()));
+            final String processColor = Color.htmlSafe(Objects.requireNonNullElseGet(process.getColor(), () -> Color.getGroupColor(process.getIdentifier())));
             shadow = SvgTagCreator.path()
                     .attr("d", points)
                     .attr(SVGAttr.STROKE, processColor)

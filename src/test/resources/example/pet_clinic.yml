@@ -44,7 +44,7 @@ items:
 processes:
   booking:
     description: The booking process
-    color: 600e7c
+    color: F781D8
     branches:
       - items:
           - customer-service
