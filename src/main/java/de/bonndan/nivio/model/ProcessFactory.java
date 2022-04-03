@@ -70,14 +70,11 @@ public class ProcessFactory implements GraphNodeFactory<Process, ProcessDescript
                 .map(ProcessFactory::createBranchWithRelations)
                 .collect(Collectors.toList());
 
-        return new Process(identifier,
-                dto.getName(),
-                dto.getOwner(),
-                dto.getContact(),
-                dto.getDescription(),
-                dto.getType(),
-                branches,
-                parent);
+        return ProcessBuilder.aProcess()
+                .withParent(parent)
+                .withBranches(branches)
+                .withComponentDescription(dto)
+                .build();
     }
 
     /**
