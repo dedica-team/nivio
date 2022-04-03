@@ -40,3 +40,16 @@ items:
     scale: 0
     type: email
     hostType: docker
+
+processes:
+  booking:
+    description: The booking process
+    color: 600e7c
+    branches:
+      - items:
+          - customer-service
+          - vet-be
+      - items:
+          - vet-be
+          - schedule
+          - emailer

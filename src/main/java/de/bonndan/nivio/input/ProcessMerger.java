@@ -52,7 +52,7 @@ public class ProcessMerger {
      *
      *
      */
-    public static ProcessingChangelog assignRelations(Process process, Landscape landscape) {
+    public static ProcessingChangelog assignRelations(@NonNull final Process process, @NonNull final Landscape landscape) {
 
         final IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
         final GraphWriteAccess<GraphComponent> writeAccess = landscape.getWriteAccess();
