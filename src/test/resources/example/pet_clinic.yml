@@ -53,3 +53,14 @@ processes:
           - vet-be
           - schedule
           - emailer
+
+  billing:
+    description: Billing after treatment
+    color: 078108
+    branches:
+      - items:
+          - vet-fe
+          - vet-be
+          - billing/billing
+          - emailer
+
