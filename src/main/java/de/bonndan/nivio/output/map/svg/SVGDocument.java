@@ -3,6 +3,7 @@ package de.bonndan.nivio.output.map.svg;
 import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.model.Process;
 import de.bonndan.nivio.model.*;
 import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
@@ -20,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static j2html.TagCreator.rawHtml;
 
@@ -99,24 +101,46 @@ public class SVGDocument extends Component {
             groupAreas.add(area);
         });
 
-        defs.add(SVGRelation.dataflowMarker());
-        List<SVGRelation> relations = getRelations(layouted);
+        defs.add(SVGRelation.dataflowMarker()); //TODO check if needed
+        Map<Relation, SVGRelation> relations = getRelations(layouted);
 
         /*
          * Transformation from cartesian to hex coords can turn the resulting cartesian coords of the hexes into negative
          * This could be fixed with a viewbox, but since the frontend svg lib is somehow broken (#438), we need to shift
          * all components into the all-positive quadrant.
          */
-        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas, relations);
+        SVGDimension dimension = SVGDimensionFactory.getDimension(groupAreas, relations.values());
         double extraPadding = Hex.HEX_SIZE;
         var offset = new Point2D.Double(
                 dimension.cartesian.horMin * -1 + extraPadding,
                 dimension.cartesian.vertMin * -1 + extraPadding
         );
 
+        /*
+         * Shift every thing by the offset to avoid negative coordinates
+         */
         items.forEach(svgItem -> svgItem.shift(offset));
         groupAreas.forEach(svgGroupArea -> svgGroupArea.shift(offset));
-        relations.forEach(svgRelation -> svgRelation.shift(offset));
+        relations.values().forEach(svgRelation -> svgRelation.shift(offset));
+
+        //build a map of processes and their svg relations
+        Map<Process, List<SVGRelation>> processListMap = new HashMap<>();
+        landscape.getChildren().stream()
+                .filter(Process.class::isInstance)
+                .map(Process.class::cast)
+                .forEach(process -> processListMap.put(process, new ArrayList<>()));
+
+        IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
+        relations.forEach((relation, svgRelation) -> {
+            relation.getProcesses().values().stream()
+                    .map(uri -> readAccess.get(uri).map(Process.class::cast).orElseThrow())
+                    .forEach(process -> processListMap.get(process).add(svgRelation));
+        });
+
+        final List<SVGProcess> svgProcesses = processListMap.entrySet().stream()
+                .map(processListEntry -> new SVGProcess(processListEntry.getKey(), processListEntry.getValue()))
+                .collect(Collectors.toList());
+
 
         //render background hexes
         defs.add(SVGBackgroundFactory.getHex());
@@ -142,7 +166,8 @@ public class SVGDocument extends Component {
                 .with(background)
                 .with(logo, title)
                 .with(groupAreas.stream().map(SVGGroupArea::render))
-                .with(relations.stream().map(SVGRelation::render))
+                .with(svgProcesses.stream().map(SVGProcess::render))
+                .with(relations.values().stream().map(SVGRelation::render))
                 //draw items above relations
                 .with(items.stream().map(SVGItem::render))
                 //defs contain reusable stuff
@@ -175,26 +200,25 @@ public class SVGDocument extends Component {
     /**
      * Iterates over all items and invokes pathfinding for their relations.
      */
-    private List<SVGRelation> getRelations(LayoutedComponent layouted) {
+    private Map<Relation, SVGRelation> getRelations(LayoutedComponent layouted) {
 
-        List<SVGRelation> relations = new ArrayList<>();
+        Map<Relation, SVGRelation> relations = new HashMap<>();
         layouted.getChildren().forEach(
                 layoutedGroup -> layoutedGroup.getChildren().forEach(layoutedItem -> {
                     Item item = (Item) layoutedItem.getComponent();
                     LOGGER.debug("Adding {} relations for {}", item.getRelations().size(), item.getFullyQualifiedIdentifier());
                     item.getRelations().stream()
                             .filter(relation -> relation.getSource().equals(item))
-                            .map(rel -> hexMap.getPath(rel)
-                                    .map(hexPath -> new SVGRelation(
-                                                    hexPath,
-                                                    layoutedItem.getColor(),
-                                                    rel, null,
-                                                    rel.getProcess().orElse(null)
-                                            )
-                                    ).orElse(null)
-                            )
-                            .filter(Objects::nonNull)
-                            .forEach(relations::add);
+                            .forEach(rel -> {
+                                        hexMap.getPath(rel)
+                                                .map(hexPath -> new SVGRelation(
+                                                                hexPath,
+                                                                layoutedItem.getColor(),
+                                                                rel, null
+                                                        )
+                                                ).ifPresent(svgRelation -> relations.put(rel, svgRelation));
+                                    }
+                            );
                 }));
 
         return relations;

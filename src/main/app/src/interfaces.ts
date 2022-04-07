@@ -130,6 +130,10 @@ export interface IRelations {
   [key: string]: IRelation;
 }
 
+export interface IProcesses {
+  [key: string]: string;
+}
+
 export interface IRelation {
   source: string;
   target: string;
@@ -140,6 +144,7 @@ export interface IRelation {
   fullyQualifiedIdentifier: string;
   direction: string;
   labels: ILabels;
+  processes: IProcesses;
 }
 
 export interface ILabels {

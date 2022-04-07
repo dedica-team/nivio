@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import {
+  Button,
   Card,
   CardHeader,
   Table,
@@ -45,6 +46,14 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const targetTitle = target.name || target.identifier;
   const title = sourceTitle + ' to ' + targetTitle;
   const labels = relation ? getLabels(relation) : null;
+  const processes: ReactElement[] = [];
+  Object.keys(relation.processes).forEach((key) => {
+    processes.push(
+      <Button onClick={() => locateFunctionContext.locateFunction(relation.processes[key])} key={key}>
+        {key}
+      </Button>
+    );
+  });
 
   const sourceStatus = landscapeContext.getAssessmentSummary(source.fullyQualifiedIdentifier);
   const targetStatus = landscapeContext.getAssessmentSummary(target.fullyQualifiedIdentifier);
@@ -54,7 +63,6 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
       <CardHeader
         title={title}
         className={classes.cardHeader}
-        subheader={<MappedString mapKey={'Relation'} />}
         action={
           <IconButton
             size={'small'}
@@ -67,6 +75,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
         }
       />
       <CardContent>
+        <Typography variant={'h6'}><MappedString mapKey={'Relation'} /></Typography>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
           <TableBody>
             <TableRow key={'Type'}>
@@ -99,6 +108,14 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
           </TableBody>
         </Table>
         <br />
+
+        {relation.processes && processes.length > 0 ? (
+          <>
+            <Typography variant={'h6'}>Processes</Typography>
+            {processes}
+          </>
+        ) : null}
+
         {labels ? (
           <>
             <Typography variant={'h6'}>Labels</Typography>

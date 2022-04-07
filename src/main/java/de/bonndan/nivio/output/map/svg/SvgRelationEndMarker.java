@@ -20,24 +20,20 @@ class SvgRelationEndMarker {
     private final BezierPath.PointWithAngle endPoint;
     private final RelationType type;
     private final String fillId;
-    private final int lastDirection;
     private final int scale;
 
     /**
      * @param endPoint      end point of the path
      * @param type          relation type
      * @param fillColor     color
-     * @param lastDirection direction of the last path tile to determine rotation angle
      */
     SvgRelationEndMarker(@NonNull final BezierPath.PointWithAngle endPoint,
                          @Nullable final RelationType type,
-                         @Nullable final String fillColor,
-                         int lastDirection
+                         @Nullable final String fillColor
     ) {
         this.endPoint = Objects.requireNonNull(endPoint);
         this.type = type;
         this.fillId = fillColor;
-        this.lastDirection = lastDirection;
         this.scale = 1;
     }
 
@@ -45,18 +41,15 @@ class SvgRelationEndMarker {
      * @param endPoint      end point of the path
      * @param type          relation type
      * @param fillColor     color
-     * @param lastDirection direction of the last path tile to determine rotation angle
      */
     SvgRelationEndMarker(@NonNull final BezierPath.PointWithAngle endPoint,
                          @Nullable final RelationType type,
                          @Nullable final String fillColor,
-                         int lastDirection,
                          int scale
     ) {
         this.endPoint = Objects.requireNonNull(endPoint);
         this.type = type;
         this.fillId = fillColor;
-        this.lastDirection = lastDirection;
         this.scale = scale;
     }
 

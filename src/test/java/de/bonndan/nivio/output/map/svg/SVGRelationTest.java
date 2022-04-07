@@ -4,8 +4,6 @@ import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.model.Process;
-import de.bonndan.nivio.model.ProcessBuilder;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexPath;
 import de.bonndan.nivio.output.map.hex.MapTile;
@@ -53,7 +51,7 @@ class SVGRelationTest {
         Relation relation = RelationFactory.create(foo, bar);
         graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue);
         DomContent render = svgRelation.render();
         String render1 = render.render();
         assertThat(render1)
@@ -69,7 +67,7 @@ class SVGRelationTest {
         graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -85,7 +83,7 @@ class SVGRelationTest {
         graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -100,7 +98,7 @@ class SVGRelationTest {
         graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -113,7 +111,7 @@ class SVGRelationTest {
 
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.DATAFLOW);
         graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
 
         //when
         DomContent render = svgRelation.render();
@@ -133,7 +131,7 @@ class SVGRelationTest {
         graph.landscape.getWriteAccess().addOrReplaceRelation(itemRelationItem);
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
@@ -163,36 +161,11 @@ class SVGRelationTest {
         }
 
         //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue, null);
+        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", itemRelationItem, statusValue);
         DomContent render = svgRelation.render();
 
         //then
         String render1 = render.render();
         assertThat(render1).contains("translate(0 -13)");
-    }
-
-    @Test
-    @DisplayName("renders process")
-    void rendersProcess() {
-        Relation relation = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);
-        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
-
-        Process foo = ProcessBuilder.aProcess()
-                .withParent(graph.landscape)
-                .withIdentifier("foo")
-                .withBranches(List.of(new Branch(List.of(relation.getFullyQualifiedIdentifier()))))
-                .build();
-        foo.getLabels().put(Label.color.name(), "orange");
-
-
-        //when
-        SVGRelation svgRelation = new SVGRelation(hexpath, "aabbee", relation, statusValue, foo);
-        DomContent render = svgRelation.render();
-
-        //then
-        String render1 = render.render();
-        assertThat(render1)
-                .contains("orange")
-                .contains("data-process=\"" + foo.getIdentifier());
     }
 }

@@ -1,9 +1,10 @@
 package de.bonndan.nivio.output.map.svg;
 
 import de.bonndan.nivio.assessment.StatusValue;
-import de.bonndan.nivio.model.Process;
-import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.output.Color;
+import de.bonndan.nivio.model.Label;
+import de.bonndan.nivio.model.Lifecycle;
+import de.bonndan.nivio.model.Relation;
+import de.bonndan.nivio.model.RelationType;
 import de.bonndan.nivio.output.map.hex.HexPath;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
@@ -14,11 +15,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.output.map.hex.Hex.SOUTH;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
 import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
@@ -41,9 +40,6 @@ class SVGRelation extends Component {
     @Nullable
     private final StatusValue statusValue;
 
-    @Nullable
-    private final Process process;
-
     private Point2D.Double offset = new Point2D.Double(0, 0);
 
     /**
@@ -55,8 +51,7 @@ class SVGRelation extends Component {
     SVGRelation(@NonNull final HexPath hexPath,
                 @NonNull final String fill,
                 @NonNull final Relation relation,
-                @Nullable final StatusValue statusValue,
-                @Nullable final Process process
+                @Nullable final StatusValue statusValue
     ) {
         this.hexPath = hexPath;
         if (!StringUtils.hasLength(fill)) {
@@ -65,7 +60,6 @@ class SVGRelation extends Component {
         this.fill = fill;
         this.relation = relation;
         this.statusValue = statusValue;
-        this.process = process;
     }
 
     @Override
@@ -77,7 +71,6 @@ class SVGRelation extends Component {
     public DomContent render() {
 
         final var fillId = "#" + fill;
-        final var lastDirection = hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size() - 1);
         final var points = hexPath.getPoints().stream()
                 .map(pathElement -> pathElement.shifted(offset))
                 .collect(Collectors.joining(""));
@@ -106,25 +99,6 @@ class SVGRelation extends Component {
                 0,
                 yPortTranslation
         );
-        ContainerTag shadow = null;
-        ContainerTag shadowMarker = null;
-        if (process != null) {
-            final String processColor = Color.htmlSafe(Objects.requireNonNullElseGet(process.getColor(), () -> Color.getGroupColor(process.getIdentifier())));
-            shadow = SvgTagCreator.path()
-                    .attr("d", points)
-                    .attr(SVGAttr.STROKE, processColor)
-                    .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2))
-                    .attr("data-process", process.getIdentifier());
-
-            shadowMarker = new SvgRelationEndMarker(
-                    endPoint,
-                    null,
-                    processColor,
-                    lastDirection,
-                    2
-            ).render();
-        }
-
 
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
@@ -144,14 +118,13 @@ class SVGRelation extends Component {
         SvgRelationEndMarker marker = new SvgRelationEndMarker(
                 endPoint,
                 RelationType.from(relation.getType()),
-                fillId,
-                lastDirection
+                fillId
         );
         ContainerTag endMarker = marker.render();
 
         ContainerTag label = createLabel(relation.getLabel(Label.label), bezierPath, fillId, statusValue, yPortTranslation);
 
-        return addAttributes(g(shadow, shadowMarker, path, endMarker, label), relation);
+        return addAttributes(g(path, endMarker, label), relation);
     }
 
     private int getTranslation() {
@@ -193,6 +166,39 @@ class SVGRelation extends Component {
         ).render();
     }
 
+    public DomContent renderAsProcessBranch(@NonNull final String processColor) {
+
+        final var points = hexPath.getPoints().stream()
+                .map(pathElement -> pathElement.shifted(offset))
+                .collect(Collectors.joining(""));
+
+        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
+        final BezierPath bezierPath = new BezierPath();
+        bezierPath.parsePathString(points);
+
+        final var endPoint = bezierPath.angleAtEnd(
+                SvgRelationEndMarker.HALF_MARKER_SIZE * 2,
+                0,
+                0
+        );
+
+        ContainerTag shadow = SvgTagCreator.path()
+                .attr("d", points)
+                .attr(SVGAttr.STROKE, processColor)
+                .attr(SVGAttr.FILL, "transparent")
+                .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2));
+
+        ContainerTag shadowMarker = new SvgRelationEndMarker(
+                endPoint,
+                null,
+                processColor,
+                3
+        ).render();
+
+
+        return g(shadow, shadowMarker);
+    }
+
     /**
      * Create a group-colored marker.
      *
@@ -215,5 +221,7 @@ class SVGRelation extends Component {
                 .with(path)
                 ;
     }
+
+
 }
 

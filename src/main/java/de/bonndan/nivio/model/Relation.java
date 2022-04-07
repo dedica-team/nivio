@@ -38,7 +38,8 @@ public class Relation implements Component, Assessable {
 
     private final Map<String, Link> links = new HashMap<>();
 
-    private final List<URI> processes = new ArrayList<>();
+    //TODO replace with map, currently rendering takes the first entry
+    private final Map<String, URI> processes = new LinkedHashMap<>();
 
     private IndexReadAccess<? extends GraphComponent> indexReadAccess;
 
@@ -255,21 +256,16 @@ public class Relation implements Component, Assessable {
         return indexReadAccess != null;
     }
 
-    public void assignProcess(URI fullyQualifiedIdentifier) {
-        processes.add(fullyQualifiedIdentifier);
+    public void assignProcess(@NonNull final String identifier, @NonNull final URI fullyQualifiedIdentifier) {
+        processes.put(Objects.requireNonNull(identifier), Objects.requireNonNull(fullyQualifiedIdentifier));
     }
 
     /**
      * Returns all processes this relation is part of.
+     *
+     * @return process uri by its identifier
      */
-    public List<URI> getProcesses() {
+    public Map<String, URI> getProcesses() {
         return processes;
-    }
-
-    public Optional<Process> getProcess() {
-        if (processes.isEmpty()) {
-            return Optional.empty();
-        }
-        return indexReadAccess.get(processes.get(0)).map(Process.class::cast);
     }
 }

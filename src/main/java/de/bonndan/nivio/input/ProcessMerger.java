@@ -62,13 +62,13 @@ public class ProcessMerger {
                 .flatMap(branch -> branch.getEdges().stream())
                 .forEach(uri -> readAccess.getRelation(uri)
                         .ifPresentOrElse(
-                                rel -> rel.assignProcess(process.getFullyQualifiedIdentifier()),
+                                rel -> rel.assignProcess(process.getIdentifier(), process.getFullyQualifiedIdentifier()),
                                 () -> {
                                     Item source = (Item) readAccess.get(Relation.parseSourceURI(uri)).orElseThrow();
                                     Item target = (Item) readAccess.get(Relation.parseTargetURI(uri)).orElseThrow();
                                     var relation = RelationFactory.create(source, target, new RelationDescription());
                                     writeAccess.addOrReplaceRelation(relation);
-                                    relation.assignProcess(process.getFullyQualifiedIdentifier());
+                                    relation.assignProcess(process.getIdentifier(), process.getFullyQualifiedIdentifier());
                                     changelog.addEntry(relation, ProcessingChangelog.ChangeType.CREATED);
                                 }));
 

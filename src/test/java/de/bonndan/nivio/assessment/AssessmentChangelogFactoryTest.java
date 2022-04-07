@@ -102,4 +102,30 @@ class AssessmentChangelogFactoryTest {
         assertThat(entry).isNotNull();
         assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
     }
+
+    @Test
+    @DisplayName("supports relations")
+    void supportsRelations() {
+
+        Relation providerRelation = RelationFactory.createProviderRelation(graph.itemAA, graph.itemAB);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(providerRelation);
+        TEST_FQI = providerRelation.getFullyQualifiedIdentifier();
+
+        List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.GREEN, null));
+        var oldAssessment = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI, Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
+
+        security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.RED, null));
+        var newAssessment = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI, Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
+
+        //when
+        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, oldAssessment, newAssessment);
+
+        //then
+        assertThat(changes).isNotNull();
+        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_FQI);
+        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_FQI);
+        assertThat(entry).isNotNull();
+        assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.UPDATED.name());
+        assertThat(entry.getMessages()).isNotEmpty().contains("summary status has changed to red");
+    }
 }

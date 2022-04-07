@@ -74,9 +74,7 @@ public class Process extends GraphComponent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Process)) return false;
-        if (!super.equals(o)) return false;
-        Process process = (Process) o;
-        return branches.equals(process.branches);
+        return super.equals(o);
     }
 
     @Override

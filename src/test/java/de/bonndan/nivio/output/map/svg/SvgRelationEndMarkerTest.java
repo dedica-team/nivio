@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.geom.Point2D;
 
-import static de.bonndan.nivio.output.map.hex.Hex.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SvgRelationEndMarkerTest {
@@ -20,7 +19,7 @@ class SvgRelationEndMarkerTest {
 
     @Test
     void provider() {
-        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.PROVIDER, "red", NORTH);
+        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.PROVIDER, "red");
 
         String render = red.render().render();
 
@@ -29,7 +28,7 @@ class SvgRelationEndMarkerTest {
 
     @Test
     void markerHasColor() {
-        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red", NORTH);
+        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red");
 
         String render = red.render().render();
 
@@ -38,7 +37,7 @@ class SvgRelationEndMarkerTest {
 
     @Test
     void dataflowMarkerPointsUp() {
-        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red", NORTH);
+        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red");
 
         String render = red.render().render();
 
@@ -47,7 +46,7 @@ class SvgRelationEndMarkerTest {
 
     @Test
     void dataflowMarkerPointsSE() {
-        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red", SOUTH_EAST);
+        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red");
 
         String render = red.render().render();
 
@@ -56,7 +55,7 @@ class SvgRelationEndMarkerTest {
 
     @Test
     void markerSetOutward() {
-        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red", SOUTH);
+        SvgRelationEndMarker red = new SvgRelationEndMarker(endPoint, RelationType.DATAFLOW, "red");
 
         String render = red.render().render();
 

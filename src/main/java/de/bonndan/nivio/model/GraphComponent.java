@@ -231,7 +231,8 @@ public abstract class GraphComponent implements Component, Assessable {
     @NonNull
     protected <T extends Component> Set<T> getChildren(@NonNull final Predicate<Component> predicate, @NonNull final Class<T> cls) {
         Set<T> set = new LinkedHashSet<>();
-        indexReadAccess.getChildren(this.getFullyQualifiedIdentifier()).stream()
+        String msg = String.format("object %s has no index access. Is it detached?", getFullyQualifiedIdentifier());
+        Objects.requireNonNull(indexReadAccess, msg).getChildren(this.getFullyQualifiedIdentifier()).stream()
                 .filter(predicate)
                 .forEach(component -> set.add((T) component));
         return set;

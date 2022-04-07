@@ -77,9 +77,9 @@ class ProcessTest {
         //ProcessMerger.assignRelations
 
         //then
-        assertThat(relation1.getProcesses()).contains(process.getFullyQualifiedIdentifier());
-        assertThat(relation2.getProcesses()).contains(process.getFullyQualifiedIdentifier());
-        assertThat(relation3.getProcesses()).doesNotContain(process.getFullyQualifiedIdentifier());
+        assertThat(relation1.getProcesses()).containsValue(process.getFullyQualifiedIdentifier());
+        assertThat(relation2.getProcesses()).containsValue(process.getFullyQualifiedIdentifier());
+        assertThat(relation3.getProcesses()).doesNotContainValue(process.getFullyQualifiedIdentifier());
     }
 
     Process getProcess(List<Branch> branches) {

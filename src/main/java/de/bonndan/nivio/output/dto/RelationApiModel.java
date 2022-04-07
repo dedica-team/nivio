@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.net.URI;
+import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RelationApiModel extends ComponentApiModel {
@@ -24,11 +25,14 @@ public class RelationApiModel extends ComponentApiModel {
 
     private final String relationName;
 
+    private final Map<String, URI> processes;
+
     public RelationApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
         super(relation);
         source = relation.getSource().getFullyQualifiedIdentifier();
         target = relation.getTarget().getFullyQualifiedIdentifier();
         format = relation.getFormat();
+        processes = relation.getProcesses();
 
         if (relation.getSource().equals(owner)) {
             relationName = !StringUtils.hasLength(relation.getTarget().getName()) ?
@@ -60,5 +64,9 @@ public class RelationApiModel extends ComponentApiModel {
 
     public String getDirection() {
         return direction;
+    }
+
+    public Map<String, URI> getProcesses() {
+        return processes;
     }
 }

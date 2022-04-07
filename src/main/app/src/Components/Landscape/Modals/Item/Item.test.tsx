@@ -17,7 +17,8 @@ describe('<Item />', () => {
     direction: 'outbound',
     labels: {},
     type: 'PROVIDER',
-    fullyQualifiedIdentifier: ''
+    fullyQualifiedIdentifier: '',
+    processes: { }
   };
   const useItem: IItem = {
     identifier: 'foo',
