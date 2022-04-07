@@ -141,14 +141,6 @@ class SVGRelationTest {
     }
 
     @Test
-    @DisplayName("The dataflow marker is not null")
-    void marker() {
-        ContainerTag containerTag = SVGRelation.dataflowMarker();
-        assertThat(containerTag).isNotNull();
-        assertThat(containerTag.getTagName()).isEqualTo("marker");
-    }
-
-    @Test
     @DisplayName("Is translated based on port count")
     void hasTranslation() {
         Relation itemRelationItem = new Relation(foo, bar, "test", "test", RelationType.PROVIDER);

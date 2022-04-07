@@ -101,7 +101,6 @@ public class SVGDocument extends Component {
             groupAreas.add(area);
         });
 
-        defs.add(SVGRelation.dataflowMarker()); //TODO check if needed
         Map<Relation, SVGRelation> relations = getRelations(layouted);
 
         /*

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
@@ -30,7 +29,6 @@ class SVGRelation extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGRelation.class);
 
-    public static final String MARKER_ID = "arrow";
     public static final int BASIC_STROKE_WIDTH = 20;
 
     private final HexPath hexPath;
@@ -195,33 +193,8 @@ class SVGRelation extends Component {
                 3
         ).render();
 
-
         return g(shadow, shadowMarker);
     }
-
-    /**
-     * Create a group-colored marker.
-     *
-     * @return a reusable marker for data flow paths
-     */
-    public static ContainerTag dataflowMarker() {
-        ContainerTag path = SvgTagCreator.path().attr("d", "M 0 0 L 10 5 L 0 10 z")
-                .attr("fill", "grey");
-
-        return SvgTagCreator.marker()
-                .attr("id", MARKER_ID)
-                .attr("markerWidth", DEFAULT_ICON_SIZE)
-                .attr("markerHeight", DEFAULT_ICON_SIZE)
-                .attr("refX", 14)
-                .attr("refY", 5)
-                .attr("orient", "auto")
-                .attr("viewBox", "0 0 10 10")
-                .attr(SVGAttr.STROKE, "context-stroke")
-                .attr("markerUnits", "userSpaceOnUse")
-                .with(path)
-                ;
-    }
-
 
 }
 
