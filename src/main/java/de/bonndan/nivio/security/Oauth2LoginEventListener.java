@@ -3,15 +3,17 @@ package de.bonndan.nivio.security;
 import de.bonndan.nivio.appuser.AppUser;
 import de.bonndan.nivio.appuser.AppUserRepository;
 import de.bonndan.nivio.appuser.AppUserRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static io.swagger.v3.oas.integration.StringOpenApiConfigurationLoader.LOGGER;
-
 @Service
 public class Oauth2LoginEventListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Oauth2LoginEventListener.class);
 
     private final AppUserRepository appUserRepository;
 

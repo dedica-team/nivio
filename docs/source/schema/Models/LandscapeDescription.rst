@@ -53,6 +53,11 @@ LandscapeDescription
      - Immutable unique identifier. Maybe use an URN.
      - **required**, defaults to null
      - null
+   * - isPartial
+     - Boolean
+     - 
+     - optional, defaults to null
+     - null
    * - items
      - List<ItemDescription>
      - List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.
