@@ -41,6 +41,6 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
    * - layoutConfig
      - LayoutConfig<LayoutConfig>
      - 
-     - optional, defaults to null
+     - **required**, defaults to null
      - null
 
