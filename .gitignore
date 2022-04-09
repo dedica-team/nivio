@@ -11,3 +11,4 @@ src/test/resources/example/*_debug.svg
 src/main/resources/static/icons/svg/*.svg
 /src/main/app/debug.log
 /src/test/dump/
+/.run/

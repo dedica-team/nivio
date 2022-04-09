@@ -33,6 +33,11 @@ A group of items. Could be used as bounded context, for instance.
      - A brief description.
      - optional, defaults to null
      - null
+   * - environment
+     - String
+     - 
+     - optional, defaults to null
+     - null
    * - identifier
      - String
      - A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.

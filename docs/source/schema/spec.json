@@ -13,12 +13,10 @@
           "mapStylesheet" : {
             "type" : "string",
             "description" : "A resolvable URL pointing to a CSS stylesheet. This stylesheet is included in the generated SVG map. Use is to style the appearance of the map.",
-            "example" : "https://acme.com/css/acme.css",
-            "exampleSetFlag" : true
+            "example" : "https://acme.com/css/acme.css"
           }
         },
-        "description" : "Map branding (tweaks visuals)",
-        "exampleSetFlag" : false
+        "description" : "Map branding (tweaks visuals)"
       },
       "GroupDescription" : {
         "required" : [ "identifier" ],
@@ -27,45 +25,41 @@
           "color" : {
             "type" : "string",
             "description" : "The HTML (hexcode only!) color used to draw the group and its items. If no color is given, one is computed.",
-            "example" : "05ffaa",
-            "exampleSetFlag" : true
+            "example" : "05ffaa"
           },
           "contact" : {
             "type" : "string",
-            "description" : "A contact method, preferably email.",
-            "exampleSetFlag" : false
+            "description" : "A contact method, preferably email."
           },
           "contains" : {
             "type" : "array",
             "description" : "A list of item identifiers or SQL-like queries to easily assign items to this group.",
             "example" : "identifier LIKE 'DB1'",
-            "exampleSetFlag" : true,
             "items" : {
               "type" : "string",
               "description" : "A list of item identifiers or SQL-like queries to easily assign items to this group.",
-              "example" : "identifier LIKE 'DB1'",
-              "exampleSetFlag" : true
+              "example" : "identifier LIKE 'DB1'"
             }
           },
           "description" : {
             "type" : "string",
-            "description" : "A brief description.",
-            "exampleSetFlag" : false
+            "description" : "A brief description."
+          },
+          "environment" : {
+            "type" : "string",
+            "writeOnly" : true
           },
           "identifier" : {
             "type" : "string",
             "description" : "A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.",
-            "example" : "shipping",
-            "exampleSetFlag" : true
+            "example" : "shipping"
           },
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "exampleSetFlag" : false
+              "type" : "string"
             },
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "links" : {
             "type" : "object",
@@ -73,73 +67,58 @@
               "$ref" : "#/components/schemas/Link"
             },
             "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio",
-            "exampleSetFlag" : true
+            "example" : "github: https://github.com/dedica-team/nivio"
           },
           "name" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "owner" : {
             "type" : "string",
-            "description" : "The business owner of the group.",
-            "exampleSetFlag" : false
+            "description" : "The business owner of the group."
           }
         },
-        "description" : "A group of items. Could be used as bounded context, for instance.",
-        "exampleSetFlag" : false
+        "description" : "A group of items. Could be used as bounded context, for instance."
       },
       "InterfaceDescription" : {
         "type" : "object",
         "properties" : {
           "deprecated" : {
-            "type" : "boolean",
-            "exampleSetFlag" : false
+            "type" : "boolean"
           },
           "description" : {
             "type" : "string",
-            "description" : "A brief description.",
-            "exampleSetFlag" : false
+            "description" : "A brief description."
           },
           "format" : {
             "type" : "string",
-            "description" : "The payload format.",
-            "exampleSetFlag" : false
+            "description" : "The payload format."
           },
           "name" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "parameters" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "path" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "payload" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "protection" : {
             "type" : "string",
-            "description" : "A description of the interface protection method.",
-            "exampleSetFlag" : false
+            "description" : "A description of the interface protection method."
           },
           "summary" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "url" : {
             "type" : "string",
             "description" : "A URL describing the endpoint.",
-            "format" : "url",
-            "exampleSetFlag" : false
+            "format" : "url"
           }
         },
-        "description" : "Describes a low-level interface of an item.",
-        "exampleSetFlag" : false
+        "description" : "Describes a low-level interface of an item."
       },
       "ItemDescription" : {
         "required" : [ "identifier" ],
@@ -147,61 +126,51 @@
         "properties" : {
           "address" : {
             "type" : "string",
-            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints.",
-            "exampleSetFlag" : false
+            "description" : "The technical address of the item (should be an URI). Taken into account when matching relation endpoints."
           },
           "color" : {
             "type" : "string",
             "description" : "Overrides the group color. Use an HTML hex color code without the leading hash.",
-            "example" : "4400FF",
-            "exampleSetFlag" : true
+            "example" : "4400FF"
           },
           "contact" : {
             "type" : "string",
             "description" : "The primary way to contact a responsible person or team. Preferably use an email address.",
-            "example" : "johnson@acme.com",
-            "exampleSetFlag" : true
+            "example" : "johnson@acme.com"
           },
           "description" : {
             "type" : "string",
-            "description" : "A brief description.",
-            "exampleSetFlag" : false
+            "description" : "A brief description."
           },
           "frameworks" : {
             "type" : "object",
             "additionalProperties" : {
               "type" : "string",
               "description" : "The parts used to create the item. Usually refers to technical frameworks.",
-              "example" : "java: 8",
-              "exampleSetFlag" : true
+              "example" : "java: 8"
             },
             "description" : "The parts used to create the item. Usually refers to technical frameworks.",
             "writeOnly" : true,
-            "example" : "java: 8",
-            "exampleSetFlag" : true
+            "example" : "java: 8"
           },
           "group" : {
             "type" : "string",
             "description" : "The identifier of the group this item belongs in. Every item requires to be member of a group internally, so if nothing is given, the value is set to its layer.",
-            "example" : "shipping",
-            "exampleSetFlag" : true
+            "example" : "shipping"
           },
           "icon" : {
             "type" : "string",
-            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work).",
-            "exampleSetFlag" : false
+            "description" : "An icon name or URL to set the displayed map icon. The default icon set is https://materialdesignicons.com/ and all names can be used (aliases do not work)."
           },
           "identifier" : {
             "pattern" : "^[\\w][\\w.:_-]{0,255}$",
             "type" : "string",
-            "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches.",
-            "exampleSetFlag" : false
+            "description" : "Immutable unique identifier (maybe use an URN). Primary means to identify items in searches."
           },
           "interfaces" : {
             "uniqueItems" : true,
             "type" : "array",
             "description" : "A collection of low level interfaces. Can be used to describe HTTP API endpoints for instance.",
-            "exampleSetFlag" : false,
             "items" : {
               "$ref" : "#/components/schemas/InterfaceDescription"
             }
@@ -209,23 +178,19 @@
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "exampleSetFlag" : false
+              "type" : "string"
             },
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "layer" : {
             "type" : "string",
             "description" : "The technical layer",
-            "example" : "infrastructure",
-            "exampleSetFlag" : true
+            "example" : "infrastructure"
           },
           "lifecycle" : {
             "type" : "string",
             "description" : "The lifecycle state of an item.",
             "writeOnly" : true,
-            "exampleSetFlag" : false,
             "enum" : [ "PLANNED", "INTEGRATION", "TEST", "PRODUCTION", "END_OF_LIFE", "EOL" ]
           },
           "links" : {
@@ -234,82 +199,67 @@
               "$ref" : "#/components/schemas/Link"
             },
             "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio",
-            "exampleSetFlag" : true
+            "example" : "github: https://github.com/dedica-team/nivio"
           },
           "name" : {
             "type" : "string",
             "description" : "A human readable name/title. The name is considered when items are searched.",
-            "example" : "my beautiful service",
-            "exampleSetFlag" : true
+            "example" : "my beautiful service"
           },
           "owner" : {
             "type" : "string",
             "description" : "The business owner of the item. Preferably use an email address.",
-            "example" : "johnson@acme.com",
-            "exampleSetFlag" : true
+            "example" : "johnson@acme.com"
           },
           "providedBy" : {
             "type" : "array",
             "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
             "example" : "shipping-mysqldb",
-            "exampleSetFlag" : true,
             "items" : {
               "type" : "string",
               "description" : "A collection of identifiers which are providers for this item (i.e. hard dependencies that are required). This is a convenience field to build relations.",
-              "example" : "shipping-mysqldb",
-              "exampleSetFlag" : true
+              "example" : "shipping-mysqldb"
             }
           },
           "status" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
             "writeOnly" : true,
-            "exampleSetFlag" : false,
             "items" : {
               "type" : "object",
               "additionalProperties" : {
                 "type" : "string",
-                "description" : "A list of statuses that works like hardcoded KPIs.",
-                "exampleSetFlag" : false
+                "description" : "A list of statuses that works like hardcoded KPIs."
               },
-              "description" : "A list of statuses that works like hardcoded KPIs.",
-              "exampleSetFlag" : false
+              "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
           "statuses" : {
             "type" : "array",
             "description" : "A list of statuses that works like hardcoded KPIs.",
             "writeOnly" : true,
-            "exampleSetFlag" : false,
             "items" : {
               "type" : "object",
               "additionalProperties" : {
                 "type" : "string",
-                "description" : "A list of statuses that works like hardcoded KPIs.",
-                "exampleSetFlag" : false
+                "description" : "A list of statuses that works like hardcoded KPIs."
               },
-              "description" : "A list of statuses that works like hardcoded KPIs.",
-              "exampleSetFlag" : false
+              "description" : "A list of statuses that works like hardcoded KPIs."
             }
           },
           "tags" : {
             "type" : "array",
-            "exampleSetFlag" : false,
             "items" : {
-              "type" : "string",
-              "exampleSetFlag" : false
+              "type" : "string"
             }
           },
           "type" : {
             "type" : "string",
             "description" : "The type of the item. A string describing its nature. If no icon is set, the type determines the displayed icon.",
-            "example" : "service|database|volume",
-            "exampleSetFlag" : true
+            "example" : "service|database|volume"
           }
         },
-        "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
-        "exampleSetFlag" : false
+        "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc."
       },
       "KPIConfig" : {
         "required" : [ "label" ],
@@ -317,55 +267,47 @@
         "properties" : {
           "description" : {
             "type" : "string",
-            "description" : "Description of the purpose of the KPI",
-            "exampleSetFlag" : false
+            "description" : "Description of the purpose of the KPI"
           },
           "enabled" : {
             "type" : "boolean",
-            "description" : "A flag indicating that the KPI is active. Can be used to disable default KPIs.",
-            "exampleSetFlag" : false
+            "description" : "A flag indicating that the KPI is active. Can be used to disable default KPIs."
           },
           "label" : {
             "type" : "string",
             "description" : "Key of the label to evaluate",
-            "example" : "costs",
-            "exampleSetFlag" : true
+            "example" : "costs"
           },
           "matches" : {
             "type" : "object",
             "additionalProperties" : {
               "type" : "string",
               "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
-              "example" : "RED: BAD;err.*",
-              "exampleSetFlag" : true
+              "example" : "RED: BAD;err.*"
             },
             "description" : "A map of string based matchers that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate matchers.",
-            "example" : "RED: BAD;err.*",
-            "exampleSetFlag" : true
+            "example" : "RED: BAD;err.*"
           },
           "messageTemplate" : {
             "type" : "string",
             "description" : "Template for the displayed message, containing a placeholder for the assessed value '%s",
-            "example" : "The current value is: %s",
-            "exampleSetFlag" : true
+            "example" : "The current value is: %s"
           },
           "ranges" : {
             "type" : "object",
             "additionalProperties" : {
               "type" : "string",
               "description" : "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
-              "example" : "GREEN: 0;99.999999",
-              "exampleSetFlag" : true
+              "example" : "GREEN: 0;99.999999"
             },
             "description" : "A map of number based ranges that determine the resulting status (GREEN|YELLOW|ORANGE|RED|BROWN). Use a semicolon to separate upper and lower bounds. Tries to evaluate label values as numbers.",
-            "example" : "GREEN: 0;99.999999",
-            "exampleSetFlag" : true
+            "example" : "GREEN: 0;99.999999"
           }
         },
-        "description" : "The configuration of landscape specific key performance indicators that derive status information from landscape components. Usually the KPIs work on labels",
-        "exampleSetFlag" : false
+        "description" : "The configuration of landscape specific key performance indicators that derive status information from landscape components. Usually the KPIs work on labels"
       },
       "LandscapeConfig" : {
+        "required" : [ "layoutConfig" ],
         "type" : "object",
         "properties" : {
           "branding" : {
@@ -373,19 +315,16 @@
           },
           "greedy" : {
             "type" : "boolean",
-            "description" : "Flag that enables instant creation items based relation targets that cannot be found in the sources.",
-            "exampleSetFlag" : false
+            "description" : "Flag that enables instant creation items based relation targets that cannot be found in the sources."
           },
           "groupBlacklist" : {
             "type" : "array",
             "description" : "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
             "example" : ".*infra.*",
-            "exampleSetFlag" : true,
             "items" : {
               "type" : "string",
               "description" : "Names or patterns of groups that should be excluded from the landscape. Used to improve automatic scanning results.",
-              "example" : ".*infra.*",
-              "exampleSetFlag" : true
+              "example" : ".*infra.*"
             }
           },
           "kpis" : {
@@ -393,27 +332,23 @@
             "additionalProperties" : {
               "$ref" : "#/components/schemas/KPIConfig"
             },
-            "description" : "Key performance indicator configs. Each KPI must have a unique identifier.",
-            "exampleSetFlag" : false
+            "description" : "Key performance indicator configs. Each KPI must have a unique identifier."
           },
           "labelBlacklist" : {
             "type" : "array",
             "description" : "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
             "example" : ".*COMPOSITION.*",
-            "exampleSetFlag" : true,
             "items" : {
               "type" : "string",
               "description" : "Names or patterns of labels that should be ignored. Used to improve automatic scanning results.",
-              "example" : ".*COMPOSITION.*",
-              "exampleSetFlag" : true
+              "example" : ".*COMPOSITION.*"
             }
           },
           "layoutConfig" : {
             "$ref" : "#/components/schemas/LayoutConfig"
           }
         },
-        "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks.",
-        "exampleSetFlag" : false
+        "description" : "Configuration of key performance indicators (i.e. status indicators) and layouting tweaks."
       },
       "LandscapeDescription" : {
         "required" : [ "identifier", "name" ],
@@ -423,55 +358,49 @@
             "type" : "object",
             "additionalProperties" : {
               "type" : "array",
-              "exampleSetFlag" : false,
               "items" : {
-                "type" : "string",
-                "exampleSetFlag" : false
+                "type" : "string"
               }
-            },
-            "exampleSetFlag" : false
+            }
           },
           "color" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           },
           "config" : {
             "$ref" : "#/components/schemas/LandscapeConfig"
           },
           "contact" : {
             "type" : "string",
-            "description" : "Primary contact method, preferably an email address.",
-            "exampleSetFlag" : false
+            "description" : "Primary contact method, preferably an email address."
           },
           "description" : {
             "type" : "string",
-            "description" : "A brief description of the landscape.",
-            "exampleSetFlag" : false
+            "description" : "A brief description of the landscape."
           },
           "groups" : {
             "type" : "object",
             "additionalProperties" : {
               "$ref" : "#/components/schemas/GroupDescription"
             },
-            "description" : "Description of item groups (optional, can also be given in sources).",
-            "exampleSetFlag" : false
+            "description" : "Description of item groups (optional, can also be given in sources)."
           },
           "icon" : {
             "type" : "string",
-            "description" : "An icon or logo url",
-            "exampleSetFlag" : false
+            "description" : "An icon or logo url"
           },
           "identifier" : {
             "pattern" : "^[\\w][\\w.:_-]{0,255}$",
             "type" : "string",
-            "description" : "Immutable unique identifier. Maybe use an URN.",
-            "exampleSetFlag" : false
+            "description" : "Immutable unique identifier. Maybe use an URN."
+          },
+          "isPartial" : {
+            "type" : "boolean",
+            "writeOnly" : true
           },
           "items" : {
             "type" : "array",
             "description" : "List of configuration sources. Handled in the given order, latter extend/overwrite earlier values like items etc.",
             "writeOnly" : true,
-            "exampleSetFlag" : false,
             "items" : {
               "$ref" : "#/components/schemas/ItemDescription"
             }
@@ -479,11 +408,9 @@
           "labels" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string",
-              "exampleSetFlag" : false
+              "type" : "string"
             },
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "links" : {
             "type" : "object",
@@ -491,36 +418,31 @@
               "$ref" : "#/components/schemas/Link"
             },
             "description" : "Key-value pairs of related links. Some keys like 'github' cause that the endpoint data is parsed and added to to corresponding landscape component.",
-            "example" : "github: https://github.com/dedica-team/nivio",
-            "exampleSetFlag" : true
+            "example" : "github: https://github.com/dedica-team/nivio"
           },
           "name" : {
             "type" : "string",
-            "description" : "Human readable name.",
-            "exampleSetFlag" : false
+            "description" : "Human readable name."
           },
           "owner" : {
             "type" : "string",
-            "description" : "The business owner (person or team), preferably an email address.",
-            "exampleSetFlag" : false
+            "description" : "The business owner (person or team), preferably an email address."
           },
           "partial" : {
             "type" : "boolean",
-            "description" : "marks that the landscape is not complete, but an update",
-            "exampleSetFlag" : false
+            "description" : "marks that the landscape is not complete, but an update"
           },
           "templates" : {
             "type" : "object",
             "additionalProperties" : {
               "$ref" : "#/components/schemas/ItemDescription"
             },
-            "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items.",
-            "exampleSetFlag" : false
+            "description" : "Item descriptions to be used as templates. All values except identifier and name will be applied to the assigned items."
           }
-        },
-        "exampleSetFlag" : false
+        }
       },
       "LayoutConfig" : {
+        "required" : [ "groupLayoutInitialTemp", "groupMaxDistanceLimit", "groupMinDistanceLimit", "itemLayoutInitialTemp", "itemMaxDistanceLimit", "itemMinDistanceLimit" ],
         "type" : "object",
         "properties" : {
           "groupLayoutInitialTemp" : {
@@ -528,7 +450,6 @@
             "description" : "The initial temperature for layouts of groups.",
             "format" : "int32",
             "example" : 900,
-            "exampleSetFlag" : true,
             "default" : 900
           },
           "groupMaxDistanceLimit" : {
@@ -536,7 +457,6 @@
             "description" : "A maximum distance between groups up to where forces are applied.",
             "format" : "int32",
             "example" : 1000,
-            "exampleSetFlag" : true,
             "default" : 1000
           },
           "groupMinDistanceLimit" : {
@@ -544,7 +464,6 @@
             "description" : "The minimum distance between groups.",
             "format" : "int32",
             "example" : 50,
-            "exampleSetFlag" : true,
             "default" : 50
           },
           "itemLayoutInitialTemp" : {
@@ -552,7 +471,6 @@
             "description" : "The initial temperature for layouts of items within groups.",
             "format" : "int32",
             "example" : 300,
-            "exampleSetFlag" : true,
             "default" : 300
           },
           "itemMaxDistanceLimit" : {
@@ -560,7 +478,6 @@
             "description" : "A maximum distance between items up to where forces are applied.",
             "format" : "int32",
             "example" : 350,
-            "exampleSetFlag" : true,
             "default" : 350
           },
           "itemMinDistanceLimit" : {
@@ -568,12 +485,10 @@
             "description" : "The minimum distance between items.",
             "format" : "int32",
             "example" : 100,
-            "exampleSetFlag" : true,
             "default" : 100
           }
         },
-        "description" : "Layout configuration for landscapes with unusual number or ratios of items, groups and relations.",
-        "exampleSetFlag" : false
+        "description" : "Layout configuration for landscapes with unusual number or ratios of items, groups and relations."
       },
       "Link" : {
         "required" : [ "href" ],
@@ -581,68 +496,55 @@
         "properties" : {
           "basicAuthPassword" : {
             "type" : "string",
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "basicAuthUsername" : {
             "type" : "string",
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "deprecation" : {
             "type" : "string",
-            "description" : "deprecation info (typically used in OpenAPI specs)",
-            "exampleSetFlag" : false
+            "description" : "deprecation info (typically used in OpenAPI specs)"
           },
           "headerTokenName" : {
             "type" : "string",
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "headerTokenValue" : {
             "type" : "string",
-            "writeOnly" : true,
-            "exampleSetFlag" : false
+            "writeOnly" : true
           },
           "href" : {
             "type" : "string",
             "description" : "The link target.",
-            "format" : "url",
-            "exampleSetFlag" : false
+            "format" : "url"
           },
           "hreflang" : {
             "type" : "string",
-            "description" : "hateoas language",
-            "exampleSetFlag" : false
+            "description" : "hateoas language"
           },
           "media" : {
             "type" : "string",
-            "description" : "hateoas media type",
-            "exampleSetFlag" : false
+            "description" : "hateoas media type"
           },
           "name" : {
             "type" : "string",
-            "description" : "HateOAS / OpenAPI name",
-            "exampleSetFlag" : false
+            "description" : "HateOAS / OpenAPI name"
           },
           "rel" : {
             "type" : "string",
-            "description" : "hateoas relation type",
-            "exampleSetFlag" : false
+            "description" : "hateoas relation type"
           },
           "title" : {
             "type" : "string",
-            "description" : "hateoas title",
-            "exampleSetFlag" : false
+            "description" : "hateoas title"
           },
           "type" : {
-            "type" : "string",
-            "exampleSetFlag" : false
+            "type" : "string"
           }
         },
         "description" : "A link to an external resource. Contains a href (URL) plus various attributes for authentication and/or hateoas.",
-        "example" : "github: https://github.com/dedica-team/nivio",
-        "exampleSetFlag" : true
+        "example" : "github: https://github.com/dedica-team/nivio"
       }
     }
   }
