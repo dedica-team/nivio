@@ -40,13 +40,14 @@ it('should render mapRelation component', () => {
     direction: 'outbound',
     name: 'bar',
     labels: {},
-    fullyQualifiedIdentifier: 'relation://' + source.fullyQualifiedIdentifier + '?to=' + target.fullyQualifiedIdentifier,
+    fullyQualifiedIdentifier:
+      'relation://' + source.fullyQualifiedIdentifier + '?to=' + target.fullyQualifiedIdentifier,
     processes: {
-      'foo': 'process//a/foo'
-    }
+      foo: 'process//a/foo',
+    },
   };
   const { getByText, getByTestId } = render(
-    <MapRelation source={source} target={target} relation={relation} />
+    <MapRelation source={source} target={target} relation={relation} setSidebarContent={() => {}} />
   );
   expect(getByText('fooName')).toBeInTheDocument();
   expect(getByText('barName')).toBeInTheDocument();

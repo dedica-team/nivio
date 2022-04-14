@@ -16,7 +16,7 @@ import { withBasePath } from '../../../utils/API/BasePath';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
-import { getGroup, getItem } from '../Utils/utils';
+import { getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
@@ -133,10 +133,23 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     setVisualFocus(fqi);
 
     if (fqi && landscapeContext.landscape) {
-      let group = getGroup(landscapeContext.landscape, fqi);
+      let group = landscapeContext.getGroup(fqi);
       if (group) {
         // @ts-ignore
         setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
+      }
+    }
+  };
+
+  const onProcessClick = (e: MouseEvent<HTMLElement>) => {
+    const fqi = e.currentTarget.getAttribute('data-identifier');
+    setVisualFocus(fqi);
+
+    if (fqi && landscapeContext.landscape) {
+      let process = landscapeContext.getProcess(fqi);
+      if (process) {
+        // @ts-ignore
+        setSidebarContent(<Group group={process} key={`process_${fqi}_${Math.random()}`} />);
       }
     }
   };
@@ -186,6 +199,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       let relation = source.relations[fqi];
       const mapRelation = (
         <MapRelation
+          setSidebarContent={setSidebarContent}
           relation={relation}
           source={source}
           target={target}
@@ -365,6 +379,11 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
                   selector='.groupArea'
                   onMouseUp={onGroupClick}
                   onTouchEnd={onGroupClick}
+                />
+                <SvgLoaderSelectElement
+                  selector='.process'
+                  onMouseUp={onProcessClick}
+                  onTouchEnd={onProcessClick}
                 />
               </>
             }

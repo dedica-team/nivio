@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
+import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -164,7 +165,7 @@ class SVGRelation extends Component {
         ).render();
     }
 
-    public DomContent renderAsProcessBranch(@NonNull final String processColor) {
+    public DomContent renderAsProcessBranch(@NonNull final URI fqi, @NonNull final String processColor) {
 
         final var points = hexPath.getPoints().stream()
                 .map(pathElement -> pathElement.shifted(offset))
@@ -184,14 +185,18 @@ class SVGRelation extends Component {
                 .attr("d", points)
                 .attr(SVGAttr.STROKE, processColor)
                 .attr(SVGAttr.FILL, "transparent")
-                .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2));
+                .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2))
+                .attr(SVGAttr.CLASS, "process")
+                .attr(SVGAttr.DATA_IDENTIFIER, fqi);
 
         ContainerTag shadowMarker = new SvgRelationEndMarker(
                 endPoint,
                 null,
                 processColor,
                 3
-        ).render();
+        ).render()
+                .attr(SVGAttr.CLASS, "process")
+                .attr(SVGAttr.DATA_IDENTIFIER, fqi);
 
         return g(shadow, shadowMarker);
     }

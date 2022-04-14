@@ -10,6 +10,7 @@ it('should render log component', () => {
     contact: '',
     description: '',
     owner: '',
+    processes: [],
     groups: []
   };
   const { getByText } = render(<Log landscape={landscape} />);

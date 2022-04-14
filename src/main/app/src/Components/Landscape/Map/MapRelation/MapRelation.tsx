@@ -20,10 +20,12 @@ import { Close, InfoOutlined } from '@material-ui/icons';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { getLabels } from '../../Utils/utils';
 import MappedString from '../../Utils/MappedString';
+import Process from '../../Modals/Process/Process';
 
 interface Props {
   source: IItem;
   target: IItem;
+  setSidebarContent: Function;
   relation: IRelation;
 }
 
@@ -32,7 +34,7 @@ interface Props {
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
+const MapRelation: React.FC<Props> = ({ source, target, relation, setSidebarContent }) => {
   const classes = componentStyles();
   const theme = useTheme();
 
@@ -49,7 +51,14 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const processes: ReactElement[] = [];
   Object.keys(relation.processes).forEach((key) => {
     processes.push(
-      <Button onClick={() => locateFunctionContext.locateFunction(relation.processes[key])} key={key}>
+      <Button
+        onClick={() => {
+          const process = landscapeContext.getProcess(relation.processes[key]);
+          if (process) setSidebarContent(<Process process={process} />);
+          else console.error(`Process not found: ${key}`);
+        }}
+        key={key}
+      >
         {key}
       </Button>
     );
@@ -75,7 +84,9 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
         }
       />
       <CardContent>
-        <Typography variant={'h6'}><MappedString mapKey={'Relation'} /></Typography>
+        <Typography variant={'h6'}>
+          <MappedString mapKey={'Relation'} />
+        </Typography>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
           <TableBody>
             <TableRow key={'Type'}>

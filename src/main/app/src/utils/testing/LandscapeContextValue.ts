@@ -1,4 +1,11 @@
-import { IAssessment, IGroup, IItem, ILandscape, INotificationMessage } from '../../interfaces';
+import {
+  IAssessment,
+  IGroup,
+  IItem,
+  ILandscape,
+  INotificationMessage,
+  IProcess,
+} from '../../interfaces';
 import { LandscapeContextType } from '../../Context/LandscapeContext';
 
 const items: IItem[] = [
@@ -19,6 +26,20 @@ const items: IItem[] = [
   },
 ];
 
+const processes: IProcess[] = [
+  {
+    fullyQualifiedIdentifier: 'test/processA',
+    name: 'A Process',
+    identifier: 'groupA',
+    icon: '',
+    labels: {},
+    tags: [],
+    type: '',
+    contact: 'marvin',
+    owner: 'daniel',
+  },
+];
+
 const groups: IGroup[] = [
   {
     fullyQualifiedIdentifier: 'test/groupA',
@@ -34,6 +55,7 @@ const landscape: ILandscape = {
   identifier: 'test',
   description: 'testIdentifier',
   groups: groups,
+  processes: processes,
   lastUpdate: 'gestern',
   contact: 'marvin',
   owner: 'daniel',
@@ -121,6 +143,12 @@ const landscapeContextValue: LandscapeContextType = {
     return assessments.results[fqi].find((assessmentResult) => assessmentResult.summary) || null;
   },
   mapChanges: null,
+  getProcess: () => {
+    return null;
+  },
+  getGroup: () => {
+    return null;
+  },
 };
 
 export default landscapeContextValue;
