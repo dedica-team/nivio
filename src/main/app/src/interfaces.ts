@@ -96,7 +96,6 @@ export interface IProcess {
   _links?: ILinks;
 }
 
-
 export interface IGroup {
   owner?: string;
   color?: string;
