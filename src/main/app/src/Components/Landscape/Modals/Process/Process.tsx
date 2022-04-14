@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { LocateFunctionContext } from '../../../../Context/LocateFunctionContext';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { Close } from '@material-ui/icons';
+import Avatar from "@material-ui/core/Avatar";
 
 interface Props {
   process: IProcess;
@@ -18,7 +19,7 @@ interface Props {
 }
 
 /**
- * Returns a chosen group if information is available
+ * Returns a chosen process if information is available
  */
 const Process: React.FC<Props> = ({ process, sticky }) => {
   const componentClasses = componentStyles();
@@ -39,10 +40,23 @@ const Process: React.FC<Props> = ({ process, sticky }) => {
               onClick={() => locateFunctionContext.locateFunction(process.fullyQualifiedIdentifier)}
               size={'small'}
               title={`Click to locate process ${process.identifier}`}
-            />
-            &nbsp;{process.name || process.identifier}
+            >
+              <Avatar
+                className={componentClasses.groupAvatar}
+                title={'Click to highlight the process.'}
+                style={{
+                  backgroundColor: '#' + process.color,
+                  paddingLeft: 1.5,
+                }}
+                src={process.icon}
+              >
+                {process.identifier[0].toUpperCase()}
+              </Avatar>
+            </IconButton>
+            {process.name?.length || process.identifier}
           </React.Fragment>
         }
+        subheader={'Process'}
         className={componentClasses.cardHeader}
         action={
           <React.Fragment>
@@ -61,16 +75,16 @@ const Process: React.FC<Props> = ({ process, sticky }) => {
       />
       <CardContent>
         <div className='information'>
-          <span className='description group'>
+          <span className='description'>
             {process?.description ? `${process?.description}` : ''}
           </span>
           {process?.contact ? (
-            <span className='contact group'>
+            <span className='contact'>
               <span className='label'>Contact: </span>
               {process?.contact || 'No Contact provided'}
             </span>
           ) : null}
-          <div className='owner group'>
+          <div className='owner'>
             <span className='label'>Owner: </span>
             {process?.owner || 'No Owner provided'}
           </div>

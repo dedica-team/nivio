@@ -50,6 +50,7 @@ public class SVGProcess extends Component {
 
         return g()
                 .attr(SVGAttr.CLASS, String.format("process %s", VISUAL_FOCUS_UNSELECTED))
+                .attr("id", fqi.toString())
                 .attr("data-identifier", fqi.toString())
                 .attr("data-process", identifier)
                 .with(svgProcessParts)

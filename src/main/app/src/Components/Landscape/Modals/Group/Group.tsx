@@ -76,7 +76,7 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
             <IconButton
               onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
               size={'small'}
-              title={`Click to local group ${group.identifier}`}
+              title={`Click to locate group ${group.identifier}`}
             >
               <GroupAvatar group={group} statusColor={assessment ? assessment.status : ''} />
             </IconButton>

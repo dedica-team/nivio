@@ -72,6 +72,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation, setSidebarCont
       <CardHeader
         title={title}
         className={classes.cardHeader}
+        subheader={'Relation'}
         action={
           <IconButton
             size={'small'}
@@ -84,9 +85,12 @@ const MapRelation: React.FC<Props> = ({ source, target, relation, setSidebarCont
         }
       />
       <CardContent>
-        <Typography variant={'h6'}>
-          <MappedString mapKey={'Relation'} />
-        </Typography>
+        <div className='information'>
+          <span className='description'>
+            {relation?.description ? `${relation?.description}` : ''}
+          </span>
+          <br/>
+        </div>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
           <TableBody>
             <TableRow key={'Type'}>
@@ -110,11 +114,6 @@ const MapRelation: React.FC<Props> = ({ source, target, relation, setSidebarCont
             <TableRow key={'format'}>
               <TableCell style={{ width: '33%' }}>Format</TableCell>
               <TableCell>{relation.format || '-'}</TableCell>
-            </TableRow>
-
-            <TableRow key={'desc'}>
-              <TableCell style={{ width: '33%' }}>Description</TableCell>
-              <TableCell>{relation.description || '-'}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

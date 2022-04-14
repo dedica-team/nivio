@@ -18,6 +18,7 @@ import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
 import { getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
+import Process from '../Modals/Process/Process';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import IconButton from '@material-ui/core/IconButton';
@@ -92,16 +93,20 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
 
+  /**
+   * Function to locate and highlight the given element.
+   */
   const locateComponent = useCallback(
-    (fullyQualifiedItemIdentifier: string) => {
-      const element = document.getElementById(fullyQualifiedItemIdentifier);
+    (fullyQualifiedIdentifier: string) => {
+      const element = document.getElementById(fullyQualifiedIdentifier);
       if (element) {
+        if (visualFocus !== fullyQualifiedIdentifier) setVisualFocus(fullyQualifiedIdentifier);
+        setRenderWithTransition(true);
+        setHighlightElement(element);
         let dataX = Number(element.getAttribute('data-x'));
         let dataY = Number(element.getAttribute('data-y'));
         if (dataX && dataY && data) {
           setValue(setPointOnViewerCenter(value, dataX, dataY, 0.5));
-          setRenderWithTransition(true);
-          setHighlightElement(element);
           setIsZoomed(true);
         }
       }
@@ -149,7 +154,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       let process = landscapeContext.getProcess(fqi);
       if (process) {
         // @ts-ignore
-        setSidebarContent(<Group group={process} key={`process_${fqi}_${Math.random()}`} />);
+        setSidebarContent(<Process process={process} key={`process_${fqi}_${Math.random()}`} />);
       }
     }
   };
@@ -275,7 +280,8 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       el.classList.add('unselected');
     });
 
-    const current = document.querySelectorAll("[data-identifier='" + visualFocus + "']");
+    const current = document.querySelectorAll(`[data-identifier='${visualFocus}']`);
+    console.log(visualFocus, current);
     Array.from(current).forEach((vf) => {
       vf.classList.add('selected');
       vf.classList.remove('unselected');

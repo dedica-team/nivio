@@ -175,8 +175,9 @@ class SVGRelation extends Component {
         final BezierPath bezierPath = new BezierPath();
         bezierPath.parsePathString(points);
 
+        final int scale = 3;
         final var endPoint = bezierPath.angleAtEnd(
-                SvgRelationEndMarker.HALF_MARKER_SIZE * 2,
+                SvgRelationEndMarker.HALF_MARKER_SIZE * scale/2,
                 0,
                 0
         );
@@ -189,12 +190,7 @@ class SVGRelation extends Component {
                 .attr(SVGAttr.CLASS, "process")
                 .attr(SVGAttr.DATA_IDENTIFIER, fqi);
 
-        ContainerTag shadowMarker = new SvgRelationEndMarker(
-                endPoint,
-                null,
-                processColor,
-                3
-        ).render()
+        ContainerTag shadowMarker = new SvgRelationEndMarker(endPoint, null, processColor, scale).render()
                 .attr(SVGAttr.CLASS, "process")
                 .attr(SVGAttr.DATA_IDENTIFIER, fqi);
 
