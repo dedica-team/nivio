@@ -13,7 +13,7 @@
     "@types/dateformat": "^3.0.1",
     "@types/jest": "^26.0.24",
     "@types/node": "^14.18.12",
-    "@types/react": "^17.0.36",
+    "@types/react": "^17.0.41",
     "@types/react-dom": "^16.9.14",
     "@types/react-html-parser": "^2.0.2",
     "@types/react-router-dom": "^5.3.2",
