@@ -1,5 +1,6 @@
 package de.bonndan.nivio.security;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -20,18 +21,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final AuthConfigProperties authConfigProperties;
 
-    public CustomOAuth2UserService(AuthConfigProperties authConfigProperties) {
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public CustomOAuth2UserService(AuthConfigProperties authConfigProperties, ApplicationEventPublisher applicationEventPublisher) {
         this.authConfigProperties = authConfigProperties;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User user = super.loadUser(userRequest);
-        try {
-            return fromGitHubUser(user, authConfigProperties.getGithubAliasAttribute(), authConfigProperties.getGithubNameAttribute());
-        } catch (NullPointerException e) {
-            throw new OAuth2AuthenticationException(String.format("Failed to create custom user: %s", e.getMessage()));
-        }
+        CustomOAuth2User customOAuth2User = fromGitHubUser(user, authConfigProperties.getGithubAliasAttribute(), authConfigProperties.getGithubNameAttribute());
+        applicationEventPublisher.publishEvent(new OAuth2LoginEvent(customOAuth2User));
+        return customOAuth2User;
     }
 
     /**
@@ -46,30 +48,42 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                                   @Nullable final String aliasAttribute,
                                                   @Nullable final String nameAttribute
     ) {
-        var id = "";
+        var externalId = "";
         if (StringUtils.hasLength(nameAttribute)) {
-            id = String.valueOf(user.getAttribute("id") == null ? "" : user.getAttribute("id"));
+            final var id = user.getAttribute("id");
+            if (id == null) {
+                externalId = "";
+            } else {
+                externalId = String.valueOf(id);
+            }
         }
 
         var name = "";
         if (StringUtils.hasLength(nameAttribute)) {
             Object val = user.getAttribute(nameAttribute);
             if (val == null) {
-                Object login = Objects.requireNonNull(user.getAttribute("login"));
+                Object login = Objects.requireNonNull(user.getAttribute(aliasAttribute));
                 name = String.valueOf(login);
             } else {
                 name = String.valueOf(val);
             }
         }
 
+        var alias = "";
+        if (StringUtils.hasLength(aliasAttribute)) {
+            alias = Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("");
+        } else {
+            alias = "";
+        }
+
         return new CustomOAuth2User(
-                id,
-                StringUtils.hasLength(aliasAttribute) ? Optional.ofNullable((String) user.getAttribute(aliasAttribute)).orElse("") : "",
+                externalId,
+                alias,
                 name,
                 user.getAttributes(),
                 user.getAuthorities(),
-                user.getAttribute("avatar_url")
-        );
+                user.getAttribute("avatar_url"),
+                "github");
     }
 
 }

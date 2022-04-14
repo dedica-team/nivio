@@ -51,7 +51,7 @@ ItemDescription
    * - fullyQualifiedIdentifier
      - URI<URI>
      - 
-     - optional, defaults to null
+     - **required**, defaults to null
      - null
    * - group
      - String

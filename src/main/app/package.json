@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
-    "@babel/runtime": "^7.16.7",
+    "@babel/runtime": "^7.17.8",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
@@ -12,14 +12,14 @@
     "@stomp/stompjs": "^5.4.4",
     "@types/dateformat": "^3.0.1",
     "@types/jest": "^26.0.24",
-    "@types/node": "^14.17.34",
-    "@types/react": "^17.0.36",
+    "@types/node": "^14.18.12",
+    "@types/react": "^17.0.41",
     "@types/react-dom": "^16.9.14",
     "@types/react-html-parser": "^2.0.2",
     "@types/react-router-dom": "^5.3.2",
     "@types/react-svg-pan-zoom": "^3.3.4",
     "@types/react-transition-group": "^4.4.4",
-    "axios": "^0.24.0",
+    "axios": "^0.26.1",
     "classnames": "^2.3.0",
     "dateformat": "^3.0.3",
     "fs-extra": "^9.1.0",
@@ -38,8 +38,9 @@
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
     "@testing-library/user-event": "^12.0.11",
-    "prettier": "^2.4.1",
-    "babel-preset-react-app": "*"
+    "babel-preset-react-app": "*",
+    "cypress": "^9.3.1",
+    "prettier": "^2.4.1"
   },
   "resolutions": {
     "mini-css-extract-plugin": "2.4.5"

@@ -46,13 +46,18 @@ LandscapeDescription
    * - fullyQualifiedIdentifier
      - URI<URI>
      - 
-     - optional, defaults to null
+     - **required**, defaults to null
      - null
    * - identifier
      - String
      - A unique identifier for the group (also used as name). Descriptions are merged based on the identifier.
      - **required**, defaults to null
      - shipping
+   * - isPartial
+     - Boolean
+     - 
+     - optional, defaults to null
+     - null
    * - itemDescriptions
      - Set<ItemDescription>
      - 

@@ -21,12 +21,12 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
    * - defaultContext
      - String
      - Identifier of the context to use as default parent for groups
-     - optional, defaults to null
+     - **required**, defaults to null
      - null
    * - defaultUnit
      - String
      - Identifier of the unit to use as default parent for contexts
-     - optional, defaults to null
+     - **required**, defaults to null
      - null
    * - groupBlacklist
      - List
@@ -46,6 +46,6 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
    * - layoutConfig
      - LayoutConfig<LayoutConfig>
      - 
-     - optional, defaults to null
+     - **required**, defaults to null
      - null
 

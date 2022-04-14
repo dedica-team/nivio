@@ -1,0 +1,21 @@
+on:
+  workflow_call:
+    inputs:
+      url:
+        required: true
+        type: string
+    secrets:
+      cypress_key:
+        required: false
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    container: cypress/included:9.3.1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cypress run
+        working-directory: src/main/app
+        run: cypress run --record --env url=${{ inputs.url }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.cypress_key }}
