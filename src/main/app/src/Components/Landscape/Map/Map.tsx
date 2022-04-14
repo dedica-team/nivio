@@ -111,7 +111,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
         }
       }
     },
-    [data, value]
+    [data, value, visualFocus]
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {

@@ -19,7 +19,6 @@ import ItemAvatar from '../../Modals/Item/ItemAvatar';
 import { Close, InfoOutlined } from '@material-ui/icons';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { getLabels } from '../../Utils/utils';
-import MappedString from '../../Utils/MappedString';
 import Process from '../../Modals/Process/Process';
 
 interface Props {
