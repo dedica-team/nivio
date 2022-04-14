@@ -11,6 +11,7 @@ import org.springframework.lang.NonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -31,7 +32,7 @@ public class AllGroupsLayout {
     /**
      * Renders the landscape using {@link FastOrganicLayout}.
      */
-    public LayoutedComponent getRendered(Landscape landscape, Map<String, Group> groups, Map<String, SubLayout> subgraphs) {
+    public LayoutedComponent getRendered(Landscape landscape, Map<URI, Group> groups, Map<URI, SubLayout> subgraphs) {
 
         LOGGER.debug("Subgraphs sequence: {}", subgraphs);
         Map<Group, LayoutedComponent> groupNodes = new LinkedHashMap<>();
@@ -40,7 +41,7 @@ public class AllGroupsLayout {
         sorted.forEach((groupName, groupItem) -> {
 
             //do not layout the group if empty
-            if (groupItem.getItems().isEmpty()) {
+            if (groupItem.getChildren().isEmpty()) {
                 return;
             }
 
@@ -49,7 +50,7 @@ public class AllGroupsLayout {
                 return;
             LayoutedComponent groupGeometry = subLayout.getOuterBounds();
             groupNodes.put(groupItem, groupGeometry);
-            items.addAll(landscape.getItems().retrieve(groupItem.getItems()));
+            items.addAll(groupItem.getChildren());
         });
         if (debug) LOGGER.debug("Group node sequence: {}", groupNodes);
 
@@ -88,18 +89,13 @@ public class AllGroupsLayout {
         GroupConnections groupConnections = new GroupConnections();
 
         items.forEach(item -> {
-            final String group = item.getGroup();
-            LayoutedComponent groupNode = findGroupBounds(group, groupNodes);
+            final String group = item.getParent().getIdentifier();
+            LayoutedComponent groupNode = findGroupBounds(item.getParent(), groupNodes);
 
             item.getRelations().forEach(relationItem -> {
                 Item targetItem = relationItem.getTarget();
-                if (targetItem == null) {
-                    LOGGER.warn("Virtual connections: No target in relation item {}", relationItem);
-                    return;
-                }
-
-                String targetGroup = targetItem.getGroup();
-                LayoutedComponent targetGroupNode = findGroupBounds(targetGroup, groupNodes);
+                String targetGroup = targetItem.getParent().getIdentifier();
+                LayoutedComponent targetGroupNode = findGroupBounds(targetItem.getParent(), groupNodes);
 
                 if (groupConnections.canConnect(group, targetGroup)) {
                     groupNode.getOpposites().add(targetGroupNode.getComponent());
@@ -110,11 +106,8 @@ public class AllGroupsLayout {
         });
     }
 
-    private LayoutedComponent findGroupBounds(String group, Map<Group, LayoutedComponent> groupNodes) {
-        return groupNodes.entrySet().stream()
-                .filter(entry -> group.equals(entry.getKey().getIdentifier()))
-                .findFirst()
-                .map(Map.Entry::getValue)
+    private LayoutedComponent findGroupBounds(Group group, Map<Group, LayoutedComponent> groupNodes) {
+        return Optional.ofNullable(groupNodes.get(group))
                 .orElseThrow(() -> new RuntimeException(String.format("Group %s not found.", group)));
     }
 

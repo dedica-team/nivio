@@ -30,7 +30,7 @@ import java.util.ArrayList;
  */
 public class BezierListProducer implements PathHandler {
 
-    final ArrayList<Bezier> bezierSegs = new ArrayList<Bezier>();
+    final ArrayList<Bezier> bezierSegs = new ArrayList<>();
     float[] coords = new float[6];
     float curveLength = 0f;
     BezierHistory hist = new BezierHistory();

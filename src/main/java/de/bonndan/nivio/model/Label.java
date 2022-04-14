@@ -111,23 +111,6 @@ public enum Label {
         return prefix + DELIMITER + key.toLowerCase() + DELIMITER + suffix;
     }
 
-    /**
-     * Exports labels with their meanings as map.
-     *
-     * @param includePrefixes include labels which are prefixes
-     * @return key is label, value is meaning
-     */
-    public static Map<String, String> export(boolean includePrefixes) {
-        Map<String, String> labelExport = new LinkedHashMap<>();
-        List<Label> sortedLabels = Arrays.stream(Label.values()).sorted(Comparator.comparing(Enum::name)).collect(Collectors.toList());
-        sortedLabels.stream()
-                .filter(label -> includePrefixes || !label.isPrefix)
-                .filter(label -> !label.name().startsWith(INTERNAL_LABEL_PREFIX))
-                .forEach(label -> labelExport.put(label.name(), label.meaning));
-
-        return labelExport;
-    }
-
     public String unprefixed(String key) {
         return key.replace(name() + DELIMITER, "");
     }

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 
 import { IGroup } from '../../../../interfaces';
-import { getLabels, getLinks } from '../../Utils/utils';
+import { getItem, getLabels, getLinks } from '../../Utils/utils';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
@@ -76,7 +76,7 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
             <IconButton
               onClick={() => locateFunctionContext.locateFunction(group.fullyQualifiedIdentifier)}
               size={'small'}
-              title={`Click to local group ${group.identifier}`}
+              title={`Click to locate group ${group.identifier}`}
             >
               <GroupAvatar group={group} statusColor={assessment ? assessment.status : ''} />
             </IconButton>
@@ -122,15 +122,19 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
               <br />
               <Typography variant={'h6'}>Status</Typography>
               <StatusChip name={assessment.field} status={assessment?.status} />
-              <ul>
-                {assessment.message.split(';').map((message) => {
-                  return (
-                    <li style={{ textAlign: 'left' }} key={message}>
-                      {message}
-                    </li>
-                  );
-                })}
-              </ul>
+              {assessment.message.split('; ').map((message) => {
+                //TODO improve
+                const uriAndMessages = message.trimLeft().split(' ');
+                const fqi = uriAndMessages.shift() || '';
+                const item = landscapeContext.landscape
+                  ? getItem(landscapeContext.landscape, fqi)
+                  : null;
+                return (
+                  <div key={message}>
+                    <strong>{item ? item.identifier : ''}</strong> {uriAndMessages.join(' ')}
+                  </div>
+                );
+              })}
             </div>
             <br />
             <br />

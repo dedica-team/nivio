@@ -54,7 +54,7 @@ public class InputFormatHandlerDot implements InputFormatHandler {
                         return;
                     }
                     final String key = LabelToFieldResolver.NIVIO_LABEL_PREFIX + entry.getKey().substring(NIVIO_LABEL_PREFIX.length());
-                    itemDescription.setLabel(key, entry.getValue());
+                    itemDescription.setLabel(key, String.valueOf(entry.getValue()));
                 });
 
                 node.links().forEach(link -> {

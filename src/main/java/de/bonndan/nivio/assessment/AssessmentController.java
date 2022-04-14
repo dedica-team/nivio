@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.model.ComponentClass;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeRepository;
@@ -7,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(path = AssessmentController.PATH)
@@ -24,8 +27,8 @@ public class AssessmentController {
     @CrossOrigin(methods = RequestMethod.GET)
     @GetMapping(path = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Assessment> landscape(@PathVariable String identifier) {
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(identifier);
-        Landscape landscape = landscapeRepository.findDistinctByIdentifier(fqi.getLandscape()).orElse(null);
+        URI fqi = FullyQualifiedIdentifier.build(ComponentClass.landscape, identifier);
+        Landscape landscape = landscapeRepository.findDistinctByIdentifier(identifier).orElse(null);
         if (landscape == null) {
             return ResponseEntity.notFound().build();
         }

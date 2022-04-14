@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.map.RenderingRepository;
 import de.bonndan.nivio.output.map.svg.SVGDocument;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +50,7 @@ class LayoutServiceTest {
         changelog.addEntry(landscape, ProcessingChangelog.ChangeType.CREATED);
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(landscapeDescription, landscape, changelog);
         when(layouter.layout(landscape)).thenReturn(mock(LayoutedComponent.class));
-        when(renderer.render(any(LayoutedComponent.class), eq(null), eq(false))).thenReturn(mock(SVGDocument.class));
+        when(renderer.render(any(LayoutedComponent.class), any(RendererOptions.class))).thenReturn(mock(SVGDocument.class));
         when(renderer.getRenderingType()).thenReturn(SVGDocument.class.getSimpleName());
 
         //when
@@ -58,7 +59,7 @@ class LayoutServiceTest {
         //then
         verify(appearanceProcessor).process(landscape);
         verify(layouter).layout(landscape);
-        verify(renderer).render(any(LayoutedComponent.class), eq(null), eq(false));
+        verify(renderer).render(any(LayoutedComponent.class), any(RendererOptions.class));
         verify(renderingRepository).save(eq(SVGDocument.class.getSimpleName()), eq(landscape), any(SVGDocument.class), eq(false));
         verify(eventPublisher).publishEvent(any(LayoutChangedEvent.class));
     }
@@ -73,7 +74,7 @@ class LayoutServiceTest {
         changelog.addEntry(landscape, ProcessingChangelog.ChangeType.UPDATED);
         ProcessingFinishedEvent e = new ProcessingFinishedEvent(landscapeDescription, landscape, changelog);
         when(layouter.layout(landscape)).thenReturn(mock(LayoutedComponent.class));
-        when(renderer.render(any(LayoutedComponent.class), eq(null), eq(false))).thenReturn(mock(SVGDocument.class));
+        when(renderer.render(any(LayoutedComponent.class), any(RendererOptions.class))).thenReturn(mock(SVGDocument.class));
         when(renderer.getRenderingType()).thenReturn(SVGDocument.class.getSimpleName());
 
         //when
@@ -82,7 +83,7 @@ class LayoutServiceTest {
         //then
         verify(appearanceProcessor).process(landscape);
         verify(layouter).layout(landscape);
-        verify(renderer).render(any(LayoutedComponent.class), eq(null), eq(false));
+        verify(renderer).render(any(LayoutedComponent.class), any(RendererOptions.class));
         verify(renderingRepository).save(eq(SVGDocument.class.getSimpleName()), eq(landscape), any(SVGDocument.class), eq(false));
         verify(eventPublisher, never()).publishEvent(any(LayoutChangedEvent.class));
     }

@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static de.bonndan.nivio.input.dto.LandscapeDescription.asSetWithAlignedKeys;
+
 /**
  * Handler for nivio's custom input format (yaml).
  */
@@ -35,7 +37,9 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
     }
 
     @Override
-    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription defaultLandscape) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference,
+                                                @NonNull final LandscapeDescription defaultLandscape
+    ) {
 
         String yml = fileFetcher.get(reference);
         Source source;
@@ -51,8 +55,11 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
             return new ArrayList<>();
         }
 
+        defaultLandscape.mergeUnits(asSetWithAlignedKeys(source.units));
+        defaultLandscape.mergeContexts(asSetWithAlignedKeys(source.contexts));
+        defaultLandscape.mergeGroups(asSetWithAlignedKeys(source.groups));
+        defaultLandscape.mergeProcesses(asSetWithAlignedKeys(source.processes));
         defaultLandscape.mergeItems(source.items);
-        defaultLandscape.mergeGroups(source.groups);
 
         if (source.templates != null) {
             source.templates.forEach((s, template) -> defaultLandscape.getTemplates().put(s, template));
@@ -60,4 +67,6 @@ public class InputFormatHandlerNivio implements InputFormatHandler {
 
         return Collections.emptyList();
     }
+
+
 }

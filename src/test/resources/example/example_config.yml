@@ -1,8 +1,7 @@
-identifier: nivio:broken
+identifier: nivio_broken
 name: Landscape example
 contact: mail@acme.org
 
 config:
   branding:
     mapStylesheet: http://localhost:8080/css/dedica_map.css
-    mapLogo: https://dedica.team/images/logo.png

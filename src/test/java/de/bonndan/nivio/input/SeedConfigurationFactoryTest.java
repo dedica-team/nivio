@@ -48,7 +48,7 @@ class SeedConfigurationFactoryTest {
         File file = new File(FILE_PATH_ENV);
         SeedConfiguration configuration = factory.fromFile(file);
         assertEquals("Landscape example", configuration.getName());
-        assertEquals("nivio:example", configuration.getIdentifier());
+        assertEquals("nivio_example", configuration.getIdentifier());
         assertEquals("mail@acme.org", configuration.getContact());
         assertTrue(configuration.getDescription().contains("demonstrate"));
         assertEquals(file.toURI().toURL().toString(), configuration.getSource().getURL().get().toString());
@@ -77,7 +77,7 @@ class SeedConfigurationFactoryTest {
         File file = new File(FILE_PATH_ENV);
         SeedConfiguration configuration = factory.fromFile(file);
         assertEquals("Landscape example", configuration.getName());
-        assertEquals("nivio:example", configuration.getIdentifier());
+        assertEquals("nivio_example", configuration.getIdentifier());
         assertEquals("mail@acme.org", configuration.getContact());
         assertTrue(configuration.getDescription().contains("demonstrate"));
         assertThat(configuration.getSource().get()).contains(file.getName());
@@ -117,7 +117,7 @@ class SeedConfigurationFactoryTest {
         File file = new File(FILE_PATH_INCREMENTAL_ENV);
         SeedConfiguration configuration = factory.fromFile(file);
         assertEquals("Incremental update example", configuration.getName());
-        assertEquals("nivio:incremental", configuration.getIdentifier());
+        assertEquals("nivio_incremental", configuration.getIdentifier());
         assertFalse(configuration.getSourceReferences().isEmpty());
     }
 
@@ -199,7 +199,7 @@ class SeedConfigurationFactoryTest {
 
         ItemDescription template = configuration.getTemplates().get("addDataFlow");
         RelationDescription df = (RelationDescription) template.getRelations().toArray()[0];
-        assertEquals("identifier LIKE 'other_crappy_name%'", df.getTarget());
+        assertEquals("identifier:other_crappy_name*", df.getTarget());
     }
 
     @Test
@@ -219,15 +219,8 @@ class SeedConfigurationFactoryTest {
         final String FILE_PATH_UNKNOWN = FILE_PATH + "example_xxx.yml";
         File file = new File(FILE_PATH_UNKNOWN);
 
-
-        try {
-            factory.fromFile(file);
-        } catch (ReadingException ex) {
-            assertTrue(ex.getMessage().contains("Failed to read file"));
-            return;
-        }
-
-        fail("ReadingException was not thrown");
+        //when
+        assertThrows(ReadingException.class, () -> factory.fromFile(file));
     }
 
     @Test
@@ -246,24 +239,6 @@ class SeedConfigurationFactoryTest {
         GroupDescription b = groups.get("B");
         assertNotNull(b);
         assertEquals("B", b.getIdentifier());
-    }
-
-    @Test
-    void testGroupsHaveEnv() {
-        final String FILE_PATH_GROUPS = FILE_PATH + "example_groups.yml";
-        File file = new File(FILE_PATH_GROUPS);
-        SeedConfiguration seedConfiguration = factory.fromFile(file);
-
-        Map<String, GroupDescription> groups = seedConfiguration.getGroups();
-        assertNotNull(groups);
-        assertEquals(2, groups.size());
-        GroupDescription groupDescription = groups.get("groupA");
-        assertNotNull(groupDescription);
-        assertEquals(seedConfiguration.getIdentifier(), groupDescription.getFullyQualifiedIdentifier().getLandscape());
-
-        GroupDescription b = groups.get("B");
-        assertNotNull(b);
-        assertEquals(seedConfiguration.getIdentifier(), b.getFullyQualifiedIdentifier().getLandscape());
     }
 
     @Test

@@ -61,13 +61,13 @@ public class LocalFileObserver extends BaseObserver {
                 WatchKey key = watchService.take();
                 for (WatchEvent<?> event : key.pollEvents()) {
                     final Path changed = (Path) event.context();
-                    File file = path.toFile();
-                    long lastModified = file.lastModified();
+                    File pathFile = path.toFile();
+                    long lastModified = pathFile.lastModified();
                     boolean isWatchedFile = changed.endsWith(this.file.getName());
-                    boolean triggersEvent = (file.length() > 0) && (lastModified - this.lastModified) > GRACE_PERIOD;
+                    boolean triggersEvent = (pathFile.length() > 0) && (lastModified - this.lastModified) > GRACE_PERIOD;
                     if (isWatchedFile && triggersEvent) {
                         this.lastModified = lastModified;
-                        triggerChange(file);
+                        triggerChange(this.file);
                     } else {
                         LOGGER.debug("Ignoring event");
                     }

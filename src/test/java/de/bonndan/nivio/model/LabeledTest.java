@@ -114,17 +114,11 @@ class LabeledTest {
     }
 
     @Test
-    void anySetterRejectsEmptyKey() {
-        ItemDescription i = new ItemDescription();
-        assertThatThrownBy(() -> i.setLabel("", new ArrayList<String>())).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     void anySetterAcceptsNumber() {
         ItemDescription i = new ItemDescription();
 
         //when
-        i.setLabel("foo", 1L);
+        i.setLabel("foo", "1");
 
         //then
         assertThat(i.getLabel("foo")).isEqualTo("1");
@@ -133,18 +127,18 @@ class LabeledTest {
     @Test
     void merge() {
         ItemDescription i = new ItemDescription();
-        i.setLabel("foo1", 1L);
-        i.setLabel("foo2", 1L);
+        i.setLabel("foo1", "1");
+        i.setLabel("foo2", "L");
         ItemDescription target = new ItemDescription();
-        i.setLabel("foo1", 2L);
-        i.setLabel("bar", 2L);
+        i.setLabel("foo1", "2");
+        i.setLabel("bar", "2");
 
         //when
         Labeled.merge(i, target);
 
         //then
         assertThat(target.getLabel("foo1")).isEqualTo("2");
-        assertThat(target.getLabel("foo2")).isEqualTo("1");
+        assertThat(target.getLabel("foo2")).isEqualTo("L");
         assertThat(target.getLabel("bar")).isEqualTo("2");
     }
 
@@ -152,11 +146,11 @@ class LabeledTest {
     void add() {
         ItemDescription i = new ItemDescription();
         i.setLabel("foo1", "after");
-        i.setLabel("foo2", 1L);
+        i.setLabel("foo2", "1");
 
         ItemDescription target = new ItemDescription();
         i.setLabel("foo1", "before");
-        i.setLabel("bar", 2L);
+        i.setLabel("bar", "2");
 
         //when
         Labeled.add(i, target);

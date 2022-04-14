@@ -82,7 +82,7 @@ items:
       github: https://www.graphviz.org/
 
   - identifier: nivio
-    name: Nivio
+    name: Nivio as
     group: nivio
     type: nivio
     providedBy:

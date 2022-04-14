@@ -3,13 +3,17 @@ package de.bonndan.nivio.model;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.net.URI;
+
 /**
- * Base for landscapes, groups and items.
+ * Base for graph objects and dtos.
+ *
+ * Is not {@link de.bonndan.nivio.assessment.Assessable}
  */
-public interface Component {
+public interface Component extends Linked, Labeled {
 
     /**
-     * Returns the landscape-wide unique identifier of a server or application.
+     * Returns the local level identifier
      */
     @NonNull
     String getIdentifier();
@@ -18,7 +22,12 @@ public interface Component {
      * @return the fqi to identify the landscape item
      */
     @NonNull
-    FullyQualifiedIdentifier getFullyQualifiedIdentifier();
+    URI getFullyQualifiedIdentifier();
+
+    /**
+     * @return the identifier of the parent
+     */
+    String getParentIdentifier();
 
     /**
      * A human readable and/or well known name.
@@ -27,12 +36,6 @@ public interface Component {
      */
     @Nullable
     String getName();
-
-    /**
-     * A way to contact the responsible person.
-     */
-    @Nullable
-    String getContact();
 
     /**
      * @return a string describing the component
@@ -45,6 +48,12 @@ public interface Component {
      */
     @Nullable
     String getOwner();
+
+    /**
+     * @return a string describing the type
+     */
+    @Nullable
+    String getType();
 
     /**
      * @return an icon url

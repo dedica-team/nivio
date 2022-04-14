@@ -2,6 +2,7 @@ package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Relation;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
 import de.bonndan.nivio.output.map.hex.gojuno.HexFactory;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -22,6 +24,8 @@ public class HexMap {
      * key is a {@link Hex}, value an {@link Item}
      */
     private final MapState mapState = new MapState();
+    private final Map<URI, Set<MapTile>> groupAreas = new HashMap<>();
+    private final Map<URI, HexPath> paths = new HashMap<>();
 
     /**
      * Add a previously layouted item to the map.
@@ -29,7 +33,7 @@ public class HexMap {
      * @return the created hex
      */
     public MapTile findFreeSpot(LayoutedComponent component) {
-        Hex hex = HexFactory.getInstance().hexAt(new Point2D.Double(component.getX(), component.getY()));
+        Hex hex = HexFactory.getInstance().hexAt(new Point2D.Double(component.getCenterX(), component.getCenterY()));
         MapTile tile = mapState.getOrAdd(hex);
         if (!mapState.hasItem(hex)) {
             return tile;
@@ -68,19 +72,23 @@ public class HexMap {
      * @param item the item (must have been added before)
      * @return the corresponding {@link Hex}
      */
-    public MapTile getTileForItem(Item item) {
-        return mapState.getHexForItem(item).orElseThrow(() -> new NoSuchElementException(String.format("Item %s has no hex tile assigned.", item)));
+    public MapTile getTileForItem(@NonNull final Item item) {
+        return mapState.getHexForItem(item)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Item %s has no hex tile assigned.", item)));
     }
 
     /**
      * Uses the pathfinder to create a path between start and target.
      *
-     * @param start  the relation source item
-     * @param target the relation target item
-     * @return a path if one could be found
+     * @param rel   relation
+     * @param debug debug
      */
-    public Optional<HexPath> getPath(Item start, Item target, boolean debug) {
-        Optional<HexPath> path = new PathFinder(this, debug).getPath(getTileForItem(start), getTileForItem(target));
+    public void addPath(@NonNull final Relation rel, boolean debug) {
+        Optional<HexPath> path = new PathFinder(this, debug).getPath(
+                getTileForItem(rel.getSource()),
+                getTileForItem(rel.getTarget())
+        );
+
         path.ifPresent(hexPath -> {
             List<PathTile> tiles = hexPath.getTiles();
             for (int i = 0, tilesSize = tiles.size(); i < tilesSize; i++) {
@@ -93,22 +101,44 @@ public class HexMap {
                     hexPath.setPortCount(portCount);
                 }
             }
+            this.paths.put(rel.getFullyQualifiedIdentifier(), hexPath);
         });
-        return path;
+    }
+
+    /**
+     * Uses the pathfinder to create a path between start and target.
+     *
+     * @param rel relation to find path for
+     * @return a path if one could be found
+     */
+    public Optional<HexPath> getPath(@NonNull final Relation rel) {
+        return Optional.ofNullable(paths.get(Objects.requireNonNull(rel).getFullyQualifiedIdentifier()));
     }
 
     /**
      * Returns all hexes which form a group area.
      *
      * @param group the group with items
-     * @param items
-     * @return a set of (adjacent) hexes
      */
-    public Set<MapTile> getGroupArea(@NonNull final Group group, Set<Item> items) {
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(this, group, items);
+    public void addGroupArea(@NonNull final Group group) {
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(this, group, group.getChildren());
         //set group identifier to all
         inArea.forEach(hex -> hex.setGroup(group.getFullyQualifiedIdentifier().toString()));
-        return inArea;
+        groupAreas.put(group.getFullyQualifiedIdentifier(), inArea);
+    }
+
+    /**
+     * Returns all hexes which form a group area.
+     *
+     * @param group the group with items
+     * @return a set of (adjacent) hexes
+     */
+    public Set<MapTile> getGroupArea(@NonNull final Group group) {
+        return Optional.ofNullable(groupAreas.get(group.getFullyQualifiedIdentifier()))
+                .orElseThrow(() -> new NoSuchElementException(
+                                String.format("Group area for group %s not found", group.getFullyQualifiedIdentifier())
+                        )
+                );
     }
 
     /**

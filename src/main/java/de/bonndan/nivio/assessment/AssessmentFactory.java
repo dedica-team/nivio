@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,8 @@ public class AssessmentFactory {
     public Assessment createAssessment(@NonNull final Landscape landscape, @NonNull final Map<String, KPI> kpis) {
         var testedLandscape = Objects.requireNonNull(landscape, ASSESSMENT_ERROR_NULL);
         var testedKpis = Objects.requireNonNull(kpis, ASSESSMENT_ERROR_NULL);
-        var map = new HashMap<String, List<StatusValue>>();
-        testedKpis.forEach((k, v) -> map.putIfAbsent(k, v.getStatusValues(testedLandscape)));
+        var map = new HashMap<URI, List<StatusValue>>();
+        testedKpis.forEach((k, kpi) -> map.putIfAbsent(testedLandscape.getFullyQualifiedIdentifier(), kpi.getStatusValues(testedLandscape)));
         return new Assessment(map);
     }
 
@@ -57,7 +58,7 @@ public class AssessmentFactory {
      * @throws NullPointerException On null input.
      */
     @NonNull
-    public Assessment createAssessment(@NonNull final Map<String, List<StatusValue>> results) {
+    public Assessment createAssessment(@NonNull final Map<URI, List<StatusValue>> results) {
         return new Assessment(Objects.requireNonNull(results, ASSESSMENT_ERROR_NULL));
     }
 

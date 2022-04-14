@@ -1,13 +1,13 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.layout.LayoutedComponent;
+import de.bonndan.nivio.output.map.hex.HexMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Turns the layouted landscape into a SVG image.
@@ -34,19 +35,22 @@ public class SVGRenderer implements Renderer<String> {
     }
 
     @Override
-    public String render(@NonNull final LayoutedComponent landscape, @Nullable final Assessment assessment, boolean debug) {
-        SVGDocument svgDocument = new SVGDocument(landscape, assessment, getStyles((Landscape) landscape.getComponent()));
-        svgDocument.setDebug(debug);
+    public String render(@NonNull final LayoutedComponent landscape, @NonNull final RendererOptions options) {
+
+        HexMap hexMap = new HexMap();
+        HexMapDataProvider.fillMap(hexMap, landscape);
+
+        SVGDocument svgDocument = new SVGDocument(landscape, hexMap, options, getStyles((Landscape) landscape.getComponent()));
         return svgDocument.getXML();
     }
 
     @Override
     public void render(@NonNull final LayoutedComponent landscape,
-                       @NonNull final Assessment assessment,
-                       @NonNull final File file, boolean debug
+                       @NonNull final RendererOptions options,
+                       @NonNull final File file
     ) {
         try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(render(landscape, assessment, debug));
+            fileWriter.write(render(landscape, options));
         } catch (IOException e) {
             LOGGER.error("Failed to render to file", e);
         }
@@ -60,7 +64,7 @@ public class SVGRenderer implements Renderer<String> {
     private String getStyles(Landscape landscape) {
         String css = "";
         try (InputStream resourceAsStream = getClass().getResourceAsStream("/static/css/svg.css")) {
-            css = new String(StreamUtils.copyToByteArray(resourceAsStream));
+            css = new String(StreamUtils.copyToByteArray(resourceAsStream), StandardCharsets.UTF_8);
         } catch (IOException e) {
             LOGGER.error("Failed to load stylesheet /static/css/svg.css");
         }

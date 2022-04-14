@@ -8,7 +8,6 @@ class GroupDescriptionTest {
 
     @Test
     void validatesIdentifier() {
-        assertThrows(IllegalArgumentException.class, () -> new GroupDescription().setName("1/1$"));
         assertThrows(IllegalArgumentException.class, () -> new GroupDescription().setIdentifier("1/1$"));
     }
 

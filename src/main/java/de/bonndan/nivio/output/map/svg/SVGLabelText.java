@@ -22,9 +22,9 @@ class SVGLabelText extends Component {
         return SvgTagCreator.text(text)
                 .attr("x", x)
                 .attr("y", !StringUtils.hasLength(y) ? "0.3em" : y)
-                .attr("class", className)
+                .attr(SVGAttr.CLASS, className)
                 .attr("alignment-baseline", "middle")
-                .attr("text-anchor", "left");
+                .attr(SVGAttr.TEXT_ANCHOR, "left");
     }
 }
 

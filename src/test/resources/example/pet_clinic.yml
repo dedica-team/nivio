@@ -5,7 +5,6 @@ description: The Pet clinic IT landscape
 icon: https://dedica.team/images/logo_orange_weiss.png
 
 config:
-  greedy: false
   kpis:
     radiation:
       description: Radiation level in mrem
@@ -41,3 +40,27 @@ items:
     scale: 0
     type: email
     hostType: docker
+
+processes:
+  booking:
+    description: The booking process
+    color: F781D8
+    branches:
+      - items:
+          - customer-service
+          - vet-be
+      - items:
+          - vet-be
+          - schedule
+          - emailer
+
+  billing:
+    description: Billing after treatment
+    color: 078108
+    branches:
+      - items:
+          - vet-fe
+          - vet-be
+          - billing/billing
+          - emailer
+

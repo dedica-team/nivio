@@ -22,12 +22,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class LabelToFieldResolverTest {
 
     private LabelToFieldResolver processor;
+    private ProcessLog processLog;
+    private LandscapeDescription input;
 
     @BeforeEach
     public void setup() {
         Logger logger = LoggerFactory.getLogger(LabelToFieldResolverTest.class);
-        ProcessLog processLog = new ProcessLog(logger, "test");
-        processor = new LabelToFieldResolver(processLog);
+        processor = new LabelToFieldResolver();
+        input = new LandscapeDescription("identifier", "name", null);
+        processLog = new ProcessLog(logger, "test");
+        input.setProcessLog(processLog);
     }
 
     @Test
@@ -39,8 +43,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("NiVIO.description", "bar");
         item1.getLabels().put("NIVIO.providedBy", "baz, bak");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -61,8 +64,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("nivio.description", "bar");
         item1.getLabels().put("nivio.providedBy", "baz, bak");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         assertEquals(4, item1.getLabels().size());
 
@@ -79,8 +81,7 @@ class LabelToFieldResolverTest {
         ItemDescription item1 = new ItemDescription();
         item1.getLabels().put("NIVIO.providedby", "baz ");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -92,11 +93,10 @@ class LabelToFieldResolverTest {
     @Test
     @DisplayName("Ensure relations can be set via labels")
     void relations() {
-        ItemDescription item1 = new ItemDescription();
+        ItemDescription item1 = new ItemDescription("test");
         item1.getLabels().put("nivio.relations", "bar, baz");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -113,45 +113,48 @@ class LabelToFieldResolverTest {
     @Test
     @DisplayName("Ensure provider relations can be set via labels")
     void extendedRelationsProvider() {
-        ItemDescription item1 = new ItemDescription();
-        item1.getLabels().put("nivio.relations.provider", "foo, bar");
+        ItemDescription foo = new ItemDescription();
+        foo.setIdentifier("foo");
+        foo.getLabels().put("nivio.relations.provider", "bar");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        ItemDescription bar = new ItemDescription();
+        bar.setIdentifier("bar");
+
+        input.getWriteAccess().addOrReplaceChild(foo);
+        input.getWriteAccess().addOrReplaceChild(bar);
 
         //when
         processor.resolve(input);
 
         //then
-        assertEquals(2, item1.getRelations().size());
-        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
+        assertEquals(1, foo.getRelations().size());
+        RelationDescription[] actual = foo.getRelations().toArray(RelationDescription[]::new);
 
-        Optional<RelationDescription> foo = Arrays.stream(actual).filter(relationDescription -> relationDescription.getSource().equals("foo")).findFirst();
-        assertThat(foo).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
-
-        Optional<RelationDescription> bar = Arrays.stream(actual).filter(relationDescription -> relationDescription.getSource().equals("bar")).findFirst();
-        assertThat(bar).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
+        Optional<RelationDescription> rel = Arrays.stream(actual).filter(description -> description.getSource().equals("bar")).findFirst();
+        assertThat(rel).isPresent().map(RelationDescription::getType).get().isEqualTo(RelationType.PROVIDER);
     }
 
     @Test
     @DisplayName("Ensure inbound relations can be set via labels")
     void extendedRelationsInbound() {
-        ItemDescription item1 = new ItemDescription("foo");
-        item1.getLabels().put("nivio.relations.inbound", "foo, bar");
+        ItemDescription foo = new ItemDescription();
+        foo.setIdentifier("foo");
+        foo.getLabels().put("nivio.relations.inbound", "bar");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        ItemDescription bar = new ItemDescription();
+        bar.setIdentifier("bar");
+
+        input.getWriteAccess().addOrReplaceChild(foo);
+        input.getWriteAccess().addOrReplaceChild(bar);
 
         //when
         processor.resolve(input);
 
         //then
-        assertEquals(2, item1.getRelations().size());
-        RelationDescription[] actual = item1.getRelations().toArray(RelationDescription[]::new);
-        boolean matchesBar = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getSource().equals("foo"));
-        assertThat(matchesBar).isTrue();
-        boolean matchesBaz = Arrays.stream(actual).anyMatch(relationDescription -> relationDescription.getSource().equals("bar"));
-        assertThat(matchesBaz).isTrue();
+        assertEquals(1, foo.getRelations().size());
+        Optional<RelationDescription> rel = foo.getRelations().stream().findFirst();
+        assertThat(rel).isPresent();
+        assertThat(rel.get().getSource()).isEqualTo("bar");
     }
 
     @Test
@@ -163,8 +166,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("NiVIO.description", "bar");
         item1.getLabels().put("NIVIO.providedBy", "baz ");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -182,8 +184,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio.links", "http://one.com, https://two.net");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -210,8 +211,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("nivio.link.wiki", "http://one.com");
         item1.getLabels().put("nivio.link.repo", "https://two.net");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -238,8 +238,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("nivio." + Label.framework.name() + ".java", "8");
         item1.getLabels().put("nivio." + Label.framework.name() + ".angular", "6");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -260,8 +259,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("a", "b");
         item1.getLabels().put("nivio." + Label.frameworks.name(), "java:8, angular:6");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);
@@ -284,8 +282,7 @@ class LabelToFieldResolverTest {
         item1.getLabels().put("nivio.software", "wordpress");
         item1.getLabels().put("nivio.other", "foo");
 
-        LandscapeDescription input = new LandscapeDescription("identifier", "name", null);
-        input.getItemDescriptions().add(item1);
+        input.getWriteAccess().addOrReplaceChild(item1);
 
         //when
         processor.resolve(input);

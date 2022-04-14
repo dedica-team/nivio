@@ -1,56 +1,72 @@
 package de.bonndan.nivio.output.dto;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Relation;
-import de.bonndan.nivio.model.RelationType;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RelationApiModel {
+public class RelationApiModel extends ComponentApiModel {
 
     public static final String INBOUND = "inbound";
     public static final String OUTBOUND = "outbound";
 
-    @JsonIdentityReference(alwaysAsId = true)
-    public final Item source;
+    public final URI source;
 
-    @JsonIdentityReference(alwaysAsId = true)
-    public final Item target;
+    private final URI target;
 
-    public final String description;
+    private final String format;
 
-    public final String format;
+    private final String direction;
 
-    public final RelationType type;
+    private final String relationName;
 
-    public final String name;
-
-    public final String id;
-
-    public final String direction;
-
-    public final Map<String, String> labels;
+    private final Map<String, URI> processes;
 
     public RelationApiModel(@NonNull final Relation relation, @NonNull final Item owner) {
-        source = relation.getSource();
-        target = relation.getTarget();
-        description = relation.getDescription();
+        super(relation);
+        source = relation.getSource().getFullyQualifiedIdentifier();
+        target = relation.getTarget().getFullyQualifiedIdentifier();
         format = relation.getFormat();
-        type = relation.getType();
-        id = relation.getIdentifier();
-        labels = relation.getLabels();
+        processes = relation.getProcesses();
 
         if (relation.getSource().equals(owner)) {
-            name = !StringUtils.hasLength(target.getName()) ? target.getIdentifier() : target.getName();
+            relationName = !StringUtils.hasLength(relation.getTarget().getName()) ?
+                    relation.getTarget().getIdentifier() : relation.getTarget().getName();
             direction = OUTBOUND;
         } else {
-            name = !StringUtils.hasLength(source.getName()) ? source.getIdentifier() : source.getName();
+            relationName = !StringUtils.hasLength(relation.getSource().getName()) ?
+                    relation.getSource().getIdentifier() : relation.getSource().getName();
             direction = INBOUND;
         }
+    }
+
+    @Override
+    public String getName() {
+        return relationName;
+    }
+
+    public URI getSource() {
+        return source;
+    }
+
+    public URI getTarget() {
+        return target;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public Map<String, URI> getProcesses() {
+        return processes;
     }
 }

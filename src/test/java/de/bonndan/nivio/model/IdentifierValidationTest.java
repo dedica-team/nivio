@@ -17,7 +17,7 @@ class IdentifierValidationTest {
         IdentifierValidation.assertValid("foo");
         IdentifierValidation.assertValid("foo245");
         IdentifierValidation.assertValid("234foo");
-        IdentifierValidation.assertValid("234_foo.bar:baz");
+        IdentifierValidation.assertValid("234_foo.bar");
     }
 
     @Test
@@ -25,6 +25,7 @@ class IdentifierValidationTest {
         assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid(null));
         assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid(""));
         assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid("1/1"));
+        assertThrows(IllegalArgumentException.class, () -> IdentifierValidation.assertValid("test:test"));
 
         byte[] array = new byte[257]; // length is bounded by 7
         new Random().nextBytes(array);

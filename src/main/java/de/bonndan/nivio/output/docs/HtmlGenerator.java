@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.Relation.DELIMITER;
 import static de.bonndan.nivio.output.FormatUtils.ifPresent;
 import static de.bonndan.nivio.output.FormatUtils.nice;
 import static j2html.TagCreator.*;
@@ -73,7 +72,7 @@ public abstract class HtmlGenerator {
     protected ContainerTag writeItem(Item item, Assessment assessment, Collection<Item> allItems) {
         boolean hasRelations = !item.getRelations().isEmpty();
         boolean hasInterfaces = !item.getInterfaces().isEmpty();
-        String groupColor = "#" + Color.nameToRGB(item.getGroup(), Color.GRAY);
+        String groupColor = "#" + Color.nameToRGB(item.getParent().getColor(), Color.GRAY);
 
         List<ContainerTag> links = item.getLinks().entrySet().stream()
                 .map(stringURLEntry -> a(" " + stringURLEntry.getKey()).attr("href", stringURLEntry.getValue().toString()))
@@ -86,7 +85,7 @@ public abstract class HtmlGenerator {
                 .map(mapEntry -> String.format("%s: %s", StringUtils.capitalize(Label.framework.unprefixed(mapEntry.getKey())), mapEntry.getValue()))
                 .collect(Collectors.toList());
 
-        List<StatusValue> statusValues = assessment.getResults().get(item.getAssessmentIdentifier());
+        List<StatusValue> statusValues = assessment.getResults().get(item.getFullyQualifiedIdentifier());
         if (statusValues == null) {
             statusValues = new ArrayList<>();
         }
@@ -107,14 +106,15 @@ public abstract class HtmlGenerator {
                                 iff(hasLength(item.getName()), li("Name: " + FormatUtils.nice(item.getName())))
                                 , iff(hasLength(item.getFullyQualifiedIdentifier().toString()), li("Full identifier: " + item.getFullyQualifiedIdentifier()))
                                 , iff(hasLength(item.getIdentifier()), li("Identifier: " + item.getIdentifier()))
-                                , iff(hasLength(item.getGroup()), li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getGroup()))))
+                                , iff(hasLength(item.getParent().getName()),
+                                        li(rawHtml("Group: " + "<span style=\"color: " + groupColor + "\">" + GROUP_CIRCLE + "</span> " + FormatUtils.nice(item.getParent().getName()))))
                                 , iff(hasLength(item.getContact()), li("Contact: " + FormatUtils.nice(item.getContact())))
                                 , iff(hasLength(item.getOwner()), li("Owner: " + FormatUtils.nice(item.getOwner())))
                                 , iff(item.getTags().length > 0, li("Tags: " + String.join(", ", item.getTags())))
                                 , iff(hasLength(item.getType()), li("Type: " + item.getType()))
                                 , iff(hasLength(item.getAddress()), li("Address: " + item.getAddress()))
                                 , iff(links.size() > 1, li("Links: ").with(links))
-                                , iff(!frameworks.isEmpty(), li("Frameworks: " + String.join(String.format("%s ", DELIMITER), frameworks)))
+                                , iff(!frameworks.isEmpty(), li("Frameworks: " + String.join(String.format("%s ", ";"), frameworks)))
                         ).with(labelList),
 
 
@@ -149,8 +149,8 @@ public abstract class HtmlGenerator {
 
                                             String direction = (df.getSource().equals(item)) ?
                                                     " &#10142; " : " incoming from ";
-                                            Item end = (df.getSource().equals(item)) ?
-                                                    df.getTarget() : df.getSource();
+                                            boolean equals = df.getSource().getFullyQualifiedIdentifier().equals(item.getFullyQualifiedIdentifier());
+                                            Item end = (Item) (equals ? df.getTarget() : df.getSource());
 
                                             ContainerTag endTag = span(end.toString());
                                             if (allItems.contains(end)) {

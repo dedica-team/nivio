@@ -36,15 +36,15 @@ public class KubernetesKPI implements KPI {
             var message = key.replaceFirst(InputFormatHandlerKubernetes.LABEL_PREFIX + ".", "");
             if (message.startsWith("boolcondition.")) {
                 message = message.replaceFirst("boolcondition.", "");
-                statusValue = new StatusValue(assessable.getAssessmentIdentifier(), IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(boolCondition(value)), message);
+                statusValue = new StatusValue(assessable.getFullyQualifiedIdentifier(), IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(boolCondition(value)), message);
             } else if (message.startsWith("replicacondition.")) {
                 var splitValue = value.split(";");
                 var replicaCount = getIntegerValue(splitValue, 0);
                 var replicaCountDesired = getIntegerValue(splitValue, 1);
                 var replicaCondition = replicaCondition(replicaCount, replicaCountDesired);
-                statusValue = new StatusValue(assessable.getAssessmentIdentifier(), IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(String.valueOf(replicaCondition.getValue())), String.valueOf(replicaCondition.getKey()));
+                statusValue = new StatusValue(assessable.getFullyQualifiedIdentifier(), IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(String.valueOf(replicaCondition.getValue())), String.valueOf(replicaCondition.getKey()));
             } else {
-                statusValue = new StatusValue(assessable.getAssessmentIdentifier(), IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(value), message);
+                statusValue = new StatusValue(assessable.getFullyQualifiedIdentifier(), IDENTIFIER + ":" + counter.getAndIncrement(), Status.from(value), message);
             }
             statusList.add(statusValue);
         });

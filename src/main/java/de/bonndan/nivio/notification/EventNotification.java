@@ -6,12 +6,12 @@ import de.bonndan.nivio.assessment.AssessmentChangedEvent;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingEvent;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.observation.InputChangedEvent;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,7 +22,7 @@ import java.time.ZonedDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventNotification {
 
-    private final FullyQualifiedIdentifier landscapeIdentifier;
+    private final URI landscapeIdentifier;
     private final String message;
     private final String level;
     private final String type;
@@ -70,7 +70,7 @@ public class EventNotification {
     }
 
     private EventNotification(
-            @Nullable final FullyQualifiedIdentifier landscapeIdentifier,
+            @Nullable final URI landscapeIdentifier,
             @NonNull final String type,
             @NonNull final String level,
             final long timestamp,
@@ -111,7 +111,7 @@ public class EventNotification {
 
     @Schema(description = "The landscape identifier (can be used as url part)")
     public String getLandscape() {
-        return landscapeIdentifier != null ? landscapeIdentifier.jsonValue() : "";
+        return landscapeIdentifier != null ? landscapeIdentifier.toString() : "";
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")

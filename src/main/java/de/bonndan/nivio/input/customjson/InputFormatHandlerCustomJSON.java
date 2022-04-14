@@ -9,6 +9,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.util.URLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,9 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
     }
 
     @Override
-    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference, @NonNull final LandscapeDescription landscapeDescription) {
+    public List<LandscapeDescription> applyData(@NonNull final SourceReference reference,
+                                                @NonNull final LandscapeDescription landscapeDescription
+    ) {
         String itemsPath = getPath(reference, ITEMS_PATH_KEY);
         if (!StringUtils.hasLength(itemsPath)) {
             LOGGER.warn("No items path configured in mapping, cannot process custom JSON");
@@ -91,17 +94,29 @@ public class InputFormatHandlerCustomJSON implements InputFormatHandler {
                 }
             });
             ItemDescription itemDescription = objectMapper.convertValue(itemMap, ItemDescription.class);
-            if (!StringUtils.hasLength(itemDescription.getFullyQualifiedIdentifier().getLandscape())) {
-                itemDescription.setEnvironment(landscapeDescription.getIdentifier());
-            }
-            String landscapeId = itemDescription.getFullyQualifiedIdentifier().getLandscape();
-            LandscapeDescription applyToLandscape = landscapeDescriptionMap.computeIfAbsent(
-                    landscapeId, LandscapeDescription::new
-            );
-            applyToLandscape.getItemDescriptions().add(itemDescription);
+
+            getTargetLandscape(itemDescription, landscapeDescriptionMap).orElse(landscapeDescription)
+                    .getWriteAccess().addOrReplaceChild(itemDescription);
         });
 
         return landscapeDescriptionMap.values().stream().collect(Collectors.toUnmodifiableList());
+    }
+
+    private Optional<LandscapeDescription> getTargetLandscape(@NonNull final ItemDescription itemDescription,
+                                                              @NonNull final Map<String, LandscapeDescription> map
+    ) {
+        var landscapeIdentifier = itemDescription.getLandscape();
+        if (!StringUtils.hasLength(landscapeIdentifier)) {
+            landscapeIdentifier = itemDescription.getFullyQualifiedIdentifier().getAuthority();
+        } else {
+            return Optional.of(map.computeIfAbsent(landscapeIdentifier, LandscapeDescription::new));
+        }
+
+        if (FullyQualifiedIdentifier.isUndefined(landscapeIdentifier)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(map.computeIfAbsent(landscapeIdentifier, LandscapeDescription::new));
     }
 
     @Nullable

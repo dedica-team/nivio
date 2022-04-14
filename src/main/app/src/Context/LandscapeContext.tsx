@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { IAssessment, IAssessmentProps, ILandscape, INotificationMessage } from '../interfaces';
+import {
+  IAssessment,
+  IAssessmentProps,
+  IGroup,
+  ILandscape,
+  INotificationMessage,
+  IProcess,
+} from '../interfaces';
 import { get } from '../utils/API/APIClient';
 import { withBasePath } from '../utils/API/BasePath';
 import { Client, StompSubscription } from '@stomp/stompjs';
@@ -13,6 +20,14 @@ export interface LandscapeContextType {
   readonly assessmentChanges: INotificationMessage | null;
   next: (identifier: string | null) => void;
   getAssessmentSummary: (fqi: string) => IAssessmentProps | null;
+  /**
+   * Find a group by its fully qualified identifier.
+   *
+   * @param landscape object
+   * @param fullyQualifiedIdentifier string to identify the group
+   */
+  getGroup: (fullyQualifiedIdentifier: string) => IGroup | null;
+  getProcess: (fullyQualifiedIdentifier: string) => IProcess | null;
 }
 
 export const LandscapeContext = React.createContext<LandscapeContextType>({
@@ -24,6 +39,12 @@ export const LandscapeContext = React.createContext<LandscapeContextType>({
   assessmentChanges: null,
   next: () => {},
   getAssessmentSummary: () => {
+    return null;
+  },
+  getGroup: () => {
+    return null;
+  },
+  getProcess: () => {
     return null;
   },
 });
@@ -143,6 +164,33 @@ const LandscapeContextProvider: React.FC = (props) => {
           if (!assessmentResults) return null;
 
           return assessmentResults.find((assessmentResult) => assessmentResult.summary) || null;
+        },
+
+        getProcess: (fullyQualifiedIdentifier) => {
+          if (!landscape) return null;
+          let process: IProcess | null = null;
+          for (let i = 0; i < landscape.processes.length; i++) {
+            let value = landscape.processes[i];
+            if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+              process = value;
+              break;
+            }
+          }
+
+          return process;
+        },
+        getGroup: (fullyQualifiedIdentifier) => {
+          let group: IGroup | null = null;
+          if (landscape)
+            for (let i = 0; i < landscape.groups.length; i++) {
+              let value = landscape.groups[i];
+              if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+                group = value;
+                break;
+              }
+            }
+
+          return group;
         },
       }}
     >

@@ -17,6 +17,7 @@ export interface ILandscape {
   _links?: ILinks;
   links?: ILinks;
   lastUpdate?: string;
+  processes: IProcess[];
   groups: IGroup[];
   kpis?: IKpis;
 }
@@ -79,6 +80,22 @@ export interface ILayoutConfig {
   maxDistanceLimitFactor?: number;
 }
 
+export interface IProcess {
+  identifier: string;
+  name: string;
+  owner: string;
+  description?: string;
+  address?: string;
+  contact: string;
+  labels: ILabels;
+  type: string;
+  fullyQualifiedIdentifier: string;
+  tags: Array<string>;
+  color?: string;
+  icon: string;
+  _links?: ILinks;
+}
+
 export interface IGroup {
   owner?: string;
   color?: string;
@@ -130,6 +147,14 @@ export interface IRelations {
   [key: string]: IRelation;
 }
 
+export interface IProcessReferences {
+  [key: string]: string;
+}
+
+export interface IProcesses {
+  [key: string]: IProcess;
+}
+
 export interface IRelation {
   source: string;
   target: string;
@@ -137,9 +162,10 @@ export interface IRelation {
   description?: string;
   format?: string;
   name: string;
-  id: string;
+  fullyQualifiedIdentifier: string;
   direction: string;
   labels: ILabels;
+  processes: IProcessReferences;
 }
 
 export interface ILabels {

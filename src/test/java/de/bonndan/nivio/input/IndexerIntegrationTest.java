@@ -4,7 +4,6 @@ import de.bonndan.nivio.IntegrationTestSupport;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
-import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,9 @@ import org.springframework.context.ApplicationEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,9 +68,9 @@ class IndexerIntegrationTest {
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
         assertTrue(landscape.getDescription().contains("demonstrate"));
-        Assertions.assertNotNull(landscape.getItems());
-        assertEquals(18, landscape.getItems().all().size());
-        Item blog = landscape.getItems().pick("blog-server", null);
+        Assertions.assertNotNull(landscape.getReadAccess());
+        assertEquals(17, landscape.getReadAccess().all(Item.class).size());
+        Item blog = landscape.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
@@ -80,7 +81,7 @@ class IndexerIntegrationTest {
                 .filter(relationItem -> relationItem.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()).stream().filter(i -> i.getIdentifier().equals("wordpress-web")).findFirst();
-        Item webserver = first.orElseThrow();
+        Item webserver = (Item) first.orElseThrow();
 
         Assertions.assertNotNull(webserver);
         assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
@@ -95,7 +96,7 @@ class IndexerIntegrationTest {
         assertEquals("hourly push KPI data", push.getDescription());
         assertEquals("json", push.getFormat());
         assertEquals(blog.getIdentifier(), push.getSource().getIdentifier());
-        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
+        assertEquals("item://nivio_example/default/default/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
         Set<ServiceInterface> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
@@ -113,22 +114,20 @@ class IndexerIntegrationTest {
 
         Assertions.assertNotNull(landscape);
         assertEquals("mail@acme.org", landscape.getContact());
-        Assertions.assertNotNull(landscape.getItems());
-        assertEquals(18, landscape.getItems().all().size());
-        Item blog = landscape.getItems().pick("blog-server", null);
+        Assertions.assertNotNull(landscape.getReadAccess());
+        assertEquals(17, landscape.getReadAccess().all(Item.class).size());
+
+        //
+        Item blog = landscape.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog);
         assertEquals(3, RelationType.PROVIDER.filter(blog.getRelations()).stream()
                 .filter(relationItem1 -> relationItem1.getTarget().equals(blog))
                 .map(Relation::getSource)
                 .collect(Collectors.toUnmodifiableSet()).size());
 
-        ArrayList<Item> landscapeItems = new ArrayList<>(RelationType.PROVIDER.filter(blog.getRelations()).stream()
-                .filter(relationItem -> relationItem.getTarget().equals(blog))
-                .map(Relation::getSource)
-                .collect(Collectors.toUnmodifiableSet()));
-        ItemIndex<Item> itemIndex = new ItemIndex<>(Item.class);
-        itemIndex.setItems(new HashSet<>(landscapeItems));
-        Item webserver = itemIndex.pick("wordpress-web", null);
+
+
+        Item webserver = landscape.getReadAccess().matchOneByIdentifiers("wordpress-web", null, Item.class).orElseThrow();
         Assertions.assertNotNull(webserver);
         assertEquals(1, RelationType.PROVIDER.filter(webserver.getRelations()).size());
 
@@ -141,8 +140,8 @@ class IndexerIntegrationTest {
 
         assertEquals("hourly push KPI data", push.getDescription());
         assertEquals("json", push.getFormat());
-        assertEquals("nivio:example/content/blog-server", push.getSource().getFullyQualifiedIdentifier().toString());
-        assertEquals("nivio:example/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
+        assertEquals(blog.getFullyQualifiedIdentifier(), push.getSource().getFullyQualifiedIdentifier());
+        assertEquals("item://nivio_example/default/default/dashboard/kpi-dashboard", push.getTarget().getFullyQualifiedIdentifier().toString());
 
         Set<ServiceInterface> interfaces = blog.getInterfaces();
         assertEquals(3, interfaces.size());
@@ -159,36 +158,45 @@ class IndexerIntegrationTest {
     @Test
     void testIncrementalUpdate() {
         Landscape landscape = index();
-        Item blog = landscape.getItems().pick("blog-server", null);
-        int before = landscape.getItems().all().size();
+        integrationTestSupport.getLandscapeRepository().save(landscape);
+
+        Item blog = landscape.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
+        int before = landscape.getReadAccess().all(Item.class).size();
 
         LandscapeDescription landscapeDescription = new LandscapeDescription(
                 landscape.getIdentifier(), landscape.getName(), null
         );
+
+        // partial: only updates
         landscapeDescription.setIsPartial(true);
 
         ItemDescription newItem = new ItemDescription();
         newItem.setIdentifier(blog.getIdentifier());
         newItem.setGroup("completelyNewGroup");
-        landscapeDescription.getItemDescriptions().add(newItem);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(newItem);
 
-        ItemDescription exsistingWordPress = new ItemDescription();
-        exsistingWordPress.setIdentifier("wordpress-web");
-        exsistingWordPress.setName("Other name");
-        landscapeDescription.getItemDescriptions().add(exsistingWordPress);
+        //item dto has no group, should match the existing item
+        ItemDescription existingWordPress = new ItemDescription();
+        existingWordPress.setIdentifier("wordpress-web");
+        existingWordPress.setName("Other name");
+        landscapeDescription.getWriteAccess().addOrReplaceChild(existingWordPress);
 
 
-        //created
+        //when
         integrationTestSupport.getIndexer().index(landscapeDescription);
-        landscape = integrationTestSupport.getLandscapeRepository().findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
-        blog = landscape.getItems().pick("blog-server", "completelyNewGroup");
-        assertEquals("completelyNewGroup", blog.getGroup());
-        assertEquals(before + 1, landscape.getItems().all().size());
 
-        //updated
-        Item wordpress = landscape.getItems().pick("wordpress-web", "content");
+        //then
+        assertThat(landscape.getReadAccess().all(Item.class)).hasSize(before + 1);
+
+        //new item
+        landscape = integrationTestSupport.getLandscapeRepository().findDistinctByIdentifier(landscapeDescription.getIdentifier()).orElseThrow();
+        blog = landscape.getReadAccess().matchOneByIdentifiers("blog-server", "completelyNewGroup", Item.class).orElseThrow();
+        assertEquals("completelynewgroup", blog.getParent().getIdentifier());
+
+        //should be updated
+        Item wordpress = landscape.getReadAccess().matchOneByIdentifiers("wordpress-web", "content", Item.class).orElseThrow();
         assertEquals("Other name", wordpress.getName());
-        assertEquals("content", wordpress.getGroup());
+        assertEquals("content", wordpress.getParent().getIdentifier());
 
         //testing changelog
         ArgumentCaptor<ProcessingFinishedEvent> captor = ArgumentCaptor.forClass(ProcessingFinishedEvent.class);
@@ -197,8 +205,15 @@ class IndexerIntegrationTest {
         assertThat(value).isNotNull();
         ProcessingChangelog changelog = value.getChangelog();
         assertThat(changelog).isNotNull();
-        assertThat(changelog.getChanges()).hasSize(3);
-        assertThat(changelog.getChanges()).containsKey("nivio:example/content/wordpress-web");
+        assertThat(changelog.getChanges()).hasSize(8);
+
+        // new item (same identifier, different group
+        assertThat(changelog.getChanges()).containsKey(blog.getFullyQualifiedIdentifier());
+        assertThat(changelog.getChanges().get(blog.getFullyQualifiedIdentifier()).getChangeType()).isEqualTo("CREATED");
+
+        //UPDATE
+        assertThat(changelog.getChanges()).containsKey(wordpress.getFullyQualifiedIdentifier());
+        assertThat(changelog.getChanges().get(wordpress.getFullyQualifiedIdentifier()).getChangeType()).isEqualTo("UPDATED");
     }
 
     /**
@@ -211,16 +226,16 @@ class IndexerIntegrationTest {
 
         Assertions.assertNotNull(landscape1);
         assertEquals("mail@acme.org", landscape1.getContact());
-        Assertions.assertNotNull(landscape1.getItems());
-        Item blog1 = landscape1.getItems().pick("blog-server", null);
+        Assertions.assertNotNull(landscape1.getReadAccess());
+        Item blog1 = landscape1.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog1);
         assertEquals("blog", blog1.getLabel(Label.shortname));
 
         Assertions.assertNotNull(landscape2);
-        assertEquals("nivio:other", landscape2.getIdentifier());
+        assertEquals("nivio_other", landscape2.getIdentifier());
         assertEquals("mail@other.org", landscape2.getContact());
-        Assertions.assertNotNull(landscape2.getItems());
-        Item blog2 = landscape2.getItems().pick("blog-server", null);
+        Assertions.assertNotNull(landscape2.getReadAccess());
+        Item blog2 = landscape2.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class).orElseThrow();
         Assertions.assertNotNull(blog2);
         assertEquals("blog1", blog2.getLabel(Label.shortname));
     }
@@ -233,14 +248,14 @@ class IndexerIntegrationTest {
         Landscape landscape1 = index("/src/test/resources/example/example_dataflow.yml");
 
         Assertions.assertNotNull(landscape1);
-        Assertions.assertNotNull(landscape1.getItems());
-        Item blog1 = landscape1.getItems().pick("blog-server", "content1");
+        Assertions.assertNotNull(landscape1.getReadAccess());
+        Item blog1 = landscape1.getReadAccess().matchOneByIdentifiers("blog-server", "content1", Item.class).orElseThrow();
         Assertions.assertNotNull(blog1);
-        Item blog2 = landscape1.getItems().pick("blog-server", "content2");
+        Item blog2 = landscape1.getReadAccess().matchOneByIdentifiers("blog-server", "content2", Item.class).orElseThrow();
         Assertions.assertNotNull(blog2);
         assertEquals("Demo Blog", blog1.getName());
         assertEquals(
-                FullyQualifiedIdentifier.build("nivio:dataflowtest", "content1", "blog-server").toString(),
+                FullyQualifiedIdentifier.build(ComponentClass.item,"nivio_dataflowtest", "default", "default", "content1", "blog-server").toString(),
                 blog1.toString()
         );
 
@@ -250,46 +265,51 @@ class IndexerIntegrationTest {
 
     @Test
     void environmentTemplatesApplied() {
+
+        //when
         Landscape landscape = index("/src/test/resources/example/example_templates.yml");
 
-        Item web = landscape.getItems().pick("web", null);
+        //then
+        Item web = landscape.getReadAccess().matchOneByIdentifiers("web", null, Item.class).orElseThrow();
         assertNotNull(web);
         assertEquals("web", web.getIdentifier());
+        assertEquals("alphateam", web.getLabel(Label.team));
         assertEquals("webservice", web.getType());
     }
 
     @Test
     void readGroups() {
-        Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
-        Map<String, Group> groups = landscape1.getGroups();
-        assertTrue(groups.containsKey("content"));
-        Group content = groups.get("content");
-        assertThat(content.getItems()).isNotEmpty();
-        assertEquals(3, content.getItems().size());
 
-        assertTrue(groups.containsKey("ingress"));
-        Group ingress = groups.get("ingress");
-        assertFalse(ingress.getItems().isEmpty());
-        assertEquals(1, ingress.getItems().size());
+        //when
+        Landscape landscape1 = index("/src/test/resources/example/example_env.yml");
+
+        //then
+        Group content = landscape1.getReadAccess().all(Group.class).stream().filter(group -> group.getIdentifier().equals("content")).findFirst().orElseThrow();
+        assertThat(content.getChildren()).isNotEmpty();
+        assertEquals(3, content.getChildren().size());
+
+        Group ingress = landscape1.getReadAccess().all(Group.class).stream().filter(group -> group.getIdentifier().equals("ingress")).findFirst().orElseThrow();
+        assertFalse(ingress.getChildren().isEmpty());
+        assertEquals(1, ingress.getChildren().size());
     }
 
     @Test
     void readGroupsContains() {
         Landscape landscape1 = index("/src/test/resources/example/example_groups.yml");
-        Group a = landscape1.getGroups().get("groupA");
-        ItemIndex<Item> index = new ItemIndex<>(Item.class);
-        index.setItems(new HashSet<>(landscape1.getItems().retrieve(a.getItems())));
+        Optional<Group> a = landscape1.getReadAccess().all(Group.class).stream()
+                .filter(group -> group.getIdentifier().equalsIgnoreCase("groupA"))
+                .findFirst();
+        assertThat(a).isPresent();
 
-        assertNotNull(index.pick("blog-server", null));
-        assertNotNull(index.pick("crappy_dockername-234234", null));
+        assertNotNull(landscape1.getReadAccess().matchOneByIdentifiers("blog-server", null, Item.class));
+        assertNotNull(landscape1.getReadAccess().matchOneByIdentifiers("crappy_dockername-234234", null, Item.class));
     }
 
     @Test
     void masksSecrets() {
         Landscape landscape1 = index("/src/test/resources/example/example_secret.yml");
-        Optional<Item> abc = landscape1.getItems().find("abc", null);
-        assertThat(abc).isNotEmpty();
-        Item item = abc.get();
+        Item item = landscape1.getReadAccess().matchOneByIdentifiers("abc", null, Item.class).orElseThrow();
+        assertThat(item).isNotNull();
         assertThat(item.getLabel("key")).isEqualTo(SecureLabelsResolver.MASK);
         assertThat(item.getLabel("password")).isEqualTo(SecureLabelsResolver.MASK);
         assertThat(item.getLabel("foo_url")).isEqualTo("https://*@foobar.com");
@@ -298,11 +318,9 @@ class IndexerIntegrationTest {
     @Test
     void labelRelations() {
         Landscape landscape = index("/src/test/resources/example/example_label_relations.yml");
-        assertEquals(3, landscape.getGroups().size()); //common group is present by default
-        assertEquals(2, landscape.getItems().all().size());
+        assertEquals(2, landscape.getReadAccess().all(Item.class).size());
 
-        Item foo = landscape.getItems().all().iterator().next();
-        assertEquals("foo", foo.getIdentifier());
+        Item foo = landscape.getReadAccess().matchOneByIdentifiers("foo", null, Item.class).orElseThrow();
         assertEquals(1, foo.getRelations().size());
     }
 

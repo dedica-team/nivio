@@ -5,6 +5,7 @@ import de.bonndan.nivio.output.map.hex.PathTile;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -87,7 +88,7 @@ public class SVGDimensionFactory {
         return new SVGDimension(hex, cartesian);
     }
 
-    static SVGDimension getDimension(List<SVGGroupArea> groupAreas, List<SVGRelation> relations) {
+    static SVGDimension getDimension(List<SVGGroupArea> groupAreas, Collection<SVGRelation> relations) {
 
         List<Hex> hexes = new ArrayList<>();
         //fix viewport, because xy and hex coordinate system have different offsets

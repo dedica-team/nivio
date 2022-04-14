@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.layout;
 
+import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.model.LayoutConfig;
@@ -9,10 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.net.URI;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,18 +35,26 @@ public class OrganicLayouter implements Layouter {
     @Override
     public LayoutedComponent layout(@NonNull final Landscape landscape) {
 
-        Map<String, SubLayout> subGraphs = new LinkedHashMap<>();
+        Map<URI, SubLayout> subGraphs = new LinkedHashMap<>();
         LayoutConfig layoutConfig = landscape.getConfig().getLayoutConfig();
-        Objects.requireNonNull(landscape).getGroups().forEach((name, group) -> {
-            Set<Item> items = landscape.getItems().retrieve(group.getItems());
+        Objects.requireNonNull(landscape).getReadAccess().all(Group.class).forEach(group -> {
+            Set<Item> items = group.getChildren();
             if (items.isEmpty()) return;
             SubLayout subLayout = new SubLayout(debug, layoutConfig);
             subLayout.render(group, items);
-            subGraphs.put(name, subLayout);
+            subGraphs.put(group.getFullyQualifiedIdentifier(), subLayout);
         });
 
         AllGroupsLayout allGroupsLayout = new AllGroupsLayout(debug, layoutConfig);
-        LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(landscape, new LinkedHashMap<>(landscape.getGroups()), subGraphs);
+        Map<URI, Group> sortedGroups = new LinkedHashMap<>();
+        landscape.getReadAccess().all(Group.class).stream()
+                .sorted(new SortedGroups())
+                .forEach(group -> sortedGroups.put(group.getFullyQualifiedIdentifier(), group));
+        LayoutedComponent layoutedComponent = allGroupsLayout.getRendered(
+                landscape,
+                sortedGroups,
+                subGraphs
+        );
         shiftGroupsAndItems(layoutedComponent);
         return layoutedComponent;
     }
@@ -60,37 +67,47 @@ public class OrganicLayouter implements Layouter {
         AtomicInteger minX = new AtomicInteger(Integer.MAX_VALUE);
         AtomicInteger minY = new AtomicInteger(Integer.MAX_VALUE);
         layoutedLandscape.getChildren().forEach(groupBounds -> {
-            if (groupBounds.getX() < minX.get()) {
-                minX.set((int) groupBounds.getX());
+            if (groupBounds.getCenterX() < minX.get()) {
+                minX.set((int) groupBounds.getCenterX());
             }
 
-            if (groupBounds.getY() < minY.get()) {
-                minY.set((int) groupBounds.getY());
+            if (groupBounds.getCenterY() < minY.get()) {
+                minY.set((int) groupBounds.getCenterY());
             }
         });
 
         final int groupPadding = Hex.HEX_SIZE;
 
-        layoutedLandscape.getChildren().forEach(groupBounds -> {
+        final int xCorr = minX.get() - groupPadding;
+        final int yCorr = minY.get() - groupPadding;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("shifting all components by x {} y {}", xCorr, yCorr);
+        }
+        layoutedLandscape.getChildren().forEach(groupLayout -> {
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+                LOGGER.debug("group {} offset {} {}", groupLayout.getComponent().getIdentifier(), groupLayout.getCenterX(), groupLayout.getCenterY());
             }
-            groupBounds.setX((groupBounds.getX() - minX.get()) + groupPadding);
-            groupBounds.setY(groupBounds.getY() - minY.get() + groupPadding);
+
+            groupLayout.setCenterX(groupLayout.getCenterX() - xCorr);
+            groupLayout.setCenterY(groupLayout.getCenterY() - yCorr);
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("corrected group {} offset {} {}", groupBounds.getComponent().getIdentifier(), groupBounds.getX(), groupBounds.getY());
+                LOGGER.debug("corrected group {} offset {} {}", groupLayout.getComponent().getIdentifier(), groupLayout.getCenterX(), groupLayout.getCenterY());
             }
 
-            groupBounds.getChildren().forEach(itemBounds -> {
+            // the group items still have their own sublayout rendering offset independent from the parent group position
+            // so it is necessary to adjust all items to their common center as null point
+            final LayoutedComponent.DimAndCenter dimAndCenter = LayoutedComponent.getDimAndCenter(groupLayout.getChildren());
+
+            groupLayout.getChildren().forEach(itemBounds -> {
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("original item pos {} {}", itemBounds.getX(), itemBounds.getY());
+                    LOGGER.debug("original item pos {} {}", itemBounds.getCenterX(), itemBounds.getCenterY());
                 }
-                itemBounds.setX(itemBounds.getX() + groupBounds.getX());
-                itemBounds.setY(itemBounds.getY() + groupBounds.getY());
+                itemBounds.setCenterX((long) (itemBounds.getCenterX() - dimAndCenter.x + groupLayout.getCenterX()));
+                itemBounds.setCenterY((long) (itemBounds.getCenterY() - dimAndCenter.y + groupLayout.getCenterY()));
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("item {} pos with group offset: {} {}", itemBounds, itemBounds.getX(), itemBounds.getY());
+                    LOGGER.debug("item {} pos with group offset: {} {}", itemBounds, itemBounds.getCenterX(), itemBounds.getCenterY());
                 }
             });
         });

@@ -12,15 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ApiModelTest {
 
-    private Landscape landscape;
-    private Group group;
     private ItemBuilder itemTemplate;
 
     @BeforeEach
     void setUp() {
-        landscape = LandscapeFactory.createForTesting("l1", "l1Landscape").build();
-        group = new Group("g1", landscape.getIdentifier());
-        itemTemplate = getTestItemBuilder("g1", "a").withLandscape(landscape).withType("two");
+        itemTemplate = getTestItemBuilder("g1", "a").withType("two");
     }
 
     @Test
@@ -30,7 +26,7 @@ class ApiModelTest {
         s1.getLabels().put("foo.one", "one");
         s1.getLabels().put("foo.two", "two");
 
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1);
 
         //when
         Map<String, String> labels = itemApiModel.getLabels();
@@ -45,7 +41,7 @@ class ApiModelTest {
         Item s1 = itemTemplate.build();
         s1.getLabels().put(InputFormatHandlerKubernetes.LABEL_PREFIX + ".foo", "one");
 
-        ItemApiModel itemApiModel = new ItemApiModel(s1, group);
+        ItemApiModel itemApiModel = new ItemApiModel(s1);
 
 
         //when

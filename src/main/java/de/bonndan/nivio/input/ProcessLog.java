@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.bonndan.nivio.input.hints.Hint;
 import org.slf4j.Logger;
 import org.springframework.lang.NonNull;
 
+import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -24,6 +27,8 @@ public class ProcessLog {
     private final List<Entry> messages = new ArrayList<>();
 
     private final String landscapeIdentifier;
+    private ProcessingChangelog changelog;
+    private Map<URI, List<Hint>> hints;
 
     public ProcessLog(@NonNull final Logger logger, @NonNull final String landscapeIdentifier) {
         this.logger = Objects.requireNonNull(logger);
@@ -76,6 +81,22 @@ public class ProcessLog {
             return messages.get(messages.size() - 1).date;
         }
         return null;
+    }
+
+    public void setChangelog(ProcessingChangelog changelog) {
+        this.changelog = Objects.requireNonNull(changelog);
+    }
+
+    public ProcessingChangelog getChangelog() {
+        return changelog;
+    }
+
+    public void setHints(Map<URI, List<Hint>> hints) {
+        this.hints = hints;
+    }
+
+    public Map<URI, List<Hint>> getHints() {
+        return hints;
     }
 
     public static class Entry {

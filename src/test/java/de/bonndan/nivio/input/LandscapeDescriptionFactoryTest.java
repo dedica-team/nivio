@@ -1,10 +1,13 @@
 package de.bonndan.nivio.input;
 
+import de.bonndan.nivio.assessment.Assessment;
+import de.bonndan.nivio.input.dto.ContextDescription;
+import de.bonndan.nivio.input.dto.GroupDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescriptionFactory;
+import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -13,8 +16,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class LandscapeDescriptionFactoryTest {
@@ -29,10 +32,6 @@ class LandscapeDescriptionFactoryTest {
         factory = new LandscapeDescriptionFactory();
     }
 
-    @Test
-    void readsMinimalWithIdentifier() {
-        assertDoesNotThrow(() -> new LandscapeDescriptionFactory().fromString("yaml", ""));
-    }
 
     @Test
     void readFails() {
@@ -60,6 +59,44 @@ class LandscapeDescriptionFactoryTest {
 
         // then
         assertThat(landscapeDescription.getIcon()).isEqualTo("https://dedica.team/images/logo_orange_weiss.png");
+    }
+
+    @Test
+    void refreshedCopy() {
+
+        //given
+        LandscapeDescription in = new LandscapeDescription("test");
+        in.setIsPartial(true);
+
+        ContextDescription context = new ContextDescription();
+        context.setIdentifier("aContext");
+        in.getWriteAccess().addOrReplaceChild(context);
+
+        GroupDescription group = new GroupDescription("a");
+        group.setName("foo");
+        in.getWriteAccess().addOrReplaceChild(group);
+
+        in.getReadAccess().indexForSearch(Assessment.empty());
+        group.setContext(context.getIdentifier()); //now the index is stale, node fqi in index is not correct
+
+        var shouldBeKey = FullyQualifiedIdentifier.forDescription(GroupDescription.class, null, null, group.getParentIdentifier(), group.getIdentifier(), null, null);
+        assertThat(in.getReadAccess().get(shouldBeKey)).isEmpty();
+
+        //when
+        var out = LandscapeDescriptionFactory.refreshedCopyOf(in);
+
+        //then
+        assertThat(out)
+                .isNotSameAs(in)
+                .isEqualTo(in);
+        assertThat(out.getConfig()).isEqualTo(in.getConfig());
+        assertThat(out.getTemplates()).isEqualTo(in.getTemplates());
+        assertThat(out.getLinks()).isEqualTo(in.getLinks());
+        assertThat(out.getName()).isEmpty(); //in had null
+        assertThat(out.getDescription()).isEqualTo(in.getDescription());
+        assertThat(out.isPartial()).isTrue();
+
+        assertThat(out.getReadAccess().get(shouldBeKey)).isPresent();
     }
 
 }

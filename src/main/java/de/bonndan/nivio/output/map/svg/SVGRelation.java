@@ -1,6 +1,5 @@
 package de.bonndan.nivio.output.map.svg;
 
-import de.bonndan.nivio.assessment.Status;
 import de.bonndan.nivio.assessment.StatusValue;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
@@ -16,13 +15,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.awt.geom.Point2D;
+import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.output.map.hex.Hex.SOUTH;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.DATA_IDENTIFIER;
 import static de.bonndan.nivio.output.map.svg.SVGDocument.VISUAL_FOCUS_UNSELECTED;
-import static de.bonndan.nivio.output.map.svg.SVGRenderer.DEFAULT_ICON_SIZE;
 import static de.bonndan.nivio.output.map.svg.SvgTagCreator.g;
 
 /**
@@ -32,7 +30,6 @@ class SVGRelation extends Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGRelation.class);
 
-    public static final String MARKER_ID = "arrow";
     public static final int BASIC_STROKE_WIDTH = 20;
 
     private final HexPath hexPath;
@@ -72,19 +69,12 @@ class SVGRelation extends Component {
     @Override
     public DomContent render() {
 
-        var fillId = "#" + fill;
-
-        var points = hexPath.getPoints().stream()
-                .map(pathElement -> pathElement.shift(offset).toString())
+        final var fillId = "#" + fill;
+        final var points = hexPath.getPoints().stream()
+                .map(pathElement -> pathElement.shifted(offset))
                 .collect(Collectors.joining(""));
 
-        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
-        BezierPath bezierPath = new BezierPath();
-        bezierPath.parsePathString(points);
-
-
-        ContainerTag shadow = null;
-        float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
+        final float factor = Optional.ofNullable(relation.getLabel(Label.weight)).map(s -> {
             try {
                 float v = Float.parseFloat(s);
                 if (v > 5f) {
@@ -96,41 +86,44 @@ class SVGRelation extends Component {
                 return 1f;
             }
         }).orElse(1f);
-        int innerStrokeWidth = Math.round(5 * factor);
-        if (statusValue != null && !statusValue.getStatus().equals(Status.UNKNOWN)) {
-            String statusColor = statusValue.getStatus().getName();
-            shadow = SvgTagCreator.path()
-                    .attr("d", points)
-                    .attr("stroke", statusColor)
-                    .attr("stroke-width", Math.round(BASIC_STROKE_WIDTH * factor));
-        }
+        final int innerStrokeWidth = Math.round(5 * factor);
+        final int yPortTranslation = getTranslation();
 
-        int translation = getTranslation();
+        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
+        final BezierPath bezierPath = new BezierPath();
+        bezierPath.parsePathString(points);
+
+        final var endPoint = bezierPath.angleAtEnd(
+                SvgRelationEndMarker.HALF_MARKER_SIZE,
+                0,
+                yPortTranslation
+        );
+
         ContainerTag path = SvgTagCreator.path()
                 .attr("d", points)
-                .attr("stroke", fillId)
-                .attr("stroke-width", innerStrokeWidth)
-                .attr("transform", String.format("translate(0 %d)", translation));
+                .attr(SVGAttr.STROKE, fillId)
+                .attr(SVGAttr.STROKE_WIDTH, innerStrokeWidth)
+                .attr(SVGAttr.TRANSFORM, String.format("translate(0 %d)", yPortTranslation));
 
         if (Lifecycle.isPlanned(relation.getSource()) || Lifecycle.isPlanned(relation.getTarget())) {
             path.attr("opacity", "0.5");
         }
 
-        if (RelationType.DATAFLOW.equals(relation.getType())) {
-            path.attr("fill", fillId);
+        if (RelationType.DATAFLOW.name().equals(relation.getType())) {
+            path.attr(SVGAttr.FILL, fillId);
             path.attr("stroke-dasharray", 15);
         }
 
-        var lastDirection = hexPath.getDirections().isEmpty() ? SOUTH : hexPath.getDirections().get(hexPath.getDirections().size() - 1);
         SvgRelationEndMarker marker = new SvgRelationEndMarker(
-                new Point2D.Double(hexPath.getEndPoint().x + offset.x, hexPath.getEndPoint().y + offset.y),
-                relation.getType(),
-                fillId,
-                lastDirection
+                endPoint,
+                RelationType.from(relation.getType()),
+                fillId
         );
         ContainerTag endMarker = marker.render();
 
-        return addAttributes(g(shadow, path, endMarker, label(relation.getLabel(Label.label), bezierPath, fillId)), relation);
+        ContainerTag label = createLabel(relation.getLabel(Label.label), bezierPath, fillId, statusValue, yPortTranslation);
+
+        return addAttributes(g(path, endMarker, label), relation);
     }
 
     private int getTranslation() {
@@ -147,45 +140,62 @@ class SVGRelation extends Component {
     }
 
     private ContainerTag addAttributes(ContainerTag g, Relation relation) {
-        String type = relation.getType() != null ? relation.getType().name() : "-";
+        String type = relation.getType() != null ? relation.getType() : "-";
         g.attr("data-type", type)
-                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().jsonValue())
-                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().jsonValue())
-                .attr(DATA_IDENTIFIER, relation.getIdentifier())
-                .attr("class", "relation " + VISUAL_FOCUS_UNSELECTED);
+                .attr("data-source", relation.getSource().getFullyQualifiedIdentifier().toString())
+                .attr("data-target", relation.getTarget().getFullyQualifiedIdentifier().toString())
+                .attr(DATA_IDENTIFIER, relation.getFullyQualifiedIdentifier())
+                .attr(SVGAttr.CLASS, String.format("relation %s", VISUAL_FOCUS_UNSELECTED));
 
         return g;
     }
 
     @Nullable
-    private ContainerTag label(String text, BezierPath bezierPath, String fillId) {
-        if (!StringUtils.hasLength(text)) {
-            return null;
-        }
-        return new SvgRelationLabel(text, bezierPath.eval(0.49f), bezierPath.eval(0.51f), fillId, true).render();
+    private ContainerTag createLabel(String text,
+                                     BezierPath bezierPath,
+                                     String fillId,
+                                     StatusValue statusValue,
+                                     int translation
+    ) {
+        return new SvgRelationLabel(
+                text,
+                bezierPath.angleAt(0.49f, 0.51f, 0, translation, true),
+                fillId,
+                statusValue
+        ).render();
     }
 
-    /**
-     * Create a group-colored marker.
-     *
-     * @return a reusable marker for data flow paths
-     */
-    public static ContainerTag dataflowMarker() {
-        ContainerTag path = SvgTagCreator.path().attr("d", "M 0 0 L 10 5 L 0 10 z")
-                .attr("fill", "grey");
+    public DomContent renderAsProcessBranch(@NonNull final URI fqi, @NonNull final String processColor) {
 
-        return SvgTagCreator.marker()
-                .attr("id", MARKER_ID)
-                .attr("markerWidth", DEFAULT_ICON_SIZE)
-                .attr("markerHeight", DEFAULT_ICON_SIZE)
-                .attr("refX", 14)
-                .attr("refY", 5)
-                .attr("orient", "auto")
-                .attr("viewBox", "0 0 10 10")
-                .attr("stroke", "context-stroke")
-                .attr("markerUnits", "userSpaceOnUse")
-                .with(path)
-                ;
+        final var points = hexPath.getPoints().stream()
+                .map(pathElement -> pathElement.shifted(offset))
+                .collect(Collectors.joining(""));
+
+        //the bezier path is used to interpolate the "stringPath" in order to find the position for the label
+        final BezierPath bezierPath = new BezierPath();
+        bezierPath.parsePathString(points);
+
+        final int scale = 3;
+        final var endPoint = bezierPath.angleAtEnd(
+                SvgRelationEndMarker.HALF_MARKER_SIZE * scale/2,
+                0,
+                0
+        );
+
+        ContainerTag shadow = SvgTagCreator.path()
+                .attr("d", points)
+                .attr(SVGAttr.STROKE, processColor)
+                .attr(SVGAttr.FILL, "transparent")
+                .attr(SVGAttr.STROKE_WIDTH, (BASIC_STROKE_WIDTH * 2))
+                .attr(SVGAttr.CLASS, "process")
+                .attr(SVGAttr.DATA_IDENTIFIER, fqi);
+
+        ContainerTag shadowMarker = new SvgRelationEndMarker(endPoint, null, processColor, scale).render()
+                .attr(SVGAttr.CLASS, "process")
+                .attr(SVGAttr.DATA_IDENTIFIER, fqi);
+
+        return g(shadow, shadowMarker);
     }
+
 }
 

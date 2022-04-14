@@ -1,22 +1,31 @@
 package de.bonndan.nivio.output.map.svg;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.model.Group;
 import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.output.map.hex.GroupAreaFactory;
 import de.bonndan.nivio.output.map.hex.Hex;
 import de.bonndan.nivio.output.map.hex.HexMap;
 import de.bonndan.nivio.output.map.hex.MapTile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SVGGroupAreaOutlineFactoryTest {
+
+    private GraphTestSupport graph;
+
+    @BeforeEach
+    void setup() {
+        graph = new GraphTestSupport();
+    }
 
     @Test
     @DisplayName("Ensure that items far apart have one outline")
@@ -24,12 +33,11 @@ class SVGGroupAreaOutlineFactoryTest {
         Hex e1 = new Hex(0, 100);
         Hex e2 = new Hex(0, 20);
 
-        Item item1 = getTestItem("foo", "bar");
-        Item item2 = getTestItem("foo", "baz");
+        Group foo = graph.getTestGroup("foo");
+        foo.setLabel(Label.color, "005500");
 
-        Group foo = new Group("foo", "landscapeIdentifier", null, null, null, "005500");
-        foo.addOrReplaceItem(item1);
-        foo.addOrReplaceItem(item2);
+        Item item1 = graph.getTestItem("foo", "bar");
+        Item item2 = graph.getTestItem("foo", "baz");
 
         HexMap hexMap = new HexMap();
         hexMap.add(item1, new MapTile(e1));

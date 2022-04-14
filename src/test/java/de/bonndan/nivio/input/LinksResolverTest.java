@@ -5,11 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.external.ExternalLinkHandler;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Link;
-import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static de.bonndan.nivio.input.external.LinkHandlerFactory.GITHUB;
-import static java.util.Optional.*;
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -36,11 +30,12 @@ class LinksResolverTest {
     @BeforeEach
     void setUp() {
         linkHandlerFactory = mock(LinkHandlerFactory.class);
-        resolver = new LinksResolver(mock(ProcessLog.class), linkHandlerFactory);
+        resolver = new LinksResolver( linkHandlerFactory);
 
         landscapeDescription = new LandscapeDescription("foo", "foo", null);
-        aGroup = new GroupDescription();
-        landscapeDescription.getGroups().put("foo", aGroup);
+        landscapeDescription.setProcessLog(mock(ProcessLog.class));
+        aGroup = new GroupDescription("a");
+        landscapeDescription.getWriteAccess().addOrReplaceChild( aGroup);
     }
 
     @Test
@@ -84,7 +79,7 @@ class LinksResolverTest {
         Link link = new Link(new URL("https://github.com/dedica-team/nivio/"), GITHUB);
         ItemDescription item = new ItemDescription("foo");
         item.setLinks(Map.of(GITHUB, link));
-        landscapeDescription.getItemDescriptions().add(item);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(item);
 
         ExternalLinkHandler mockResolver = mock(ExternalLinkHandler.class);
         when(linkHandlerFactory.getResolver(eq(GITHUB))).thenReturn(ofNullable(mockResolver));
@@ -125,7 +120,7 @@ class LinksResolverTest {
         item.setIcon("foo");
         item.setName("bar");
         item.setLinks(Map.of("github", link));
-        landscapeDescription.getItemDescriptions().add(item);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(item);
 
         ExternalLinkHandler mockResolver = mock(ExternalLinkHandler.class);
         when(linkHandlerFactory.getResolver(eq(GITHUB))).thenReturn(ofNullable(mockResolver));

@@ -34,7 +34,7 @@ public class MapStyleSheetFactory {
         }
 
         try {
-            processLog.debug("Loading customer stylesheet: " + mapStylesheet);
+            processLog.debug(String.format("Loading customer stylesheet: %s", mapStylesheet));
             return URLFactory.getURL(mapStylesheet).map(fileFetcher::get).orElse("");
         } catch (ReadingException e) {
             processLog.warn("Failed to load customer stylesheet " + mapStylesheet + ": " + e.getMessage());

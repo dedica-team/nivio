@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import static de.bonndan.nivio.input.demo.PetClinicSimulatorResolver.LANDSCAPE_IDENTIFIER_PETCLINIC;
 import static de.bonndan.nivio.input.demo.PetClinicSimulatorResolver.RADIATION;
@@ -21,17 +22,18 @@ class PetClinicSimulatorResolverTest {
         input = new LandscapeDescription(LANDSCAPE_IDENTIFIER_PETCLINIC);
         ItemDescription sensor = new ItemDescription("sensor");
         sensor.setGroup("xray");
-        input.getItemDescriptions().add(sensor);
+        input.getWriteAccess().addOrReplaceChild(sensor);
         ItemDescription customerDB = new ItemDescription("customer-db");
         customerDB.setGroup("xray");
-        input.getItemDescriptions().add(customerDB);
-        resolver = new PetClinicSimulatorResolver(mock(ProcessLog.class));
+        input.getWriteAccess().addOrReplaceChild(customerDB);
+        input.setProcessLog(new ProcessLog(mock(Logger.class), input.getIdentifier()));
+        resolver = new PetClinicSimulatorResolver();
     }
 
     @Test
     void simulatesChangingRadiation() {
 
-        ItemDescription sensor = input.getItemDescriptions().pick("sensor", "xray");
+        ItemDescription sensor = input.getReadAccess().matchOneByIdentifiers("sensor", "xray", ItemDescription.class).orElseThrow();
         int currentRad = 0;
         sensor.setLabel(RADIATION, String.valueOf(currentRad));
 

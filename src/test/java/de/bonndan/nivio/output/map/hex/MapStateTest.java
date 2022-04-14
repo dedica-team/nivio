@@ -1,5 +1,6 @@
 package de.bonndan.nivio.output.map.hex;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.ItemFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +18,9 @@ class MapStateTest {
 
     @BeforeEach
     void setUp() {
+        var graph = new GraphTestSupport();
         mapState = new MapState();
-        testItem = ItemFactory.getTestItem("bar", "foo");
+        testItem = graph.getTestItem(graph.groupA.getIdentifier(), "foo");
     }
 
     @Test
@@ -78,13 +80,13 @@ class MapStateTest {
 
         MapTile other = new MapTile(new Hex(0, 0));
         other.setItem(testItem.getFullyQualifiedIdentifier());
-        other.setGroup(testItem.getFullyQualifiedIdentifier().getGroup());
+        other.setGroup(testItem.getParent().getIdentifier());
 
         //when
         MapTile inMap = mapState.add(other, testItem);
 
         assertThat(inMap).isSameAs(mapTile);
-        assertThat(inMap.getGroup()).isEqualTo(testItem.getGroup());
+        assertThat(inMap.getGroup()).isEqualTo(testItem.getParent().getIdentifier());
         assertThat(inMap.getItem()).isEqualTo(testItem.getFullyQualifiedIdentifier());
     }
 

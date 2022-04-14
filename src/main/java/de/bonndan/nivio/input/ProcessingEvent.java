@@ -1,8 +1,8 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.context.ApplicationEvent;
 
+import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -15,7 +15,7 @@ public abstract class ProcessingEvent extends ApplicationEvent {
     public static final String LOG_LEVEL_INFO = "info";
     public static final String LOG_LEVEL_ERROR = "error";
 
-    protected ProcessingEvent(FullyQualifiedIdentifier source) {
+    protected ProcessingEvent(URI source) {
         super(source);
     }
 
@@ -40,7 +40,7 @@ public abstract class ProcessingEvent extends ApplicationEvent {
     }
 
     @Override
-    public FullyQualifiedIdentifier getSource() {
-        return (FullyQualifiedIdentifier) super.getSource();
+    public URI getSource() {
+        return (URI) super.getSource();
     }
 }

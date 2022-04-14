@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 public class ThreeDRenderController {
@@ -30,7 +31,7 @@ public class ThreeDRenderController {
     public ThreeDRenderController(LandscapeRepository landscapeRepository) throws IOException {
         this.landscapeRepository = landscapeRepository;
         InputStream resourceAsStream = getClass().getResourceAsStream("/static/html/3d.html");
-        content = new String(StreamUtils.copyToByteArray(resourceAsStream));
+        content = new String(StreamUtils.copyToByteArray(resourceAsStream), StandardCharsets.UTF_8);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/render/{landscape}/threeD.html")

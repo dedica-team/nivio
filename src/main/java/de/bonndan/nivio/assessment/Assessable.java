@@ -6,6 +6,7 @@ import de.bonndan.nivio.input.ProcessingException;
 import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import org.springframework.lang.NonNull;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
  * Interface for components that can be assessed and can have assigned {@link StatusValue}s.
  */
 public interface Assessable {
+
+    URI getFullyQualifiedIdentifier();
 
     /**
      * Returns pre-set status values not computed by {@link KPI}s.
@@ -25,21 +28,13 @@ public interface Assessable {
     @NonNull
     Set<StatusValue> getAdditionalStatusValues();
 
-    /**
-     * Returns the string to be used as key/identifier for a component assessment.
-     *
-     * @return map key / identifier
-     */
-    @JsonIgnore
-    @NonNull
-    String getAssessmentIdentifier();
 
     /**
      * Returns the components to be assessed before this (e.g. group items).
      */
     @JsonIgnore
     @NonNull
-    List<? extends Assessable> getChildren();
+    Set<Assessable> getAssessables();
 
     /**
      * Recursively applies the {@link KPI}s to children and self.
@@ -47,18 +42,18 @@ public interface Assessable {
      * @param kpis kpis used for assessment
      * @return a map with statusValues indexed by {@link FullyQualifiedIdentifier}
      */
-    default Map<String, List<StatusValue>> applyKPIs(final Map<String, KPI> kpis) {
-        final Map<String, List<StatusValue>> map = new HashMap<>();
+    default Map<URI, List<StatusValue>> applyKPIs(@NonNull final Map<String, KPI> kpis) {
+        final Map<URI, List<StatusValue>> map = new HashMap<>();
 
         List<StatusValue> childrenValues = new ArrayList<>();
         //apply to children
-        getChildren().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(fullyQualifiedIdentifierListMap -> {
+        getAssessables().stream().map(assessable -> assessable.applyKPIs(kpis)).forEach(fullyQualifiedIdentifierListMap -> {
             map.putAll(fullyQualifiedIdentifierListMap);
             fullyQualifiedIdentifierListMap.forEach((key, value) -> replaceAll(childrenValues, value));
         });
 
         //apply each kpi to his
-        String fqi = this.getAssessmentIdentifier();
+        URI fqi = this.getFullyQualifiedIdentifier();
         map.putIfAbsent(fqi, new ArrayList<>());
 
         //add preset status values
@@ -78,7 +73,7 @@ public interface Assessable {
         });
 
         replaceAll(childrenValues, map.get(fqi));
-        replace(map.get(fqi), StatusValue.summary(getAssessmentIdentifier(), childrenValues));
+        replace(map.get(fqi), StatusValue.summary(getFullyQualifiedIdentifier(), childrenValues));
 
         //sort in descending order, the worst first
         map.get(fqi).sort(Collections.reverseOrder(new StatusValue.Comparator()));

@@ -1,19 +1,14 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
+import de.bonndan.nivio.input.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.codec.digest.DigestUtils.md5;
 
 
 /**
@@ -42,11 +37,11 @@ public class SourceReferencesResolver {
      */
     public List<LandscapeDescription> resolve(@NonNull final SeedConfiguration seedConfiguration) {
 
-        Map<FullyQualifiedIdentifier, LandscapeDescription> map = new HashMap<>();
+        Map<String, LandscapeDescription> map = new HashMap<>();
 
         //default landscape when items are set directly
-        LandscapeDescription defaultLandscapeDTO = createDefaultDTO(seedConfiguration);
-        map.put(defaultLandscapeDTO.getFullyQualifiedIdentifier(), defaultLandscapeDTO);
+        LandscapeDescription defaultLandscapeDTO = LandscapeDescriptionFactory.createDefaultDTO(seedConfiguration);
+        map.put(defaultLandscapeDTO.getIdentifier(), defaultLandscapeDTO);
 
         seedConfiguration.getSourceReferences().forEach(ref -> {
             InputFormatHandler formatHandler;
@@ -80,15 +75,25 @@ public class SourceReferencesResolver {
     /**
      * Ensures that the produced landscape description is merged or updated into the map
      */
-    private void handleDTO(Map<FullyQualifiedIdentifier, LandscapeDescription> map, SourceReference ref, LandscapeDescription landscapeDescription) {
+    private void handleDTO(Map<String, LandscapeDescription> map, SourceReference ref, LandscapeDescription landscapeDescription) {
         if (ref.getAssignTemplates() != null) {
             landscapeDescription.setAssignTemplates(ref.getAssignTemplates());
         }
-        Optional<LandscapeDescription> existing = Optional.ofNullable(map.get(landscapeDescription.getFullyQualifiedIdentifier()));
+        Optional<LandscapeDescription> existing = Optional.ofNullable(map.get(landscapeDescription.getIdentifier()));
         if (existing.isPresent()) {
-            existing.get().merge(landscapeDescription);
+            LandscapeDescription landscapeDescription1 = existing.get();
+            String otherFQI = Objects.requireNonNull(landscapeDescription).getIdentifier();
+            if (!existing.get().getIdentifier().equals(otherFQI)) {
+                throw new IllegalArgumentException(String.format("Other landscape description has different fqi %s", otherFQI));
+            }
+
+            landscapeDescription1.mergeUnits(landscapeDescription.getReadAccess().all(UnitDescription.class));
+            landscapeDescription1.mergeContexts(landscapeDescription.getReadAccess().all(ContextDescription.class));
+            landscapeDescription1.mergeGroups(landscapeDescription.getReadAccess().all(GroupDescription.class));
+            landscapeDescription1.mergeItems(landscapeDescription.getReadAccess().all(ItemDescription.class));
+            landscapeDescription1.mergeProcesses(landscapeDescription.getReadAccess().all(ProcessDescription.class));
         } else {
-            map.put(landscapeDescription.getFullyQualifiedIdentifier(), landscapeDescription);
+            map.put(landscapeDescription.getIdentifier(), landscapeDescription);
         }
     }
 
@@ -100,31 +105,6 @@ public class SourceReferencesResolver {
         }
 
         return s.trim();
-    }
-
-    @NonNull
-    private LandscapeDescription createDefaultDTO(@NonNull final SeedConfiguration seedConfiguration) {
-
-        Objects.requireNonNull(seedConfiguration, "A seed config must be provided.");
-        if (!StringUtils.hasLength(seedConfiguration.getIdentifier())) {
-            throw new IllegalArgumentException("Seed config does not have an identifier to create a default landscape description.");
-        }
-        String identifier = StringUtils.hasLength(seedConfiguration.getIdentifier()) ?
-                seedConfiguration.getIdentifier() :
-                new String(md5(seedConfiguration.getSource().toString().getBytes(StandardCharsets.UTF_8)));
-        LandscapeDescription landscapeDescription = new LandscapeDescription(identifier);
-        landscapeDescription.setName(seedConfiguration.getName());
-        landscapeDescription.setDescription(seedConfiguration.getDescription());
-        landscapeDescription.setContact(seedConfiguration.getContact());
-        landscapeDescription.setGroups(seedConfiguration.getGroups());
-        landscapeDescription.setItems(seedConfiguration.getItems());
-        landscapeDescription.setLabels(seedConfiguration.getLabels());
-        if (seedConfiguration.getTemplates() != null) {
-            landscapeDescription.setTemplates(seedConfiguration.getTemplates());
-        }
-        landscapeDescription.setConfig(seedConfiguration.getConfig());
-        return landscapeDescription;
-
     }
 
 }

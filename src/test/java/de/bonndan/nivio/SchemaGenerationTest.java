@@ -60,7 +60,11 @@ public class SchemaGenerationTest {
         Map<String, Schema> stringSchemaMap = ModelConverters.getInstance().readAll(new AnnotatedType(LandscapeDescription.class));
         stringSchemaMap.keySet().forEach(s -> {
             Schema schema = stringSchemaMap.get(s);
-            schema.setProperties(new TreeMap<String, Schema>(schema.getProperties()));
+            Map properties = schema.getProperties();
+            if (properties != null) {
+                //noinspection unchecked
+                schema.setProperties(new TreeMap<String, Schema>(properties));
+            }
         });
         return stringSchemaMap;
     }

@@ -1,5 +1,4 @@
 Models/Branding.rst
-Models/GroupDescription.rst
 Models/InterfaceDescription.rst
 Models/ItemDescription.rst
 Models/KPIConfig.rst
@@ -7,4 +6,5 @@ Models/LandscapeConfig.rst
 Models/LandscapeDescription.rst
 Models/LayoutConfig.rst
 Models/Link.rst
+Models/PartDescription.rst
 README.rst

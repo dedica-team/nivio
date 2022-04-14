@@ -10,16 +10,16 @@ class ComponentDescriptionValuesTest {
 
     @Test
     void assignNotNull() {
-        ComponentDescription component = new GroupDescription();
+        GroupDescription component = new GroupDescription();
 
-        ComponentDescription increment = new GroupDescription();
+        GroupDescription increment = new GroupDescription();
         increment.setName("name");
         increment.setDescription("desc");
         increment.setOwner("owner");
         increment.setContact("contact");
 
         //when
-        ComponentDescriptionValues.assignNotNull(component, increment);
+        component.assignNotNull( increment);
 
         //then
         assertThat(component.getName()).isEqualTo("name");
@@ -44,7 +44,7 @@ class ComponentDescriptionValuesTest {
         increment.setContact("contact2");
 
         //when
-        ComponentDescriptionValues.assignSafeNotNull(component, increment);
+        component.assignSafeNotNull( increment);
 
         //then
         assertThat(component.getName()).isEqualTo("name");

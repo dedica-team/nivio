@@ -89,7 +89,7 @@ class SVGGroupArea extends Component {
     @Override
     public DomContent render() {
         List<Component> territoryHexes = components != null ? new ArrayList<>(components) : new ArrayList<>();
-        String fqi = group.getFullyQualifiedIdentifier().jsonValue();
+        String fqi = group.getFullyQualifiedIdentifier().toString();
         if (!StringUtils.hasLength(fqi)) {
             // we can still render an svg, but area will not be clickable
             LOGGER.warn("Empty group fqi in SVG group area, group {}", group);
@@ -104,7 +104,7 @@ class SVGGroupArea extends Component {
                 .attr(DATA_IDENTIFIER, fqi)
                 .attr("data-x", anchor.x)
                 .attr("data-y", anchor.y)
-                .attr("class", "groupArea " + VISUAL_FOCUS_UNSELECTED);
+                .attr(SVGAttr.CLASS, "groupArea " + VISUAL_FOCUS_UNSELECTED);
     }
 
     /**
@@ -116,7 +116,7 @@ class SVGGroupArea extends Component {
         var x = anchor.x;
         var y = anchor.y + SVGRenderer.DEFAULT_ICON_SIZE * 2;
         var fontSize = 8;
-        boolean small = group.getItems().size() < 4;
+        boolean small = group.getChildren().size() < 4;
         if (!small) {
             fontSize = 16;
             //calculate center
@@ -132,11 +132,11 @@ class SVGGroupArea extends Component {
         return SvgTagCreator.text(group.getIdentifier())
                 .attr("x", x)
                 .attr("y", y)
-                .attr("fill", fillId)
+                .attr(SVGAttr.FILL, fillId)
                 .attr("text-anchor", "middle")
                 .attr("style", "text-shadow: 1px 2px 2px black")
                 .attr("font-size", fontSize + "em")
-                .attr("class", "groupLabel");
+                .attr(SVGAttr.CLASS, "groupLabel");
     }
 
     @NonNull

@@ -18,10 +18,15 @@ Configuration of key performance indicators (i.e. status indicators) and layouti
      - 
      - optional, defaults to null
      - null
-   * - greedy
-     - Boolean
-     - Flag that enables instant creation items based relation targets that cannot be found in the sources.
-     - optional, defaults to null
+   * - defaultContext
+     - String
+     - Identifier of the context to use as default parent for groups
+     - **required**, defaults to null
+     - null
+   * - defaultUnit
+     - String
+     - Identifier of the unit to use as default parent for contexts
+     - **required**, defaults to null
      - null
    * - groupBlacklist
      - List

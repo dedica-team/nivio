@@ -1,7 +1,9 @@
 package de.bonndan.nivio.assessment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
@@ -48,6 +50,12 @@ public enum Status {
     @JsonValue
     public String getName() {
         return name();
+    }
+
+    @NonNull
+    @JsonIgnore
+    public String getColor() {
+        return statusName;
     }
 
     @Override

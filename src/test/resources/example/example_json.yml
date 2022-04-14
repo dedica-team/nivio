@@ -7,7 +7,7 @@ sources:
       items: "$.items"
       item:
         identifier: "$.id"
-        environment: "$.landscape"
+        landscape: "$.landscape"
         name: '$.moreThanAName|find "([\w\s]*),"'
         endOfLife: "$.end_of_life.date"
         nivio.link.homepage: "$.a_named_link"

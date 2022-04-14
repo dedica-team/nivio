@@ -2,6 +2,7 @@ package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.InterfaceDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
+import de.bonndan.nivio.input.dto.PartDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Label;
 import de.bonndan.nivio.model.Lifecycle;
@@ -9,14 +10,16 @@ import de.bonndan.nivio.model.RelationFactory;
 import de.bonndan.nivio.model.RelationType;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ItemDescriptionValuesTest {
 
     @Test
-    public void incrementAddsIcon() {
+    void incrementAddsIcon() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -24,13 +27,13 @@ class ItemDescriptionValuesTest {
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         increment.setIcon("foo");
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals("foo", sd1.getIcon());
     }
 
     @Test
-    public void incrementAddsIconSafely() {
+    void incrementAddsIconSafely() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -38,13 +41,13 @@ class ItemDescriptionValuesTest {
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         increment.setIcon("foo");
-        ItemDescriptionValues.assignSafeNotNull(sd1, increment);
+        sd1.assignFromTemplate(increment);
 
         assertEquals("foo", sd1.getIcon());
     }
 
     @Test
-    public void incrementAddsAddress() {
+    void incrementAddsAddress() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -52,13 +55,13 @@ class ItemDescriptionValuesTest {
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         increment.setAddress("foo");
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals("foo", sd1.getAddress());
     }
 
     @Test
-    public void incrementAddsLayer() {
+    void incrementAddsLayer() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -66,13 +69,13 @@ class ItemDescriptionValuesTest {
         ItemDescription increment = new ItemDescription();
         increment.setIdentifier("sd1");
         increment.setLayer("foo");
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals("foo", sd1.getLayer());
     }
 
     @Test
-    public void incrementAddsAddressSafely() {
+    void incrementAddsAddressSafely() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -83,13 +86,13 @@ class ItemDescriptionValuesTest {
         increment.setAddress("foo");
 
 
-        ItemDescriptionValues.assignSafeNotNull(sd1, increment);
+        sd1.assignFromTemplate(increment);
 
         assertEquals("sd1A", sd1.getAddress());
     }
 
     @Test
-    public void incrementAddsDataflow() {
+    void incrementAddsDataflow() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -101,13 +104,13 @@ class ItemDescriptionValuesTest {
         RelationDescription another = RelationFactory.createDataflowDescription(increment, "another");
         increment.addOrReplaceRelation(another);
 
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals(2, sd1.getRelations().size());
     }
 
     @Test
-    public void incrementUpdatesRelationDescription() {
+    void incrementUpdatesRelationDescription() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -121,7 +124,7 @@ class ItemDescriptionValuesTest {
         increment.addOrReplaceRelation(another);
 
         //when
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
 
         assertEquals(1, sd1.getRelations().size());
@@ -130,7 +133,7 @@ class ItemDescriptionValuesTest {
     }
 
     @Test
-    public void incrementAddsNetworks() {
+    void incrementAddsNetworks() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -140,13 +143,13 @@ class ItemDescriptionValuesTest {
         increment.setIdentifier("sd1");
         increment.setPrefixed(Label.network, "net2");
 
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals(2, sd1.getLabels(Label.network).size());
     }
 
     @Test
-    public void incrementAddsProvidedBy() {
+    void incrementAddsProvidedBy() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -159,16 +162,16 @@ class ItemDescriptionValuesTest {
         RelationDescription redisProvider = RelationFactory.createProviderDescription(sd1, "redis");
         increment.addOrReplaceRelation(redisProvider);
 
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals(2,
                 sd1.getRelations().stream()
-                .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
-                .collect(Collectors.toUnmodifiableList()).size());
+                        .filter(relation -> RelationType.PROVIDER.equals(relation.getType()))
+                        .collect(Collectors.toUnmodifiableList()).size());
     }
 
     @Test
-    public void incrementAddsInterfaces() {
+    void incrementAddsInterfaces() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -184,13 +187,13 @@ class ItemDescriptionValuesTest {
         increment.getInterfaces().add(if2);
 
 
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals(2, sd1.getInterfaces().size());
     }
 
     @Test
-    public void incrementAddsLifecycle() {
+    void incrementAddsLifecycle() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -200,13 +203,13 @@ class ItemDescriptionValuesTest {
         increment.setLifecycle(Lifecycle.END_OF_LIFE.name());
 
 
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         assertEquals(Lifecycle.END_OF_LIFE.name(), sd1.getLabel(Label.lifecycle));
     }
 
     @Test
-    public void incrementAddsUnsetLabels() {
+    void incrementAddsUnsetLabels() {
 
         ItemDescription sd1 = new ItemDescription();
         sd1.setIdentifier("sd1");
@@ -218,11 +221,42 @@ class ItemDescriptionValuesTest {
         increment.getLabels().put("b", "3");
 
 
-        ItemDescriptionValues.assignNotNull(sd1, increment);
+        sd1.assignNotNull(increment);
 
         //a is overwritten
         assertEquals("2", sd1.getLabels().get("a"));
         //b is new
         assertEquals("3", sd1.getLabels().get("b"));
+    }
+
+    @Test
+    void assignsParts() {
+
+        ItemDescription sd1 = new ItemDescription();
+        sd1.setIdentifier("sd1");
+        sd1.getLabels().put("a", "1");
+        PartDescription foo = new PartDescription("foo");
+        foo.setName("bar");
+        sd1.getParts().add(foo);
+
+        ItemDescription increment = new ItemDescription();
+        increment.setIdentifier("sd1");
+        increment.getLabels().put("a", "2");
+        increment.getLabels().put("b", "3");
+        PartDescription fooBaz = new PartDescription("foo");
+        fooBaz.setName("baz");
+        increment.getParts().add(fooBaz);
+
+        PartDescription bar = new PartDescription("bar");
+        increment.getParts().add(bar);
+
+        sd1.assignNotNull(increment);
+
+        assertThat(sd1.getParts()).hasSize(2)
+                .contains(fooBaz)
+                .contains(bar);
+
+        Optional<PartDescription> first = sd1.getParts().stream().filter(partDescription -> "baz".equals(partDescription.getName())).findFirst();
+        assertThat(first).isNotEmpty();
     }
 }

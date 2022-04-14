@@ -125,7 +125,7 @@ public class BezierPath {
      * Evaluates this animation element for the passed interpolation time.  Interp
      * must be on [0..1].
      */
-    public Point2D.Float eval(float interp) {
+    public Point2D.Float eval(double interp) {
         Point2D.Float point = new Point2D.Float();
 
 
@@ -144,4 +144,52 @@ public class BezierPath {
         return point;
     }
 
+    /**
+     * Calculates the angle at the given piece of the path.
+     *
+     * @param distanceToEnd in px/map units
+     * @param yOffset       extra x offset to add
+     * @param yOffset       extra y offset to add
+     * @return point and atan
+     */
+    public PointWithAngle angleAtEnd(int distanceToEnd, int xOffset, int yOffset) {
+
+        float start = (path.curveLength - distanceToEnd) / path.curveLength;
+        double end = start + 0.0001;
+        return angleAt(start, end, xOffset, yOffset, false);
+    }
+
+    /**
+     * Calculates the angle at the given piece of the path.
+     *
+     * @param start   relative start point
+     * @param end     relative end point
+     * @param yOffset extra y offset to add
+     * @param upright toogle that angle is calculated so that text is always upright
+     * @return point and atan
+     */
+    public PointWithAngle angleAt(double start, double end, int xOffset, int yOffset, boolean upright) {
+
+        Point2D.Float point1 = eval(start);
+        point1.setLocation(point1.x + xOffset, point1.y + yOffset);
+        Point2D.Float point2 = eval(end);
+        point2.setLocation(point2.x+ xOffset, point2.y + yOffset);
+
+        var degrees = Math.atan2((point2.y - point1.y), (point2.x - point1.x)) * 180 / Math.PI;
+        if (upright && (degrees > 90 || degrees < -90)) {
+            degrees += 180; //always upright
+        }
+
+        return new PointWithAngle(point1, degrees);
+    }
+
+    static class PointWithAngle {
+        final Point2D.Float point;
+        final double degrees;
+
+        public PointWithAngle(Point2D.Float point, double degrees) {
+            this.point = point;
+            this.degrees = degrees;
+        }
+    }
 }

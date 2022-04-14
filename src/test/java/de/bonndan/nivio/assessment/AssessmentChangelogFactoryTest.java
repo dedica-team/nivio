@@ -1,42 +1,42 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.input.ProcessingChangelog;
-import de.bonndan.nivio.model.ItemFactory;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeFactory;
+import de.bonndan.nivio.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AssessmentChangelogFactoryTest {
 
-    public static final String TEST_BAR_BAZ = "test/bar/baz";
-    private Landscape landscape;
+    private URI TEST_FQI;
     private Assessment assessment;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setUp() {
-        landscape = LandscapeFactory.createForTesting("test", "test")
-                .withItems(Set.of(ItemFactory.getTestItem("bar", "baz")))
-                .build();
-        List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_BAR_BAZ, "security", Status.GREEN, null));
-        assessment = new Assessment(Map.of(TEST_BAR_BAZ, List.of(StatusValue.summary(TEST_BAR_BAZ, Collections.singletonList(StatusValue.summary("test/bar/baz", security))))));
+        graph = new GraphTestSupport();
+        TEST_FQI = graph.itemAB.getFullyQualifiedIdentifier();
+
+        List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.GREEN, null));
+        assessment = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI, Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
     }
 
     @Test
     void entryCreated() {
 
         //when
-        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(landscape, assessment);
+        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, assessment);
 
         //then
         assertThat(changes).isNotNull();
-        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_BAR_BAZ);
-        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_BAR_BAZ);
+        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_FQI);
+        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_FQI);
         assertThat(entry).isNotNull();
         assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.CREATED.name());
     }
@@ -45,18 +45,17 @@ class AssessmentChangelogFactoryTest {
     @DisplayName("Change from green to red")
     void entryUpdated() {
 
-        List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_BAR_BAZ, "security", Status.RED, null));
-        var update = new Assessment(Map.of(TEST_BAR_BAZ, List.of(StatusValue.summary(TEST_BAR_BAZ,
-                Collections.singletonList(StatusValue.summary("test/bar/baz", security)))))
-        );
+        List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.RED, null));
+        var update = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI,
+                Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
 
         //when
-        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(landscape, assessment, update);
+        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, assessment, update);
 
         //then
         assertThat(changes).isNotNull();
-        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_BAR_BAZ);
-        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_BAR_BAZ);
+        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_FQI);
+        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_FQI);
         assertThat(entry).isNotNull();
         assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.UPDATED.name());
         assertThat(entry.getMessages()).isNotEmpty().contains("summary status has changed to red");
@@ -67,19 +66,19 @@ class AssessmentChangelogFactoryTest {
     void entryUpdatedWithField() {
 
         List<StatusValue> list = new ArrayList<>();
-        list.add(new StatusValue(TEST_BAR_BAZ, "security", Status.RED, null));
-        list.add(new StatusValue(TEST_BAR_BAZ, "stability", Status.ORANGE, null));
-        var update = new Assessment(Map.of(TEST_BAR_BAZ, List.of(StatusValue.summary(TEST_BAR_BAZ,
-                Collections.singletonList(StatusValue.summary("test/bar/baz", list)))))
+        list.add(new StatusValue(TEST_FQI, "security", Status.RED, null));
+        list.add(new StatusValue(TEST_FQI, "stability", Status.ORANGE, null));
+        var update = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI,
+                Collections.singletonList(StatusValue.summary(TEST_FQI, list)))))
         );
 
         //when
-        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(landscape, assessment, update);
+        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, assessment, update);
 
         //then
         assertThat(changes).isNotNull();
-        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_BAR_BAZ);
-        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_BAR_BAZ);
+        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_FQI);
+        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_FQI);
         assertThat(entry).isNotNull();
         assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.UPDATED.name());
         assertThat(entry.getMessages()).isNotEmpty().contains("summary status has changed to red");
@@ -88,19 +87,45 @@ class AssessmentChangelogFactoryTest {
     @Test
     void entryDeleted() {
 
-        String identifier = "something/different/baz";
+        URI identifier = FullyQualifiedIdentifier.build(ComponentClass.item, "something", null, null, "different", "baz");
         var update = new Assessment(Map.of(identifier, List.of(StatusValue.summary(identifier,
                 Collections.singletonList(StatusValue.summary(identifier, new ArrayList<>())))))
         );
 
         //when
-        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(landscape, assessment, update);
+        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, assessment, update);
 
         //then
         assertThat(changes).isNotNull();
-        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_BAR_BAZ);
-        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_BAR_BAZ);
+        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_FQI);
+        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_FQI);
         assertThat(entry).isNotNull();
         assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.DELETED.name());
+    }
+
+    @Test
+    @DisplayName("supports relations")
+    void supportsRelations() {
+
+        Relation providerRelation = RelationFactory.createProviderRelation(graph.itemAA, graph.itemAB);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(providerRelation);
+        TEST_FQI = providerRelation.getFullyQualifiedIdentifier();
+
+        List<StatusValue> security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.GREEN, null));
+        var oldAssessment = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI, Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
+
+        security = Collections.singletonList(new StatusValue(TEST_FQI, "security", Status.RED, null));
+        var newAssessment = new Assessment(Map.of(TEST_FQI, List.of(StatusValue.summary(TEST_FQI, Collections.singletonList(StatusValue.summary(TEST_FQI, security))))));
+
+        //when
+        ProcessingChangelog changes = AssessmentChangelogFactory.getChanges(graph.landscape, oldAssessment, newAssessment);
+
+        //then
+        assertThat(changes).isNotNull();
+        assertThat(changes.getChanges()).isNotNull().isNotEmpty().containsKey(TEST_FQI);
+        ProcessingChangelog.Entry entry = changes.getChanges().get(TEST_FQI);
+        assertThat(entry).isNotNull();
+        assertThat(entry.getChangeType()).isEqualTo(ProcessingChangelog.ChangeType.UPDATED.name());
+        assertThat(entry.getMessages()).isNotEmpty().contains("summary status has changed to red");
     }
 }

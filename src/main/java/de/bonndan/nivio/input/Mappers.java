@@ -1,16 +1,10 @@
 package de.bonndan.nivio.input;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import de.bonndan.nivio.input.dto.GroupDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +16,8 @@ import java.util.Map;
  */
 public class Mappers {
 
+    private Mappers(){}
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Mappers.class);
 
     public static final ObjectMapper gracefulYamlMapper = new ObjectMapper(new YAMLFactory());
@@ -32,7 +28,6 @@ public class Mappers {
         gracefulYamlMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         gracefulYamlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
         gracefulYamlMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        gracefulYamlMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         gracefulYamlMapper.addHandler(errorHandler);
     }
 
@@ -40,6 +35,8 @@ public class Mappers {
 
         private static final Map<String, String> mapping = Map.of(
                 LandscapeDescription.class.getSimpleName(), "landscape",
+                UnitDescription.class.getSimpleName(), "unit",
+                ContextDescription.class.getSimpleName(), "context",
                 GroupDescription.class.getSimpleName(), "group",
                 ItemDescription.class.getSimpleName(), "item",
                 SourceReference.class.getSimpleName(), "source"
@@ -50,7 +47,7 @@ public class Mappers {
             super.handleUnknownProperty(ctxt, jp, deserializer, beanOrClass, propertyName);
             String simpleName = beanOrClass.getClass().getSimpleName();
             LOGGER.error("Property with name '{}' doesn't exist in '{}'", propertyName, mapping.getOrDefault(simpleName, simpleName));
-            return true;
+            throw JsonMappingException.from(ctxt, String.format("Property with name %s doesn't exist", propertyName));
         }
 
     }

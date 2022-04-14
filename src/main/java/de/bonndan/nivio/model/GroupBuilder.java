@@ -1,85 +1,56 @@
 package de.bonndan.nivio.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.bonndan.nivio.output.Color;
 
-public final class GroupBuilder {
-    private Map<String, Link> links = new HashMap<>();
-    private String identifier;
-    private String landscapeIdentifier;
-    private String owner;
-    private String description;
-    private String contact;
+import java.util.Objects;
+
+public final class GroupBuilder extends GraphNodeBuilder<GroupBuilder, Group, Context> {
+
     private String color;
-    private Map<String, String> labels = new HashMap<>();
+    private String icon;
 
     private GroupBuilder() {
+    }
+
+    @Override
+    public GroupBuilder getThis() {
+        return this;
+    }
+
+    @Deprecated
+    public static GroupBuilder aTestGroup(String identifier) {
+        return new GroupBuilder().withIdentifier(identifier).withParent(ContextBuilder.aTestContext("default").build());
     }
 
     public static GroupBuilder aGroup() {
         return new GroupBuilder();
     }
 
-    public GroupBuilder withLinks(Map<String, Link> links) {
-        this.links = links;
-        return this;
-    }
-
-    public GroupBuilder withIdentifier(String identifier) {
-        this.identifier = identifier;
-        return this;
-    }
-
-    public GroupBuilder withLandscapeIdentifier(String landscapeIdentifier) {
-        this.landscapeIdentifier = landscapeIdentifier;
-        return this;
-    }
-
-    public GroupBuilder withOwner(String owner) {
-        this.owner = owner;
-        return this;
-    }
-
-    public GroupBuilder withDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public GroupBuilder withContact(String contact) {
-        this.contact = contact;
-        return this;
-    }
-
     public GroupBuilder withColor(String color) {
         this.color = color;
-        return this;
+        return getThis();
     }
 
-    public GroupBuilder withLabels(Map<String, String> labels) {
-        this.labels = labels;
-        return this;
+    public GroupBuilder withIcon(String icon) {
+        this.icon = icon;
+        return getThis();
     }
 
+    @Override
     public Group build() {
-        Group group = new Group(identifier, landscapeIdentifier, owner, description, contact, color);
+
+        Group group = new Group(identifier, name, owner, contact, description, type, Objects.requireNonNull(parent, "Group has no parent context"));
         group.setLinks(links);
-        group.getLabels().putAll(labels);
+        group.setLabels(labels);
+
+        if (color == null) {
+            color = Color.nameToRGB(identifier, Color.DARKGRAY);
+        }
+        group.setLabel(Label.color.name(), Color.safe(color));
+
+        if (icon != null) {
+            group.setLabel(Label.icon.name(), icon);
+        }
         return group;
-    }
-
-    public Map<String, Link> getLinks() {
-        return links;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public Map<String, String> getLabels() {
-        return labels;
     }
 }

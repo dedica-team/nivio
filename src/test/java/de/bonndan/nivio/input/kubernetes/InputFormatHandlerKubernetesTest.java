@@ -2,6 +2,7 @@ package de.bonndan.nivio.input.kubernetes;
 
 import de.bonndan.nivio.input.SeedConfiguration;
 import de.bonndan.nivio.input.SourceReference;
+import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.observation.InputFormatObserver;
 import de.bonndan.nivio.observation.KubernetesObserver;
@@ -45,7 +46,7 @@ class InputFormatHandlerKubernetesTest {
         var sourceReference = new SourceReference(new URL("https://dedica.team"), "");
         sourceReference.setConfig(new SeedConfiguration("k8sLandscapeTest"));
         inputFormatHandlerKubernetes.applyData(sourceReference, landscapeDescription);
-        assertThat(landscapeDescription.getItemDescriptions().all().size()).isZero();
+        assertThat(landscapeDescription.getItemDescriptions().size()).isZero();
         var identifierMap = setK8sTestEnvironment();
 
         //when
@@ -53,20 +54,20 @@ class InputFormatHandlerKubernetesTest {
         inputFormatHandlerKubernetes.applyData(sourceReference, landscapeDescription);
 
         //then
-        assertThat(landscapeDescription.getItemDescriptions().all().size()).isEqualTo(7);
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("deployment"), "deployment").orElseThrow().getRelations().size()).isZero();
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("replicaSet"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("deployment"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("replicaSet"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("replicaSet"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("pod"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("replicaSet"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("pod"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("pod"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("service"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("deployment"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("service"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("service"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolume"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolume"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolume"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("pod"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("pod"));
-        assertThat(landscapeDescription.getItemDescriptions().find(identifierMap.get("persistentVolumeClaim"), "deployment").orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
+        assertThat(landscapeDescription.getItemDescriptions().size()).isEqualTo(7);
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("deployment"), "deployment", ItemDescription.class).orElseThrow().getRelations().size()).isZero();
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("replicaSet"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("deployment"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("replicaSet"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("replicaSet"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("pod"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("replicaSet"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("pod"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("pod"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("service"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("deployment"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("service"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("service"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("persistentVolume"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("persistentVolume"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolume"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("persistentVolumeClaim"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("pod"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("persistentVolumeClaim"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("persistentVolumeClaim"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getSource()).isEqualTo(identifierMap.get("pod"));
+        assertThat(landscapeDescription.getReadAccess().matchOneByIdentifiers(identifierMap.get("persistentVolumeClaim"), "deployment", ItemDescription.class).orElseThrow().getRelations().stream().findFirst().orElseThrow().getTarget()).isEqualTo(identifierMap.get("persistentVolumeClaim"));
     }
 
     private Map<String, String> setK8sTestEnvironment() {

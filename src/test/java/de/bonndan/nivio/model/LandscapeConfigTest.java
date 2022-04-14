@@ -13,7 +13,7 @@ class LandscapeConfigTest {
     @BeforeEach
     void setUp() {
         existing = new LandscapeConfig();
-        createConfig(existing, true, 1, "one");
+        createConfig(existing, 1, "one");
     }
 
 
@@ -39,7 +39,9 @@ class LandscapeConfigTest {
 
         //given
         LandscapeConfig config = new LandscapeConfig();
-        createConfig(config, false, 2, "two");
+        createConfig(config, 2, "two");
+        config.setDefaultUnit("aUnit");
+        config.setDefaultContext("aContext");
 
         //when
         LandscapeConfig merged = existing.merge(config);
@@ -49,7 +51,6 @@ class LandscapeConfigTest {
                 .containsKey("two")
                 .containsKey("one");
 
-        assertThat(merged.isGreedy()).isFalse();
         assertThat(merged.getBranding().getMapStylesheet()).isEqualTo(config.getBranding().getMapStylesheet());
 
         assertThat(merged.getGroupBlacklist()).hasSameElementsAs(config.getGroupBlacklist());
@@ -60,10 +61,12 @@ class LandscapeConfigTest {
         assertThat(merged.getLayoutConfig().getItemMinDistanceLimit()).isEqualTo(config.getLayoutConfig().getItemMinDistanceLimit());
         assertThat(merged.getLayoutConfig().getItemMaxDistanceLimit()).isEqualTo(config.getLayoutConfig().getItemMaxDistanceLimit());
 
+        assertThat(merged.getDefaultUnit()).isEqualTo(config.getDefaultUnit());
+        assertThat(merged.getDefaultContext()).isEqualTo(config.getDefaultContext());
+
     }
 
-    private void createConfig(LandscapeConfig existing, boolean greedy, int val1, String val2) {
-        existing.setGreedy(greedy);
+    private void createConfig(LandscapeConfig existing, int val1, String val2) {
         existing.getLayoutConfig().setGroupLayoutInitialTemp(val1);
         existing.getLayoutConfig().setItemLayoutInitialTemp(val1);
         existing.getLayoutConfig().setGroupMaxDistanceLimit(val1);

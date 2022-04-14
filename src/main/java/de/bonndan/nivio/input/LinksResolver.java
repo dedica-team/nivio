@@ -1,8 +1,6 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ComponentDescription;
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.*;
 import de.bonndan.nivio.input.external.LinkHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,26 +17,38 @@ import java.util.concurrent.TimeoutException;
 /**
  * Resolves all links of all landscape components.
  */
-public class LinksResolver extends Resolver {
+public class LinksResolver implements Resolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinksResolver.class);
 
     private final LinkHandlerFactory linkHandlerFactory;
 
     /**
-     * @param logger             the log belonging to the landscape.
      * @param linkHandlerFactory factory responsible to create single link resolvers.
      */
-    public LinksResolver(ProcessLog logger, LinkHandlerFactory linkHandlerFactory) {
-        super(logger);
+    public LinksResolver(LinkHandlerFactory linkHandlerFactory) {
         this.linkHandlerFactory = linkHandlerFactory;
     }
 
+    @NonNull
     @Override
-    public void resolve(@NonNull final LandscapeDescription input) {
-        List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input);
-        input.getGroups().forEach((s, groupItem) -> resolveLinks(groupItem));
-        input.getItemDescriptions().all().forEach(item -> completableFutures.addAll(resolveLinks(item)));
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
+        final ProcessLog processLog = input.getProcessLog();
+        final List<CompletableFuture<ComponentDescription>> completableFutures = resolveLinks(input, processLog);
+        input.getReadAccess().all(UnitDescription.class).stream()
+                .map(dto -> resolveLinks(dto, processLog))
+                .forEach(completableFutures::addAll);
+        input.getReadAccess().all(ContextDescription.class).stream()
+                .map(dto -> resolveLinks(dto, processLog))
+                .forEach(completableFutures::addAll);
+        input.getReadAccess().all(GroupDescription.class).stream()
+                .map(dto -> resolveLinks(dto, processLog))
+                .forEach(completableFutures::addAll);
+        input.getReadAccess().all(ItemDescription.class).stream()
+                .map(dto -> resolveLinks(dto, processLog)).forEach(completableFutures::addAll);
+
+        //TODO relation links
+
 
         LOGGER.info("Waiting for completion of {} external link handlers.", completableFutures.size());
         try {
@@ -49,33 +59,31 @@ public class LinksResolver extends Resolver {
                 Thread.currentThread().interrupt();
             }
         }
+
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 
-    private <T extends ComponentDescription> List<CompletableFuture<T>> resolveLinks(final T component) {
+    private  List<CompletableFuture<ComponentDescription>> resolveLinks(final ComponentDescription dto, ProcessLog processLog) {
 
-        List<CompletableFuture<T>> all = new ArrayList<>();
-        component.getLinks().forEach((key, link) -> linkHandlerFactory.getResolver(key).ifPresent(handler -> {
-                    LOGGER.info("Resolving link {} of component {}", link, component);
+        List<CompletableFuture<ComponentDescription>> all = new ArrayList<>();
+        dto.getLinks().forEach((key, link) -> linkHandlerFactory.getResolver(key).ifPresent(handler -> {
+                    LOGGER.debug("Resolving link {} of component {}", link, dto);
                     try {
-                        CompletableFuture<T> f = handler
+                        CompletableFuture<ComponentDescription> f = handler
                                 .resolve(link)
                                 .handleAsync((componentDescription, throwable) -> {
                                     if (componentDescription != null) {
-                                        processLog.info(String.format("Successfully read link %s of %s", key, component));
-                                        if (component instanceof ItemDescription) {
-                                            ItemDescriptionValues.assignSafeNotNull((ItemDescription) component, (ItemDescription) componentDescription);
-                                        } else {
-                                            ComponentDescriptionValues.assignSafeNotNull(component, componentDescription);
-                                        }
+                                        processLog.info(String.format("Successfully read link %s of %s", key, dto));
+                                        dto.assignSafeNotNull(componentDescription);
                                     } else {
-                                        LOGGER.warn("Link resolving failure {} {}", key, component, throwable);
+                                        LOGGER.warn("Link resolving failure {} {}", key, dto, throwable);
                                     }
-                                    return component;
+                                    return dto;
                                 });
                         all.add(f);
                     } catch (Exception e) {
-                        LOGGER.warn("Link resolving failure {} {}", key, component, e);
-                        processLog.warn(String.format("Failed read link %s of %s: %s", key, component, e.getMessage()));
+                        LOGGER.warn("Link resolving failure {} {}", key, dto, e);
+                        processLog.warn(String.format("Failed read link %s of %s: %s", key, dto, e.getMessage()));
                     }
                 }
 

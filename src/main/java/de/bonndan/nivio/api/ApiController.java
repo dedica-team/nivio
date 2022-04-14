@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,7 +48,7 @@ public class ApiController {
 
     @Operation(summary = "Overview on all landscape and global configuration")
     @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Index index() {
+    public ApiRootModel index() {
         return linkFactory.getIndex(landscapeRepository.findAll());
     }
 
@@ -79,9 +76,13 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<Group> group = landscape.getGroup(groupIdentifier);
+        Optional<Group> group = landscape.getGroups().entrySet().stream()
+                .filter(uriGroupEntry -> uriGroupEntry.getValue().getIdentifier().equalsIgnoreCase(groupIdentifier))
+                .findFirst()
+                .map(Map.Entry::getValue);
         if (group.isPresent()) {
-            GroupApiModel groupItem = new GroupApiModel(group.get(), landscape.getItems().retrieve(group.get().getItems()));
+            Group group1 = group.get();
+            GroupApiModel groupItem = new GroupApiModel(group1, Set.copyOf(group1.getChildren()));
             linkFactory.setGroupLinksRecursive(groupItem);
             return new ResponseEntity<>(groupItem, HttpStatus.OK);
         } else {
@@ -100,14 +101,14 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<Item> item = landscape.getItems().find(itemIdentifier, groupIdentifier);
-        if (item.isEmpty()) {
+        try {
+            Item item = landscape.getReadAccess().matchOneByIdentifiers(itemIdentifier, groupIdentifier, Item.class).orElseThrow();
+            ItemApiModel apiModel = new ItemApiModel(item);
+            linkFactory.setItemSelfLink(apiModel);
+            return new ResponseEntity<>(apiModel, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
-        Group group = landscape.getGroup(groupIdentifier).orElseThrow();
-        ItemApiModel apiModel = new ItemApiModel(item.get(), group);
-        linkFactory.setItemSelfLink(apiModel);
-        return new ResponseEntity<>(apiModel, HttpStatus.OK);
     }
 
     @Operation(summary = "Creates or replaces a landscape")
@@ -169,10 +170,9 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        Map<String, Group> groups = landscape.getGroups();
         try {
-            Set<ItemApiModel> results = landscape.search(query).stream()
-                    .map(item -> new ItemApiModel(item, groups.get(item.getGroup())))
+            Set<ItemApiModel> results = landscape.getReadAccess().search(query, Item.class).stream()
+                    .map(ItemApiModel::new)
                     .collect(Collectors.toSet());
             return new ResponseEntity<>(results, HttpStatus.OK);
         } catch (RuntimeException error) {
@@ -191,7 +191,7 @@ public class ApiController {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(landscape.getSearchIndex().facets(), HttpStatus.OK);
+        return new ResponseEntity<>(landscape.getReadAccess().getFacets(), HttpStatus.OK);
     }
 
     @Operation(summary = "Returns the mapping of internally used terms to terms to be displayed")
@@ -219,7 +219,7 @@ public class ApiController {
     }
 
 
-    private Optional<URI> getURIForDTO(FullyQualifiedIdentifier fullyQualifiedIdentifier) {
+    private Optional<URI> getURIForDTO(URI fullyQualifiedIdentifier) {
         Optional<Link> link = linkFactory.generateComponentLink(fullyQualifiedIdentifier);
         if (link.isEmpty()) {
             return Optional.empty();

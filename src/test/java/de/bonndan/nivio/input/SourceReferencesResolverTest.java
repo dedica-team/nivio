@@ -1,10 +1,11 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.IntegrationTestSupport;
+import de.bonndan.nivio.input.dto.BranchDescription;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
+import de.bonndan.nivio.input.dto.ProcessDescription;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.search.ItemIndex;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,9 +53,9 @@ class SourceReferencesResolverTest {
 
         assertThat(resolve).isNotEmpty();
 
-        ItemIndex<ItemDescription> itemDescriptions = resolve.get(0).getItemDescriptions();
-        assertThat(itemDescriptions.all()).isNotEmpty();
-        ItemDescription mapped = itemDescriptions.all().stream()
+        Set<ItemDescription> itemDescriptions = resolve.get(0).getItemDescriptions();
+        assertThat(itemDescriptions).isNotEmpty();
+        ItemDescription mapped = itemDescriptions.stream()
                 .filter(itemDescription -> "blog-server".equals(itemDescription.getIdentifier()))
                 .findFirst()
                 .orElseThrow();
@@ -61,6 +63,31 @@ class SourceReferencesResolverTest {
         assertNotNull(mapped);
         assertEquals("blog1", mapped.getLabel(Label.shortname));
         assertEquals("name2", mapped.getName());
+    }
+
+    @Test
+    void containsProcesses() {
+
+        File file = new File(RootPath.get() + "/src/test/resources/example/internals.yml");
+        SeedConfiguration configuration = factory.fromFile(file);
+
+        //when
+        List<LandscapeDescription> resolve = sourceReferencesResolver.resolve(configuration);
+
+        //then
+        assertThat(resolve).isNotEmpty();
+
+        Set<ProcessDescription> processDescriptions = resolve.get(0).getReadAccess().all(ProcessDescription.class);
+        assertThat(processDescriptions).isNotEmpty().hasSize(1);
+        ProcessDescription start = processDescriptions.iterator().next();
+        assertThat(start.getBranches()).hasSize(1);
+        BranchDescription firstBranch = start.getBranches().get(0);
+        assertThat(firstBranch.getItems()).hasSize(4)
+                .contains("start/seed")
+                .contains("start/config")
+                .contains("sources/parsing")
+                .contains("sources/factory")
+        ;
     }
 
     @Test

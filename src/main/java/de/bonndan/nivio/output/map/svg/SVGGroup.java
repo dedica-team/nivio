@@ -33,20 +33,20 @@ class SVGGroup extends Component {
                         .attr("y", y)
                         .attr("rx", DEFAULT_ICON_SIZE)
                         .attr("ry", DEFAULT_ICON_SIZE)
-                        .attr("width", width)
-                        .attr("height", height)
+                        .attr(SVGAttr.WIDTH, width)
+                        .attr(SVGAttr.HEIGHT, height)
                         //.attr("style", cellStyle)
                         .attr("stroke", fillId)
-                        .attr("fill", fillId)
-                        .attr("class", "group")
+                        .attr(SVGAttr.FILL, fillId)
+                        .attr(SVGAttr.CLASS, "group")
                         .attr("id", "group_" + group.getIdentifier()),
 
                 SvgTagCreator.text(group.getIdentifier())
                         .attr("x", x + size / 2)
                         .attr("y", y + height + size / 2)
-                        .attr("fill", fillId)
+                        .attr(SVGAttr.FILL, fillId)
                         .attr("font-size", 24)
-                        .attr("class", "groupLabel")
+                        .attr(SVGAttr.CLASS, "groupLabel")
         );
     }
 }

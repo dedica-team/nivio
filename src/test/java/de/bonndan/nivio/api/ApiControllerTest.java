@@ -1,6 +1,8 @@
 package de.bonndan.nivio.api;
 
 import com.github.jknack.handlebars.internal.Files;
+import de.bonndan.nivio.GraphTestSupport;
+import de.bonndan.nivio.assessment.Assessment;
 import de.bonndan.nivio.input.IndexingDispatcher;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.model.*;
@@ -8,7 +10,7 @@ import de.bonndan.nivio.output.dto.FrontendMappingApiModel;
 import de.bonndan.nivio.output.dto.GroupApiModel;
 import de.bonndan.nivio.output.dto.ItemApiModel;
 import de.bonndan.nivio.output.dto.LandscapeApiModel;
-import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.search.LuceneSearchIndex;
 import de.bonndan.nivio.util.FrontendMapping;
 import de.bonndan.nivio.util.RootPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +40,9 @@ class ApiControllerTest {
     LandscapeRepository landscapeRepository;
     FrontendMapping frontendMapping;
     ApiController apiController;
+    private Landscape landscape;
+    private ApiRootModel apiRootModel;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setUp() {
@@ -47,18 +51,20 @@ class ApiControllerTest {
         landscapeRepository = Mockito.mock(LandscapeRepository.class);
         frontendMapping = Mockito.mock(FrontendMapping.class);
         apiController = new ApiController(landscapeRepository, linkFactory, indexingDispatcher, frontendMapping);
+
+        graph = new GraphTestSupport();
+        landscape = graph.landscape;
+        apiRootModel = Mockito.mock(ApiRootModel.class);
     }
 
     @Test
     void index() {
-        var index = Mockito.mock(Index.class);
-        Mockito.when(linkFactory.getIndex(landscapeRepository.findAll())).thenReturn(index);
-        assertThat(apiController.index()).isEqualTo(index);
+        Mockito.when(linkFactory.getIndex(landscapeRepository.findAll())).thenReturn(apiRootModel);
+        assertThat(apiController.index()).isEqualTo(apiRootModel);
     }
 
     @Test
     void landscape() {
-        var landscape = Mockito.mock(Landscape.class);
         Mockito.when(landscapeRepository.findDistinctByIdentifier("")).thenReturn(Optional.empty());
         assertThat(apiController.landscape("")).isEqualTo(ResponseEntity.notFound().build());
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(Optional.of(landscape));
@@ -69,36 +75,33 @@ class ApiControllerTest {
 
     @Test
     void group() {
-        var landscape = Mockito.mock(Landscape.class);
         Mockito.when(landscapeRepository.findDistinctByIdentifier("")).thenReturn(Optional.empty());
-        assertThat(apiController.group("", "")).isEqualTo(ResponseEntity.notFound().build());
-        Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(Optional.of(landscape));
-        Mockito.when(landscape.getGroup("test")).thenReturn(Optional.of(new Group("test", "test")));
-        Mockito.when(landscape.getItems()).thenReturn(new ItemIndex<>(Item.class));
 
-        assertThat(apiController.group("test", "test").getClass()).isEqualTo(ResponseEntity.class);
-        assertThat(apiController.group("test", "test").getStatusCode()).isEqualTo(HttpStatus.OK);
-        Group test = landscape.getGroup("test").get();
-        assertThat(apiController.group("test", "test").getBody()).isEqualToComparingFieldByField(new GroupApiModel(test, landscape.getItems().retrieve(test.getItems())));
+        //when
+        ResponseEntity<GroupApiModel> group = apiController.group("", "");
+        assertThat(group).isEqualTo(ResponseEntity.notFound().build());
+
+        Mockito.when(landscapeRepository.findDistinctByIdentifier(landscape.getIdentifier())).thenReturn(Optional.of(landscape));
+
+
+        ResponseEntity<GroupApiModel> group1 = apiController.group(landscape.getIdentifier(), graph.groupA.getIdentifier());
+        assertThat(group1.getClass()).isEqualTo(ResponseEntity.class);
+        assertThat(group1.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(group1.getBody()).isInstanceOf(GroupApiModel.class);
+        assertThat(group1.getBody().getFullyQualifiedIdentifier()).isEqualTo(graph.groupA.getFullyQualifiedIdentifier());
     }
 
     @Test
     void item() {
-        var landscape = Mockito.mock(Landscape.class);
-        var item = Mockito.mock(Item.class);
-        var itemIndex = new ItemIndex<>(Item.class);
-        Mockito.when(item.getFullyQualifiedIdentifier()).thenReturn(FullyQualifiedIdentifier.build("test", "test", "test"));
-        Mockito.when(landscapeRepository.findDistinctByIdentifier("")).thenReturn(Optional.empty());
-        assertThat(apiController.item("test", "test", "test")).isEqualTo(ResponseEntity.notFound().build());
-        Mockito.when(landscape.getItems()).thenReturn(itemIndex);
-        assertThat(apiController.item("test", "test", "test")).isEqualTo(ResponseEntity.notFound().build());
-        itemIndex.add(item);
+        Mockito.when(landscapeRepository.findDistinctByIdentifier(landscape.getIdentifier())).thenReturn(Optional.of(landscape));
 
-        Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(Optional.of(landscape));
-        Mockito.when(landscape.getGroup("test")).thenReturn(Optional.of(new Group("test", "test")));
-        assertThat(apiController.item("test", "test", "test").getClass()).isEqualTo(ResponseEntity.class);
-        assertThat(apiController.item("test", "test", "test").getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(apiController.item("test", "test", "test").getBody()).isEqualToComparingFieldByField(new ItemApiModel(item, landscape.getGroup("test").get()));
+        ResponseEntity<ItemApiModel> item = apiController.item(landscape.getIdentifier(), "test", "test");
+        assertThat(item).isEqualTo(ResponseEntity.notFound().build());
+
+        item = apiController.item(landscape.getIdentifier(), graph.itemAA.getParentIdentifier(), graph.itemAA.getIdentifier());
+        assertThat(item.getClass()).isEqualTo(ResponseEntity.class);
+        assertThat(item.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(item.getBody()).isNotNull();
     }
 
     @Test
@@ -143,21 +146,22 @@ class ApiControllerTest {
 
     @Test
     void search() {
-        var landscape = Mockito.mock(Landscape.class);
-        var item1 = Mockito.mock(Item.class);
-        var item2 = Mockito.mock(Item.class);
-        Mockito.when(item1.getGroup()).thenReturn("test");
-        Mockito.when(item2.getGroup()).thenReturn("test");
+
+        graph = new GraphTestSupport(new Index<>(LuceneSearchIndex.createVolatile()));
+        landscape = graph.landscape;
+        landscape.getReadAccess().indexForSearch(Assessment.empty());
+
         Mockito.when(landscapeRepository.findDistinctByIdentifier("")).thenReturn(Optional.empty());
-        assertThat(apiController.search("", "test")).isEqualTo(ResponseEntity.notFound().build());
         Mockito.when(landscapeRepository.findDistinctByIdentifier("test")).thenReturn(Optional.of(landscape));
-        Mockito.when(landscape.getGroups()).thenReturn(Map.of("test", new Group("test", "test")));
-        Mockito.when(landscape.getGroup("test")).thenReturn(Optional.of(new Group("test", "test")));
-        Mockito.when(landscape.search("test")).thenReturn(Set.of(item1, item2));
-        assertThat(apiController.search("test", "test").getClass()).isEqualTo(ResponseEntity.class);
-        assertThat(apiController.search("test", "test").getStatusCode()).isEqualTo(HttpStatus.OK);
-        var hashSet = new HashSet<ItemApiModel>();
-        assertThat(apiController.search("test", "test").getBody().size()).isEqualTo(2);
+
+        //when
+        ResponseEntity<Set<ItemApiModel>> test = apiController.search("", "test");
+        assertThat(test).isEqualTo(ResponseEntity.notFound().build());
+
+        ResponseEntity<Set<ItemApiModel>> search = apiController.search(graph.landscape.getIdentifier(), "identifier:" + graph.itemAA.getIdentifier());
+        assertThat(search.getClass()).isEqualTo(ResponseEntity.class);
+        assertThat(search.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(search.getBody()).hasSize(1);
     }
 
     @Test

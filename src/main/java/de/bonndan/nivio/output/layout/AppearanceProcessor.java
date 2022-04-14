@@ -17,15 +17,17 @@ import java.util.Objects;
 public class AppearanceProcessor {
 
     private final IconService iconService;
+    private final LocalIcons localIcons;
 
-    public AppearanceProcessor(IconService iconService) {
+    public AppearanceProcessor(IconService iconService, LocalIcons localIcons) {
         this.iconService = iconService;
+        this.localIcons = localIcons;
     }
 
     public void process(@NonNull final Landscape landscape) {
-        Objects.requireNonNull(landscape).getGroupItems().forEach(group -> {
+        Objects.requireNonNull(landscape).getReadAccess().all(Group.class).forEach(group -> {
             setIconAndFillAppearance(group);
-            landscape.getItems().retrieve(group.getItems()).forEach(this::setIconAndFillAppearance);
+            group.getChildren().forEach(this::setIconAndFillAppearance);
         });
         setIconAndFillAppearance(landscape);
     }
@@ -42,7 +44,6 @@ public class AppearanceProcessor {
                         .ifPresent(s -> labeled.setLabel(Label._icondata, s));
             }
             if (!StringUtils.hasLength(icon) && labeled instanceof Group) {
-                LocalIcons localIcons = new LocalIcons();
                 labeled.setLabel(Label._icondata, localIcons.getDefaultGroupIcon());
             }
         }

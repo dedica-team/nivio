@@ -1,5 +1,6 @@
 package de.bonndan.nivio.assessment;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ class ProcessingEventListenerTest {
     private AssessmentRepository repo;
     private AssessmentFactory factory;
     private ApplicationEventPublisher publisher;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setUp() {
@@ -31,22 +34,23 @@ class ProcessingEventListenerTest {
         publisher = mock(ApplicationEventPublisher.class);
         factory = mock(AssessmentFactory.class);
         listener = new ProcessingEventListener(repo, factory, publisher);
+
+        graph = new GraphTestSupport();
     }
 
     @Test
     void onProcessingFinishedEvent() {
         //given
-        Landscape landscape = LandscapeFactory.createForTesting("foo", "bar").build();
-        LandscapeDescription description = new LandscapeDescription("foo");
-        ProcessingFinishedEvent e = new ProcessingFinishedEvent(description, landscape, mock(ProcessingChangelog.class));
-        when(factory.createAssessment(any(Landscape.class))).thenReturn(new Assessment(Map.of("foo/bar/baz", List.of(StatusValue.summary("foo/bar/baz", new ArrayList<>())))));
-        landscape.getItems().add(ItemFactory.getTestItem("bar", "baz"));
+        LandscapeDescription description = new LandscapeDescription(graph.landscape.getIdentifier());
+        URI uri = graph.itemAA.getFullyQualifiedIdentifier();
+        when(factory.createAssessment(any(Landscape.class))).thenReturn(new Assessment(Map.of(uri, List.of(StatusValue.summary(uri, new ArrayList<>())))));
+        ProcessingFinishedEvent e = new ProcessingFinishedEvent(description, graph.landscape, mock(ProcessingChangelog.class));
 
         //when
         listener.onProcessingFinishedEvent(e);
 
         //then
-        verify(repo).save(eq(landscape.getFullyQualifiedIdentifier()), any(Assessment.class));
+        verify(repo).save(eq(graph.landscape.getFullyQualifiedIdentifier()), any(Assessment.class));
         verify(publisher).publishEvent(any(AssessmentChangedEvent.class));
     }
 
@@ -54,10 +58,10 @@ class ProcessingEventListenerTest {
     @DisplayName("Does not propagate event if assessment has not changed")
     void noEvent() {
         //given
-        Landscape landscape = LandscapeFactory.createForTesting("foo", "bar").build();
-        LandscapeDescription description = new LandscapeDescription("foo");
-        ProcessingFinishedEvent e = new ProcessingFinishedEvent(description, landscape, mock(ProcessingChangelog.class));
-        Assessment assessment = new Assessment(Map.of());
+        LandscapeDescription description = new LandscapeDescription(graph.landscape.getIdentifier());
+        URI uri = graph.itemAA.getFullyQualifiedIdentifier();
+        ProcessingFinishedEvent e = new ProcessingFinishedEvent(description, graph.landscape, mock(ProcessingChangelog.class));
+        Assessment assessment = Assessment.empty();
         when(factory.createAssessment(any(Landscape.class))).thenReturn(assessment);
         when(repo.getAssessment(any())).thenReturn(Optional.of(assessment));
 
@@ -65,7 +69,7 @@ class ProcessingEventListenerTest {
         listener.onProcessingFinishedEvent(e);
 
         //then
-        verify(repo).save(eq(landscape.getFullyQualifiedIdentifier()), any(Assessment.class));
+        verify(repo).save(eq(graph.landscape.getFullyQualifiedIdentifier()), any(Assessment.class));
         verify(publisher, never()).publishEvent(any(AssessmentChangedEvent.class));
     }
 }

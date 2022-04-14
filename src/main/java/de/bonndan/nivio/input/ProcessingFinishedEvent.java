@@ -5,6 +5,7 @@ import de.bonndan.nivio.model.FullyQualifiedIdentifier;
 import de.bonndan.nivio.model.Landscape;
 import org.springframework.lang.NonNull;
 
+import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -68,7 +69,7 @@ public class ProcessingFinishedEvent extends ProcessingEvent {
     }
 
     @Override
-    public FullyQualifiedIdentifier getSource() {
+    public URI getSource() {
         return landscape.getFullyQualifiedIdentifier();
     }
 }

@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import {
+  Button,
   Card,
   CardHeader,
   Table,
@@ -18,11 +19,12 @@ import ItemAvatar from '../../Modals/Item/ItemAvatar';
 import { Close, InfoOutlined } from '@material-ui/icons';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { getLabels } from '../../Utils/utils';
-import MappedString from '../../Utils/MappedString';
+import Process from '../../Modals/Process/Process';
 
 interface Props {
   source: IItem;
   target: IItem;
+  setSidebarContent: Function;
   relation: IRelation;
 }
 
@@ -31,7 +33,7 @@ interface Props {
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
+const MapRelation: React.FC<Props> = ({ source, target, relation, setSidebarContent }) => {
   const classes = componentStyles();
   const theme = useTheme();
 
@@ -45,6 +47,21 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
   const targetTitle = target.name || target.identifier;
   const title = sourceTitle + ' to ' + targetTitle;
   const labels = relation ? getLabels(relation) : null;
+  const processes: ReactElement[] = [];
+  Object.keys(relation.processes).forEach((key) => {
+    processes.push(
+      <Button
+        onClick={() => {
+          const process = landscapeContext.getProcess(relation.processes[key]);
+          if (process) setSidebarContent(<Process process={process} />);
+          else console.error(`Process not found: ${key}`);
+        }}
+        key={key}
+      >
+        {key}
+      </Button>
+    );
+  });
 
   const sourceStatus = landscapeContext.getAssessmentSummary(source.fullyQualifiedIdentifier);
   const targetStatus = landscapeContext.getAssessmentSummary(target.fullyQualifiedIdentifier);
@@ -54,7 +71,7 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
       <CardHeader
         title={title}
         className={classes.cardHeader}
-        subheader={<MappedString mapKey={'Relation'} />}
+        subheader={'Relation'}
         action={
           <IconButton
             size={'small'}
@@ -67,6 +84,12 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
         }
       />
       <CardContent>
+        <div className='information'>
+          <span className='description'>
+            {relation?.description ? `${relation?.description}` : ''}
+          </span>
+          <br/>
+        </div>
         <Table aria-label={'info table'} style={{ tableLayout: 'fixed' }}>
           <TableBody>
             <TableRow key={'Type'}>
@@ -91,14 +114,17 @@ const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
               <TableCell style={{ width: '33%' }}>Format</TableCell>
               <TableCell>{relation.format || '-'}</TableCell>
             </TableRow>
-
-            <TableRow key={'desc'}>
-              <TableCell style={{ width: '33%' }}>Description</TableCell>
-              <TableCell>{relation.description || '-'}</TableCell>
-            </TableRow>
           </TableBody>
         </Table>
         <br />
+
+        {relation.processes && processes.length > 0 ? (
+          <>
+            <Typography variant={'h6'}>Processes</Typography>
+            {processes}
+          </>
+        ) : null}
+
         {labels ? (
           <>
             <Typography variant={'h6'}>Labels</Typography>

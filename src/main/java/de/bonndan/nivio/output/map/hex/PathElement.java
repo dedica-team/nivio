@@ -1,8 +1,10 @@
 package de.bonndan.nivio.output.map.hex;
 
 import de.bonndan.nivio.output.map.svg.Component;
+import org.springframework.lang.NonNull;
 
 import java.awt.geom.Point2D;
+import java.util.Objects;
 
 public class PathElement {
 
@@ -17,22 +19,23 @@ public class PathElement {
         return new PathElement(pt);
     }
 
-    PathElement(String cmd) {
-        this.cmd = cmd;
+    PathElement(@NonNull final String cmd) {
+        this.cmd = Objects.requireNonNull(cmd);
         this.pt = null;
     }
 
-    PathElement(Point2D.Double pt) {
+    PathElement(@NonNull final Point2D.Double pt) {
         this.cmd = null;
-        this.pt = pt;
+        this.pt = Objects.requireNonNull(pt);
     }
 
-    public PathElement shift(Point2D.Double offset) {
-        if (pt != null) {
-            pt.x = pt.x + offset.x;
-            pt.y = pt.y + offset.y;
+    public String shifted(@NonNull final Point2D.Double offset) {
+        if (cmd != null) {
+            return cmd;
         }
-        return this;
+
+        Objects.requireNonNull(pt);
+        return String.format("%s %s", Component.round(pt.x + offset.x), Component.round(pt.y + offset.y));
     }
 
     @Override

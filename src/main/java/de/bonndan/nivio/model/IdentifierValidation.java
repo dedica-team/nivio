@@ -4,12 +4,14 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 public class IdentifierValidation {
 
     /**
      * A valid identifier must be of length greater than zero and start with an a-z character or number.
      */
-    public static final String PATTERN = "^[\\w][\\w.:_-]{0,255}$";
+    public static final String IDENTIFIER_PATTERN = "^[\\w][\\w._-]{0,255}$";
 
     private IdentifierValidation() {
     }
@@ -25,8 +27,8 @@ public class IdentifierValidation {
             throw new IllegalArgumentException("Invalid empty identifier given.");
         }
 
-        if (!identifier.matches(PATTERN)) {
-            throw new IllegalArgumentException(String.format("Invalid  identifier given: '%s', it must match %s", identifier, PATTERN));
+        if (!identifier.matches(IDENTIFIER_PATTERN)) {
+            throw new IllegalArgumentException(String.format("Invalid  identifier given: '%s', it must match %s", identifier, IDENTIFIER_PATTERN));
         }
     }
 
@@ -39,12 +41,20 @@ public class IdentifierValidation {
      */
     @NonNull
     public static String getValidIdentifier(@Nullable final String identifier) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("Invalid empty identifier given.");
+        if (FullyQualifiedIdentifier.isUndefined(identifier)) {
+            throw new IllegalArgumentException(String.format("Invalid identifier '%s' given.", identifier));
         }
-        //noinspection ConstantConditions
-        String trimmed = StringUtils.trimWhitespace(identifier);
+        @SuppressWarnings("ConstantConditions") String trimmed = StringUtils.trimWhitespace(identifier); //NOSONAR
         IdentifierValidation.assertValid(trimmed);
         return trimmed;
+    }
+
+    @NonNull
+    public static Optional<String> getIdentifier(@Nullable final String identifier) {
+        try {
+            return Optional.of(getValidIdentifier(identifier));
+        } catch (IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
     }
 }

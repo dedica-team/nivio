@@ -7,6 +7,7 @@ import de.bonndan.nivio.model.LandscapeFactory;
 import de.bonndan.nivio.model.Landscape;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 
 import java.net.URL;
 
@@ -26,14 +27,13 @@ class MapStyleSheetFactoryTest {
         fileFetcher = mock(FileFetcher.class);
         factory = new MapStyleSheetFactory(fileFetcher);
         processLog = mock(ProcessLog.class);
-        landscape = LandscapeFactory.createForTesting("test", "testLandscape")
-                .withProcessLog(processLog)
-                .build();
+        landscape = LandscapeFactory.createForTesting("test", "testLandscape").build();
+        landscape.setLog(processLog);
         landscape.getConfig().getBranding().setMapStylesheet("http://acme.com/test.css");
     }
 
     @Test
-    public void returnsFile() {
+    void returnsFile() {
         when(fileFetcher.get(any(URL.class))).thenReturn("foo {}");
 
         String s = factory.getMapStylesheet(landscape.getConfig(), landscape.getLog());
@@ -41,7 +41,7 @@ class MapStyleSheetFactoryTest {
     }
 
     @Test
-    public void returnsEmptyString() {
+    void returnsEmptyString() {
         when(fileFetcher.get(any(URL.class))).thenThrow(new ReadingException("whatever", new RuntimeException("foo")));
 
         String s = factory.getMapStylesheet(landscape.getConfig(), landscape.getLog());

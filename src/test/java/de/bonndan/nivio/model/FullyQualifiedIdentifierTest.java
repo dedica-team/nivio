@@ -3,129 +3,91 @@ package de.bonndan.nivio.model;
 import de.bonndan.nivio.input.dto.ItemDescription;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.net.URI;
 
-public class FullyQualifiedIdentifierTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+class FullyQualifiedIdentifierTest {
+
 
     @Test
-     void testToString() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
-        assertEquals("/g1/d1", fqi1.toString());
+    void buildWithSimpleId() {
 
-        var fqi2 = FullyQualifiedIdentifier.build("l1", "g1", "d1");
-        assertEquals("l1/g1/d1", fqi2.toString());
+        //when
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.landscape, "test");
 
-        var fqi3 = FullyQualifiedIdentifier.build("l1", "g1", null);
-        assertEquals("l1/g1", fqi3.toString());
-
-        var fqi4 = FullyQualifiedIdentifier.build("l1", null, null);
-        assertEquals("l1", fqi4.toString());
+        //then
+        assertThat(test).isNotNull().isEqualTo(URI.create("landscape://test/"));
     }
 
     @Test
-     void testJsonValue() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
-        assertEquals("", fqi1.jsonValue());
+    void buildWithComplexLandscapeId() {
 
-        var fqi2 = FullyQualifiedIdentifier.build("l1", "g1", "d1");
-        assertEquals("l1/g1/d1", fqi2.jsonValue());
+        //when
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.landscape, "nivio:demo-1_foo");
 
-        var fqi3 = FullyQualifiedIdentifier.build("l1", "g1", null);
-        assertEquals("l1/g1", fqi3.jsonValue());
-
-        var fqi4 = FullyQualifiedIdentifier.build("l1", null, null);
-        assertEquals("l1", fqi4.jsonValue());
-
-        var fqi5 = FullyQualifiedIdentifier.build("l1", null, "d1");
-        assertEquals("l1/" + Layer.domain.name() + "/d1", fqi5.jsonValue());
-
+        //then
+        assertThat(test).isNotNull().isEqualTo(URI.create("landscape://nivio:demo-1_foo/"));
     }
 
     @Test
-     void testEqualsWithGroup() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
+    void buildWithItem() {
 
-        ItemDescription desc1 = new ItemDescription();
-        desc1.setIdentifier("d1");
-        desc1.setGroup("g1");
+        //when
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.item, "nivio:demo-1_foo", "default", "default","aGroup", "foo");
 
-        ItemDescription otherGroup = new ItemDescription();
-        otherGroup.setIdentifier("d1");
-        otherGroup.setGroup("g2");
-
-        ItemDescription otherIdentifier = new ItemDescription();
-        otherIdentifier.setIdentifier("d2");
-        otherIdentifier.setGroup("g1");
-
-        assertTrue(fqi1.isSimilarTo(desc1));
-        assertFalse(fqi1.isSimilarTo(otherGroup));
-        assertFalse(fqi1.isSimilarTo(otherIdentifier));
+        //then
+        assertThat(test).isNotNull().isEqualTo(URI.create("item://nivio:demo-1_foo/default/default/aGroup/foo"));
     }
 
     @Test
-     void testEqualsWithoutGroup() {
-        var fqi1 = FullyQualifiedIdentifier.build(null, "g1", "d1");
+    void buildWithContext() {
 
-        ItemDescription desc1 = new ItemDescription();
-        desc1.setIdentifier("d1");
-        desc1.setGroup(null);
-        assertTrue(fqi1.isSimilarTo(desc1));
+        //when
+        URI test = FullyQualifiedIdentifier.build(ComponentClass.context, "nivio:demo-1_foo", "aUnit", "aContext");
 
-        ItemDescription otherGroup = new ItemDescription();
-        otherGroup.setIdentifier("d1");
-        otherGroup.setGroup("g2");
-
-        var fqiNoGroup = FullyQualifiedIdentifier.build(null, null, "d1");
-        assertTrue(fqiNoGroup.isSimilarTo(desc1));
-        assertTrue(fqiNoGroup.isSimilarTo(otherGroup));
+        //then
+        assertThat(test).isNotNull().isEqualTo(URI.create("context://nivio:demo-1_foo/aUnit/aContext"));
     }
 
     @Test
-     void fromComplete() {
+    void forDescription() {
 
-        String three = "a/b/c";
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(three);
-        assertEquals("a", fqi.getLandscape());
-        assertEquals("b", fqi.getGroup());
-        assertEquals("c", fqi.getItem());
+        //when
+        URI uri = FullyQualifiedIdentifier.forDescription(ItemDescription.class, "landscape", "foo", "bar", null, null, null);
+
+        //then
+        assertThat(uri).isNotNull().isEqualTo(URI.create("item://landscape/foo/bar"));
     }
 
     @Test
-     void fromLandscapeAndGroup() {
-        String two = "b/c";
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(two);
-        assertEquals("b", fqi.getLandscape());
-        assertEquals("c", fqi.getGroup());
-        assertNull(fqi.getItem());
-    }
-    @Test
-     void fromLandscape() {
-        String one = "c";
-        FullyQualifiedIdentifier fqi = FullyQualifiedIdentifier.from(one);
-        assertEquals("c", fqi.getLandscape());
-        assertNull(fqi.getGroup());
-        assertNull(fqi.getItem());
+    void forDescriptionWithMissingParts() {
+
+        //when
+        URI uri = FullyQualifiedIdentifier.forDescription(ItemDescription.class, "", null, "bar", null, null, null);
+
+        //then
+        assertThat(uri).isNotNull().isEqualTo(URI.create("item://_/_/bar"));
     }
 
     @Test
-    void isNotGroup() {
-        assertFalse(FullyQualifiedIdentifier.from("a").isGroup());
-        assertFalse(FullyQualifiedIdentifier.from("a/b/c").isGroup());
+    void fromParentWithItem() {
+
+        Group group = GroupBuilder.aTestGroup("foo").withParent(ContextBuilder.aTestContext("test").build()).build();
+        Item item = ItemFactory.getTestItemBuilder(group.getIdentifier(), "bar").withParent(group).build();
+
+        //when
+        URI uri = FullyQualifiedIdentifier.from(group.getFullyQualifiedIdentifier(), item);
+
+        //then
+        assertThat(uri).isNotNull().isEqualTo(URI.create("item://test/testunit/test/foo/bar"));
     }
 
     @Test
-    void isGroup() {
-        assertTrue(FullyQualifiedIdentifier.from("a/b").isGroup());
-    }
-
-    @Test
-    void isItem() {
-        assertTrue(FullyQualifiedIdentifier.from("a/b/c").isItem());
-    }
-
-    @Test
-    void isNotItem() {
-        assertFalse(FullyQualifiedIdentifier.from("a").isItem());
-        assertFalse(FullyQualifiedIdentifier.from("a/b").isItem());
+    void isUndefined() {
+        assertThat(FullyQualifiedIdentifier.isUndefined(FullyQualifiedIdentifier.UNDEFINED)).isTrue();
+        assertThat(FullyQualifiedIdentifier.isUndefined(null)).isTrue();
+        assertThat(FullyQualifiedIdentifier.isUndefined("")).isTrue();
+        assertThat(FullyQualifiedIdentifier.isUndefined("a")).isFalse();
     }
 }

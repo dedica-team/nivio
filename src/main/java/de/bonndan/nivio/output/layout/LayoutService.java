@@ -5,6 +5,7 @@ import de.bonndan.nivio.input.ProcessingChangelog;
 import de.bonndan.nivio.input.ProcessingFinishedEvent;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.Renderer;
+import de.bonndan.nivio.output.RendererOptions;
 import de.bonndan.nivio.output.map.RenderingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -52,7 +54,7 @@ public class LayoutService implements ApplicationListener<ProcessingFinishedEven
         LayoutedComponent layout = layout(landscape);
 
         var debug = false;
-        var artefact = renderer.render(layout, null, debug);
+        var artefact = renderer.render(layout, new RendererOptions(null, List.of(), debug));
         renderingRepository.save(renderer.getRenderingType(), landscape, artefact, debug);
         LOGGER.info("Generated {} rendering of landscape {} (debug: {})", renderer.getRenderingType(), landscape.getIdentifier(), debug);
 
@@ -83,6 +85,6 @@ public class LayoutService implements ApplicationListener<ProcessingFinishedEven
      * @return renderer artefact
      */
     public Object render(@NonNull final LayoutedComponent graph, @NonNull final Assessment assessment, boolean debug) {
-        return renderer.render(graph, Objects.requireNonNull(assessment), debug);
+        return renderer.render(graph, new RendererOptions(assessment, List.of(), debug));
     }
 }

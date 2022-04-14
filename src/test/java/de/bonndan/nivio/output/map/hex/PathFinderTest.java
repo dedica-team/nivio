@@ -1,6 +1,6 @@
 package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.model.Group;
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.model.Item;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,25 +16,19 @@ class PathFinderTest {
     private HexMap hexMap;
     private MapTile one;
     private MapTile two;
+    private GraphTestSupport graph;
 
     @BeforeEach
     void setup() {
         one = new MapTile(new Hex(1, 2));
         two = new MapTile(new Hex(3, 5));
 
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-        Item target2 = getTestItem("group", "target2");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-        group.addOrReplaceItem(target);
-        group.addOrReplaceItem(target2);
+        graph = new GraphTestSupport();
 
         hexMap = new HexMap();
-        hexMap.add(landscapeItem, one);
-        hexMap.add(target, two);
-        hexMap.add(target, two);
+        hexMap.add(graph.itemAA, one);
+        hexMap.add(graph.itemAB, two);
+        hexMap.add(graph.itemAC, two);
     }
 
     @Test
@@ -61,13 +55,9 @@ class PathFinderTest {
         //given
         MapTile obstacle = new MapTile(new Hex(2, 5));
 
-        Item target2 = getTestItem("group", "target2");
-        obstacle.setItem(target2.getFullyQualifiedIdentifier());
+        obstacle.setItem(graph.itemAC.getFullyQualifiedIdentifier());
 
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(target2);
-
-        hexMap.add(target2, obstacle);
+        hexMap.add(graph.itemAC, obstacle);
 
         PathFinder pathFinder = new PathFinder(hexMap, true);
 
@@ -81,11 +71,11 @@ class PathFinderTest {
 
     @Test
     void noExtraCost() {
-        MapTile fromHex = new MapTile(new Hex(3,2));
+        MapTile fromHex = new MapTile(new Hex(3, 2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        MapTile toHex = new MapTile(new Hex(3,3));
+        MapTile toHex = new MapTile(new Hex(3, 3));
         PathTile to = new PathTile(toHex);
 
         //when
@@ -95,11 +85,11 @@ class PathFinderTest {
 
     @Test
     void pathCosts() {
-        MapTile fromHex = new MapTile(new Hex(3,2));
+        MapTile fromHex = new MapTile(new Hex(3, 2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        MapTile toHex =  new MapTile(new Hex(3,3));
+        MapTile toHex = new MapTile(new Hex(3, 3));
         toHex.addPathDirection(1);
         PathTile to = new PathTile(toHex);
 
@@ -110,11 +100,11 @@ class PathFinderTest {
 
     @Test
     void groupCostMore() {
-        MapTile fromHex = new MapTile(new Hex(3,2));
+        MapTile fromHex = new MapTile(new Hex(3, 2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        MapTile toHex = new MapTile(new Hex(3,3));
+        MapTile toHex = new MapTile(new Hex(3, 3));
         toHex.setGroup("bar");
         PathTile to = new PathTile(toHex);
 
@@ -125,12 +115,12 @@ class PathFinderTest {
 
     @Test
     void groupCostSameIfComingFromGroup() {
-        MapTile fromHex = new MapTile(new Hex(3,2));
+        MapTile fromHex = new MapTile(new Hex(3, 2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
         from.mapTile.setGroup("foo/other");
 
-        MapTile toHex = new MapTile(new Hex(3,3));
+        MapTile toHex = new MapTile(new Hex(3, 3));
         toHex.setGroup("foo/bar");
         PathTile to = new PathTile(toHex);
 
@@ -141,13 +131,14 @@ class PathFinderTest {
 
     @Test
     void itemsBlock() {
-        MapTile fromHex = new MapTile(new Hex(3,2));
+        MapTile fromHex = new MapTile(new Hex(3, 2));
         PathTile from = new PathTile(fromHex);
         from.moveCosts = 1;
 
-        Item block = getTestItem("foo", "block");
-        MapTile toHex = new MapTile(new Hex(3,3));
-        toHex.setGroup(block.getGroup());
+        graph.getTestGroup("foo");
+        Item block = graph.getTestItem("foo", "block");
+        MapTile toHex = new MapTile(new Hex(3, 3));
+        toHex.setGroup(block.getParent().getIdentifier());
         toHex.setItem(block.getFullyQualifiedIdentifier());
         PathTile to = new PathTile(toHex);
 

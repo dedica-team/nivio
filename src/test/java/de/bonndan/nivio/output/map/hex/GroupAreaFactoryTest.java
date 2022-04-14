@@ -1,15 +1,14 @@
 package de.bonndan.nivio.output.map.hex;
 
-import de.bonndan.nivio.model.Group;
-import de.bonndan.nivio.model.Item;
+import de.bonndan.nivio.GraphTestSupport;
 import org.apache.commons.collections4.set.UnmodifiableSet;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,6 +23,12 @@ class GroupAreaFactoryTest {
             new MapTile(new Hex(2, 1)),
             new MapTile(new Hex(1, 1))
     ));
+    private GraphTestSupport graph;
+
+    @BeforeEach
+    void setup() {
+        graph = new GraphTestSupport();
+    }
 
     /**
      * https://www.redblobgames.com/grids/hexagons/#coordinates
@@ -48,19 +53,13 @@ class GroupAreaFactoryTest {
         MapTile one = new MapTile(new Hex(1, 2));
         MapTile two = new MapTile(new Hex(3, 5));
 
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-        group.addOrReplaceItem(target);
 
         HexMap hexMap = new HexMap();
-        hexMap.add(landscapeItem, one);
-        hexMap.add(target, two);
+        hexMap.add(graph.itemAA, one);
+        hexMap.add(graph.itemAB, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, target));
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, graph.groupA, Set.of(graph.itemAA, graph.itemAB));
 
         //then
         assertThat(inArea).containsAll(expectedTerritory);
@@ -76,21 +75,15 @@ class GroupAreaFactoryTest {
         MapTile one = new MapTile(new Hex(1, 2));
         MapTile two = new MapTile(new Hex(3, 3));
 
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-
         HexMap hexMap = new HexMap();
-        hexMap.add(landscapeItem, one);
-        hexMap.add(target, two);
+        hexMap.add(graph.itemAA, one);
+        hexMap.add(graph.itemAA, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem));
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, graph.groupA, Set.of(graph.itemAA));
 
         //then
-        assertThat(inArea).isEqualTo(expectedTerritory);
+        assertThat(inArea).hasSize(7);
     }
 
     @Test
@@ -99,18 +92,12 @@ class GroupAreaFactoryTest {
         MapTile one = new MapTile(new Hex(4, 4));
         MapTile two = new MapTile(new Hex(6, 4));
 
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-
         HexMap hexMap = new HexMap();
-        hexMap.add(landscapeItem, one);
-        hexMap.add(target, two);
+        hexMap.add(graph.itemAA, one);
+        hexMap.add(graph.itemAB, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, target));
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, graph.groupA, Set.of(graph.itemAA, graph.itemAB));
         assertThat(inArea).doesNotContain(new MapTile(new Hex(5, 2)));
         assertThat(inArea).doesNotContain(new MapTile(new Hex(6, 2)));
         assertThat(inArea).doesNotContain(new MapTile(new Hex(7, 2)));
@@ -122,19 +109,12 @@ class GroupAreaFactoryTest {
         MapTile one = new MapTile(new Hex(4, 4));
         MapTile two = new MapTile(new Hex(7, 4));
 
-        Item landscapeItem = getTestItem("group", "landscapeItem");
-        Item target = getTestItem("group", "target");
-
-        Group group = new Group("group", "landscapeIdentifier");
-        group.addOrReplaceItem(landscapeItem);
-        group.addOrReplaceItem(target);
-
         HexMap hexMap = new HexMap();
-        hexMap.add(landscapeItem, one);
-        hexMap.add(target, two);
+        hexMap.add(graph.itemAA, one);
+        hexMap.add(graph.itemAB, two);
 
         //when
-        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, group, Set.of(landscapeItem, target));
+        Set<MapTile> inArea = GroupAreaFactory.getGroup(hexMap, graph.groupA, Set.of(graph.itemAA, graph.itemAB));
 
         //then
         assertThat(inArea).contains(new MapTile(new Hex(6, 3)));

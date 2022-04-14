@@ -38,11 +38,11 @@ public class SVGHex extends Component {
 
     public DomContent render() {
         return SvgTagCreator.polygon()
-                .attr("stroke-width", 1)
+                .attr(SVGAttr.STROKE_WIDTH, 1)
                 .attr("points", asPoints(hex))
-                .condAttr(StringUtils.hasLength(stroke), "stroke", stroke)
-                .condAttr(StringUtils.hasLength(fillId), "fill", fillId)
-                .condAttr(StringUtils.hasLength(fillId), "fill-opacity", String.valueOf(0.4))
+                .condAttr(StringUtils.hasLength(stroke), SVGAttr.STROKE, stroke)
+                .condAttr(StringUtils.hasLength(fillId), SVGAttr.FILL, fillId)
+                .condAttr(StringUtils.hasLength(fillId), SVGAttr.FILL_OPACITY, String.valueOf(0.4))
                 .condAttr(debug, "data-hex-coords", hex.q + "," + hex.r)
                 ;
     }

@@ -6,9 +6,7 @@ import de.bonndan.nivio.input.FileFetcher;
 import de.bonndan.nivio.input.SourceReference;
 import de.bonndan.nivio.input.http.HttpService;
 import de.bonndan.nivio.input.nivio.InputFormatHandlerNivio;
-import de.bonndan.nivio.model.Item;
 import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Layer;
 import de.bonndan.nivio.model.Lifecycle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +42,7 @@ class InputFormatHandlerNivioTest {
         SourceReference file = new SourceReference(new File(s).toURI().toURL());
 
         formatHandlerNivio.applyData(file, landscapeDescription);
-        ItemDescription service = landscapeDescription.getItemDescriptions().pick("blog-server", null);
+        ItemDescription service = landscapeDescription.getReadAccess().matchOneByIdentifiers("blog-server", null, ItemDescription.class).orElseThrow();
         assertEquals("Demo Blog", service.getName());
         assertEquals("to be replaced", service.getLabel(Label.note));
         assertEquals("blog-server", service.getIdentifier());
@@ -78,7 +77,7 @@ class InputFormatHandlerNivioTest {
             }
         });
 
-        ItemDescription web = landscapeDescription.getItemDescriptions().pick("wordpress-web", null);
+        ItemDescription web = landscapeDescription.getReadAccess().matchOneByIdentifiers("wordpress-web", null, ItemDescription.class).orElseThrow();
         assertEquals("infra", web.getLayer());
         assertEquals("wordpress-web", web.getIdentifier());
         assertEquals("Webserver", web.getDescription());
@@ -103,10 +102,10 @@ class InputFormatHandlerNivioTest {
         formatHandlerNivio.applyData(file, landscapeDescription);
 
         //then
-        Map<String, GroupDescription> groups = landscapeDescription.getGroups();
+        Set<GroupDescription> groups = landscapeDescription.getReadAccess().all(GroupDescription.class);
         assertThat(groups).isNotEmpty();
 
-        GroupDescription ingress = groups.get("ingress");
+        GroupDescription ingress = groups.stream().filter(groupDescription -> groupDescription.getIdentifier().equals("ingress")).findFirst().orElseThrow();
         assertThat(ingress).isNotNull();
         assertThat(ingress.getDescription()).isEqualTo("This group provides authentication.");
     }

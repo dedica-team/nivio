@@ -1,4 +1,4 @@
-identifier: nivio:incremental
+identifier: nivio_incremental
 name: Incremental update example
 sources:
   - "./services/wordpress.yml"

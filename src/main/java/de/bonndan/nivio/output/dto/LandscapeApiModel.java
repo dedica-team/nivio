@@ -2,10 +2,8 @@ package de.bonndan.nivio.output.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.bonndan.nivio.assessment.kpi.KPI;
-import de.bonndan.nivio.model.FullyQualifiedIdentifier;
-import de.bonndan.nivio.model.Label;
-import de.bonndan.nivio.model.Landscape;
-import de.bonndan.nivio.model.LandscapeConfig;
+import de.bonndan.nivio.model.Process;
+import de.bonndan.nivio.model.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -22,23 +20,9 @@ public class LandscapeApiModel extends ComponentApiModel {
     private final Landscape landscape;
 
     public LandscapeApiModel(@NonNull final Landscape landscape) {
+        super(landscape);
         this.landscape = Objects.requireNonNull(landscape);
         hateoasLinks.putAll(landscape.getLinks());
-    }
-
-    @NonNull
-    public String getIdentifier() {
-        return landscape.getIdentifier();
-    }
-
-    @NonNull
-    public FullyQualifiedIdentifier getFullyQualifiedIdentifier() {
-        return landscape.getFullyQualifiedIdentifier();
-    }
-
-    @NonNull
-    public String getName() {
-        return landscape.getName();
     }
 
     @Nullable
@@ -50,31 +34,27 @@ public class LandscapeApiModel extends ComponentApiModel {
         return landscape.getConfig();
     }
 
-    public Set<GroupApiModel> getGroups() {
-        return landscape.getGroupItems().stream()
-                .map(group -> new GroupApiModel(group, landscape.getItems().retrieve(group.getItems())))
+    public Set<UnitApiModel> getUnits() {
+        return landscape.getReadAccess().all(Unit.class).stream()
+                .map(UnitApiModel::new)
                 .collect(Collectors.toSet());
     }
 
-    public String getDescription() {
-        return landscape.getDescription();
+    public Set<GroupApiModel> getGroups() {
+        return landscape.getReadAccess().all(Group.class).stream()
+                .map(group -> new GroupApiModel(group, Set.copyOf(group.getChildren())))
+                .collect(Collectors.toSet());
     }
 
-    public String getOwner() {
-        return landscape.getOwner();
+    public Set<ProcessApiModel> getProcesses() {
+        return landscape.getReadAccess().all(Process.class).stream()
+                .map(ProcessApiModel::new)
+                .collect(Collectors.toSet());
     }
 
-    @Override
-    public Map<String, String> getLabels() {
-        return getPublicLabels(landscape.getLabels());
-    }
 
     public ZonedDateTime getLastUpdate() {
         return landscape.getLastUpdate();
-    }
-
-    public String getIcon() {
-        return landscape.getLabel(Label._icondata);
     }
 
     /**

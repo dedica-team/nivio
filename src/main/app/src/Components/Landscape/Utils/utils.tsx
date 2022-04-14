@@ -1,6 +1,6 @@
-import React, {ReactElement} from 'react';
-import {IGroup, IItem, ILandscape, IRelation} from '../../../interfaces';
-import {Button, Link, List, ListItem, ListItemText} from '@material-ui/core';
+import React, { ReactElement } from 'react';
+import { IGroup, IItem, ILandscape, IProcess, IRelation } from '../../../interfaces';
+import { Button, Link, List, ListItem, ListItemText } from '@material-ui/core';
 import MappedString from './MappedString';
 
 /**
@@ -8,42 +8,18 @@ import MappedString from './MappedString';
  *
  * @param landscape object containing groups
  * @param fullyQualifiedIdentifier string to identify the item
+ * TODO ineffective, group identifier can be extract from fullyQualifiedIdentifier
  */
 export const getItem = (landscape: ILandscape, fullyQualifiedIdentifier: string): IItem | null => {
-  let item: IItem | null = null;
-  for (const value of landscape.groups) {
-    for (let i = 0; i < value.items.length; i++) {
-      let value1 = value.items[i];
-      if (value1.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-        item = value1;
-        break;
+  for (const group of landscape.groups) {
+    for (const item of group.items) {
+      if (item.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
+        return item;
       }
     }
   }
 
-  return item;
-};
-
-/**
- * Find a group by its fully qualified identifier.
- *
- * @param landscape object
- * @param fullyQualifiedIdentifier string to identify the group
- */
-export const getGroup = (
-  landscape: ILandscape,
-  fullyQualifiedIdentifier: string
-): IGroup | null => {
-  let group: IGroup | null = null;
-  for (let i = 0; i < landscape.groups.length; i++) {
-    let value = landscape.groups[i];
-    if (value.fullyQualifiedIdentifier === fullyQualifiedIdentifier) {
-      group = value;
-      break;
-    }
-  }
-
-  return group;
+  return null;
 };
 
 /**
@@ -51,7 +27,7 @@ export const getGroup = (
  *
  * @param element item/group/landscape
  */
-export const getLinks = (element: IGroup | IItem): ReactElement[] => {
+export const getLinks = (element: IProcess | IGroup | IItem): ReactElement[] => {
   let links: ReactElement[] = [];
   if (element?._links) {
     Object.keys(element._links).forEach((key) => {
@@ -73,7 +49,7 @@ export const getLinks = (element: IGroup | IItem): ReactElement[] => {
   return links;
 };
 
-export const getLabels = (element: IGroup | IItem | IRelation) => {
+export const getLabels = (element: IProcess | IGroup | IItem | IRelation) => {
   let labels: ReactElement[] = [];
   if (!element?.labels) {
     return null;

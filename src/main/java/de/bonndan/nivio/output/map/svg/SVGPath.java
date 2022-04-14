@@ -31,13 +31,13 @@ public class SVGPath extends Component {
     @Override
     public DomContent render() {
         String path = pointsPath.stream()
-                .map(pathElement -> pathElement.shift(offset).toString())
+                .map(pathElement -> pathElement.shifted(offset))
                 .collect(Collectors.joining(" "));
 
         return SvgTagCreator.path()
                 .attr("d", path)
-                .attr("fill", "none")
-                .condAttr(StringUtils.hasLength(fillId), "stroke", fillId)
-                .attr("stroke-width", 3);
+                .attr(SVGAttr.FILL, "none")
+                .condAttr(StringUtils.hasLength(fillId), SVGAttr.STROKE, fillId)
+                .attr(SVGAttr.STROKE_WIDTH, 3);
     }
 }

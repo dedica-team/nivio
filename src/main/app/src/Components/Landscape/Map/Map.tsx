@@ -16,8 +16,9 @@ import { withBasePath } from '../../../utils/API/BasePath';
 import { get } from '../../../utils/API/APIClient';
 import { ReactSvgPanZoomLoaderXML } from './ReactSVGPanZoomLoaderXML';
 import Item from '../Modals/Item/Item';
-import { getGroup, getItem } from '../Utils/utils';
+import { getItem } from '../Utils/utils';
 import Group from '../Modals/Group/Group';
+import Process from '../Modals/Process/Process';
 import { LocateFunctionContext } from '../../../Context/LocateFunctionContext';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import IconButton from '@material-ui/core/IconButton';
@@ -92,21 +93,25 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
 
+  /**
+   * Function to locate and highlight the given element.
+   */
   const locateComponent = useCallback(
-    (fullyQualifiedItemIdentifier: string) => {
-      const element = document.getElementById(fullyQualifiedItemIdentifier);
+    (fullyQualifiedIdentifier: string) => {
+      const element = document.getElementById(fullyQualifiedIdentifier);
       if (element) {
+        if (visualFocus !== fullyQualifiedIdentifier) setVisualFocus(fullyQualifiedIdentifier);
+        setRenderWithTransition(true);
+        setHighlightElement(element);
         let dataX = Number(element.getAttribute('data-x'));
         let dataY = Number(element.getAttribute('data-y'));
         if (dataX && dataY && data) {
           setValue(setPointOnViewerCenter(value, dataX, dataY, 0.5));
-          setRenderWithTransition(true);
-          setHighlightElement(element);
           setIsZoomed(true);
         }
       }
     },
-    [data, value]
+    [data, value, visualFocus]
   );
 
   const onItemClick = (e: MouseEvent<HTMLElement>) => {
@@ -133,10 +138,23 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     setVisualFocus(fqi);
 
     if (fqi && landscapeContext.landscape) {
-      let group = getGroup(landscapeContext.landscape, fqi);
+      let group = landscapeContext.getGroup(fqi);
       if (group) {
         // @ts-ignore
         setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
+      }
+    }
+  };
+
+  const onProcessClick = (e: MouseEvent<HTMLElement>) => {
+    const fqi = e.currentTarget.getAttribute('data-identifier');
+    setVisualFocus(fqi);
+
+    if (fqi && landscapeContext.landscape) {
+      let process = landscapeContext.getProcess(fqi);
+      if (process) {
+        // @ts-ignore
+        setSidebarContent(<Process process={process} key={`process_${fqi}_${Math.random()}`} />);
       }
     }
   };
@@ -145,7 +163,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     if (!landscapeContext.landscape) return;
 
     const dataSource = e.currentTarget.getAttribute('data-source');
-    const fqi = e.currentTarget.getAttribute('data-identifier');
+    const fqi = e.currentTarget.getAttribute('data-identifier') || '';
     setVisualFocus(fqi);
 
     let source, sourceElement, sourceX, sourceY;
@@ -183,14 +201,14 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     }
 
     if (source && target && dataTarget) {
-      const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
-      let relation = source.relations[relId];
+      let relation = source.relations[fqi];
       const mapRelation = (
         <MapRelation
+          setSidebarContent={setSidebarContent}
           relation={relation}
           source={source}
           target={target}
-          key={`relation_${relId}_${Math.random()}`}
+          key={`relation_${fqi}_${Math.random()}`}
         />
       );
       // @ts-ignore
@@ -262,7 +280,8 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       el.classList.add('unselected');
     });
 
-    const current = document.querySelectorAll("[data-identifier='" + visualFocus + "']");
+    const current = document.querySelectorAll(`[data-identifier='${visualFocus}']`);
+    console.log(visualFocus, current);
     Array.from(current).forEach((vf) => {
       vf.classList.add('selected');
       vf.classList.remove('unselected');
@@ -366,6 +385,11 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
                   selector='.groupArea'
                   onMouseUp={onGroupClick}
                   onTouchEnd={onGroupClick}
+                />
+                <SvgLoaderSelectElement
+                  selector='.process'
+                  onMouseUp={onProcessClick}
+                  onTouchEnd={onProcessClick}
                 />
               </>
             }

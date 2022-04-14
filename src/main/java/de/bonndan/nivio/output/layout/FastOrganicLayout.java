@@ -176,7 +176,7 @@ public class FastOrganicLayout {
     public void execute() {
 
         setup();
-        layoutLogger.recordLocations(centerLocations);
+        layoutLogger.recordLocations(centerLocations, radius);
 
         // Main iteration loop
         for (iteration = 0; iteration < maxIterations; iteration++) {
@@ -197,8 +197,8 @@ public class FastOrganicLayout {
 
         for (int i = 0; i < nodes.size(); i++) {
             LayoutedComponent vertex = nodes.get(i);
-            vertex.setX((long) centerLocations[i][0]);
-            vertex.setY((long) centerLocations[i][1]);
+            vertex.setCenterX((long) centerLocations[i][0]);
+            vertex.setCenterY((long) centerLocations[i][1]);
         }
     }
 
@@ -239,7 +239,7 @@ public class FastOrganicLayout {
                 distances[index][j] = Geometry.getDistance(centerLocations[index], centerLocations[j], 0, 0, radius[index], radius[j]);
             }
         }
-        layoutLogger.recordLocations(centerLocations);
+        layoutLogger.recordLocations(centerLocations, radius);
     }
 
     /**

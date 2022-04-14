@@ -35,10 +35,10 @@ public class LifecycleKPI extends CustomKPI {
     protected List<StatusValue> getStatusValues(@NonNull final Assessable assessable, String value, String message) {
         var lifecycle = Lifecycle.from(value);
         if (Lifecycle.PRODUCTION.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(assessable.getAssessmentIdentifier(), Label.lifecycle.name(), Status.GREEN, message));
+            return Collections.singletonList(new StatusValue(assessable.getFullyQualifiedIdentifier(), Label.lifecycle.name(), Status.GREEN, message));
         }
         if (Lifecycle.END_OF_LIFE.equals(lifecycle)) {
-            return Collections.singletonList(new StatusValue(assessable.getAssessmentIdentifier(), Label.lifecycle.name(), Status.ORANGE, message));
+            return Collections.singletonList(new StatusValue(assessable.getFullyQualifiedIdentifier(), Label.lifecycle.name(), Status.ORANGE, message));
         }
 
         return new ArrayList<>();

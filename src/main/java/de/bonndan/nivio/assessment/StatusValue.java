@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,8 +21,10 @@ public class StatusValue {
     public static final String LABEL_SUFFIX_MESSAGE = "message";
     public static final String SUMMARY_FIELD_VALUE = "summary";
 
+    public static final StatusValue UNKNOWN = new StatusValue(URI.create("component://nostatus"), "unknown", Status.UNKNOWN, "");
+
     @NonNull
-    private final String identifier;
+    private final URI identifier;
 
     @NonNull
     private final String field;
@@ -43,19 +46,16 @@ public class StatusValue {
      * @param status     current status
      * @param message    additional message
      */
-    public StatusValue(@NonNull final String identifier,
+    public StatusValue(@NonNull final URI identifier,
                        @NonNull final String field,
                        @Nullable final Status status,
                        @Nullable final String message
     ) {
-        if (!StringUtils.hasLength(identifier)) {
-            throw new IllegalArgumentException("Assessment identifier is empty");
-        }
         if (!StringUtils.hasLength(field)) {
             throw new IllegalArgumentException("Status value has no field");
         }
 
-        this.identifier = identifier;
+        this.identifier = Objects.requireNonNull(identifier, "identifier is null");
         this.field = field;
         this.status = status == null ? Status.UNKNOWN : status;
         this.message = message;
@@ -75,7 +75,7 @@ public class StatusValue {
      * @return derived StatusValues
      */
     @NonNull
-    public static Set<StatusValue> fromMapping(@NonNull final String identifier, @NonNull final Map<String, Map<String, String>> valuesByKey) {
+    public static Set<StatusValue> fromMapping(@NonNull final URI identifier, @NonNull final Map<String, Map<String, String>> valuesByKey) {
 
         Set<StatusValue> statusValues = new HashSet<>();
         valuesByKey.forEach((key, stringStringMap) -> {
@@ -98,10 +98,10 @@ public class StatusValue {
      * @return summary
      */
     @NonNull
-    public static StatusValue summary(@NonNull final String identifier, @NonNull final List<StatusValue> values) {
+    public static StatusValue summary(@NonNull final URI identifier, @NonNull final List<StatusValue> values) {
         //order from worst to best
         List<StatusValue> sortedValues;
-        values.sort(new StatusValue.Comparator());
+        Objects.requireNonNull(values).sort(new StatusValue.Comparator());
         if (!values.isEmpty()) {
             Status worstStatus = values.get(values.size() - 1).getStatus();
             sortedValues = values.stream().filter(statusValue -> statusValue.getStatus().equals(worstStatus)).collect(Collectors.toUnmodifiableList());
@@ -121,7 +121,7 @@ public class StatusValue {
     }
 
     @NonNull
-    public String getIdentifier() {
+    public URI getIdentifier() {
         return identifier;
     }
 
@@ -148,7 +148,7 @@ public class StatusValue {
     public boolean equals(Object obj) {
         if (obj instanceof StatusValue) {
             StatusValue other = (StatusValue) obj;
-            return identifier.equalsIgnoreCase(other.identifier) && field.equalsIgnoreCase(other.field);
+            return identifier.equals(other.identifier) && field.equalsIgnoreCase(other.field);
         }
         return false;
     }

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class ScalingKPI extends AbstractKPI {
 
         String scaleLabel = component.getLabel(Label.scale);
         int scaleValue = -1;
-        String assessmentIdentifier = component.getAssessmentIdentifier();
+        URI assessmentIdentifier = component.getFullyQualifiedIdentifier();
         if (scaleLabel != null) {
             try {
                 scaleValue = Integer.parseInt(scaleLabel);

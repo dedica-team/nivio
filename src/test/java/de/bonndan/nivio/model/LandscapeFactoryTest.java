@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
-import java.util.Set;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,13 +26,13 @@ class LandscapeFactoryTest {
         description.setSource(new Source("foo"));
         description.setOwner("baz");
         description.setDescription("Hello, World.");
-        description.setLink("home", new URL("https://dedica.team"));
+        description.getLinks().put("home", new Link(new URL("https://dedica.team")));
         description.getLabels().put("one", "two");
     }
 
     @Test
     void create() {
-        Landscape landscape = LandscapeFactory.createFromInput(description);
+        Landscape landscape = LandscapeBuilder.aLandscape().withComponentDescription(description).build();
         assertNotNull(landscape);
         assertEquals(description.getIdentifier(), landscape.getIdentifier());
         assertEquals(description.getSource(), landscape.getSource());
@@ -47,20 +45,11 @@ class LandscapeFactoryTest {
     }
 
     @Test
-    void createAddsDefaultGroups() {
-        Landscape landscape = LandscapeFactory.createFromInput(description);
-        assertNotNull(landscape);
-        assertEquals(2, landscape.getGroups().size());
-        assertNotNull(landscape.getGroup(Layer.domain.name()));
-        assertNotNull(landscape.getGroup(Layer.infrastructure.name()));
-    }
-
-    @Test
     void createFromInput() {
-        Landscape landscape = LandscapeFactory.createFromInput(description);
+        Landscape landscape = LandscapeBuilder.aLandscape().withComponentDescription(description).build();
 
         assertEquals(description.getContact(), landscape.getContact());
-        assertEquals(description.getConfig(), landscape.getConfig());
+        assertEquals(description.getConfig().getGroupBlacklist(), landscape.getConfig().getGroupBlacklist());
         assertEquals(description.getOwner(), landscape.getOwner());
         assertEquals(description.getDescription(), landscape.getDescription());
         assertEquals(description.getName(), landscape.getName());
@@ -78,12 +67,10 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
-                .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
 
         //when
-        Landscape landscape = LandscapeFactory.recreate(existing, description);
+        Landscape landscape = LandscapeFactory.recreate(existing.getConfiguredBuilder(), description);
 
         //then
         assertThat(landscape.getContact()).isEqualTo(description.getContact());
@@ -101,11 +88,12 @@ class LandscapeFactoryTest {
     void fromInputAddsKPIs() {
 
         //given
+        Landscape existing = LandscapeBuilder.aLandscape().withIdentifier("test").build();
         description.getConfig().getKPIs().put("foo", new KPIConfig());
         description.getConfig().getKPIs().put("bar", new KPIConfig());
 
         //when
-        Landscape landscape = LandscapeFactory.createFromInput(description);
+        Landscape landscape = LandscapeFactory.recreate(existing.getConfiguredBuilder(), description);
         assertThat(landscape.getKpis()).isNotEmpty();
         assertThat(landscape.getKpis()).hasSize(2);
     }
@@ -119,13 +107,11 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
-                .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .build();
         description.getConfig().getKPIs().put("foo", new KPIConfig());
 
         //when
-        Landscape landscape = LandscapeFactory.recreate(existing, description);
+        Landscape landscape = LandscapeFactory.recreate(existing.getConfiguredBuilder(), description);
 
         assertThat(landscape.getKpis()).isNotEmpty();
         assertThat(landscape.getKpis()).hasSize(1);
@@ -141,13 +127,11 @@ class LandscapeFactoryTest {
                 .withName("A Test")
                 .withContact("foo")
                 .withOwner("bar")
-                .withGroups(Map.of("agroup", new Group("agroup", description.getIdentifier())))
-                .withItems(Set.of(getTestItem("agroup", "hihi")))
                 .withKpis(Map.of("foo", mock(KPI.class), "baz", mock(KPI.class)))
                 .build();
 
         //when
-        Landscape landscape = LandscapeFactory.recreate(existing, description);
+        Landscape landscape = LandscapeFactory.recreate(existing.getConfiguredBuilder(), description);
 
         assertThat(landscape.getKpis()).isNotEmpty();
         assertThat(landscape.getKpis()).hasSize(3);

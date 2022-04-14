@@ -62,7 +62,7 @@ public class InputFormatHandlerCompose2 implements InputFormatHandler {
             itemDescriptions.add(composeService.getDescription());
         });
 
-        landscapeDescription.setItems(itemDescriptions);
+        landscapeDescription.mergeItems(itemDescriptions);
         return Collections.emptyList();
     }
 }

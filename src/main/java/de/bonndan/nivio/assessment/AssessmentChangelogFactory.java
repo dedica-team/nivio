@@ -1,15 +1,12 @@
 package de.bonndan.nivio.assessment;
 
 import de.bonndan.nivio.input.ProcessingChangelog;
-import de.bonndan.nivio.model.Landscape;
+import de.bonndan.nivio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class AssessmentChangelogFactory {
 
@@ -26,11 +23,24 @@ public class AssessmentChangelogFactory {
                                                  @NonNull final Assessment update
     ) {
         ProcessingChangelog changelog = new ProcessingChangelog();
-        Objects.requireNonNull(update).getResults().forEach((key, value) -> landscape.findOneByAssessmentIdentifier(key)
-                .ifPresentOrElse(
-                        component1 -> changelog.addEntry(component1, ProcessingChangelog.ChangeType.CREATED),
-                        () -> LOGGER.error(COULD_NOT_FIND_COMPONENT, key)
-                )
+        Objects.requireNonNull(update).getResults().forEach((key, value) -> {
+
+                    final IndexReadAccess<GraphComponent> readAccess = landscape.getReadAccess();
+                    if (key.getScheme().startsWith(ComponentClass.relation.name())) {
+                        readAccess.getRelation(key)
+                                .ifPresentOrElse(
+                                        component1 -> changelog.addEntry(component1, ProcessingChangelog.ChangeType.CREATED),
+                                        () -> LOGGER.error(COULD_NOT_FIND_COMPONENT, key)
+                                );
+                        return;
+                    }
+
+                    readAccess.get(key)
+                            .ifPresentOrElse(
+                                    component1 -> changelog.addEntry(component1, ProcessingChangelog.ChangeType.CREATED),
+                                    () -> LOGGER.error(COULD_NOT_FIND_COMPONENT, key)
+                            );
+                }
         );
 
         return changelog;
@@ -42,21 +52,30 @@ public class AssessmentChangelogFactory {
     ) {
 
         ProcessingChangelog changelog = new ProcessingChangelog();
+        var readAccess = landscape.getReadAccess();
 
         //updated and deleted
-        current.getResults().keySet().forEach(key -> landscape.findOneByAssessmentIdentifier(key).ifPresent(component1 -> {
-            if (update.getResults().containsKey(key)) {
-                List<String> compare = compare(current.getResults().get(key), update.getResults().get(key));
-                changelog.addEntry(component1, ProcessingChangelog.ChangeType.UPDATED, compare);
-            } else {
-                changelog.addEntry(component1, ProcessingChangelog.ChangeType.DELETED);
-            }
-        }));
+        current.getResults().keySet().forEach(key -> {
+
+            Optional<? extends Component> component = key.getScheme().startsWith(ComponentClass.relation.name()) ?
+                    readAccess.getRelation(key) : readAccess.get(key);
+
+            component.ifPresent(component1 -> {
+                if (update.getResults().containsKey(key)) {
+                    List<String> compare = compare(current.getResults().get(key), update.getResults().get(key));
+                    changelog.addEntry(component1, ProcessingChangelog.ChangeType.UPDATED, compare);
+                } else {
+                    changelog.addEntry(component1, ProcessingChangelog.ChangeType.DELETED);
+                }
+            });
+        });
 
         //created
         update.getResults().keySet().forEach(key -> {
             if (!current.getResults().containsKey(key)) {
-                landscape.findOneByAssessmentIdentifier(key).ifPresentOrElse(
+                Optional<? extends Component> component = key.getScheme().startsWith(ComponentClass.relation.name()) ?
+                        readAccess.getRelation(key) : readAccess.get(key);
+                component.ifPresentOrElse(
                         component1 -> changelog.addEntry(component1, ProcessingChangelog.ChangeType.CREATED),
                         () -> LOGGER.error(COULD_NOT_FIND_COMPONENT, key));
             }

@@ -7,15 +7,9 @@ import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.Landscape;
 import de.bonndan.nivio.output.RenderingTest;
-import de.bonndan.nivio.output.icons.ExternalIcons;
-import de.bonndan.nivio.output.icons.ExternalIconsProvider;
-import de.bonndan.nivio.output.icons.IconService;
-import de.bonndan.nivio.output.icons.LocalIcons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -92,14 +86,12 @@ class OrganicLayouterTest extends RenderingTest {
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
-            gd.setEnvironment(input.getIdentifier());
-            input.getGroups().put(groupIdentifier, gd);
+            input.getWriteAccess().addOrReplaceChild(gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
-                itemDescription.setEnvironment(input.getIdentifier());
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
-                input.getItemDescriptions().add(itemDescription);
+                input.getWriteAccess().addOrReplaceChild(itemDescription);
                 descriptionList.add(itemDescription);
                 i++;
             }
@@ -149,12 +141,12 @@ class OrganicLayouterTest extends RenderingTest {
             GroupDescription gd = new GroupDescription();
             String groupIdentifier = "group" + g;
             gd.setIdentifier(groupIdentifier);
-            input.getGroups().put(groupIdentifier, gd);
+            input.getWriteAccess().addOrReplaceChild(gd);
             while (i < max) {
                 ItemDescription itemDescription = new ItemDescription();
                 itemDescription.setIdentifier(groupIdentifier + "_item_" + i);
                 itemDescription.setGroup(groupIdentifier);
-                input.getItemDescriptions().add(itemDescription);
+                input.getWriteAccess().addOrReplaceChild(itemDescription);
                 descriptionList.add(itemDescription);
                 i++;
             }
@@ -183,13 +175,13 @@ class OrganicLayouterTest extends RenderingTest {
 
         Map<String, Object> map = mapper.convertValue(model, Map.class);
 
-        LandscapeDescription landscapeDescription = new LandscapeDescription("landscapeItem:model", "Landscape Item Model", null);
-        landscapeDescription.getItemDescriptions().add(model);
+        LandscapeDescription landscapeDescription = new LandscapeDescription("landscape_model", "Landscape Item Model", null);
+        landscapeDescription.getWriteAccess().addOrReplaceChild(model);
 
         map.forEach((field, o) -> {
             ItemDescription d = new ItemDescription();
             d.setIdentifier(field);
-            landscapeDescription.getItemDescriptions().add(d);
+            landscapeDescription.getWriteAccess().addOrReplaceChild(d);
             model.getLabels().put(field + "_PROVIDER_URL", field.toLowerCase());
         });
 
@@ -220,7 +212,7 @@ class OrganicLayouterTest extends RenderingTest {
         assertNotNull(itemComponent);
 
         //check items are shifted
-        assertEquals(3959, itemComponent.getX()); //margin + group offset + own offset
-        assertEquals(2420, itemComponent.getY()); //margin + group offset + own offset
+        assertEquals(3958, itemComponent.getCenterX()); //margin + group offset + own offset
+        assertEquals(2420, itemComponent.getCenterY()); //margin + group offset + own offset
     }
 }

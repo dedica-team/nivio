@@ -1,65 +1,82 @@
 package de.bonndan.nivio.model;
 
+import de.bonndan.nivio.GraphTestSupport;
 import de.bonndan.nivio.output.dto.RelationApiModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.List;
 
-import static de.bonndan.nivio.model.ItemFactory.getTestItem;
-import static de.bonndan.nivio.model.ItemFactory.getTestItemBuilder;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class RelationTest {
 
+    private GraphTestSupport graph;
+    private Item one;
+    private Item two;
+
+    @BeforeEach
+    void setup() {
+        graph = new GraphTestSupport();
+
+        graph.getTestGroup("foo");
+        one = graph.getTestItem("foo", "bar");
+        two = graph.getTestItem("foo", "baz");
+    }
+
     @Test
     void toApiModel() {
-        Item one = getTestItem("foo", "bar");
-        Item two = getTestItem("foo", "baz");
+
         Relation relation = new Relation(one, two, null, null, RelationType.PROVIDER);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, one);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(RelationApiModel.OUTBOUND);
-        assertThat(apiModel.name).isEqualTo("baz");
-        assertThat(apiModel.type).isEqualTo(relation.getType());
-        assertThat(apiModel.source).isEqualTo(relation.getSource());
-        assertThat(apiModel.target).isEqualTo(relation.getTarget());
-        assertThat(apiModel.description).isEqualTo(relation.getDescription());
-        assertThat(apiModel.format).isEqualTo(relation.getFormat());
+        assertThat(apiModel.getDirection()).isEqualTo(RelationApiModel.OUTBOUND);
+        assertThat(apiModel.getName()).isEqualTo("baz");
+        assertThat(apiModel.getType()).isEqualTo(relation.getType());
+        assertThat(apiModel.source).isEqualTo(relation.getSource().getFullyQualifiedIdentifier());
+        assertThat(apiModel.getTarget()).isEqualTo(relation.getTarget().getFullyQualifiedIdentifier());
+        assertThat(apiModel.getDescription()).isEqualTo(relation.getDescription());
+        assertThat(apiModel.getFormat()).isEqualTo(relation.getFormat());
     }
 
     @Test
     void inbound() {
-        Item one = getTestItem("foo", "bar");
-        Item two = getTestItem("foo", "baz");
-        Relation relation = RelationFactory.createForTesting(one, two);
+
+        Relation relation = RelationFactory.create(one, two);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, two);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(RelationApiModel.INBOUND);
-        assertThat(apiModel.name).isEqualTo("bar");
+        assertThat(apiModel.getDirection()).isEqualTo(RelationApiModel.INBOUND);
+        assertThat(apiModel.getName()).isEqualTo("bar");
     }
 
     @Test
     void inboundName() {
-        Item one = getTestItemBuilder("foo", "bar").withName("huhu").build();
-        Item two = getTestItem("foo", "baz");
-        Relation relation = RelationFactory.createForTesting(one, two);
+        Item one = graph.getTestItemBuilder("foo", "bar").withName("huhu").build();
+        graph.landscape.getWriteAccess().addOrReplaceChild(one);
+        Item two = graph.getTestItem("foo", "baz");
+        Relation relation = RelationFactory.create(one, two);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(relation);
 
         RelationApiModel apiModel = new RelationApiModel(relation, two);
 
         assertThat(apiModel).isNotNull();
-        assertThat(apiModel.direction).isEqualTo(RelationApiModel.INBOUND);
-        assertThat(apiModel.name).isEqualTo("huhu");
+        assertThat(apiModel.getDirection()).isEqualTo(RelationApiModel.INBOUND);
+        assertThat(apiModel.getName()).isEqualTo("huhu");
     }
 
     @Test
     void getChangesInType() {
-        Item b = getTestItem("a", "b");
-        Item c = getTestItem("a", "c");
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
         Relation before = new Relation(b, c, "foo", "JSON", null);
+        graph.landscape.getWriteAccess().addOrReplaceRelation(before);
         Relation after = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
 
         //when
@@ -72,8 +89,8 @@ class RelationTest {
 
     @Test
     void getChangesInFormat() {
-        Item b = getTestItem("a", "b");
-        Item c = getTestItem("a", "c");
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
         Relation before = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
         Relation after = new Relation(b, c, "foo", "XML", RelationType.PROVIDER);
 
@@ -87,8 +104,8 @@ class RelationTest {
 
     @Test
     void getChangesInDescription() {
-        Item b = getTestItem("a", "b");
-        Item c = getTestItem("a", "c");
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
         Relation before = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
         Relation after = new Relation(b, c, "bar", "JSON", RelationType.PROVIDER);
 
@@ -102,8 +119,8 @@ class RelationTest {
 
     @Test
     void hasNoChange() {
-        Item b = getTestItem("a", "b");
-        Item c = getTestItem("a", "c");
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
         Relation before = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
         Relation after = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
 
@@ -113,4 +130,51 @@ class RelationTest {
         //then
         assertThat(changes).isNotNull().hasSize(0);
     }
+
+    @Test
+    void parseSourceUri() {
+
+        //given
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
+        Relation relation = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+
+        //when
+        URI uri = Relation.parseSourceURI(relation.getFullyQualifiedIdentifier());
+
+        //then
+        assertThat(uri).isEqualTo(graph.itemAB.getFullyQualifiedIdentifier());
+    }
+
+    @Test
+    void parseSourceUriWithNonRelationURI() {
+
+        //then
+        assertThatThrownBy(() -> Relation.parseSourceURI(graph.itemAB.getFullyQualifiedIdentifier())).isInstanceOf(IllegalArgumentException.class);
+
+    }
+
+    @Test
+    void parseTargetUri() {
+
+        //given
+        Item b = graph.itemAB;
+        Item c = graph.itemAC;
+        Relation relation = new Relation(b, c, "foo", "JSON", RelationType.PROVIDER);
+
+        //when
+        URI uri = Relation.parseTargetURI(relation.getFullyQualifiedIdentifier());
+
+        //then
+        assertThat(uri).isEqualTo(graph.itemAC.getFullyQualifiedIdentifier());
+    }
+
+    @Test
+    void parseTargetUriWithNonRelationURI() {
+
+        //then
+        assertThatThrownBy(() -> Relation.parseTargetURI(graph.itemAB.getFullyQualifiedIdentifier())).isInstanceOf(IllegalArgumentException.class);
+
+    }
+
 }

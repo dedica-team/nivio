@@ -8,6 +8,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
+
 /**
  * Creates a new assessment after a {@link ProcessingFinishedEvent}
  */
@@ -30,7 +32,7 @@ public class ProcessingEventListener {
     @EventListener(ProcessingFinishedEvent.class)
     public void onProcessingFinishedEvent(final ProcessingFinishedEvent processingEvent) {
         Landscape landscape = processingEvent.getLandscape();
-        FullyQualifiedIdentifier fqi = landscape.getFullyQualifiedIdentifier();
+        URI fqi = landscape.getFullyQualifiedIdentifier();
         var current = repository.getAssessment(fqi);
 
         Assessment assessment = factory.createAssessment(landscape);

@@ -5,7 +5,6 @@ import de.bonndan.nivio.input.dto.ItemDescription;
 import de.bonndan.nivio.input.dto.LandscapeDescription;
 import de.bonndan.nivio.input.dto.RelationDescription;
 import de.bonndan.nivio.model.RelationType;
-import de.bonndan.nivio.search.ItemIndex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,9 +80,9 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        Set<ItemDescription> itemDescriptions = description.getItemDescriptions().all();
+        Set<ItemDescription> itemDescriptions = description.getItemDescriptions();
         assertThat(itemDescriptions).hasSize(8);
-        ItemDescription white = description.getItemDescriptions().pick("white", null);
+        ItemDescription white = description.getReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
 
         assertThat(white).isNotNull();
         assertThat(white.getLabel(LabelToFieldResolver.NIVIO_LABEL_PREFIX + "owner")).isEqualTo("Marketing");
@@ -102,7 +100,7 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        ItemDescription white = description.getItemDescriptions().pick("white", null);
+        ItemDescription white = description.getReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
 
         Set<RelationDescription> relations = white.getRelations();
         assertThat(relations).isNotEmpty().hasSize(3);
@@ -127,7 +125,7 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        ItemDescription white = description.getItemDescriptions().pick("white", null);
+        ItemDescription white = description.getReadAccess().matchOneByIdentifiers("white", null, ItemDescription.class).orElseThrow();
 
         Set<RelationDescription> relations = white.getRelations();
 
@@ -148,9 +146,8 @@ class InputFormatHandlerDotTest {
         handler.applyData(sourceReference, description);
 
         //then
-        ItemIndex<ItemDescription> itemDescriptions = description.getItemDescriptions();
-        itemDescriptions.pick("main", null);
-        assertThat(itemDescriptions.all()).hasSize(8);
+        assertThat(description.getReadAccess().matchOneByIdentifiers("main", null, ItemDescription.class)).isNotEmpty();
+        assertThat(description.getItemDescriptions()).hasSize(8);
     }
 
     @Test

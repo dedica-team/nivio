@@ -1,11 +1,12 @@
 package de.bonndan.nivio.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import de.bonndan.nivio.assessment.Assessable;
 import de.bonndan.nivio.assessment.StatusValue;
+import de.bonndan.nivio.input.ProcessingException;
 import org.springframework.lang.NonNull;
 
-import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,15 +18,13 @@ import static de.bonndan.nivio.model.ComponentDiff.compareStrings;
  *
  * Outgoing flows having a target which matches a service identifier will cause a relation to be created.
  */
-public class Relation implements Labeled, Assessable, Serializable {
+public class Relation implements Component, Assessable {
 
-    public static final String DELIMITER = ";";
+    public static final String TO = "to=";
 
-    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
-    private final Item source;
+    protected final URI sourceURI;
 
-    @JsonIdentityReference(alwaysAsId = true) //needed for debugging internal models
-    private final Item target;
+    protected final URI targetURI;
 
     private final String description;
 
@@ -35,29 +34,114 @@ public class Relation implements Labeled, Assessable, Serializable {
 
     private final Map<String, String> labels = new ConcurrentHashMap<>();
 
-    public Relation(@NonNull final Item source,
-                    @NonNull final Item target,
+    private final URI fullyQualifiedIdentifier;
+
+    private final Map<String, Link> links = new HashMap<>();
+
+    //TODO replace with map, currently rendering takes the first entry
+    private final Map<String, URI> processes = new LinkedHashMap<>();
+
+    private IndexReadAccess<? extends GraphComponent> indexReadAccess;
+
+
+    public Relation(@NonNull final GraphComponent source,
+                    @NonNull final GraphComponent target,
                     final String description,
                     final String format,
                     final RelationType type
     ) {
+        this.sourceURI = Objects.requireNonNull(source, "Source is null").getFullyQualifiedIdentifier();
+        this.targetURI = Objects.requireNonNull(target, "Target is null").getFullyQualifiedIdentifier();
+
         if (source.equals(target)) {
             throw new IllegalArgumentException(String.format("Relation source and target are equal.%s %s", source, target));
         }
 
-        this.source = Objects.requireNonNull(source, "Source is null");
-        this.target = Objects.requireNonNull(target, "Target is null");
         this.description = description;
         this.format = format;
         this.type = type;
+        try {
+            this.fullyQualifiedIdentifier = new URI(Relation.class.getSimpleName().toLowerCase(Locale.ROOT),
+                    source.getFullyQualifiedIdentifier().getAuthority(),
+                    source.getFullyQualifiedIdentifier().getPath(),
+                    TO + target.getFullyQualifiedIdentifier(),
+                    null
+            );
+        } catch (URISyntaxException e) {
+            throw new ProcessingException("Failed to generate fqi", e);
+        }
     }
 
+    /**
+     * @param uri relation uri
+     * @return the relation source item uri
+     */
+    public static URI parseSourceURI(@NonNull final URI uri) {
+
+        if (!uri.getScheme().equals(ComponentClass.relation.name())) {
+            throw new IllegalArgumentException(String.format("Relation URI must be given, was: %s", uri));
+        }
+
+        return URI.create(ComponentClass.item.name() + "://" + Objects.requireNonNull(uri).getAuthority() + uri.getPath());
+    }
+
+    /**
+     * @param uri relation uri
+     * @return the relation target item uri
+     */
+    public static URI parseTargetURI(URI uri) {
+
+        if (!uri.getScheme().equals(ComponentClass.relation.name())) {
+            throw new IllegalArgumentException(String.format("Relation URI must be given, was: %s", uri));
+        }
+
+        return URI.create(uri.getQuery().replace(TO, ""));
+    }
+
+    @Override
+    @NonNull
     public String getIdentifier() {
-        return source.getFullyQualifiedIdentifier().jsonValue() + DELIMITER + target.getFullyQualifiedIdentifier().jsonValue();
+        return getFullyQualifiedIdentifier().toString();
     }
 
-    public RelationType getType() {
-        return type;
+    @Override
+    @NonNull
+    public String getName() {
+        return getFullyQualifiedIdentifier().toString();
+    }
+
+    @Override
+    public String getOwner() {
+        return null;
+    }
+
+    @Override
+    public String getIcon() {
+        return null;
+    }
+
+    @Override
+    public String getColor() {
+        return null;
+    }
+
+    @Override
+    @NonNull
+    public URI getFullyQualifiedIdentifier() {
+        return fullyQualifiedIdentifier;
+    }
+
+    @NonNull
+    @Override
+    public String getParentIdentifier() {
+        return getSource().getFullyQualifiedIdentifier().toString();
+    }
+
+    public String getType() {
+        if (type == null) {
+            return null;
+        }
+        return type.name();
     }
 
     public String getDescription() {
@@ -68,31 +152,30 @@ public class Relation implements Labeled, Assessable, Serializable {
         return format;
     }
 
+    protected URI getSourceURI() {
+        return sourceURI;
+    }
+
+    public URI getTargetURI() {
+        return targetURI;
+    }
+
+    @NonNull
     public Item getTarget() {
-        return target;
+        if (!isAttached()) {
+            throw new IllegalStateException(String.format("Relation %s is already detached", fullyQualifiedIdentifier));
+        }
+        return (Item) indexReadAccess.get(targetURI)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Source %s not in index.", sourceURI)));
     }
 
+    @NonNull
     public Item getSource() {
-        return source;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Relation relation = (Relation) o;
-        return Objects.equals(source, relation.source) && Objects.equals(target, relation.target);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(source, target);
-    }
-
-    @Override
-    public String toString() {
-        return "Relation{" + getIdentifier() + '}';
+        if (!isAttached()) {
+            throw new IllegalStateException(String.format("Relation %s is already detached", fullyQualifiedIdentifier));
+        }
+        return (Item) indexReadAccess.get(sourceURI)
+                .orElseThrow(() -> new NoSuchElementException(String.format("Source %s not in index.", sourceURI)));
     }
 
     @Override
@@ -109,19 +192,13 @@ public class Relation implements Labeled, Assessable, Serializable {
     @Override
     @NonNull
     public Set<StatusValue> getAdditionalStatusValues() {
-        return StatusValue.fromMapping(getAssessmentIdentifier(), indexedByPrefix(Label.status));
+        return StatusValue.fromMapping(getFullyQualifiedIdentifier(), indexedByPrefix(Label.status));
     }
 
     @Override
     @NonNull
-    public String getAssessmentIdentifier() {
-        return getIdentifier();
-    }
-
-    @Override
-    @NonNull
-    public List<? extends Assessable> getChildren() {
-        return new ArrayList<>();
+    public Set<Assessable> getAssessables() {
+        return Set.of();
     }
 
     /**
@@ -142,5 +219,53 @@ public class Relation implements Labeled, Assessable, Serializable {
         changes.addAll(compareOptionals(Optional.ofNullable(this.type), Optional.ofNullable(newer.type), "Type"));
 
         return changes;
+    }
+
+    @Override
+    public Map<String, Link> getLinks() {
+        return links;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Relation)) return false;
+        Relation relation = (Relation) o;
+        return Objects.equals(sourceURI, relation.sourceURI) && Objects.equals(targetURI, relation.targetURI);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sourceURI, targetURI);
+    }
+
+    @Override
+    public String toString() {
+        return fullyQualifiedIdentifier.toString();
+    }
+
+    void attach(@NonNull final IndexReadAccess<? extends GraphComponent> indexReadAccess) {
+        this.indexReadAccess = Objects.requireNonNull(indexReadAccess);
+    }
+
+    void detach() {
+        this.indexReadAccess = null;
+    }
+
+    boolean isAttached() {
+        return indexReadAccess != null;
+    }
+
+    public void assignProcess(@NonNull final String identifier, @NonNull final URI fullyQualifiedIdentifier) {
+        processes.put(Objects.requireNonNull(identifier), Objects.requireNonNull(fullyQualifiedIdentifier));
+    }
+
+    /**
+     * Returns all processes this relation is part of.
+     *
+     * @return process uri by its identifier
+     */
+    public Map<String, URI> getProcesses() {
+        return processes;
     }
 }

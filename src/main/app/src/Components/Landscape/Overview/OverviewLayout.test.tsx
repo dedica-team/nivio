@@ -37,6 +37,7 @@ const landscapes: ILandscape = {
   identifier: 'testIdentifier',
   description: 'testIdentifier',
   groups: groups,
+  processes: [],
   contact: 'marvin',
   owner: 'daniel',
   fullyQualifiedIdentifier: 'fullTestIdentifier',

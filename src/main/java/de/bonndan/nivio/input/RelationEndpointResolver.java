@@ -1,74 +1,86 @@
 package de.bonndan.nivio.input;
 
-import de.bonndan.nivio.input.dto.ItemDescription;
-import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.input.dto.RelationDescription;
-import de.bonndan.nivio.search.ItemIndex;
+import de.bonndan.nivio.input.dto.*;
+import de.bonndan.nivio.model.IndexReadAccess;
 import de.bonndan.nivio.model.RelationFactory;
+import de.bonndan.nivio.model.FlexSearch;
+import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
-import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
  * Resolves the dynamic endpoints of relations.
  */
-public class RelationEndpointResolver extends Resolver {
+public class RelationEndpointResolver implements Resolver {
 
-    protected RelationEndpointResolver(ProcessLog processLog) {
-        super(processLog);
-    }
-
+    @NonNull
     @Override
-    public void resolve(LandscapeDescription landscape) {
-        landscape.getItemDescriptions().all().forEach(itemDescription -> {
+    public LandscapeDescription resolve(@NonNull final LandscapeDescription input) {
+        IndexReadAccess<ComponentDescription> indexReadAccess = input.getReadAccess();
+        indexReadAccess.all(ItemDescription.class).forEach(itemDescription -> {
             try {
-                resolveRelations(itemDescription, landscape.getItemDescriptions());
+                resolveProvidedBy(itemDescription, input);
+                resolveRelations(itemDescription, input);
             } catch (Exception e) {
-                processLog.error(
-                        new ProcessingException(landscape, String.format("Failed to resolve relation for item description %s", itemDescription), e)
+                input.getProcessLog().error(
+                        new ProcessingException(input, String.format("Failed to resolve relation for item description %s", itemDescription), e)
                 );
             }
         });
+
+        return LandscapeDescriptionFactory.refreshedCopyOf(input);
     }
 
-    private void resolveRelations(final ItemDescription description, ItemIndex<ItemDescription> allItems) {
+    private void resolveProvidedBy(final ItemDescription description,
+                                   final LandscapeDescription input
+    ) {
+        var smartSearch = FlexSearch.forClassOn(ItemDescription.class, input.getReadAccess());
 
-        //providers
         description.getProvidedBy().forEach(term -> {
-            allItems.query(term).stream().findFirst().ifPresentOrElse(o -> {
-                        RelationDescription rel = RelationFactory.createProviderDescription(o, description.getIdentifier());
-                        description.addOrReplaceRelation(rel);
+            var provider = smartSearch.searchOne(term, description.getParentIdentifier());
+            provider.ifPresentOrElse(
+                    source -> {
+                        try {
+                            RelationDescription rel = RelationFactory.createProviderDescription(source, description.getIdentifier());
+                            description.addOrReplaceRelation(rel);
+                        } catch (IllegalArgumentException e) {
+                            input.getProcessLog().error("Failed to create relation: " + e.getMessage());
+                        }
                     },
-                    () -> processLog.warn(description.getIdentifier() + ": no provider target found for term " + term));
+                    () -> input.getProcessLog().warn(description.getIdentifier() + ": no provider target found for term " + term)
+            );
         });
 
-        //other relations
+    }
+
+    private void resolveRelations(final ItemDescription description,
+                                  final LandscapeDescription input
+    ) {
+
+        var smartSearch = FlexSearch.forClassOn(ItemDescription.class, input.getReadAccess());
+
         description.getRelations().forEach(rel -> {
 
-            resolveOne(description, rel.getSource(), allItems)
-                    .ifPresent(resolvedSource -> rel.setSource(resolvedSource.getFullyQualifiedIdentifier().toString()));
+            var source = rel.getSource();
+            var parentIdentifier = "";
+            if (!StringUtils.hasLength(source) || rel.getSource().equalsIgnoreCase(description.getIdentifier())) {
+                source = description.getIdentifier();
+                parentIdentifier = description.getParentIdentifier();
+            }
 
-            resolveOne(description, rel.getTarget(), allItems)
-                    .ifPresent(resolvedTarget -> rel.setTarget(resolvedTarget.getFullyQualifiedIdentifier().toString()));
+            try {
+                Optional<ItemDescription> sourceDTO = input.getReadAccess().matchOneByIdentifiers(source, parentIdentifier, ItemDescription.class);
+                sourceDTO.ifPresent(resolvedSource -> rel.setSource(resolvedSource.getFullyQualifiedIdentifier().toString()));
+
+                var target = smartSearch.searchOne(rel.getTarget(), parentIdentifier).orElseThrow();
+                rel.setTarget(target.getFullyQualifiedIdentifier().toString());
+            } catch (IllegalArgumentException | NoSuchElementException e) {
+                input.getProcessLog().error(String.format("Failed to create relation: %s", e.getMessage()));
+            }
         });
 
     }
 
-    private Optional<ItemDescription> resolveOne(ItemDescription description, String term, ItemIndex<ItemDescription> allItems) {
-
-        if (!StringUtils.hasLength(term)) {
-            return Optional.of(description);
-        }
-
-        Collection<ItemDescription> result = allItems.query(term);
-        if (result.size() > 1) {
-            return allItems.firstWithGroup(result, description.getGroup());
-        } else if (result.size() == 0) {
-            processLog.warn(String.format("%s: Found no sources matching %s", description.getIdentifier(), term));
-            return Optional.empty();
-        }
-
-        return Optional.of(result.iterator().next());
-    }
 }

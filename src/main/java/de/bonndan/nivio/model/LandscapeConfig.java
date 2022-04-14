@@ -13,9 +13,6 @@ import java.util.*;
  */
 public class LandscapeConfig {
 
-    @Schema(description = "Flag that enables instant creation items based relation targets that cannot be found in the sources.")
-    private boolean greedy = true;
-
     @Schema(description = "Settings to tweak the positioning of groups in the map")
     private LayoutConfig layoutConfig = new LayoutConfig();
 
@@ -33,13 +30,11 @@ public class LandscapeConfig {
     @Schema(description = "Key performance indicator configs. Each KPI must have a unique identifier.")
     private final Map<String, KPIConfig> kpis = new HashMap<>();
 
-    public boolean isGreedy() {
-        return greedy;
-    }
+    @Schema(description = "Identifier of the unit to use as default parent for contexts")
+    private String defaultUnit = "default";
 
-    public void setGreedy(boolean greedy) {
-        this.greedy = greedy;
-    }
+    @Schema(description = "Identifier of the context to use as default parent for groups")
+    private String defaultContext = "default";
 
     /**
      * @return a list of group identifiers which are excluded from the landscape
@@ -78,6 +73,28 @@ public class LandscapeConfig {
         return layoutConfig;
     }
 
+    @NonNull
+    public String getDefaultUnit() {
+        return defaultUnit;
+    }
+
+    public void setDefaultUnit(String defaultUnit) {
+        if (StringUtils.hasLength(defaultUnit)) {
+            this.defaultUnit = defaultUnit;
+        }
+    }
+
+    @NonNull
+    public String getDefaultContext() {
+        return defaultContext;
+    }
+
+    public void setDefaultContext(String defaultContext) {
+        if (StringUtils.hasLength(defaultContext)) {
+            this.defaultContext = defaultContext;
+        }
+    }
+
     /**
      * Merges the values of the update if present
      *
@@ -87,13 +104,11 @@ public class LandscapeConfig {
     public LandscapeConfig merge(LandscapeConfig update) {
         LandscapeConfig landscapeConfig = new LandscapeConfig();
         landscapeConfig.layoutConfig = layoutConfig;
-        landscapeConfig.greedy = greedy;
         landscapeConfig.groupBlacklist.addAll(groupBlacklist);
         landscapeConfig.labelBlacklist.addAll(labelBlacklist);
         landscapeConfig.branding.setMapStylesheet(branding.mapStylesheet);
         landscapeConfig.kpis.putAll(kpis);
 
-        landscapeConfig.greedy = update.greedy;
         landscapeConfig.kpis.putAll(update.kpis);
 
         landscapeConfig.layoutConfig.setItemLayoutInitialTemp(update.layoutConfig.getItemLayoutInitialTemp());
@@ -114,6 +129,9 @@ public class LandscapeConfig {
         if (StringUtils.hasLength(update.branding.mapStylesheet)) {
             landscapeConfig.branding.mapStylesheet = update.branding.mapStylesheet;
         }
+
+        landscapeConfig.setDefaultUnit(update.defaultUnit);
+        landscapeConfig.setDefaultContext(update.defaultContext);
 
         return landscapeConfig;
     }

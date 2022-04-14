@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class SecureLabelsResolverTest {
@@ -24,12 +24,13 @@ class SecureLabelsResolverTest {
 
         landscapeDescription = new LandscapeDescription("foo");
         landscapeDescription.mergeItems(List.of(item));
+        landscapeDescription.setProcessLog(new ProcessLog(mock(Logger.class), "test"));
 
-        secureLabelsResolver = new SecureLabelsResolver(new ProcessLog(mock(Logger.class), "test"));
+        secureLabelsResolver = new SecureLabelsResolver();
     }
 
     @Test
-    public void regularLabels() {
+    void regularLabels() {
         item.setLabel("foo", "bar");
         item.setLabel("niviofoo", "baz");
 
@@ -40,7 +41,7 @@ class SecureLabelsResolverTest {
     }
 
     @Test
-    public void fieldLabel() {
+    void fieldLabel() {
         item.setLabel("foo", "bar");
         item.setLabel("nivio.description", "baz");
 
@@ -50,84 +51,84 @@ class SecureLabelsResolverTest {
     }
 
     @Test
-    public void pass() {
+    void pass() {
         item.setLabel("pass", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("pass"));
     }
 
     @Test
-    public void apass() {
+    void apass() {
         item.setLabel("a.pass_", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("a.pass_"));
     }
 
     @Test
-    public void secret() {
+    void secret() {
         item.setLabel("secret", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("secret"));
     }
 
     @Test
-    public void my_secret_x() {
+    void my_secret_x() {
         item.setLabel("my_secret_x", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("my_secret_x"));
     }
 
     @Test
-    public void credentials() {
+    void credentials() {
         item.setLabel("credentials", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("credentials"));
     }
 
     @Test
-    public void ucredentials() {
+    void ucredentials() {
         item.setLabel("_credentials_", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("_credentials_"));
     }
 
     @Test
-    public void token() {
+    void token() {
         item.setLabel("token", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("token"));
     }
 
     @Test
-    public void atoken() {
+    void atoken() {
         item.setLabel("a_token_", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("a_token_"));
     }
 
     @Test
-    public void key() {
+    void key() {
         item.setLabel("key", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("key"));
     }
 
     @Test
-    public void akey() {
+    void akey() {
         item.setLabel("a_key_", "x");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals(SecureLabelsResolver.MASK, item.getLabels().get("a_key_"));
     }
 
     @Test
-    public void secretUrl() {
+    void secretUrl() {
         item.setLabel("foo", "http://very:secret@foobar.com:8080/a/path?foo=bar");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("http://*@foobar.com:8080/a/path?foo=bar", item.getLabels().get("foo"));
     }
 
     @Test
-    public void simpleSecretUrl() {
+    void simpleSecretUrl() {
         item.setLabel("foo", "http://very:secret@foobar.com");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("http://*@foobar.com", item.getLabels().get("foo"));
@@ -135,21 +136,21 @@ class SecureLabelsResolverTest {
 
 
     @Test
-    public void regularUrl() {
+    void regularUrl() {
         item.setLabel("foo", "http://foobar.com");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("http://foobar.com", item.getLabels().get("foo"));
     }
 
     @Test
-    public void dsn() {
+    void dsn() {
         item.setLabel("mongodb_dsn", "mongodb://foo:somePw123@server.com:27017/adatabase");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("mongodb://*@server.com:27017/adatabase", item.getLabels().get("mongodb_dsn"));
     }
 
     @Test
-    public void dsnWithoutSecret() {
+    void dsnWithoutSecret() {
         item.setLabel("mongodb_dsn", "mongodb://server.com:27017/adatabase");
         secureLabelsResolver.resolve(landscapeDescription);
         assertEquals("mongodb://server.com:27017/adatabase", item.getLabels().get("mongodb_dsn"));

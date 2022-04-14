@@ -1,21 +1,16 @@
 package de.bonndan.nivio.input;
 
 import de.bonndan.nivio.input.dto.LandscapeDescription;
-import de.bonndan.nivio.model.Landscape;
 import org.springframework.lang.NonNull;
 
 /**
- * Resolves data based on the landscape description (input DTO).
+ * Resolves data based on the landscape description (input DTO) and possibly mutates the data.
  *
  *
  */
-public abstract class Resolver {
+@FunctionalInterface
+public interface Resolver {
 
-    protected final ProcessLog processLog;
-
-    protected Resolver(ProcessLog processLog) {
-        this.processLog = processLog;
-    }
-
-    public abstract void resolve(@NonNull final LandscapeDescription input);
+    @NonNull
+    LandscapeDescription resolve(@NonNull final LandscapeDescription input);
 }

@@ -34,7 +34,7 @@ public class HexFactory {
     public Hex hexAt(@NonNull final Point2D.Double point) {
         double x = (point.getX() - origin.getX()) / size.getX();
         double y = (point.getY() - origin.getY()) / size.getY();
-        double q = orientation.getB()[0] * x + orientation.getB()[1] * y;
+        double q = orientation.getB()[0] * x + orientation. getB()[1] * y;
         double r = orientation.getB()[2] * x + orientation.getB()[3] * y;
         return (new FractionalHex(q, r)).toHex();
     }
