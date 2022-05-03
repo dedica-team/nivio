@@ -22,6 +22,9 @@ import componentStyles from '../../Resources/styling/ComponentStyles';
 import LandscapeWatcher from '../Landscape/Dashboard/LandscapeWatcher';
 import { LandscapeContext } from '../../Context/LandscapeContext';
 import SearchField from '../Landscape/Search/SearchField';
+import LoginDialog from './LoginDialog';
+import { UserContext } from '../../Context/UserContext';
+import { ExitToApp} from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,8 +57,10 @@ interface Props {
  */
 const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, version }) => {
   const classes = useStyles();
+  const loginButton: JSX.Element[] = [];
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
+  const userContext = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -82,6 +87,24 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       {...props}
     />
   ));
+
+  if (userContext.error === 401 || !userContext.error) {
+    if (!userContext.user) {
+      loginButton.push(<LoginDialog key='login' />);
+    } else {
+      loginButton.push(
+        <IconButton
+          key='logout'
+          component={Link}
+          to='/logout'
+          title={`Logout, ${userContext.user.name}`}
+        >
+          <ExitToApp />
+        </IconButton>
+      );
+    }
+  }
+
   return (
     <Toolbar className={classes.appBar} variant={'dense'}>
       <IconButton
@@ -123,6 +146,7 @@ const Navigation: React.FC<Props> = ({ setSidebarContent, pageTitle, logo, versi
       <Box className={classes.pageTitle}>
         <Typography variant='h6'>{pageTitle}</Typography>
       </Box>
+      {loginButton}
       {landscapeContext.identifier ? <Notification setSidebarContent={setSidebarContent} /> : null}
       <LandscapeWatcher setSidebarContent={setSidebarContent} />
       {landscapeContext.identifier ? (

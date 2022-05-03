@@ -27,10 +27,6 @@ public interface ComponentDescription extends Component, Labeled, Linked {
 
     void setIcon(String icon);
 
-    default void setLabel(String key, String value) {
-        setLabel(key, (Object) value);
-    }
-
     /**
      * Any-setter default implementation for deserialization.
      *

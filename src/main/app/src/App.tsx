@@ -5,12 +5,16 @@ import LandscapeOverview from './Components/Landscape/Overview/Overview';
 import LandscapeMap from './Components/Landscape/Map/Map';
 import Man from './Components/Manual/Man';
 import Layout from './Components/Layout/Layout';
-import { Routes } from './interfaces';
+import { ILinks, Routes } from './interfaces';
 import { Box, CssBaseline, Theme } from '@material-ui/core';
 import { createTheme, ThemeOptions, ThemeProvider } from '@material-ui/core/styles';
 import { get } from './utils/API/APIClient';
 import defaultThemeVariables from './Resources/styling/theme';
 import { FrontendMappingProvider } from './Context/FrontendMappingContext';
+import { OAuth2LinksProvider } from './Context/OAuth2LinksContext';
+import { LocateFunctionContextProvider } from './Context/LocateFunctionContext';
+import { LandscapeContextProvider } from './Context/LandscapeContext';
+import { UserProvider } from './Context/UserContext';
 
 interface Config {
   baseUrl: string;
@@ -24,6 +28,8 @@ interface Config {
 
 interface Index {
   config: Config;
+  oauth2Links: ILinks;
+  _links: ILinks;
 }
 
 const App: React.FC = () => {
@@ -32,6 +38,7 @@ const App: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [version, setVersion] = useState<string>();
   const [theme, setTheme] = useState<Theme>();
+  const [oAuth2Links, setOAuth2Links] = useState<ILinks>({});
 
   useEffect(() => {
     const getColorSafely = (inputColor: string, defaultColor: string) => {
@@ -55,7 +62,7 @@ const App: React.FC = () => {
       const secondary = getColorSafely(index.config.brandingSecondary, '#eeeeee');
       setMessage(index.config.brandingMessage);
       setVersion(index.config.version);
-
+      setOAuth2Links(index.oauth2Links);
       const tv: ThemeOptions = defaultThemeVariables;
       if (!tv.palette) return;
       // @ts-ignore
@@ -88,38 +95,46 @@ const App: React.FC = () => {
   }
 
   return (
-    <FrontendMappingProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router hashType='slash'>
-          <Switch>
-            <Layout logo={logo} pageTitle={pageTitle} version={version}>
-              <Route
-                exact
-                path='/'
-                render={(props) => (
-                  <LandscapeOverview
-                    setPageTitle={setPageTitle}
-                    welcomeMessage={message}
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                exact
-                path={Routes.MAP_ROUTE}
-                render={(props) => <LandscapeMap setPageTitle={setPageTitle} {...props} />}
-              />
-              <Route
-                exact
-                path='/man/:usage'
-                render={(props) => <Man setPageTitle={setPageTitle} {...props} />}
-              />
-            </Layout>
-          </Switch>
-        </Router>
-      </ThemeProvider>
-    </FrontendMappingProvider>
+    <LandscapeContextProvider>
+      <LocateFunctionContextProvider>
+        <FrontendMappingProvider>
+          <OAuth2LinksProvider oAuth2LinksProps={oAuth2Links}>
+            <UserProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Router hashType='slash'>
+                  <Switch>
+                    <Layout logo={logo} pageTitle={pageTitle} version={version}>
+                      <Route
+                        exact
+                        path='/'
+                        render={(props) => (
+                          <LandscapeOverview
+                            setPageTitle={setPageTitle}
+                            welcomeMessage={message}
+                            {...props}
+                          />
+                        )}
+                      />
+                      <Route
+                        exact
+                        path={Routes.MAP_ROUTE}
+                        render={(props) => <LandscapeMap setPageTitle={setPageTitle} {...props} />}
+                      />
+                      <Route
+                        exact
+                        path='/man/:usage'
+                        render={(props) => <Man setPageTitle={setPageTitle} {...props} />}
+                      />
+                    </Layout>
+                  </Switch>
+                </Router>
+              </ThemeProvider>
+            </UserProvider>
+          </OAuth2LinksProvider>
+        </FrontendMappingProvider>
+      </LocateFunctionContextProvider>
+    </LandscapeContextProvider>
   );
 };
 

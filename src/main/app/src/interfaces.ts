@@ -228,3 +228,8 @@ export interface IChipValue {
   value: number;
   color: string;
 }
+
+export interface IUser {
+  name: string;
+  avatar: string;
+}
