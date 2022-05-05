@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import { Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Box, Button, Card, CardHeader, CardMedia, darken, Theme } from '@material-ui/core';
+import { Box, Button, Card, CardHeader, darken, Theme } from '@material-ui/core';
 import { ILandscape } from '../../../interfaces';
 import dateFormat from 'dateformat';
 import { withBasePath } from '../../../utils/API/BasePath';
@@ -31,8 +31,9 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'block',
       borderRadius: 5,
       backgroundColor: 'black',
+      textAlign: 'center',
     },
-    cardMedia: {
+    preview: {
       height: 200,
       maxWidth: '100%',
       backgroundSize: 'contain',
@@ -104,9 +105,10 @@ const OverviewLayout: React.FC<Props> = ({ landscapes }) => {
               className={classes.link}
               title={'Landscape map'}
             >
-              <CardMedia
-                className={classes.cardMedia}
-                image={withBasePath(`/render/${landscape.identifier}/map.svg`)}
+              <img
+                src={withBasePath(`/render/${landscape.identifier}/map.svg`)}
+                alt={landscape.identifier}
+                className={classes.preview}
               />
             </Button>
             <br />
