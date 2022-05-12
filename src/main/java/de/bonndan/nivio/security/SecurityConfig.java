@@ -26,8 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String LOGIN_MODE_REQUIRED = "required";
     public static final String LOGIN_MODE_OPTIONAL = "optional";
     public static final String LOGIN_MODE_NONE = "none";
-    public static final String LOGIN_PATH = "/login";
-    public static final String LOGOUT_PATH = "/logout";
+    public static final String LOGIN_PATH = "/login"; //NOSONAR
+    public static final String LOGOUT_PATH = "/logout"; //NOSONAR
     public static final String ALL_ORIGINS_HTTP = "http://*";
     public static final String ALL_ORIGINS_HTTPS = "https://*";
 
@@ -57,11 +57,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private void configureForNone(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource());
     }
 
     private void configureForOptional(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .headers(configurer -> {
@@ -83,6 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private void configureForRequired(HttpSecurity http) throws Exception {
 
         http
+                .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .headers(configurer -> {
@@ -102,7 +105,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl(LOGIN_PATH).permitAll();
-
     }
 
     private CorsConfigurationSource corsConfigurationSource() {

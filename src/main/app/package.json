@@ -1,6 +1,6 @@
 {
   "name": "nivio",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": true,
   "homepage": "./",
   "dependencies": {
@@ -12,7 +12,7 @@
     "@stomp/stompjs": "^5.4.4",
     "@types/dateformat": "^3.0.1",
     "@types/jest": "^26.0.24",
-    "@types/node": "^14.18.12",
+    "@types/node": "^14.18.13",
     "@types/react": "^17.0.41",
     "@types/react-dom": "^16.9.14",
     "@types/react-html-parser": "^2.0.2",
@@ -26,8 +26,8 @@
     "html-react-parser": "^0.14.3",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-router-dom": "^5.3.0",
-    "react-scripts": "^5.0.0",
+    "react-router-dom": "^5.3.1",
+    "react-scripts": "^5.0.1",
     "react-social-login-buttons": "^3.6.0",
     "react-svg-pan-zoom-loader": "^1.4.1",
     "react-transition-group": "^4.4.2",

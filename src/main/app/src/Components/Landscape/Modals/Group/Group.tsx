@@ -116,7 +116,7 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
           </div>
         </div>
 
-        {assessment && assessment.status ? (
+        {assessment && assessment.status && assessment.status !== 'UNKNOWN' ? (
           <div>
             <div>
               <br />
@@ -124,18 +124,20 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
               <StatusChip name={assessment.field} status={assessment?.status} />
               <ul>
                 {assessment.message.split(';').map((message) => {
-                  return (
+                  return message && message.length ? (
                     <li style={{ textAlign: 'left' }} key={message}>
                       {message}
                     </li>
-                  );
+                  ) : null;
                 })}
               </ul>
             </div>
             <br />
             <br />
           </div>
-        ) : null}
+        ) : (
+          <br />
+        )}
 
         <div className='labels'>{labels}</div>
 

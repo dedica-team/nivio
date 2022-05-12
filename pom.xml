@@ -5,7 +5,7 @@
 
     <groupId>de.bonndan</groupId>
     <artifactId>nivio</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -19,7 +19,7 @@
         <java.version>17</java.version>
         <maven.compiler.release>11</maven.compiler.release>
         <junit-jupiter.version>5.4.0</junit-jupiter.version>
-        <mockito.version>4.3.1</mockito.version>
+        <mockito.version>4.5.1</mockito.version>
         <archunit.version>0.23.1</archunit.version>
         <jacoco.version>0.8.7</jacoco.version>
         <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
@@ -124,6 +124,11 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency><!-- https://github.com/mockito/mockito/issues/2629 -->
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.12.10</version>
         </dependency>
 
         <dependency>
@@ -288,7 +293,7 @@
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.303</version>
+            <version>1.306</version>
         </dependency>
 
         <dependency>

@@ -4,7 +4,7 @@ import { ILandscape, ILandscapeLinks } from '../../../interfaces';
 import OverviewLayout from './OverviewLayout';
 import { get } from '../../../utils/API/APIClient';
 import { createStyles, darken, Theme } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { withBasePath } from '../../../utils/API/BasePath';
 import Avatar from '@material-ui/core/Avatar';
@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
       width: theme.spacing(25),
       height: theme.spacing(25),
     },
+    help: {
+      color: theme.palette.primary.contrastText,
+    },
   })
 );
 
@@ -56,7 +59,7 @@ const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
       if (landscapeLinks) {
         setLandscapesCount(Object.keys(landscapeLinks._links).length);
         for (const landscapeLink in landscapeLinks._links) {
-          if(landscapeLinks._links[landscapeLink].rel !== "landscape") return;
+          if (landscapeLinks._links[landscapeLink].rel !== 'landscape') return;
           const landscapeDescription: ILandscape | null = await get(
             landscapeLinks._links[landscapeLink].href
           );
@@ -82,7 +85,18 @@ const Overview: React.FC<Props> = ({ setPageTitle, welcomeMessage }) => {
           src={withBasePath('icons/svg/nivio.svg')}
           className={classes.large}
         />
-        <h2>Loading landscapes ...</h2>
+        {loadLandscapes ? (
+          <h2>Loading landscapes ...</h2>
+        ) : (
+          <>
+            <h2>That went wrong.</h2>
+            No landscapes configured or found. Please see the{' '}
+            <Link to={`/man/install.html`} className={classes.help}>
+              manual
+            </Link>{' '}
+            how to provide an initial configuration.
+          </>
+        )}
       </div>
     </div>
   );
