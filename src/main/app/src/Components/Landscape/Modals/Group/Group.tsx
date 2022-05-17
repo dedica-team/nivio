@@ -16,19 +16,19 @@ import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { Close } from '@material-ui/icons';
 
 interface Props {
-  defaultGroup: IGroup;
+  initialGroup: IGroup;
   sticky?: boolean;
 }
 
 /**
  * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({ defaultGroup, sticky }) => {
+const Group: React.FC<Props> = ({ initialGroup, sticky }) => {
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const [visible, setVisible] = useState<boolean>(true);
-  const [group, setGroup] = useState<IGroup>(defaultGroup);
+  const [group, setGroup] = useState<IGroup>(initialGroup);
 
   const getGroupItems = (
     group: IGroup,
@@ -63,14 +63,14 @@ const Group: React.FC<Props> = ({ defaultGroup, sticky }) => {
 
   useEffect(() => {
     if (landscapeContext.landscape) {
-      const newGroup = getGroup(landscapeContext.landscape, defaultGroup.fullyQualifiedIdentifier);
+      const newGroup = getGroup(landscapeContext.landscape, initialGroup.fullyQualifiedIdentifier);
       if (newGroup) {
         newGroup.items.length > 0 ? setGroup(newGroup) : setVisible(false);
       } else {
         setVisible(false);
       }
     }
-  }, [landscapeContext.landscape, defaultGroup]);
+  }, [landscapeContext.landscape, initialGroup]);
 
   if (!visible) return null;
 

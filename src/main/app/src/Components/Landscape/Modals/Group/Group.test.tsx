@@ -11,6 +11,6 @@ it('should render landscape group component', () => {
     icon: 'foo.png',
   };
 
-  const { getByText } = render(<Group defaultGroup={group} />);
+  const { getByText } = render(<Group initialGroup={group} />);
   expect(getByText('foo')).toBeInTheDocument();
 });

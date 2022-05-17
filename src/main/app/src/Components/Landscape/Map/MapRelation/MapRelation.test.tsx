@@ -45,7 +45,7 @@ it('should render mapRelation component', () => {
   act(() => {
     const { getByText, getByTestId } = render(
       <MapRelation
-        defaultSource={source}
+        initialSource={source}
         target={target}
       />
     );
