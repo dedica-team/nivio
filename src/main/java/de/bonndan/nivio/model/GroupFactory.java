@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
-import static de.bonndan.nivio.util.SafeAssign.assignSafe;
+import static de.bonndan.nivio.util.SafeAssign.assignValueOrEmpty;
 
 public class GroupFactory {
 
@@ -27,10 +27,10 @@ public class GroupFactory {
         GroupBuilder builder = getBuilder(group);
 
         if (added != null) {
-            assignSafe(added.getColor(), builder::withColor);
-            assignSafe(added.getContact(), builder::withContact);
-            assignSafe(added.getDescription(), builder::withDescription);
-            assignSafe(added.getOwner(), builder::withOwner);
+            assignValueOrEmpty(added.getColor(), builder::withColor);
+            assignValueOrEmpty(added.getContact(), builder::withContact);
+            assignValueOrEmpty(added.getDescription(), builder::withDescription);
+            assignValueOrEmpty(added.getOwner(), builder::withOwner);
 
             added.getLinks().forEach((s, url) -> group.getLinks().putIfAbsent(s, url));
             added.getLabels().forEach((s, val) -> builder.getLabels().putIfAbsent(s, val));

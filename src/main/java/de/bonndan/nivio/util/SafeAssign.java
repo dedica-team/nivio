@@ -8,13 +8,23 @@ import java.util.function.Consumer;
 public class SafeAssign {
 
     /**
+     * Assigns the value if not null else ""
+     *
+     * @param s value
+     * @param c consumer
+     */
+    public static void assignValueOrEmpty(String s, Consumer<String> c) {
+        c.accept(Objects.requireNonNullElse(s, ""));
+    }
+
+    /**
      * Assigns the value if not null
      *
      * @param s value
      * @param c consumer
      */
     public static void assignSafe(String s, Consumer<String> c) {
-        c.accept(Objects.requireNonNullElse(s, ""));
+        if (s != null) c.accept(s);
     }
 
     /**
