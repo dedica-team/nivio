@@ -48,7 +48,6 @@ it('should render mapRelation component', () => {
         defaultSource={source}
         dataSource={''}
         target={target}
-        relId={source.fullyQualifiedIdentifier + ';' + target.fullyQualifiedIdentifier}
       />
     );
 

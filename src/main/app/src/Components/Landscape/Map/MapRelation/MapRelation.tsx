@@ -24,7 +24,6 @@ interface Props {
   dataSource: string | null;
   defaultSource: IItem;
   target: IItem;
-  relId: string;
 }
 
 /**
@@ -32,13 +31,15 @@ interface Props {
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ dataSource, defaultSource, target, relId }) => {
+const MapRelation: React.FC<Props> = ({ dataSource, defaultSource, target }) => {
   const classes = componentStyles();
   const theme = useTheme();
 
+
   const [visible, setVisible] = useState<boolean>(true);
-  const [relation, setRelation] = useState<IRelation>(defaultSource.relations[relId]);
   const [source, setSource] = useState<IItem>(defaultSource);
+  const relId = source.fullyQualifiedIdentifier + ";" + target.fullyQualifiedIdentifier;
+  const [relation, setRelation] = useState<IRelation>(defaultSource.relations[relId]);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
 
