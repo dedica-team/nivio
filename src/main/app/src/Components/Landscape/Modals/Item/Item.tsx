@@ -205,9 +205,16 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
 
   useEffect(() => {
     if (fullyQualifiedItemIdentifier) {
-      get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
-        setItem(loaded);
-      });
+      get(`/api/${fullyQualifiedItemIdentifier}`)
+        .then((loaded) => {
+          setItem(loaded);
+        })
+        .catch((error) => {
+          // Make the component invisible if api can't find an item
+          if (error.response.status === 404) {
+            setVisible(false);
+          }
+        });
     }
   }, [landscapeContext.landscape, fullyQualifiedItemIdentifier]);
 
