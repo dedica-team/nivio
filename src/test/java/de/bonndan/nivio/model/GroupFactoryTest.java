@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GroupFactoryTest {
 
     @Test
-    @DisplayName("Merged groups uses all updates where not null")
+    @DisplayName("Merged groups uses all updates")
     void testMerge() {
         Group one = new Group("a", "test", "Joe", null, "mail", "#123123");
 
@@ -19,7 +19,7 @@ class GroupFactoryTest {
 
         assertEquals("Matt", merged.getOwner());
         assertEquals("a", merged.getDescription());
-        assertEquals("mail", merged.getContact());
+        assertEquals("", merged.getContact());
         assertEquals("610000", merged.getColor());
     }
 
