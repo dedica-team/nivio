@@ -36,7 +36,7 @@ const MapRelation: React.FC<Props> = ({ defaultSource, target }) => {
 
   const [visible, setVisible] = useState<boolean>(true);
   const [source, setSource] = useState<IItem>(defaultSource);
-  const relId = source.fullyQualifiedIdentifier + ";" + target.fullyQualifiedIdentifier;
+  const relId = source.fullyQualifiedIdentifier + ';' + target.fullyQualifiedIdentifier;
   const dataSource = defaultSource.fullyQualifiedIdentifier;
   const [relation, setRelation] = useState<IRelation>(defaultSource.relations[relId]);
   const locateFunctionContext = useContext(LocateFunctionContext);
@@ -47,7 +47,11 @@ const MapRelation: React.FC<Props> = ({ defaultSource, target }) => {
       return;
     }
     setSource(getItem(landscapeContext.landscape, dataSource) || source);
-    setRelation(source.relations[relId]);
+    if (source.relations[relId]) {
+      setRelation(source.relations[relId]);
+    } else {
+      setVisible(false);
+    }
   }, [landscapeContext.landscape, dataSource, relId, source]);
 
   if (!visible) return null;
