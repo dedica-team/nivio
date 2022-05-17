@@ -88,17 +88,13 @@ public class LandscapeFactory {
         final boolean isPartial = input.isPartial();
 
         //overwrite some data which is not handled by resolvers
-        if (!isPartial || input.getContact() != null) {
-            builder.withContact(input.getContact());
-        }
-        if (!isPartial || StringUtils.hasLength(input.getName())) {
-            builder.withName(input.getName());
-        }
-        if (!isPartial || input.getDescription() != null) {
-            builder.withDescription(input.getDescription());
-        }
-        if (!isPartial || input.getOwner() != null) {
-            builder.withOwner(input.getOwner());
+        if (!isPartial) {
+            builder.withContact(input.getContact() != null ? input.getContact() : "");
+            if (StringUtils.hasLength(input.getName())) {
+                builder.withName(input.getName());
+            }
+            builder.withDescription(input.getDescription() != null ? input.getDescription() : "");
+            builder.withOwner(input.getOwner() != null ? input.getOwner() : "");
         }
 
         if (isPartial) {

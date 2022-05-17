@@ -1,6 +1,7 @@
 package de.bonndan.nivio.util;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -13,7 +14,7 @@ public class SafeAssign {
      * @param c consumer
      */
     public static void assignSafe(String s, Consumer<String> c) {
-        if (s != null) c.accept(s);
+        c.accept(Objects.requireNonNullElse(s, ""));
     }
 
     /**
