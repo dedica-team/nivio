@@ -82,10 +82,8 @@ Adding your own groups
 ^^^^^^^^^^^^^^^^^^^^^^
 
 - Without groups, all items will be assigned to a default group. Items can be assigned to groups using the ``group`` attribute.
-
 - If a group does not exist, nivio creates it. To customize a group, add it to the configuration.
-
-- However, you can't create a group with no attributes. Nivio will not accept the landscape. So at least add an `owner`.
+- However, you can't create a group with no attributes. Nivio will not accept the landscape. So at least add an ``owner``.
 
 .. code-block:: yaml
    :linenos:
@@ -199,7 +197,6 @@ Observations
 * The status of a KPI (i.e. its color) is automatically assessed based on the attribute value - awesome! 🏆
 * There are two other colors that you could use, orange and brown.
 * You only need to define a KPI once, then you can use the respective attribute on as many items as you need to. And of course, an item can use multiple KPIs.
-* Nivio ships with a number of default KPIs. The moment you define your custom ones though, all the default ones disappear.
 
 
 Summary
