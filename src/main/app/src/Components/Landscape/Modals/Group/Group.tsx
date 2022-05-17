@@ -63,9 +63,12 @@ const Group: React.FC<Props> = ({ defaultGroup, sticky }) => {
 
   useEffect(() => {
     if (landscapeContext.landscape) {
-      setGroup(
-        getGroup(landscapeContext.landscape, defaultGroup.fullyQualifiedIdentifier) || defaultGroup
-      );
+      const newGroup = getGroup(landscapeContext.landscape, defaultGroup.fullyQualifiedIdentifier);
+      if (newGroup) {
+        newGroup.items.length > 0 ? setGroup(newGroup) : setVisible(false);
+      } else {
+        setVisible(false);
+      }
     }
   }, [landscapeContext.landscape, defaultGroup]);
 
