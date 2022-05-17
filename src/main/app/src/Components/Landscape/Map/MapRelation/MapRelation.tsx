@@ -47,11 +47,7 @@ const MapRelation: React.FC<Props> = ({ defaultSource, target }) => {
       return;
     }
     setSource(getItem(landscapeContext.landscape, dataSource) || source);
-    if (source.relations[relId]) {
-      setRelation(source.relations[relId]);
-    } else {
-      setVisible(false);
-    }
+    source.relations[relId] ? setRelation(source.relations[relId]) : setVisible(false);
   }, [landscapeContext.landscape, dataSource, relId, source]);
 
   if (!visible) return null;
