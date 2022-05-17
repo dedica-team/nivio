@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import MapRelation from './MapRelation';
 
 it('should render mapRelation component', () => {
@@ -8,7 +8,6 @@ it('should render mapRelation component', () => {
     name: 'fooName',
     owner: '',
     contact: '',
-    relations: {},
     labels: {},
     tags: [],
     icon: '',
@@ -16,6 +15,17 @@ it('should render mapRelation component', () => {
     fullyQualifiedIdentifier: 'abc/foo',
     group: 'Customers',
     networks: ['lan'],
+    relations: {
+      'abc/foo;abc/bar': {
+        source: 'abc/foo',
+        target: 'abc/bar',
+        type: 'PROVIDER',
+        id: 'abc/bar',
+        direction: 'outbound',
+        name: 'bar',
+        labels: {},
+      },
+    },
   };
   const target = {
     identifier: 'bar',
@@ -32,21 +42,20 @@ it('should render mapRelation component', () => {
     networks: ['vpn', 'lan'],
   };
 
-  const relation = {
-    source: source.fullyQualifiedIdentifier,
-    target: target.fullyQualifiedIdentifier,
-    type: 'PROVIDER',
-    id: target.fullyQualifiedIdentifier,
-    direction: 'outbound',
-    name: 'bar',
-    labels: {},
-  };
-  const { getByText, getByTestId } = render(
-    <MapRelation source={source} target={target} relation={relation} />
-  );
-  expect(getByText('fooName')).toBeInTheDocument();
-  expect(getByText('barName')).toBeInTheDocument();
-  expect(getByText('Type')).toBeInTheDocument();
-  expect(getByText('PROVIDER')).toBeInTheDocument();
-  expect(getByTestId('InfoIconRelation')).toBeInTheDocument();
+  act(() => {
+    const { getByText, getByTestId } = render(
+      <MapRelation
+        defaultSource={source}
+        dataSource={''}
+        target={target}
+        relId={source.fullyQualifiedIdentifier + ';' + target.fullyQualifiedIdentifier}
+      />
+    );
+
+    expect(getByText('fooName')).toBeInTheDocument();
+    expect(getByText('barName')).toBeInTheDocument();
+    expect(getByText('Type')).toBeInTheDocument();
+    expect(getByText('PROVIDER')).toBeInTheDocument();
+    expect(getByTestId('InfoIconRelation')).toBeInTheDocument();
+  });
 });

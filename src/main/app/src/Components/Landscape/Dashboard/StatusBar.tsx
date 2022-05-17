@@ -53,7 +53,7 @@ const StatusBar: React.FC<Props> = ({ setSidebarContent, landscape, assessments 
 
   const onGroupClick = (group: IGroup) => {
     findGroup(group.fullyQualifiedIdentifier);
-    setSidebarContent(<Group group={group} sticky={true} />);
+    setSidebarContent(<Group defaultGroup={group} sticky={true} />);
   };
 
   if (landscape && assessments)

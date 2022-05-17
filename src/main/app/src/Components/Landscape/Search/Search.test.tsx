@@ -70,7 +70,7 @@ describe('<Search />', () => {
   it('should add facet to search term', async () => {
     const mock = jest.spyOn(APIClient, 'get');
     mock.mockReturnValue(Promise.resolve(facets));
-    const { container, getByText, getByDisplayValue } = render(
+    const { container, getByText } = render(
       <LandscapeContext.Provider value={landscapeContextValue}>
         <MockTheme>
           <Search searchTerm={''} setSearchTerm={() => {}} />

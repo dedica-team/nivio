@@ -204,12 +204,12 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   };
 
   useEffect(() => {
-    if (!item && fullyQualifiedItemIdentifier) {
+    if (fullyQualifiedItemIdentifier) {
       get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
         setItem(loaded);
       });
     }
-  }, [item, fullyQualifiedItemIdentifier]);
+  }, [landscapeContext.landscape, fullyQualifiedItemIdentifier]);
 
   useEffect(() => {
     if (small) {
@@ -260,7 +260,11 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{ color: theme.palette.info.main }} fontSize='small' data-testid={'InfoIcon'} />
+                  <InfoOutlined
+                    style={{ color: theme.palette.info.main }}
+                    fontSize='small'
+                    data-testid={'InfoIcon'}
+                  />
                 </span>
               </>
             }

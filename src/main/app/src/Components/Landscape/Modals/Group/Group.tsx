@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { IGroup } from '../../../../interfaces';
-import { getLabels, getLinks } from '../../Utils/utils';
+import { getGroup, getLabels, getLinks } from '../../Utils/utils';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
@@ -16,18 +16,19 @@ import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { Close } from '@material-ui/icons';
 
 interface Props {
-  group: IGroup;
+  defaultGroup: IGroup;
   sticky?: boolean;
 }
 
 /**
  * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({ group, sticky }) => {
+const Group: React.FC<Props> = ({ defaultGroup, sticky }) => {
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const [visible, setVisible] = useState<boolean>(true);
+  const [group, setGroup] = useState<IGroup>(defaultGroup);
 
   const getGroupItems = (
     group: IGroup,
@@ -59,6 +60,14 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
     }
     return [];
   };
+
+  useEffect(() => {
+    if (landscapeContext.landscape) {
+      setGroup(
+        getGroup(landscapeContext.landscape, defaultGroup.fullyQualifiedIdentifier) || defaultGroup
+      );
+    }
+  }, [landscapeContext.landscape, defaultGroup]);
 
   if (!visible) return null;
 
@@ -105,10 +114,10 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
             {group?.description ? `${group?.description}` : ''}
           </span>
           {group?.contact ? (
-            <span className='contact group'>
+            <div className='contact group'>
               <span className='label'>Contact: </span>
               {group?.contact || 'No Contact provided'}
-            </span>
+            </div>
           ) : null}
           <div className='owner group'>
             <span className='label'>Owner: </span>
