@@ -185,7 +185,6 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     if (source && target && dataTarget) {
       const mapRelation = (
         <MapRelation
-          dataSource={dataSource}
           defaultSource={source}
           target={target}
           key={`relation_${source.fullyQualifiedIdentifier + ';' + dataTarget}_${Math.random()}`}

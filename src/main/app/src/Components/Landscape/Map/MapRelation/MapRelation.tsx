@@ -21,7 +21,6 @@ import { getItem, getLabels } from '../../Utils/utils';
 import MappedString from '../../Utils/MappedString';
 
 interface Props {
-  dataSource: string | null;
   defaultSource: IItem;
   target: IItem;
 }
@@ -31,23 +30,20 @@ interface Props {
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ dataSource, defaultSource, target }) => {
+const MapRelation: React.FC<Props> = ({ defaultSource, target }) => {
   const classes = componentStyles();
   const theme = useTheme();
-
 
   const [visible, setVisible] = useState<boolean>(true);
   const [source, setSource] = useState<IItem>(defaultSource);
   const relId = source.fullyQualifiedIdentifier + ";" + target.fullyQualifiedIdentifier;
+  const dataSource = defaultSource.fullyQualifiedIdentifier;
   const [relation, setRelation] = useState<IRelation>(defaultSource.relations[relId]);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
 
   useEffect(() => {
     if (!landscapeContext.landscape) {
-      return;
-    }
-    if (!dataSource) {
       return;
     }
     setSource(getItem(landscapeContext.landscape, dataSource) || source);
