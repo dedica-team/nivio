@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { IGroup } from '../../../../interfaces';
-import { getLabels, getLinks } from '../../Utils/utils';
+import { getGroup, getLabels, getLinks } from '../../Utils/utils';
 import { Card, CardHeader } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import StatusChip from '../../../StatusChip/StatusChip';
@@ -16,18 +16,19 @@ import { LandscapeContext } from '../../../../Context/LandscapeContext';
 import { Close } from '@material-ui/icons';
 
 interface Props {
-  group: IGroup;
+  initialGroup: IGroup;
   sticky?: boolean;
 }
 
 /**
  * Returns a chosen group if information is available
  */
-const Group: React.FC<Props> = ({ group, sticky }) => {
+const Group: React.FC<Props> = ({ initialGroup, sticky }) => {
   const componentClasses = componentStyles();
   const landscapeContext = useContext(LandscapeContext);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const [visible, setVisible] = useState<boolean>(true);
+  const [group, setGroup] = useState<IGroup>(initialGroup);
 
   const getGroupItems = (
     group: IGroup,
@@ -59,6 +60,17 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
     }
     return [];
   };
+
+  useEffect(() => {
+    if (landscapeContext.landscape) {
+      const newGroup = getGroup(landscapeContext.landscape, initialGroup.fullyQualifiedIdentifier);
+      if (newGroup) {
+        newGroup.items.length > 0 ? setGroup(newGroup) : setVisible(false);
+      } else {
+        setVisible(false);
+      }
+    }
+  }, [landscapeContext.landscape, initialGroup]);
 
   if (!visible) return null;
 
@@ -104,15 +116,13 @@ const Group: React.FC<Props> = ({ group, sticky }) => {
           <span className='description group'>
             {group?.description ? `${group?.description}` : ''}
           </span>
-          {group?.contact ? (
-            <span className='contact group'>
-              <span className='label'>Contact: </span>
-              {group?.contact || 'No Contact provided'}
-            </span>
-          ) : null}
           <div className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}
+          </div>
+          <div className='contact group'>
+            <span className='label'>Contact: </span>
+            {group?.contact || 'No Contact provided'}
           </div>
         </div>
 

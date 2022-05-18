@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -17,13 +17,12 @@ import componentStyles from '../../../../Resources/styling/ComponentStyles';
 import ItemAvatar from '../../Modals/Item/ItemAvatar';
 import { Close, InfoOutlined } from '@material-ui/icons';
 import { LandscapeContext } from '../../../../Context/LandscapeContext';
-import { getLabels } from '../../Utils/utils';
+import { getItem, getLabels } from '../../Utils/utils';
 import MappedString from '../../Utils/MappedString';
 
 interface Props {
-  source: IItem;
+  initialSource: IItem;
   target: IItem;
-  relation: IRelation;
 }
 
 /**
@@ -31,13 +30,25 @@ interface Props {
  * Returns a chosen Map Relation
  *
  */
-const MapRelation: React.FC<Props> = ({ source, target, relation }) => {
+const MapRelation: React.FC<Props> = ({ initialSource, target }) => {
   const classes = componentStyles();
   const theme = useTheme();
 
   const [visible, setVisible] = useState<boolean>(true);
+  const [source, setSource] = useState<IItem>(initialSource);
+  const relId = source.fullyQualifiedIdentifier + ';' + target.fullyQualifiedIdentifier;
+  const dataSource = initialSource.fullyQualifiedIdentifier;
+  const [relation, setRelation] = useState<IRelation>(initialSource.relations[relId]);
   const locateFunctionContext = useContext(LocateFunctionContext);
   const landscapeContext = useContext(LandscapeContext);
+
+  useEffect(() => {
+    if (!landscapeContext.landscape) {
+      return;
+    }
+    setSource(getItem(landscapeContext.landscape, dataSource) || source);
+    source.relations[relId] ? setRelation(source.relations[relId]) : setVisible(false);
+  }, [landscapeContext.landscape, dataSource, relId, source]);
 
   if (!visible) return null;
 

@@ -136,7 +136,7 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
       let group = getGroup(landscapeContext.landscape, fqi);
       if (group) {
         // @ts-ignore
-        setSidebarContent(<Group group={group} key={`group_${fqi}_${Math.random()}`} />);
+        setSidebarContent(<Group initialGroup={group} key={`group_${fqi}_${Math.random()}`} />);
       }
     }
   };
@@ -183,14 +183,11 @@ const Map: React.FC<Props> = ({ setPageTitle }) => {
     }
 
     if (source && target && dataTarget) {
-      const relId = source.fullyQualifiedIdentifier + ';' + dataTarget;
-      let relation = source.relations[relId];
       const mapRelation = (
         <MapRelation
-          relation={relation}
-          source={source}
+          initialSource={source}
           target={target}
-          key={`relation_${relId}_${Math.random()}`}
+          key={`relation_${source.fullyQualifiedIdentifier + ';' + dataTarget}_${Math.random()}`}
         />
       );
       // @ts-ignore
