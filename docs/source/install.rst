@@ -62,8 +62,6 @@ For example, simply change the name of the item and run the same curl command ag
 
 The landscape diagram should update immediately in your browser.
 
-Only if you change the name of the landscape itself, then you need to refresh the browser manually.
-
 As long as the landscape's `identifier` is the same, it will be updated in place. If you change the landscape identifier in the YAML file, then Nivio will create a new, separate landscape.
 
 .. code-block:: bash
