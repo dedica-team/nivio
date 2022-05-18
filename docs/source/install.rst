@@ -84,6 +84,7 @@ Adding your own groups
 - Without groups, all items will be assigned to a default group. Items can be assigned to groups using the ``group`` attribute.
 - If a group does not exist, nivio creates it. To customize a group, add it to the configuration.
 - However, you can't create a group with no attributes. Nivio will not accept the landscape. So at least add an ``owner``.
+- If intended to delete already set group attributes such as ``description`` or ``contact``, you can do so. But please pay attention that this is not true for the attributes of items or of the landscape. The reason is that group attributes for the groups are all manually set, and the user should have full control about it. For items, instead, best practice is that attributes stick to the old values if they are missing in one configuration file. This is because items are mainly set by several config files. Also, landscapes are not intended to have missing attributes. Therefore, the landscape's attributes stick to formerly set ones if they are missing.
 
 .. code-block:: yaml
    :linenos:
@@ -197,6 +198,7 @@ Observations
 * The status of a KPI (i.e. its color) is automatically assessed based on the attribute value - awesome! 🏆
 * There are two other colors that you could use, orange and brown.
 * You only need to define a KPI once, then you can use the respective attribute on as many items as you need to. And of course, an item can use multiple KPIs.
+* Nivio ships with a number of default KPIs (for more information see :ref:`Data Assessment using KPIs` section)
 
 
 Summary

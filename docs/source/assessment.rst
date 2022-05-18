@@ -39,18 +39,19 @@ Other
 * health (examines the health label on items)
 * condition (K8s condition true/false evaluation)
 
-By default all shipped `KPIs (Key Performance Indicators)` are disabled. Set ``enabled`` to true in the config to disable them.
+By default all shipped `KPIs (Key Performance Indicators)` are disabled. Set ``enabled`` to true in the config to enable them.
 
 .. code-block:: yaml
    :linenos:
 
     identifier: kpi_example
 
-    config:
-      kpis:
-        scaling:
-          enabled: true
-
+   config:
+     kpis:
+       lifecycle:
+         enabled: true
+       scaling:
+         enabled: true
 
 Custom KPIs
 -----------
