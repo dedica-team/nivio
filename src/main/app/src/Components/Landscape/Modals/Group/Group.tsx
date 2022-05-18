@@ -116,15 +116,13 @@ const Group: React.FC<Props> = ({ initialGroup, sticky }) => {
           <span className='description group'>
             {group?.description ? `${group?.description}` : ''}
           </span>
-          {group?.contact ? (
-            <div className='contact group'>
-              <span className='label'>Contact: </span>
-              {group?.contact || 'No Contact provided'}
-            </div>
-          ) : null}
           <div className='owner group'>
             <span className='label'>Owner: </span>
             {group?.owner || 'No Owner provided'}
+          </div>
+          <div className='contact group'>
+            <span className='label'>Contact: </span>
+            {group?.contact || 'No Contact provided'}
           </div>
         </div>
 
