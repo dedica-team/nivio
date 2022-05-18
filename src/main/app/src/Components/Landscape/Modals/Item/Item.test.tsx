@@ -55,7 +55,7 @@ describe('<Item />', () => {
     mock.mockReturnValue(Promise.resolve(useItem));
 
     //when
-    const { container, getByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
+    const { getByText } = render(<Item fullyQualifiedItemIdentifier={'foo'} />);
 
     //then
     await waitFor(() => expect(mock).toHaveBeenCalledTimes(1));

@@ -98,17 +98,16 @@ const LandscapeContextProvider: React.FC = (props) => {
   }, [client, subscriptions]);
 
   /**
-   * Load the landscape data when the identifier changes.
+   * Load the landscape data when the identifier or landscape changes.
    */
   useEffect(() => {
     if (identifier == null) return;
-
     get(`/api/${identifier}`).then((response) => {
       setLandscape(response);
       console.debug(`Loaded landscape data after identifier change: ${identifier}`);
     });
     setLandscapeChanges(null);
-  }, [identifier]);
+  }, [identifier, landscapeChanges]);
 
   /**
    * Load the landscape and assessment data when the identifier changes.

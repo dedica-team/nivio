@@ -204,12 +204,19 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
   };
 
   useEffect(() => {
-    if (!item && fullyQualifiedItemIdentifier) {
-      get(`/api/${fullyQualifiedItemIdentifier}`).then((loaded) => {
-        setItem(loaded);
-      });
+    if (fullyQualifiedItemIdentifier) {
+      get(`/api/${fullyQualifiedItemIdentifier}`)
+        .then((loaded) => {
+          setItem(loaded);
+        })
+        .catch((error) => {
+          // Make the component invisible if api can't find an item
+          if (error.response.status === 404) {
+            setVisible(false);
+          }
+        });
     }
-  }, [item, fullyQualifiedItemIdentifier]);
+  }, [landscapeContext.landscape, fullyQualifiedItemIdentifier]);
 
   useEffect(() => {
     if (small) {
@@ -260,7 +267,11 @@ const Item: React.FC<Props> = ({ fullyQualifiedItemIdentifier, small, sticky }) 
                     'A PROVIDER relation is a hard dependency that is required. A DATAFLOW relation is a soft dependency.'
                   }
                 >
-                  <InfoOutlined style={{ color: theme.palette.info.main }} fontSize='small' data-testid={'InfoIcon'} />
+                  <InfoOutlined
+                    style={{ color: theme.palette.info.main }}
+                    fontSize='small'
+                    data-testid={'InfoIcon'}
+                  />
                 </span>
               </>
             }

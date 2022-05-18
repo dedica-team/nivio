@@ -1,10 +1,21 @@
 package de.bonndan.nivio.util;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class SafeAssign {
+
+    /**
+     * Assigns the value if not null else ""
+     *
+     * @param s value
+     * @param c consumer
+     */
+    public static void assignValueOrEmpty(String s, Consumer<String> c) {
+        c.accept(Objects.requireNonNullElse(s, ""));
+    }
 
     /**
      * Assigns the value if not null
