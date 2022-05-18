@@ -12,9 +12,10 @@ The easiest way to get started is by bringing up Nivio in Docker:
    docker run -it --rm -e NIVIO_BASE_URL -p 8080:8080 dedica/nivio:latest
 
 
-Take a look at http://localhost:8080/#/
+Take a look at http://localhost:8080/
 
-Without any landscapes yet, the application might look like it's stuck in a loading state. Don't worry about it too much.
+A friendly reminder on the application starting screen tells you that there are no landscapes loaded, yet. To do so, follow the instructions below.
+
 
 Creating the first landscape
 ----------------------------
@@ -61,8 +62,6 @@ For example, simply change the name of the item and run the same curl command ag
 
 The landscape diagram should update immediately in your browser.
 
-Only if you change the name of the landscape itself, or want to see label changes in the info tabs, and probably other things outside of the main diagram, then you need to refresh the browser manually.
-
 As long as the landscape's `identifier` is the same, it will be updated in place. If you change the landscape identifier in the YAML file, then Nivio will create a new, separate landscape.
 
 .. code-block:: bash
@@ -80,9 +79,10 @@ Exploring the Nivio model
 Adding your own groups
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Without groups, all items will be assigned to a default group. Items can be assigned to groups using the ``group`` attribute.
-If a group does not exist, nivio creates it. To customize a group, add it to the configuration. However, you can't create a
-group with no attributes. Nivio will not accept the landscape. So at least add an `owner`.
+- Without groups, all items will be assigned to a default group. Items can be assigned to groups using the ``group`` attribute.
+- If a group does not exist, nivio creates it. To customize a group, add it to the configuration.
+- However, you can't create a group with no attributes. Nivio will not accept the landscape. So at least add an ``owner``.
+- If intended to delete already set group attributes such as ``description`` or ``contact``, you can do so. But please pay attention that this is not true for the attributes of items or of the landscape. The reason is that group attributes for the groups are all manually set, and the user should have full control about it. For items, instead, best practice is that attributes stick to the old values if they are missing in one configuration file. This is because items are mainly set by several config files. Also, landscapes are not intended to have missing attributes. Therefore, the landscape's attributes stick to formerly set ones if they are missing.
 
 .. code-block:: yaml
    :linenos:
@@ -107,8 +107,8 @@ group with no attributes. Nivio will not accept the landscape. So at least add a
 Adding relations between items
 ------------------------------
 
-Relations are a key element of every graph. Note that relations are directional in Nivio. A relation can have a `weight`
-attribute between 0-5 to control the width of the line between the two items.
+- Relations are a key element of every graph. Note that relations are directional in Nivio.
+- A relation can have a `weight` attribute between 0-5 to control the width of the line between the two items.
 
 .. code-block:: yaml
    :linenos:
@@ -196,6 +196,7 @@ Observations
 * The status of a KPI (i.e. its color) is automatically assessed based on the attribute value - awesome! 🏆
 * There are two other colors that you could use, orange and brown.
 * You only need to define a KPI once, then you can use the respective attribute on as many items as you need to. And of course, an item can use multiple KPIs.
+* Nivio ships with a number of default KPIs (for more information see :ref:`Data Assessment using KPIs` section)
 
 
 Summary
