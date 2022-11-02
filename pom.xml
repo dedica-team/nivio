@@ -312,7 +312,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
-            <version>5.4.0</version>
+            <version>6.2.1</version>
         </dependency>
 
         <!-- dot parsing -->
